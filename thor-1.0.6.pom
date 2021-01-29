@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>thor.ipfs</groupId>
   <artifactId>thor</artifactId>
-  <version>1.0.5</version>
+  <version>1.0.6</version>
   <packaging>aar</packaging>
   <name>IPFS Thor</name>
   <description>IPFS Library</description>
