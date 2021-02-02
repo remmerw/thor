@@ -26,6 +26,16 @@ type ResolveInfo interface {
 	Close() bool
 }
 
+func (n *Node) DecodeName(name string) string {
+
+	pid, err := peer.Decode(name)
+	if err != nil {
+		n.Listener.Error("Error decoding name")
+		return ""
+	}
+	return pid.Pretty()
+}
+
 func (n *Node) ResolveName(info ResolveInfo, name string, offline bool, dhtRecords int) error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

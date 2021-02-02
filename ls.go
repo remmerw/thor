@@ -44,7 +44,7 @@ type DirEntry struct {
 	Err error
 }
 
-func (n *Node) Ls(paths string, info LsInfoClose) error {
+func (n *Node) Ls(paths string, info LsInfoClose, resolveChildren bool) error {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -66,7 +66,7 @@ func (n *Node) Ls(paths string, info LsInfoClose) error {
 		}
 	}(info)
 
-	pchan, err := n.Lss(ctx, path.New(paths), true)
+	pchan, err := n.Lss(ctx, path.New(paths), resolveChildren)
 
 	if err != nil {
 		return err
