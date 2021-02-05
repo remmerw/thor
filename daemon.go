@@ -36,10 +36,6 @@ func daemon(n *Node, ctx context.Context) error {
 	// let the user know we're going.
 	n.Listener.Info("Initializing daemon...")
 
-	// The node will also close the repo but there are many places we could
-	// fail before we get to that. It can't hurt to close it twice.
-	defer n.DataStore.Close()
-
 	var Swarm []string
 
 	Swarm = append(Swarm, fmt.Sprintf("/ip4/0.0.0.0/tcp/%d", n.Port))
@@ -74,10 +70,7 @@ func daemon(n *Node, ctx context.Context) error {
 		return err
 	}
 
-	// hash security
-	bs := blockstore.NewBlockstore(n.DataStore)
-
-	n.BlockStore = blockstore.NewIdStore(bs)
+	n.BlockStore = blockstore.NewBlockstore(n.DataStore)
 
 	grace, err := time.ParseDuration(n.GracePeriod)
 	if err != nil {
@@ -94,16 +87,7 @@ func daemon(n *Node, ctx context.Context) error {
 	opts = append(opts, libp2p.Transport(libp2pquic.NewTransport))
 	opts = append(opts, libp2p.DefaultTransports)
 	opts = append(opts, libp2p.Ping(false))
-
 	opts = append(opts, libp2p.ChainOptions(libp2p.EnableAutoRelay(), libp2p.DefaultStaticRelays()))
-
-	opts = append(opts, libp2p.EnableNATService())
-
-	interval := time.Minute
-
-	opts = append(opts,
-		libp2p.AutoNATServiceRateLimit(30, 3, interval),
-	)
 
 	// Let this host use the DHT to find other hosts
 	opts = append(opts, libp2p.Routing(func(host host.Host) (routing.PeerRouting, error) {
@@ -116,7 +100,7 @@ func daemon(n *Node, ctx context.Context) error {
 
 		bitSwapNetwork := bsnet.NewFromIpfsHost(host, n.Routing)
 
-		exchange := bitswap.New(ctx, bitSwapNetwork, bs,
+		exchange := bitswap.New(ctx, bitSwapNetwork, n.BlockStore,
 			bitswap.ProvideEnabled(false))
 
 		n.BlockService = blockservice.New(n.BlockStore, exchange)
@@ -128,19 +112,6 @@ func daemon(n *Node, ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("constructPeerHost: %s", err)
 	}
-
-	defer func() {
-		// We wait for the node to close first, as the node has children
-		// that it will wait for before closing, such as the API server.
-		n.DataStore.Close()
-
-		//case <-req.Context.Done():
-		select {
-		case <-ctx.Done():
-			n.Listener.Info("Gracefully shut down daemon")
-		default:
-		}
-	}()
 
 	n.Listener.Info("Daemon is ready")
 

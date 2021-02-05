@@ -13,4 +13,4 @@ cd $HOME
 
 set GO111MODULE=off
 
-gomobile bind -o thor-1.0.7.aar -v -androidapi=26 -target=android -ldflags="-s -w" github.com/remmerw/thor
+gomobile bind -o thor-1.0.8.aar -v -androidapi=26 -target=android -ldflags="-s -w" github.com/remmerw/thor
