@@ -14,10 +14,33 @@ type StreamInfo struct {
 	Protocol string
 }
 
+type Peer struct {
+	Address string
+	ID      string
+}
+
 func (n *Node) SwarmPeers() int {
 	return len(n.Host.Network().Conns())
 }
 
+func (n *Node) SwarmPeer(pid string) (*Peer, error) {
+
+	conn := n.Host.Network().Conns()
+
+	for _, c := range conn {
+
+		if c.RemotePeer().Pretty() == pid {
+			ci := Peer{
+				Address: c.RemoteMultiaddr().String(),
+				ID:      c.RemotePeer().Pretty(),
+			}
+			return &ci, nil
+		}
+
+	}
+
+	return nil, nil
+}
 func (n *Node) IsConnected(pid string) (bool, error) {
 
 	id, err := peer.Decode(pid)
