@@ -93,7 +93,7 @@ func daemon(n *Node, ctx context.Context) error {
 	opts = append(opts, libp2p.Routing(func(host host.Host) (routing.PeerRouting, error) {
 
 		n.Routing, err = dht.New(
-			ctx, host, dht.Concurrency(10),
+			ctx, host, dht.Concurrency(n.Concurrency),
 			dht.Mode(dht.ModeClient),
 			dht.DisableAutoRefresh(),
 			dht.Validator(n.RecordValidator))
