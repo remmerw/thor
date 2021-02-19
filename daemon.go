@@ -113,13 +113,16 @@ func daemon(n *Node, ctx context.Context) error {
 		return fmt.Errorf("constructPeerHost: %s", err)
 	}
 
-	n.Listener.Info("Daemon is ready")
-
 	n.Running = true
+	n.Shutdown = false
 
 	for {
-		n.Listener.Verbose("Daemon still running ...")
-		time.Sleep(10 * time.Second)
+		if n.Shutdown {
+			n.Running = false
+			n.Listener.Info("Daemon is shutdown")
+			return nil
+		}
+		time.Sleep(time.Duration(n.Responsive) * time.Millisecond)
 	}
 
 	return nil

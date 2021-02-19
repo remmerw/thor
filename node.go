@@ -25,6 +25,7 @@ type Node struct {
 	HighWater   int
 	Port        int
 	Concurrency int
+	Responsive  int
 
 	PeerID     string
 	PrivateKey string
@@ -33,6 +34,7 @@ type Node struct {
 	Agent      string
 
 	Running           bool
+	Shutdown          bool
 	Listener          Listener
 	DataStore         ds.Batching
 	PeerStore         peerstore.Peerstore
