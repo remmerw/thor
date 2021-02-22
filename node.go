@@ -6,8 +6,7 @@ import (
 	"encoding/base64"
 	_ "expvar"
 	"github.com/ipfs/go-blockservice"
-	ds "github.com/ipfs/go-datastore"
-	blockstore "github.com/ipfs/go-ipfs-blockstore"
+	bs "github.com/ipfs/go-ipfs-blockstore"
 	format "github.com/ipfs/go-ipld-format"
 	"github.com/libp2p/go-libp2p-core/connmgr"
 	ci "github.com/libp2p/go-libp2p-core/crypto"
@@ -36,10 +35,9 @@ type Node struct {
 	Running           bool
 	Shutdown          bool
 	Listener          Listener
-	DataStore         ds.Batching
 	PeerStore         peerstore.Peerstore
 	RecordValidator   record.Validator
-	BlockStore        blockstore.Blockstore
+	BlockStore        bs.Blockstore
 	BlockService      blockservice.BlockService
 	DagService        format.DAGService
 	Host              host.Host
@@ -59,8 +57,7 @@ type Listener interface {
 }
 
 func NewNode(listener Listener) *Node {
-	store := NewDatastore(listener)
-	return &Node{Listener: listener, DataStore: store, Running: false}
+	return &Node{Listener: listener, Running: false}
 }
 
 func (n *Node) Identity() error {

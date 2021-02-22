@@ -8,7 +8,6 @@ import (
 	bsnet "github.com/ipfs/go-bitswap/network"
 	"github.com/ipfs/go-blockservice"
 
-	blockstore "github.com/ipfs/go-ipfs-blockstore"
 	"github.com/ipfs/go-ipns"
 	"github.com/ipfs/go-merkledag"
 	"github.com/libp2p/go-libp2p"
@@ -70,7 +69,7 @@ func daemon(n *Node, ctx context.Context) error {
 		return err
 	}
 
-	n.BlockStore = blockstore.NewBlockstore(n.DataStore)
+	n.BlockStore = NewBlockstore(n.Listener)
 
 	grace, err := time.ParseDuration(n.GracePeriod)
 	if err != nil {
@@ -120,7 +119,7 @@ func daemon(n *Node, ctx context.Context) error {
 		if n.Shutdown {
 			n.Running = false
 			n.Listener.Info("Daemon is shutdown")
-			return nil
+			break
 		}
 		time.Sleep(time.Duration(n.Responsive) * time.Millisecond)
 	}
