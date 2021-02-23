@@ -4,7 +4,6 @@ go 1.13
 
 require (
 	github.com/benbjohnson/clock v1.0.3 // indirect
-	github.com/gogo/protobuf v1.3.1
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/gopherjs/gopherjs v0.0.0-20190812055157-5d271430af9f // indirect
 	github.com/ipfs/go-bitswap v0.3.2

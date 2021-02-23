@@ -50,8 +50,7 @@ func (n *Node) GetLoader(paths string, close LoaderClose) (*Loader, error) {
 
 	p := path.New(paths)
 
-	dagService := dag.NewReadOnlyDagService(
-		dag.NewSession(ctx, n.DagService))
+	dagService := dag.NewReadOnlyDagService(dag.NewSession(ctx, n.DagService))
 
 	nd, err := n.ResolveNode(ctx, dagService, p)
 	if err != nil {
