@@ -69,8 +69,6 @@ func daemon(n *Node, ctx context.Context) error {
 		return err
 	}
 
-	n.BlockStore = NewBlockstore(n.Listener)
-
 	grace, err := time.ParseDuration(n.GracePeriod)
 	if err != nil {
 		return fmt.Errorf("parsing Swarm.ConnMgr.GracePeriod: %s", err)
@@ -92,14 +90,15 @@ func daemon(n *Node, ctx context.Context) error {
 	opts = append(opts, libp2p.Routing(func(host host.Host) (routing.PeerRouting, error) {
 
 		n.Routing, err = dht.New(
-			ctx, host, dht.Concurrency(n.Concurrency),
-			dht.Mode(dht.ModeClient),
+			ctx, host,
+			dht.Concurrency(n.Concurrency),
 			dht.DisableAutoRefresh(),
+			dht.Mode(dht.ModeClient),
 			dht.Validator(n.RecordValidator))
 
 		bitSwapNetwork := bsnet.NewFromIpfsHost(host, n.Routing)
 
-		exchange := bitswap.New(ctx, bitSwapNetwork, n.BlockStore,
+		exchange := bitswap.New(ctx, bitSwapNetwork, NewLeacher(n.Listener),
 			bitswap.ProvideEnabled(false))
 
 		n.BlockService = blockservice.New(n.BlockStore, exchange)

@@ -57,7 +57,7 @@ type Listener interface {
 }
 
 func NewNode(listener Listener) *Node {
-	return &Node{Listener: listener, Running: false}
+	return &Node{Listener: listener, BlockStore: NewBlockstore(listener), Running: false}
 }
 
 func (n *Node) Identity() error {

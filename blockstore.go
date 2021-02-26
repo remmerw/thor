@@ -1,5 +1,3 @@
-// Package blockstore implements a thin wrapper over a datastore, giving a
-// clean interface for Getting and Putting block objects.
 package thor
 
 import (
@@ -12,8 +10,6 @@ import (
 
 var _ bstore.Blockstore = (*blockstore)(nil)
 
-// NewBlockstore returns a default Blockstore implementation
-// using the provided datastore.Batching backend.
 func NewBlockstore(listener Listener) bstore.Blockstore {
 	return &blockstore{
 		Listener: listener,
