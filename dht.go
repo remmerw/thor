@@ -15,10 +15,6 @@ type Provider interface {
 	Pid(Message string)
 }
 
-type DhtClose interface {
-	Close() bool
-}
-
 func (n *Node) DhtFindProvsTimeout(mcid string, provider Provider, numProviders int, timeout int32) error {
 	dnsTimeout := time.Duration(timeout) * time.Second
 
@@ -48,11 +44,11 @@ func (n *Node) DhtFindProvsTimeout(mcid string, provider Provider, numProviders 
 	return nil
 }
 
-func (n *Node) DhtFindProvs(mcid string, provider Provider, numProviders int, close DhtClose) error {
+func (n *Node) DhtFindProvs(mcid string, provider Provider, numProviders int, close Closeable) error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	go func(stream DhtClose) {
+	go func(stream Closeable) {
 		for {
 			if ctx.Err() != nil {
 				break
@@ -89,11 +85,11 @@ func (n *Node) DhtFindProvs(mcid string, provider Provider, numProviders int, cl
 	return nil
 }
 
-func (n *Node) DhtProvide(mcid string, close DhtClose) error {
+func (n *Node) DhtProvide(mcid string, close Closeable) error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	go func(stream DhtClose) {
+	go func(stream Closeable) {
 		for {
 			if ctx.Err() != nil {
 				break

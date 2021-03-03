@@ -12,7 +12,7 @@ import (
 
 type ResolveInfo interface {
 	Resolved(Data []byte)
-	Close() bool
+	Closeable
 }
 
 func (n *Node) DecodeName(name string) string {

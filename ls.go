@@ -17,13 +17,9 @@ import (
 	"time"
 )
 
-type LsClose interface {
-	Close() bool
-}
-
 type LsInfoClose interface {
 	LsInfo(NAME string, HASH string, SIZE int, TYPE int32)
-	Close() bool
+	Closeable
 }
 
 const (
@@ -47,13 +43,13 @@ type DirEntry struct {
 	Err error
 }
 
-func (n *Node) IsDir(paths string, close LsClose) (bool, error) {
+func (n *Node) IsDir(paths string, close Closeable) (bool, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	var err error
 
-	go func(stream LsClose) {
+	go func(stream Closeable) {
 		for {
 			if ctx.Err() != nil {
 				break
@@ -79,13 +75,13 @@ func (n *Node) IsDir(paths string, close LsClose) (bool, error) {
 	return true, nil
 }
 
-func (n *Node) Resolve(paths string, close LsClose) string {
+func (n *Node) Resolve(paths string, close Closeable) string {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	var err error
 
-	go func(stream LsClose) {
+	go func(stream Closeable) {
 		for {
 			if ctx.Err() != nil {
 				break
