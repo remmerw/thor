@@ -60,6 +60,9 @@ kotlin {
                 implementation("io.github.vinceglb:filekit-dialogs:0.10.0-beta04")
                 implementation("io.github.vinceglb:filekit-dialogs-compose:0.10.0-beta04")
 
+
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+
                 implementation(libs.connectivity.core)
                 implementation(libs.connectivity.compose)
 
@@ -71,13 +74,6 @@ kotlin {
                 implementation(libs.kotlin.test)
             }
         }
-
-        androidUnitTest {
-            dependencies {
-                implementation(libs.kotlin.test)
-            }
-        }
-
         iosMain {
             dependencies {
                 implementation(libs.connectivity.device)
@@ -86,12 +82,43 @@ kotlin {
             }
         }
 
+        iosArm64Main {
+            dependencies {
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-iosarm64:1.10.2")
+            }
+        }
+
+        iosSimulatorArm64Main {
+            dependencies {
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-iossimulatorarm64:1.10.2")
+            }
+        }
+
+        iosX64Main {
+            dependencies {
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-iosx64:1.10.2")
+            }
+        }
         jvmMain {
             dependencies {
                 implementation(compose.desktop.common)
                 implementation(libs.connectivity.http)
                 implementation(libs.connectivity.compose.http)
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.10.2")
             }
+        }
+
+        androidUnitTest {
+            dependencies {
+                implementation(libs.kotlin.test)
+                implementation("androidx.test:runner:1.6.2")
+                implementation("androidx.test:core:1.6.1")
+            }
+        }
+        androidInstrumentedTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation("androidx.test:runner:1.6.2")
+            implementation("androidx.test:core:1.6.1")
         }
 
         androidMain {
@@ -100,6 +127,7 @@ kotlin {
                 implementation(libs.connectivity.device)
                 implementation(libs.connectivity.compose.device)
                 implementation(libs.connectivity.android)
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
             }
         }
     }
