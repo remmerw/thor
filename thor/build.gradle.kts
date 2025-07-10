@@ -1,4 +1,3 @@
-import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -6,15 +5,12 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.composeMultiplatform)
-    alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.vanniktech.mavenPublish)
 }
 
 group = "io.github.remmerw"
-version = "0.2.1"
+version = "0.0.1"
 
 
 kotlin {
@@ -27,9 +23,9 @@ kotlin {
 
 
     jvm()
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
+    // iosX64()
+    // iosArm64()
+    // iosSimulatorArm64()
 
 
     sourceSets {
@@ -38,34 +34,14 @@ kotlin {
                 implementation(libs.kotlin.stdlib)
                 implementation(libs.androidx.sqlite.bundled)
                 implementation(libs.androidx.room.runtime)
-                implementation(libs.kotlinx.datetime)
                 implementation(libs.kotlinx.io.core)
-                implementation(libs.uri.kmp)
+
                 implementation(libs.androidx.datastore.preferences.core)
                 implementation(libs.androidx.datastore.preferences)
-                implementation(libs.atomicfu)
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.material3)
-                implementation(compose.ui)
-                implementation(compose.components.resources)
-                implementation(compose.materialIconsExtended)
-                implementation(libs.qrose)
-                implementation(libs.lifecycle)
-
-                implementation("io.github.remmerw:asen:0.2.7")
-                implementation("io.github.remmerw:idun:0.2.7")
-
-                implementation("io.github.vinceglb:filekit-core:0.10.0-beta04")
-                implementation("io.github.vinceglb:filekit-dialogs:0.10.0-beta04")
-                implementation("io.github.vinceglb:filekit-dialogs-compose:0.10.0-beta04")
 
 
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
-
-                implementation(libs.connectivity.core)
-                implementation(libs.connectivity.compose)
-
+                implementation("io.github.remmerw:asen:0.3.3")
+                implementation("io.github.remmerw:idun:0.3.3")
             }
         }
 
@@ -74,44 +50,11 @@ kotlin {
                 implementation(libs.kotlin.test)
             }
         }
-        iosMain {
-            dependencies {
-                implementation(libs.connectivity.device)
-                implementation(libs.connectivity.compose.device)
-                implementation(libs.connectivity.apple)
-            }
-        }
 
-        iosArm64Main {
-            dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-iosarm64:1.10.2")
-            }
-        }
-
-        iosSimulatorArm64Main {
-            dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-iossimulatorarm64:1.10.2")
-            }
-        }
-
-        iosX64Main {
-            dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-iosx64:1.10.2")
-            }
-        }
-        jvmMain {
-            dependencies {
-                implementation(compose.desktop.common)
-                implementation(libs.connectivity.http)
-                implementation(libs.connectivity.compose.http)
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.10.2")
-            }
-        }
 
         androidUnitTest {
             dependencies {
                 implementation(libs.kotlin.test)
-                implementation("androidx.test:runner:1.6.2")
                 implementation("androidx.test:core:1.6.1")
             }
         }
@@ -123,11 +66,6 @@ kotlin {
 
         androidMain {
             dependencies {
-                implementation(libs.androidx.work.runtime)
-                implementation(libs.connectivity.device)
-                implementation(libs.connectivity.compose.device)
-                implementation(libs.connectivity.android)
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
             }
         }
     }
@@ -139,10 +77,15 @@ android {
     compileSdk = 36
     defaultConfig {
         minSdk = 27
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
+    }
+    packaging {
+        resources.excludes.add("META-INF/versions/9/OSGI-INF/MANIFEST.MF")
+        resources.excludes.add("DebugProbesKt.bin")
     }
 }
 
@@ -150,23 +93,23 @@ android {
 
 dependencies {
     add("kspAndroid", libs.androidx.room.compiler)
-    add("kspIosX64", libs.androidx.room.compiler)
-    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
-    add("kspIosArm64", libs.androidx.room.compiler)
+    //add("kspIosX64", libs.androidx.room.compiler)
+    //add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+    //add("kspIosArm64", libs.androidx.room.compiler)
     add("kspJvm", libs.androidx.room.compiler)
 }
 
 
 
 mavenPublishing {
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    publishToMavenCentral()
 
     signAllPublications()
 
     coordinates(group.toString(), "thor", version.toString())
 
     pom {
-        name = "odin"
+        name = "thor"
         description = "API library for Thor application"
         inceptionYear = "2025"
         url = "https://github.com/remmerw/thor/"

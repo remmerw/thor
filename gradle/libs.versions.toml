@@ -1,52 +1,27 @@
 [versions]
 agp = "8.11.0"
-qrose = "1.0.1"
 datastorePreferencesCore = "1.1.7"
 kotlin = "2.2.0"
-kotlinxIoCore = "0.7.0"
+kotlinxIoCore = "0.8.0"
 ksp = "2.2.0-2.0.2"
 androidx-room = "2.7.2"
 androidx-sqlite = "2.5.2"
-kotlinx-datetime = "0.6.2"
-uriKmp = "0.0.19"
-workRuntime = "2.10.2"
-atomicfu = "0.28.0"
-compose-multiplatform = "1.8.2"
-lifecycle = "2.9.1"
-connectivity = "2.1.0"
+
 
 [libraries]
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferencesCore" }
 androidx-datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastorePreferencesCore" }
-androidx-work-runtime = { module = "androidx.work:work-runtime", version.ref = "workRuntime" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlinx-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinxIoCore" }
 androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "androidx-sqlite" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "androidx-room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "androidx-room" }
-kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
-uri-kmp = { module = "com.eygraber:uri-kmp", version.ref = "uriKmp" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
-qrose = { module = "io.github.alexzhirkevich:qrose", version.ref = "qrose" }
-lifecycle = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
-connectivity-core = { module = "dev.jordond.connectivity:connectivity-core", version.ref = "connectivity" }
-connectivity-device = { module = "dev.jordond.connectivity:connectivity-device", version.ref = "connectivity" }
-connectivity-android = { module = "dev.jordond.connectivity:connectivity-android", version.ref = "connectivity" }
-connectivity-apple = { module = "dev.jordond.connectivity:connectivity-apple", version.ref = "connectivity" }
-connectivity-http = { module = "dev.jordond.connectivity:connectivity-http", version.ref = "connectivity" }
-connectivity-compose = { module = "dev.jordond.connectivity:connectivity-compose", version.ref = "connectivity" }
-connectivity-compose-device = { module = "dev.jordond.connectivity:connectivity-compose-device", version.ref = "connectivity" }
-connectivity-compose-http = { module = "dev.jordond.connectivity:connectivity-compose-http", version.ref = "connectivity" }
-
 
 
 [plugins]
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
-composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-vanniktech-mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.32.0" }
+vanniktech-mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.33.0" }
 
