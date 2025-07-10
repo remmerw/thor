@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 
 
 plugins {
@@ -15,6 +16,8 @@ version = "0.0.1"
 
 kotlin {
     androidTarget {
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_21)
@@ -51,6 +54,11 @@ kotlin {
             }
         }
 
+        jvmTest {
+            dependencies {
+                implementation(libs.kotlin.test)
+            }
+        }
 
         androidUnitTest {
             dependencies {
@@ -64,10 +72,7 @@ kotlin {
             implementation("androidx.test:core:1.6.1")
         }
 
-        androidMain {
-            dependencies {
-            }
-        }
+
     }
 }
 
