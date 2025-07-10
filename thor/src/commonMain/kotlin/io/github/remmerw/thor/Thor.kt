@@ -11,6 +11,7 @@ import io.github.remmerw.thor.core.Bookmarks
 import io.github.remmerw.thor.core.Peers
 import io.github.remmerw.thor.core.Tasks
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
 import okio.Path.Companion.toPath
@@ -21,11 +22,15 @@ expect abstract class Context
 
 interface Thor {
 
-    fun datastore(): DataStore<Preferences>
     fun tasks(): Tasks
     fun bookmarks(): Bookmarks
     fun idun(): Idun
     fun cacheDir(): Path
+
+    suspend fun removeHomepage()
+
+    fun homepageUri(default: String): Flow<String>
+    suspend fun homepage(uri: String, title: String, icon: ByteArray?)
 }
 
 expect fun initializeThor(context: Context)
@@ -48,17 +53,17 @@ fun deleteRecursively(path: Path, deleteDirectory: Boolean, mustExist: Boolean =
 expect fun thor(): Thor
 
 
-@Suppress("KotlinNoActualForExpect", "EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 expect object TasksConstructor : RoomDatabaseConstructor<Tasks> {
     override fun initialize(): Tasks
 }
 
-@Suppress("KotlinNoActualForExpect", "EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 expect object BookmarksConstructor : RoomDatabaseConstructor<Bookmarks> {
     override fun initialize(): Bookmarks
 }
 
-@Suppress("KotlinNoActualForExpect", "EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 expect object PeersConstructor : RoomDatabaseConstructor<Peers> {
     override fun initialize(): Peers
 }
