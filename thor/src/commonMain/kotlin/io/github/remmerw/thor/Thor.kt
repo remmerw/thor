@@ -76,7 +76,7 @@ abstract class Thor {
     }
 
     suspend fun removeTask(task: Task) {
-       tasks().delete(task)
+        tasks().delete(task)
     }
 
     suspend fun cancelTask(task: Task) {
@@ -95,35 +95,35 @@ abstract class Thor {
         tasks().purge()
     }
 
-    suspend fun storeTask(task: Task){
-        tasks().insert(task)
+    suspend fun storeTask(task: Task): Long {
+        return tasks().insert(task)
     }
 
-    suspend fun setTaskWork(taskId: Long, uuid:String){
+    suspend fun setTaskWork(taskId: Long, uuid: String) {
         tasks().work(taskId, uuid)
     }
 
-    suspend fun setTaskActive(taskId: Long){
+    suspend fun setTaskActive(taskId: Long) {
         tasks().active(taskId)
     }
 
-    suspend fun setTaskInactive(taskId: Long){
+    suspend fun setTaskInactive(taskId: Long) {
         tasks().inactive(taskId)
     }
 
-    suspend fun setTaskFinished(taskId: Long, url: String){
+    suspend fun setTaskFinished(taskId: Long, url: String) {
         tasks().finished(taskId, url)
     }
 
-    suspend fun setTaskFinished(taskId: Long){
+    suspend fun setTaskFinished(taskId: Long) {
         tasks().finished(taskId)
     }
 
-    suspend fun setTaskProgress(taskId: Long, progress: Float){
+    suspend fun setTaskProgress(taskId: Long, progress: Float) {
         tasks().progress(taskId, progress)
     }
 
-    suspend fun getTask(taskId: Long) : Task{
+    suspend fun getTask(taskId: Long): Task {
         return tasks().task(taskId)
     }
 
