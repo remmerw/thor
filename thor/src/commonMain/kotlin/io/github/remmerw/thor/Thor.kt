@@ -14,11 +14,9 @@ import io.github.remmerw.thor.core.Task
 import io.github.remmerw.thor.core.Tasks
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
 import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
 import okio.Path.Companion.toPath
-import kotlin.io.deleteRecursively
 
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
@@ -28,8 +26,7 @@ abstract class Thor {
 
     internal abstract fun datastore(): DataStore<Preferences>
     internal abstract fun bookmarks(): Bookmarks
-
-    abstract fun tasks(): Tasks
+    internal abstract fun tasks(): Tasks
 
     abstract fun idun(): Idun
     abstract fun cacheDir(): Path
@@ -96,6 +93,45 @@ abstract class Thor {
 
     suspend fun purgeTasks() {
         tasks().purge()
+    }
+
+    suspend fun storeTask(task: Task){
+        tasks().insert(task)
+    }
+
+    suspend fun setTaskWork(taskId: Long, uuid:String){
+        tasks().work(taskId, uuid)
+    }
+
+    suspend fun setTaskActive(taskId: Long){
+        tasks().active(taskId)
+    }
+
+    suspend fun setTaskInactive(taskId: Long){
+        tasks().inactive(taskId)
+    }
+
+    suspend fun setTaskFinished(taskId: Long, url: String){
+        tasks().finished(taskId, url)
+    }
+
+    suspend fun setTaskFinished(taskId: Long){
+        tasks().finished(taskId)
+    }
+
+    suspend fun setTaskProgress(taskId: Long, progress: Float){
+        tasks().progress(taskId, progress)
+    }
+
+    suspend fun getTask(taskId: Long) : Task{
+        return tasks().task(taskId)
+    }
+
+    suspend fun createOrGetTask(
+        pid: Long, name: String, mimeType: String, uri: String,
+        size: Long, uuid: String
+    ): Long {
+        return tasks().createOrGet(pid, name, mimeType, uri, size, uuid)
     }
 }
 
