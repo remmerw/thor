@@ -7,36 +7,102 @@ import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import io.github.remmerw.idun.Idun
+import io.github.remmerw.thor.core.Bookmark
 import io.github.remmerw.thor.core.Bookmarks
 import io.github.remmerw.thor.core.Peers
+import io.github.remmerw.thor.core.Task
 import io.github.remmerw.thor.core.Tasks
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
 import okio.Path.Companion.toPath
+import kotlin.io.deleteRecursively
 
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 expect abstract class Context
 
-interface Thor {
+abstract class Thor {
 
-    fun tasks(): Tasks
-    fun bookmarks(): Bookmarks
-    fun idun(): Idun
-    fun cacheDir(): Path
+    internal abstract fun datastore(): DataStore<Preferences>
+    internal abstract fun bookmarks(): Bookmarks
 
-    suspend fun removeHomepage()
+    abstract fun tasks(): Tasks
 
-    fun homepageUri(default: String): Flow<String>
-    suspend fun homepage(uri: String, title: String, icon: ByteArray?)
+    abstract fun idun(): Idun
+    abstract fun cacheDir(): Path
+
+    suspend fun removeHomepage() {
+        io.github.remmerw.thor.core.removeHomepage(datastore())
+    }
+
+    fun getHomepageUri(default: String): Flow<String> {
+        return io.github.remmerw.thor.core.homepageUri(datastore(), default)
+    }
+
+    suspend fun setHomepage(uri: String, title: String, icon: ByteArray?) {
+        io.github.remmerw.thor.core.homepage(datastore(), uri, title, icon)
+    }
+
+
+    suspend fun storeBookmark(bookmark: Bookmark) {
+        bookmarks().insert(bookmark)
+    }
+
+    fun hasBookmark(url: String?): Flow<Boolean> {
+        return bookmarks().hasBookmark(url)
+    }
+
+    suspend fun deleteBookmark(bookmark: Bookmark) {
+        bookmarks().delete(bookmark)
+    }
+
+    suspend fun getBookmark(url: String): Bookmark? {
+        return bookmarks().bookmark(url)
+    }
+
+    fun getBookmarks(): Flow<List<Bookmark>> {
+        return bookmarks().bookmarks()
+    }
+
+    suspend fun reset() {
+        tasks().reset()
+        deleteRecursively(cacheDir(), false)
+    }
+
+
+    suspend fun startTask(task: Task, uuid: String) {
+        tasks().active(task.id)
+        tasks().work(task.id, uuid)
+    }
+
+    suspend fun removeTask(task: Task) {
+       tasks().delete(task)
+    }
+
+    suspend fun cancelTask(task: Task) {
+        tasks().inactive(task.id)
+    }
+
+    fun activeTasks(): Flow<Boolean> {
+        return tasks().active()
+    }
+
+    fun getTasks(pid: Long): Flow<List<Task>> {
+        return tasks().tasks(pid)
+    }
+
+    suspend fun purgeTasks() {
+        tasks().purge()
+    }
 }
 
 expect fun initializeThor(context: Context)
 
 
-fun deleteRecursively(path: Path, deleteDirectory: Boolean, mustExist: Boolean = false) {
+private fun deleteRecursively(path: Path, deleteDirectory: Boolean, mustExist: Boolean = false) {
     val isDirectory = SystemFileSystem.metadataOrNull(path)?.isDirectory ?: false
     if (isDirectory) {
         for (child in SystemFileSystem.list(path)) {

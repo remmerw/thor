@@ -10,8 +10,6 @@ import io.github.remmerw.idun.newIdun
 import io.github.remmerw.thor.core.Bookmarks
 import io.github.remmerw.thor.core.Peers
 import io.github.remmerw.thor.core.Tasks
-import io.github.remmerw.thor.core.homepage
-import kotlinx.coroutines.flow.Flow
 import kotlinx.io.files.Path
 
 private var thor: Thor? = null
@@ -26,8 +24,11 @@ internal class AndroidThor(
     private val tasks: Tasks,
     private val bookmarks: Bookmarks,
     private val idun: Idun
-) : Thor {
+) : Thor() {
 
+    override fun datastore(): DataStore<Preferences> {
+        return datastore
+    }
 
     override fun tasks(): Tasks {
         return tasks
@@ -45,17 +46,7 @@ internal class AndroidThor(
         return Path(context.cacheDir.absolutePath)
     }
 
-    override suspend fun removeHomepage() {
-        io.github.remmerw.thor.core.removeHomepage(datastore)
-    }
 
-    override fun homepageUri(default: String): Flow<String> {
-        return io.github.remmerw.thor.core.homepageUri(datastore, default)
-    }
-
-    override suspend fun homepage(uri: String, title: String, icon: ByteArray?) {
-        homepage(datastore, uri, title, icon)
-    }
 }
 
 

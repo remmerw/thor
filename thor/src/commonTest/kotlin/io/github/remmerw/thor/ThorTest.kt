@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.kmp.testing.context
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -23,21 +24,36 @@ class ThorTest {
         val thor = thor()
         assertNotNull(thor)
 
-        val bookmarks = thor.bookmarks()
+
         // tests bookmarks
         val bookmark = Bookmark(0, "https://test.de", "Moin", null)
-        bookmarks.insert(bookmark)
+        thor.storeBookmark(bookmark)
 
-        assertTrue(bookmarks.hasBookmark("https://test.de").first())
+        assertTrue(thor.hasBookmark("https://test.de").first())
 
-        val stored = bookmarks.bookmark("https://test.de")
+        val stored = thor.getBookmark("https://test.de")
         assertNotNull(stored)
 
-        bookmarks.delete(stored)
+        val list = thor.getBookmarks().first()
+        assertEquals(list.size, 1)
 
-        assertFalse(bookmarks.hasBookmark("https://test.de").first())
+        thor.deleteBookmark(stored)
 
-        // tests
+        assertFalse(thor.hasBookmark("https://test.de").first())
+
+
+        // tests homepage
+        thor.setHomepage("https://test.de", "Moin", null)
+        val uri = thor.getHomepageUri("test").first()
+        assertEquals("https://test.de", uri)
+        thor.removeHomepage()
+
+        // tests tasks
+
+
+
+        // cleanup
+        thor.reset()
     }
 
 }
