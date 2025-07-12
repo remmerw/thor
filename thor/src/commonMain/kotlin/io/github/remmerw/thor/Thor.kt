@@ -9,8 +9,6 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import io.github.remmerw.idun.Idun
 import io.github.remmerw.idun.Node
 import io.github.remmerw.idun.Response
-import io.github.remmerw.idun.extractCid
-import io.github.remmerw.idun.extractPeerId
 import io.github.remmerw.thor.core.Bookmark
 import io.github.remmerw.thor.core.Bookmarks
 import io.github.remmerw.thor.core.Peers
@@ -18,6 +16,7 @@ import io.github.remmerw.thor.core.Task
 import io.github.remmerw.thor.core.Tasks
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.io.RawSink
 import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
 import okio.Path.Companion.toPath
@@ -77,6 +76,9 @@ abstract class Thor {
         return idun().response(request)
     }
 
+    suspend fun transferTo(rawSink: RawSink, request: String, progress: (Float) -> Unit){
+        idun().transferTo(rawSink, request, progress)
+    }
 
     suspend fun reset() {
         tasks().reset()
