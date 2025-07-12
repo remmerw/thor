@@ -43,8 +43,8 @@ kotlin {
                 implementation(libs.androidx.datastore.preferences)
 
 
-                implementation("io.github.remmerw:asen:0.3.3")
-                implementation("io.github.remmerw:idun:0.3.3")
+                implementation("io.github.remmerw:asen:0.3.4")
+                implementation("io.github.remmerw:idun:0.3.4")
             }
         }
 
@@ -87,10 +87,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
-    }
-    packaging {
-        resources.excludes.add("META-INF/versions/9/OSGI-INF/MANIFEST.MF")
-        resources.excludes.add("DebugProbesKt.bin")
     }
 }
 

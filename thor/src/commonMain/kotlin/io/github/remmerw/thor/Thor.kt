@@ -6,7 +6,10 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import io.github.remmerw.asen.PeerId
 import io.github.remmerw.idun.Idun
+import io.github.remmerw.idun.Node
+import io.github.remmerw.idun.Response
 import io.github.remmerw.thor.core.Bookmark
 import io.github.remmerw.thor.core.Bookmarks
 import io.github.remmerw.thor.core.Peers
@@ -63,6 +66,11 @@ abstract class Thor {
     fun getBookmarks(): Flow<List<Bookmark>> {
         return bookmarks().bookmarks()
     }
+
+    suspend fun response(request: String): Response {
+        return idun().response(request)
+    }
+
 
     suspend fun reset() {
         tasks().reset()
