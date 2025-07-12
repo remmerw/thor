@@ -6,10 +6,11 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import io.github.remmerw.asen.PeerId
 import io.github.remmerw.idun.Idun
 import io.github.remmerw.idun.Node
 import io.github.remmerw.idun.Response
+import io.github.remmerw.idun.extractCid
+import io.github.remmerw.idun.extractPeerId
 import io.github.remmerw.thor.core.Bookmark
 import io.github.remmerw.thor.core.Bookmarks
 import io.github.remmerw.thor.core.Peers
@@ -25,13 +26,15 @@ import okio.Path.Companion.toPath
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 expect abstract class Context
 
+typealias Info = Node
+
 abstract class Thor {
 
     internal abstract fun datastore(): DataStore<Preferences>
     internal abstract fun bookmarks(): Bookmarks
     internal abstract fun tasks(): Tasks
+    internal abstract fun idun(): Idun
 
-    abstract fun idun(): Idun
     abstract fun cacheDir(): Path
 
     suspend fun removeHomepage() {
@@ -45,7 +48,6 @@ abstract class Thor {
     suspend fun setHomepage(uri: String, title: String, icon: ByteArray?) {
         io.github.remmerw.thor.core.homepage(datastore(), uri, title, icon)
     }
-
 
     suspend fun storeBookmark(bookmark: Bookmark) {
         bookmarks().insert(bookmark)
@@ -65,6 +67,10 @@ abstract class Thor {
 
     fun getBookmarks(): Flow<List<Bookmark>> {
         return bookmarks().bookmarks()
+    }
+
+    suspend fun info(request: String) : Info {
+       return idun().info(request)
     }
 
     suspend fun response(request: String): Response {
