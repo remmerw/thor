@@ -25,7 +25,6 @@ import okio.Path.Companion.toPath
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 expect abstract class Context
 
-typealias Info = Node
 
 abstract class Thor {
 
@@ -68,7 +67,7 @@ abstract class Thor {
         return bookmarks().bookmarks()
     }
 
-    suspend fun info(request: String) : Info {
+    suspend fun info(request: String) : Node {
        return idun().info(request)
     }
 
