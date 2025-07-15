@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import io.github.remmerw.asen.Peeraddr
 import io.github.remmerw.idun.Idun
 import io.github.remmerw.idun.Node
 import io.github.remmerw.idun.Response
@@ -34,6 +35,10 @@ abstract class Thor {
     internal abstract fun idun(): Idun
 
     abstract fun cacheDir(): Path
+
+    fun reachable(peeraddr: Peeraddr){
+        idun().reachable(peeraddr)
+    }
 
     suspend fun removeHomepage() {
         io.github.remmerw.thor.core.removeHomepage(datastore())
@@ -71,8 +76,8 @@ abstract class Thor {
        return idun().info(request)
     }
 
-    suspend fun response(request: String): Response {
-        return idun().response(request)
+    suspend fun request(request: String): Response {
+        return idun().request(request)
     }
 
     suspend fun transferTo(rawSink: RawSink, request: String, progress: (Float) -> Unit){
