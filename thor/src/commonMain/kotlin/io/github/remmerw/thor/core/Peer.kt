@@ -5,15 +5,15 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import io.github.remmerw.asen.PeerId
 import io.github.remmerw.asen.Peeraddr
-import io.github.remmerw.asen.parsePeeraddr
 
 @Entity
 data class Peer(
     @field:PrimaryKey val peerId: PeerId,
-    @field:ColumnInfo(typeAffinity = ColumnInfo.BLOB) val raw: ByteArray
+    @field:ColumnInfo val address: ByteArray,
+    @field:ColumnInfo val port: Int
 ) {
     fun peeraddr(): Peeraddr {
-        return parsePeeraddr(peerId, raw)
+        return Peeraddr(peerId, address, port.toUShort())
     }
 
     override fun hashCode(): Int {
@@ -27,9 +27,9 @@ data class Peer(
         other as Peer
 
         if (peerId != other.peerId) return false
-        if (!raw.contentEquals(other.raw)) return false
+        if (!address.contentEquals(other.address)) return false
+        if (port != other.port) return false
 
         return true
     }
-
 }

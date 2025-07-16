@@ -38,13 +38,14 @@ kotlin {
                 implementation(libs.androidx.sqlite.bundled)
                 implementation(libs.androidx.room.runtime)
                 implementation(libs.kotlinx.io.core)
+                implementation(libs.ktor.network)
 
                 implementation(libs.androidx.datastore.preferences.core)
                 implementation(libs.androidx.datastore.preferences)
 
 
-                implementation("io.github.remmerw:asen:0.3.6")
-                implementation("io.github.remmerw:idun:0.3.8")
+                implementation("io.github.remmerw:asen:0.3.7")
+                implementation("io.github.remmerw:idun:0.3.9")
             }
         }
 
