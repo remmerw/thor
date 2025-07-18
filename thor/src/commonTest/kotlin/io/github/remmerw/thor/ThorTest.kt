@@ -51,7 +51,6 @@ class ThorTest {
         // tests tasks
 
 
-
         // cleanup
         thor.reset()
     }

@@ -36,7 +36,7 @@ abstract class Thor {
 
     abstract fun cacheDir(): Path
 
-    fun reachable(peeraddr: Peeraddr){
+    fun reachable(peeraddr: Peeraddr) {
         idun().reachable(peeraddr)
     }
 
@@ -72,15 +72,15 @@ abstract class Thor {
         return bookmarks().bookmarks()
     }
 
-    suspend fun info(request: String) : Node {
-       return idun().info(request)
+    suspend fun info(request: String): Node {
+        return idun().info(request)
     }
 
     suspend fun request(request: String): Response {
         return idun().request(request)
     }
 
-    suspend fun transferTo(rawSink: RawSink, request: String, progress: (Float) -> Unit){
+    suspend fun transferTo(rawSink: RawSink, request: String, progress: (Float) -> Unit) {
         idun().transferTo(rawSink, request, progress)
     }
 
