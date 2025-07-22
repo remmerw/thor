@@ -165,10 +165,18 @@ private fun deleteRecursively(path: Path, deleteDirectory: Boolean, mustExist: B
             deleteRecursively(child, true, mustExist)
         }
         if (deleteDirectory) {
-            SystemFileSystem.delete(path, mustExist)
+            try {
+                SystemFileSystem.delete(path, mustExist)
+            } catch (_: Throwable){
+                println("Deletion failed for $path")
+            }
         }
     } else {
-        SystemFileSystem.delete(path, mustExist)
+        try {
+            SystemFileSystem.delete(path, mustExist)
+        } catch (_: Throwable){
+            println("Deletion failed for $path")
+        }
     }
 }
 
