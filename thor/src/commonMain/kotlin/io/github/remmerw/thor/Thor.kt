@@ -7,6 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import io.github.remmerw.asen.Peeraddr
+import io.github.remmerw.borr.PeerId
 import io.github.remmerw.idun.Idun
 import io.github.remmerw.idun.Node
 import io.github.remmerw.idun.Response
@@ -21,6 +22,7 @@ import kotlinx.io.RawSink
 import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
 import okio.Path.Companion.toPath
+import java.net.InetSocketAddress
 
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
@@ -36,8 +38,10 @@ abstract class Thor {
 
     abstract fun cacheDir(): Path
 
-    fun reachable(peeraddr: Peeraddr) {
-        idun().reachable(peeraddr)
+    fun reachable(peerId: PeerId, address: InetSocketAddress) {
+        idun().reachable(
+            Peeraddr(peerId, address.address.address, address.port.toUShort())
+        )
     }
 
     suspend fun removeHomepage() {
