@@ -39,9 +39,7 @@ abstract class Thor {
     abstract fun cacheDir(): Path
 
     fun reachable(peerId: PeerId, address: InetSocketAddress) {
-        idun().reachable(
-            Peeraddr(peerId, address.address.address, address.port.toUShort())
-        )
+        idun().reachable(peerId, address)
     }
 
     suspend fun removeHomepage() {
