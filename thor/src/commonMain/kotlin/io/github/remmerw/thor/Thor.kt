@@ -6,11 +6,8 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import io.github.remmerw.asen.Peeraddr
 import io.github.remmerw.borr.PeerId
 import io.github.remmerw.idun.Idun
-import io.github.remmerw.idun.Node
-import io.github.remmerw.idun.Response
 import io.github.remmerw.thor.core.Bookmark
 import io.github.remmerw.thor.core.Bookmarks
 import io.github.remmerw.thor.core.Peers
@@ -74,16 +71,13 @@ abstract class Thor {
         return bookmarks().bookmarks()
     }
 
-    suspend fun info(request: String): Node {
-        return idun().info(request)
-    }
-
-    suspend fun request(request: String): Response {
-        return idun().request(request)
-    }
-
-    suspend fun transferTo(rawSink: RawSink, request: String, progress: (Float) -> Unit) {
-        idun().transferTo(rawSink, request, progress)
+    suspend fun transferTo(
+        rawSink: RawSink,
+        request: String,
+        offset: Long,
+        progress: (Float) -> Unit
+    ) {
+        idun().transferTo(rawSink, request, offset, progress)
     }
 
     suspend fun reset() {
@@ -169,14 +163,14 @@ private fun deleteRecursively(path: Path, deleteDirectory: Boolean, mustExist: B
         if (deleteDirectory) {
             try {
                 SystemFileSystem.delete(path, mustExist)
-            } catch (_: Throwable){
+            } catch (_: Throwable) {
                 println("Deletion failed for $path")
             }
         }
     } else {
         try {
             SystemFileSystem.delete(path, mustExist)
-        } catch (_: Throwable){
+        } catch (_: Throwable) {
             println("Deletion failed for $path")
         }
     }
