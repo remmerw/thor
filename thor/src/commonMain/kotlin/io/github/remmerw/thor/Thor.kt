@@ -10,7 +10,6 @@ import io.github.remmerw.borr.PeerId
 import io.github.remmerw.idun.Idun
 import io.github.remmerw.thor.core.Bookmark
 import io.github.remmerw.thor.core.Bookmarks
-import io.github.remmerw.thor.core.Peers
 import io.github.remmerw.thor.core.Task
 import io.github.remmerw.thor.core.Tasks
 import kotlinx.coroutines.Dispatchers
@@ -189,10 +188,6 @@ expect object BookmarksConstructor : RoomDatabaseConstructor<Bookmarks> {
     override fun initialize(): Bookmarks
 }
 
-@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-expect object PeersConstructor : RoomDatabaseConstructor<Peers> {
-    override fun initialize(): Peers
-}
 
 fun createDataStore(producePath: () -> String): DataStore<Preferences> =
     PreferenceDataStoreFactory.createWithPath(
@@ -200,17 +195,6 @@ fun createDataStore(producePath: () -> String): DataStore<Preferences> =
     )
 
 internal const val dataStoreFileName = "settings.preferences_pb"
-
-
-fun peersDatabaseBuilder(
-    builder: RoomDatabase.Builder<Peers>
-): Peers {
-    return builder
-        .fallbackToDestructiveMigrationOnDowngrade(true)
-        .setDriver(BundledSQLiteDriver())
-        .setQueryCoroutineContext(Dispatchers.IO)
-        .build()
-}
 
 
 fun tasksDatabaseBuilder(

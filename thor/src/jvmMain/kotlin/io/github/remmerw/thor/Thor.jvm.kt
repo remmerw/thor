@@ -4,11 +4,9 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import io.github.remmerw.asen.bootstrap
 import io.github.remmerw.idun.Idun
 import io.github.remmerw.idun.newIdun
 import io.github.remmerw.thor.core.Bookmarks
-import io.github.remmerw.thor.core.Peers
 import io.github.remmerw.thor.core.Tasks
 import kotlinx.io.files.Path
 import java.io.File
@@ -59,25 +57,9 @@ actual fun thor(): Thor = thor!!
 actual fun initializeThor(context: Context) {
     val datastore = createDataStore()
     val tasks = createTasks()
-    val peers = createPeers()
     val bookmarks = createBookmarks()
-    val idun = newIdun(
-        peerStore = peers,
-        bootstrap = bootstrap()
-    )
+    val idun = newIdun()
     thor = JvmThor(datastore, tasks, bookmarks, idun)
-}
-
-
-fun peersBuilder(): RoomDatabase.Builder<Peers> {
-    val dbFile = File(System.getProperty("java.io.tmpdir"), "peers.db")
-    return Room.databaseBuilder<Peers>(
-        name = dbFile.absolutePath
-    )
-}
-
-fun createPeers(): Peers {
-    return peersDatabaseBuilder(peersBuilder())
 }
 
 

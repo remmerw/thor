@@ -1,10 +1,9 @@
 [versions]
 agp = "8.12.0"
-asen = "0.4.5"
 borr = "0.0.4"
 core = "1.7.0"
-dagr = "0.2.5"
-idun = "0.5.0"
+dagr = "0.3.6"
+idun = "0.6.0"
 kotlin = "2.2.0"
 ksp = "2.2.0-2.0.2"
 androidx-room = "2.7.2"
@@ -25,7 +24,6 @@ androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.r
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "androidx-room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "androidx-room" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
-asen = { module = "io.github.remmerw:asen", version.ref = "asen" }
 
 
 [plugins]

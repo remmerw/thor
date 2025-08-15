@@ -43,7 +43,6 @@ kotlin {
                 implementation(libs.androidx.datastore.preferences.core)
                 implementation(libs.androidx.datastore.preferences)
 
-                implementation(libs.asen)
                 implementation(libs.dagr)
 
                 api(libs.idun)
