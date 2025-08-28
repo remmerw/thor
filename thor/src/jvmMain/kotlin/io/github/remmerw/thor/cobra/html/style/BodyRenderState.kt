@@ -37,12 +37,12 @@ class BodyRenderState  // Note: BODY behaves like an inline element, but the roo
         }
         binfo = super.getBackgroundInfo()
         if ((binfo == null) || (binfo.backgroundColor == null)) {
-            val bgcolor = this.element.getAttribute("bgcolor")
+            val bgcolor = this.element?.getAttribute("bgcolor")
             if ((bgcolor != null) && (bgcolor.length != 0)) {
                 if (binfo == null) {
                     binfo = BackgroundInfo()
                 }
-                binfo.backgroundColor = ColorFactory.getInstance().getColor(bgcolor)
+                binfo.backgroundColor = ColorFactory.instance?.getColor(bgcolor)
             }
         }
         this.iBackgroundInfo = binfo

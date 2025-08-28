@@ -4,8 +4,8 @@ import cz.vutbr.web.css.NodeData
 import org.w3c.dom.DOMException
 
 class ComputedJStyleProperties(
-    context: CSS2PropertiesContext?,
-    private val nodeData: NodeData?,
+    context: CSS2PropertiesContext,
+    override val nodeData: NodeData?,
     nullIfAbsent: Boolean
 ) : JStyleProperties(context, nullIfAbsent) {
     //TODO need to implement all the unimplemented setters.
@@ -619,7 +619,7 @@ class ComputedJStyleProperties(
         throw UnsupportedOperationException()
     }
 
-    protected override fun getNodeData(): NodeData? {
+    protected fun getNodeData(): NodeData? {
         return this.nodeData
     }
 }

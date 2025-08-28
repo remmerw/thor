@@ -49,11 +49,11 @@ open class StyleSheetRenderState : RenderState {
     protected val prevRenderState: RenderState?
     protected var iBackgroundInfo: BackgroundInfo? = INVALID_BACKGROUND_INFO
     protected var iWhiteSpace: Int? = null
-    protected var marginInsets: HtmlInsets? = INVALID_INSETS
-    protected var paddingInsets: HtmlInsets? = INVALID_INSETS
-    protected var overflowX: Int = -1
-    protected var overflowY: Int = -1
-    protected var borderInfo: BorderInfo? = INVALID_BORDER_INFO
+    override var marginInsets: HtmlInsets? = INVALID_INSETS
+    override var paddingInsets: HtmlInsets? = INVALID_INSETS
+    override var overflowX: Int = -1
+    override var overflowY: Int = -1
+    override var borderInfo: BorderInfo? = INVALID_BORDER_INFO
     var iWordInfoMap: MutableMap<String?, WordInfo?>? = null
     private var iFont: Font? = null
     private var iFontMetrics: FontMetrics? = null
@@ -71,7 +71,7 @@ open class StyleSheetRenderState : RenderState {
     private var iBlankWidth = -1
     private var iHighlight = false
     private var iDisplay: Int? = null
-    private var alignXPercent = -1
+    override var alignXPercent = -1
     private var counters: MutableMap<String?, ArrayList<Int?>>? = null
     private var iTextIndentText: String? = null
     private var cachedVisibility: Int? = null
@@ -94,7 +94,7 @@ open class StyleSheetRenderState : RenderState {
     protected open val defaultDisplay: Int
         get() = RenderState.Companion.DISPLAY_INLINE
 
-    override fun getDisplay(): Int {
+    fun getDisplay(): Int {
         val d = this.iDisplay
         if (d != null) {
             return d
@@ -144,7 +144,7 @@ open class StyleSheetRenderState : RenderState {
         return displayInt
     }
 
-    override fun getFontBase(): Int {
+    fun getFontBase(): Int {
         return 3
     }
 
@@ -184,7 +184,7 @@ open class StyleSheetRenderState : RenderState {
         // Should NOT invalidate parent render state.
     }
 
-    override fun getFont(): Font? {
+    fun getFont(): Font? {
         var f = this.iFont
         if (f != null) {
             return f
@@ -193,7 +193,7 @@ open class StyleSheetRenderState : RenderState {
         val prs = this.prevRenderState
         if (style == null) {
             if (prs != null) {
-                val font = prs.getFont()
+                val font = prs.font
                 return font
             }
             f = DEFAULT_FONT
@@ -217,7 +217,7 @@ open class StyleSheetRenderState : RenderState {
         if ((newFontSize == null) && (newFontWeight == null) && (newFontStyle == null) && (newFontFamily == null) && (newFontVariant == null)) {
             if (!isSuper && !isSub) {
                 if (prs != null) {
-                    return prs.getFont()
+                    return prs.font
                 } else {
                     f = DEFAULT_FONT
                     this.iFont = f
@@ -233,7 +233,7 @@ open class StyleSheetRenderState : RenderState {
             }
         } else {
             if (prs != null) {
-                fontSize = (prs.getFont().getSize()).toFloat()
+                fontSize = (prs.font?.getSize())?.toFloat()
             } else {
                 fontSize = HtmlValues.DEFAULT_FONT_SIZE_BOX
             }
@@ -267,7 +267,7 @@ open class StyleSheetRenderState : RenderState {
             fontStyle,
             fontVariant,
             fontWeight,
-            fontSize,
+            fontSize!!,
             locales,
             superscript
         )
@@ -275,7 +275,7 @@ open class StyleSheetRenderState : RenderState {
         return f
     }
 
-    override fun getColor(): Color? {
+    fun getColor(): Color? {
         var c = this.iColor
         if (c != null) {
             return c
@@ -285,12 +285,12 @@ open class StyleSheetRenderState : RenderState {
         if ((colorValue == null) || "" == colorValue) {
             colorValue = "black"
         }
-        c = ColorFactory.getInstance().getColor(colorValue)
+        c = ColorFactory.instance?.getColor(colorValue)
         this.iColor = c
         return c
     }
 
-    override fun getBackgroundColor(): Color? {
+    fun getBackgroundColor(): Color? {
         val c = this.iBackgroundColor
         if (c !== INVALID_COLOR) {
             return c
@@ -302,7 +302,7 @@ open class StyleSheetRenderState : RenderState {
         return localColor
     }
 
-    override fun getTextBackgroundColor(): Color? {
+    fun getTextBackgroundColor(): Color? {
         val c = this.iTextBackgroundColor
         if (c !== INVALID_COLOR) {
             return c
@@ -319,22 +319,22 @@ open class StyleSheetRenderState : RenderState {
         return localColor
     }
 
-    override fun getOverlayColor(): Color? {
+    fun getOverlayColor(): Color? {
         var c = this.iOverlayColor
         if (c !== INVALID_COLOR) {
             return c
         }
         val props = this.cssProperties
-        var colorValue = if (props == null) null else props.getOverlayColor()
+        var colorValue = if (props == null) null else props.overlayColor
         if ((colorValue == null) || (colorValue.length == 0)) {
             colorValue = null
         }
-        c = if (colorValue == null) null else ColorFactory.getInstance().getColor(colorValue)
+        c = if (colorValue == null) null else ColorFactory.instance?.getColor(colorValue)
         this.iOverlayColor = c
         return c
     }
 
-    override fun getTextDecorationMask(): Int {
+    fun getTextDecorationMask(): Int {
         var td = this.iTextDecoration
         if (td != -1) {
             return td
@@ -363,7 +363,7 @@ open class StyleSheetRenderState : RenderState {
         return td
     }
 
-    override fun getTextTransform(): Int {
+    fun getTextTransform(): Int {
         var tt = this.iTextTransform
         if (tt != -1) {
             return tt
@@ -393,7 +393,7 @@ open class StyleSheetRenderState : RenderState {
         return tt
     }
 
-    override fun getFontMetrics(): FontMetrics {
+    fun getFontMetrics(): FontMetrics {
         var fm = this.iFontMetrics
         if (fm == null) {
             // TODO getFontMetrics deprecated. How to get text width?
@@ -403,7 +403,7 @@ open class StyleSheetRenderState : RenderState {
         return fm
     }
 
-    override fun getBlankWidth(): Int {
+    fun getBlankWidth(): Int {
         var bw = this.iBlankWidth
         if (bw == -1) {
             bw = this.getFontMetrics().charWidth(' ')
@@ -415,14 +415,14 @@ open class StyleSheetRenderState : RenderState {
     /**
      * @return Returns the iHighlight.
      */
-    override fun isHighlight(): Boolean {
+    fun isHighlight(): Boolean {
         return this.iHighlight
     }
 
     /**
      * @param highlight The iHighlight to set.
      */
-    override fun setHighlight(highlight: Boolean) {
+    fun setHighlight(highlight: Boolean) {
         this.iHighlight = highlight
     }
 
@@ -449,7 +449,7 @@ open class StyleSheetRenderState : RenderState {
         return wi
     }
 
-    override fun getAlignXPercent(): Int {
+    fun getAlignXPercent(): Int {
         var axp = this.alignXPercent
         if (axp != -1) {
             return axp
@@ -480,7 +480,7 @@ open class StyleSheetRenderState : RenderState {
         return axp
     }
 
-    override fun getAlignYPercent(): Int {
+    fun getAlignYPercent(): Int {
         // This is only settable in table cells.
         // TODO: Does it work with display: table-cell?
         return 0
@@ -546,7 +546,7 @@ open class StyleSheetRenderState : RenderState {
         return prevValue
     }
 
-    override fun getBackgroundInfo(): BackgroundInfo? {
+    open fun getBackgroundInfo(): BackgroundInfo? {
         run {
             val binfo = this.iBackgroundInfo
             if (binfo !== INVALID_BACKGROUND_INFO) {
@@ -561,7 +561,7 @@ open class StyleSheetRenderState : RenderState {
             val backgroundColorText = props.backgroundColor
             if (backgroundColorText != null) {
                 binfo = BackgroundInfo()
-                binfo.backgroundColor = ColorFactory.getInstance().getColor(backgroundColorText)
+                binfo.backgroundColor = ColorFactory.instance?.getColor(backgroundColorText)
             }
             val backgroundImageText = props.getBackgroundImage()
             if ((backgroundImageText != null) && (!backgroundImageText.isEmpty())) {
@@ -619,7 +619,7 @@ open class StyleSheetRenderState : RenderState {
     // }
     // }
     // }
-    override fun getTextIndentText(): String {
+    fun getTextIndentText(): String {
         var tiText = this.iTextIndentText
         if (tiText != null) {
             return tiText
@@ -642,8 +642,8 @@ open class StyleSheetRenderState : RenderState {
         }
     }
 
-    override fun getWhiteSpace(): Int {
-        if (RenderThreadState.Companion.getState().overrideNoWrap) {
+    fun getWhiteSpace(): Int {
+        if (RenderThreadState.Companion.state.overrideNoWrap) {
             return RenderState.Companion.WS_NOWRAP
         }
         val ws = this.iWhiteSpace
@@ -669,7 +669,7 @@ open class StyleSheetRenderState : RenderState {
         return wsValue
     }
 
-    override fun getMarginInsets(): HtmlInsets? {
+    fun getMarginInsets(): HtmlInsets? {
         var mi = this.marginInsets
         if (mi !== INVALID_INSETS) {
             return mi
@@ -684,7 +684,7 @@ open class StyleSheetRenderState : RenderState {
         return mi
     }
 
-    override fun getPaddingInsets(): HtmlInsets? {
+    fun getPaddingInsets(): HtmlInsets? {
         var mi = this.paddingInsets
         if (mi !== INVALID_INSETS) {
             return mi
@@ -781,7 +781,7 @@ open class StyleSheetRenderState : RenderState {
         }
     }
 
-    override fun getVisibility(): Int {
+    fun getVisibility(): Int {
         val v = this.cachedVisibility
         if (v != null) {
             return v
@@ -811,7 +811,7 @@ open class StyleSheetRenderState : RenderState {
         return visibility
     }
 
-    override fun getPosition(): Int {
+    fun getPosition(): Int {
         val p = this.cachedPosition
         if (p != null) {
             return p
@@ -843,7 +843,7 @@ open class StyleSheetRenderState : RenderState {
         return position
     }
 
-    override fun getFloat(): Int {
+    fun getFloat(): Int {
         val p = this.cachedFloat
         if (p != null) {
             return p
@@ -853,7 +853,7 @@ open class StyleSheetRenderState : RenderState {
         if (props == null) {
             floatValue = RenderState.Companion.FLOAT_NONE
         } else {
-            val floatText = props.getFloat()
+            val floatText = props.float
             if ((floatText == null) || (floatText.isEmpty())) {
                 floatValue = RenderState.Companion.FLOAT_NONE
             } else {
@@ -871,7 +871,7 @@ open class StyleSheetRenderState : RenderState {
         return floatValue
     }
 
-    override fun getClear(): Int {
+    fun getClear(): Int {
         if (cachedClear == null) {
             val props = this.cssProperties
             if (props == null) {
@@ -896,7 +896,7 @@ open class StyleSheetRenderState : RenderState {
         return "StyleSheetRenderState[font=" + this.getFont() + ",textDecoration=" + this.getTextDecorationMask() + "]"
     }
 
-    override fun getOverflowX(): Int {
+    fun getOverflowX(): Int {
         var overflow = this.overflowX
         if (overflow != -1) {
             return overflow
@@ -931,7 +931,7 @@ open class StyleSheetRenderState : RenderState {
         return overflow
     }
 
-    override fun getOverflowY(): Int {
+    fun getOverflowY(): Int {
         var overflow = this.overflowY
         if (overflow != -1) {
             return overflow
@@ -966,7 +966,7 @@ open class StyleSheetRenderState : RenderState {
         return overflow
     }
 
-    override fun getBorderInfo(): BorderInfo? {
+    fun getBorderInfo(): BorderInfo? {
         var binfo = this.borderInfo
         if (binfo !== INVALID_BORDER_INFO) {
             return binfo
@@ -981,8 +981,8 @@ open class StyleSheetRenderState : RenderState {
         return binfo
     }
 
-    override fun getCursor(): Optional<Cursor?> {
-        val prevCursorOpt: Optional<Cursor?> = Optional.empty<Cursor?>()
+    fun getCursor(): Optional<Cursor> {
+        val prevCursorOpt: Optional<Cursor> = Optional.empty<Cursor>()
         val props = this.cssProperties
         if (props == null) {
             return prevCursorOpt
@@ -1013,27 +1013,27 @@ open class StyleSheetRenderState : RenderState {
         }
     }
 
-    override fun getLeft(): String? {
+    fun getLeft(): String? {
         val props = this.cssProperties
         return if (props == null) null else props.left
     }
 
-    override fun getTop(): String? {
+    fun getTop(): String? {
         val props = this.cssProperties
         return if (props == null) null else props.top
     }
 
-    override fun getRight(): String? {
+    fun getRight(): String? {
         val props = this.cssProperties
         return if (props == null) null else props.right
     }
 
-    override fun getBottom(): String? {
+    fun getBottom(): String? {
         val props = this.cssProperties
         return if (props == null) null else props.bottom
     }
 
-    override fun getFontXHeight(): Double {
+    fun getFontXHeight(): Double {
         // TODO: Cache this
         val fm = getFontMetrics()
         val font = fm.getFont()
@@ -1054,14 +1054,15 @@ open class StyleSheetRenderState : RenderState {
     }
 
     // TODO: This should return a more abstract type that can represent values like length and percentage
-    override fun getVerticalAlign(): VerticalAlign? {
+    fun getVerticalAlign(): VerticalAlign? {
         val props = this.cssProperties
-        val valignProperty = props!!.getNodeData().getProperty<VerticalAlign?>("vertical-align")
+        val valignProperty = props!!.nodeData?.getProperty<VerticalAlign?>("vertical-align")
         return valignProperty
     }
 
     companion object {
         protected val INVALID_INSETS: HtmlInsets = HtmlInsets()
+        @JvmStatic
         protected val INVALID_BACKGROUND_INFO: BackgroundInfo = BackgroundInfo()
         protected val INVALID_BORDER_INFO: BorderInfo = BorderInfo()
         protected val INVALID_COLOR: Color = Color(100, 0, 100)

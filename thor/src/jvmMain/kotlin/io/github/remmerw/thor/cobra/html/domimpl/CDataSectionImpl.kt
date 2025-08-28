@@ -25,7 +25,7 @@ package io.github.remmerw.thor.cobra.html.domimpl
 
 import org.w3c.dom.CDATASection
 
-class CDataSectionImpl : TextImpl, CDATASection {
+abstract class CDataSectionImpl : TextImpl, CDATASection {
     constructor() : super()
 
     constructor(text: String?) : super(text)

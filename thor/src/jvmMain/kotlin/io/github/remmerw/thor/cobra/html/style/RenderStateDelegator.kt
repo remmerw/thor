@@ -28,47 +28,47 @@ import java.awt.FontMetrics
 import java.util.Optional
 
 abstract class RenderStateDelegator(protected val delegate: RenderState) : RenderState {
-    override fun getAlignXPercent(): Int {
+    fun getAlignXPercent(): Int {
         return delegate.getAlignXPercent()
     }
 
-    override fun getAlignYPercent(): Int {
+    fun getAlignYPercent(): Int {
         return delegate.getAlignYPercent()
     }
 
-    override fun getBlankWidth(): Int {
+    fun getBlankWidth(): Int {
         return delegate.getBlankWidth()
     }
 
-    override fun getColor(): Color? {
+    fun getColor(): Color? {
         return delegate.getColor()
     }
 
-    override fun getFont(): Font? {
+    fun getFont(): Font? {
         return delegate.getFont()
     }
 
-    override fun getFontBase(): Int {
+    open fun getFontBase(): Int {
         return delegate.getFontBase()
     }
 
-    override fun getFontMetrics(): FontMetrics? {
+    fun getFontMetrics(): FontMetrics? {
         return delegate.getFontMetrics()
     }
 
-    override fun getOverlayColor(): Color? {
+    fun getOverlayColor(): Color? {
         return delegate.getOverlayColor()
     }
 
-    override fun getBackgroundColor(): Color? {
+    fun getBackgroundColor(): Color? {
         return delegate.getBackgroundColor()
     }
 
-    override fun getTextDecorationMask(): Int {
+    fun getTextDecorationMask(): Int {
         return delegate.getTextDecorationMask()
     }
 
-    override fun getTextTransform(): Int {
+    fun getTextTransform(): Int {
         return delegate.getTextTransform()
     }
 
@@ -80,11 +80,11 @@ abstract class RenderStateDelegator(protected val delegate: RenderState) : Rende
         delegate.invalidate()
     }
 
-    override fun isHighlight(): Boolean {
-        return delegate.isHighlight()
+    fun isHighlight(): Boolean {
+        return delegate.isHighlight
     }
 
-    override fun setHighlight(highlight: Boolean) {
+    fun setHighlight(highlight: Boolean) {
         delegate.setHighlight(highlight)
     }
 
@@ -100,91 +100,91 @@ abstract class RenderStateDelegator(protected val delegate: RenderState) : Rende
         return this.delegate.incrementCount(counter, nesting)
     }
 
-    override fun getBackgroundInfo(): BackgroundInfo? {
+    fun getBackgroundInfo(): BackgroundInfo? {
         return this.delegate.getBackgroundInfo()
     }
 
-    override fun getDisplay(): Int {
-        return this.delegate.getDisplay()
+    fun getDisplay(): Int {
+        return this.delegate.display
     }
 
-    override fun getTextBackgroundColor(): Color? {
-        return this.delegate.getTextBackgroundColor()
+    fun getTextBackgroundColor(): Color? {
+        return this.delegate.textBackgroundColor
     }
 
     override fun getTextIndent(availWidth: Int): Int {
         return this.delegate.getTextIndent(availWidth)
     }
 
-    override fun getTextIndentText(): String? {
+    fun getTextIndentText(): String? {
         return this.delegate.getTextIndentText()
     }
 
-    override fun getWhiteSpace(): Int {
+    fun getWhiteSpace(): Int {
         return this.delegate.getWhiteSpace()
     }
 
-    override fun getMarginInsets(): HtmlInsets? {
+    fun getMarginInsets(): HtmlInsets? {
         return this.delegate.getMarginInsets()
     }
 
-    override fun getPaddingInsets(): HtmlInsets? {
+    fun getPaddingInsets(): HtmlInsets? {
         return this.delegate.getPaddingInsets()
     }
 
-    override fun getVisibility(): Int {
+    fun getVisibility(): Int {
         return this.delegate.getVisibility()
     }
 
-    override fun getPosition(): Int {
-        return this.delegate.getPosition()
+    fun getPosition(): Int {
+        return this.delegate.position
     }
 
-    override fun getFloat(): Int {
-        return this.delegate.getFloat()
+    fun getFloat(): Int {
+        return this.delegate.float
     }
 
-    override fun getClear(): Int {
-        return this.delegate.getClear()
+    fun getClear(): Int {
+        return this.delegate.clear
     }
 
-    override fun getOverflowX(): Int {
-        return this.delegate.getOverflowX()
+    fun getOverflowX(): Int {
+        return this.delegate.overflowX
     }
 
-    override fun getOverflowY(): Int {
+    fun getOverflowY(): Int {
         return this.delegate.getOverflowY()
     }
 
-    override fun getBorderInfo(): BorderInfo? {
+    fun getBorderInfo(): BorderInfo? {
         return this.delegate.getBorderInfo()
     }
 
-    override fun getCursor(): Optional<Cursor?>? {
+    fun getCursor(): Optional<Cursor?>? {
         return this.delegate.getCursor()
     }
 
-    override fun getLeft(): String? {
+    fun getLeft(): String? {
         return this.delegate.getLeft()
     }
 
-    override fun getTop(): String? {
+    fun getTop(): String? {
         return this.delegate.getTop()
     }
 
-    override fun getBottom(): String? {
+    fun getBottom(): String? {
         return this.delegate.getBottom()
     }
 
-    override fun getRight(): String? {
+    fun getRight(): String? {
         return this.delegate.getRight()
     }
 
-    override fun getFontXHeight(): Double {
+    fun getFontXHeight(): Double {
         return this.delegate.getFontXHeight()
     }
 
-    override fun getVerticalAlign(): VerticalAlign? {
+    fun getVerticalAlign(): VerticalAlign? {
         return this.delegate.getVerticalAlign()
     }
 }

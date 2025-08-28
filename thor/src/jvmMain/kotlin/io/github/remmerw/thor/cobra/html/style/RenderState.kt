@@ -24,6 +24,11 @@
 package io.github.remmerw.thor.cobra.html.style
 
 import cz.vutbr.web.css.CSSProperty.VerticalAlign
+import java.awt.Color
+import java.awt.Cursor
+import java.awt.Font
+import java.awt.FontMetrics
+import java.util.Optional
 
 /**
  * @author J. H. S.
@@ -41,7 +46,7 @@ interface RenderState {
 
     val fontBase: Int
 
-    fun getWordInfo(word: String?): WordInfo?
+    fun getWordInfo(word: String): WordInfo
 
     val color: Color?
 
@@ -95,7 +100,7 @@ interface RenderState {
 
     val borderInfo: BorderInfo?
 
-    val cursor: Optional<Cursor?>?
+    val cursor: Optional<Cursor>?
 
     val left: String?
 

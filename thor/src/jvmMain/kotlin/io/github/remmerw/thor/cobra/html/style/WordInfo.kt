@@ -28,7 +28,7 @@ import java.awt.FontMetrics
 /**
  * @author J. H. S.
  */
-internal class WordInfo {
+class WordInfo {
     var fontMetrics: FontMetrics? = null
     var descent: Int = 0
     var ascentPlusLeading: Int = 0

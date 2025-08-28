@@ -103,7 +103,7 @@ object CSSUtilities {
 
     @Throws(MalformedURLException::class)
     fun jParse(
-        ownerNode: Node?, href: String?, doc: HTMLDocumentImpl, baseUri: String,
+        ownerNode: Node?, href: String, doc: HTMLDocumentImpl, baseUri: String,
         considerDoubleSlashComments: Boolean
     ): StyleSheet? {
         val bcontext = doc.getUserAgentContext()
@@ -112,16 +112,16 @@ object CSSUtilities {
         val cssURL = Urls.createURL(baseURL, href)
         val cssURI = cssURL.toExternalForm()
         // Perform a synchronous request
-        SecurityUtil.doPrivileged<StyleSheet?>(PrivilegedAction {
+        SecurityUtil.doPrivileged<StyleSheet?> {
             try {
-                request.open("GET", cssURI, false)
-                request.send(null, UserAgentContext.Request(cssURL, RequestKind.CSS))
+                request?.open("GET", cssURI, false)
+                request?.send(null, UserAgentContext.Request(cssURL, RequestKind.CSS))
             } catch (thrown: IOException) {
                 logger.log(Level.WARNING, "parse()", thrown)
             }
             emptyStyleSheet
-        })
-        val status = request.status
+        }
+        val status = request?.status
         if ((status != 200) && (status != 0)) {
             logger.warning("Unable to parse CSS. URI=[" + cssURI + "]. Response status was " + status + ".")
             return emptyStyleSheet
@@ -227,15 +227,15 @@ object CSSUtilities {
         return false
     }
 
-    class SafeNetworkProcessor(val bcontext: UserAgentContext) : NetworkProcessor {
+    class SafeNetworkProcessor(val bcontext: UserAgentContext?) : NetworkProcessor {
         @Throws(IOException::class)
         override fun fetch(url: URL): InputStream {
             //return AccessController.doPrivileged((PrivilegedExceptionAction<InputStream>) () -> {
 
-            val request = bcontext.createHttpRequest()
-            request.open("GET", url, false)
-            request.send(null, UserAgentContext.Request(url, RequestKind.CSS))
-            val responseBytes = request.responseBytes
+            val request = bcontext?.createHttpRequest()
+            request?.open("GET", url, false)
+            request?.send(null, UserAgentContext.Request(url, RequestKind.CSS))
+            val responseBytes = request?.responseBytes
             if (responseBytes == null) {
                 // This can happen when a request is denied by the request manager.
                 throw IOException("Empty response")

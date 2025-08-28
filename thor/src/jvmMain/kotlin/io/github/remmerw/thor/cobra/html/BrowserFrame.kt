@@ -23,6 +23,8 @@
  */
 package io.github.remmerw.thor.cobra.html
 
+import org.w3c.dom.Document
+import java.awt.Component
 import java.awt.Insets
 import java.net.URL
 
