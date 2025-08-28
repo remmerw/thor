@@ -37,7 +37,7 @@ internal abstract class BaseControl
  */(protected val controlElement: HTMLElementImpl?) : JComponent(), UIControl {
     protected var ruicontrol: RUIControl? = null
 
-    override fun getComponent(): Component {
+    fun getComponent(): Component {
         return this
     }
 
@@ -45,7 +45,7 @@ internal abstract class BaseControl
         this.ruicontrol = ruicontrol
     }
 
-    override fun getVAlign(): VerticalAlign? {
+    open fun getVAlign(): VerticalAlign? {
         return VerticalAlign.BASELINE
     }
 
@@ -59,7 +59,7 @@ internal abstract class BaseControl
             logger.severe("invalidateAndPaint(): RUIControl not set.")
             return
         }
-        if (rc.isValid()) {
+        if (rc.isValid) {
             rc.relayout()
         }
     }
@@ -69,7 +69,7 @@ internal abstract class BaseControl
      *
      * @see org.xamjwg.html.renderer.UIControl#getBackgroundColor()
      */
-    override fun getBackgroundColor(): Color? {
+    fun getBackgroundColor(): Color? {
         return this.getBackground()
     }
 

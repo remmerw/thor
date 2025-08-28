@@ -133,10 +133,10 @@ interface BoundableRenderable : Renderable {
      * @return True iff it's in selection when finished painting.
      */
     fun paintSelection(
-        g: Graphics?,
+        g: Graphics,
         inSelection: Boolean,
-        startPoint: RenderableSpot?,
-        endPoint: RenderableSpot?
+        startPoint: RenderableSpot,
+        endPoint: RenderableSpot
     ): Boolean
 
     /**
@@ -145,7 +145,7 @@ interface BoundableRenderable : Renderable {
      *
      * @param g Parent's Graphics context.
      */
-    fun paintTranslated(g: Graphics?)
+    fun paintTranslated(g: Graphics)
 
     fun extractSelectionText(
         buffer: StringBuffer?,

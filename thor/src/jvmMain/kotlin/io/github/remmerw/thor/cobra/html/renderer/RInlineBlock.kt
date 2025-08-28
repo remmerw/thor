@@ -114,7 +114,7 @@ class RInlineBlock(
         this.child.applyLook()
     }
 
-    protected override fun invalidateLayoutLocal() {
+    override fun invalidateLayoutLocal() {
         super.invalidateLayoutLocal()
         this.child.invalidateLayoutLocal()
     }

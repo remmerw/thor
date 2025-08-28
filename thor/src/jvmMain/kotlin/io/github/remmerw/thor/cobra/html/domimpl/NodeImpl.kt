@@ -51,10 +51,8 @@ import org.w3c.dom.ProcessingInstruction
 import org.w3c.dom.Text
 import org.w3c.dom.UserDataHandler
 import org.w3c.dom.html.HTMLCollection
-import org.w3c.dom.html.HTMLDocument
 import java.io.IOException
 import java.lang.Boolean
-import java.net.MalformedURLException
 import java.net.URL
 import java.util.Arrays
 import java.util.LinkedList
@@ -115,7 +113,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
      * attached by default.
      */
 
-     var isAttachedToDocument: kotlin.Boolean = this is Document
+    var isAttachedToDocument: kotlin.Boolean = this is Document
 
 
     /**
@@ -1525,13 +1523,22 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
         // TODO
         println("node by name: " + getNodeName() + " adding Event listener of type: " + type)
         // System.out.println("  txt content: " + getInnerText());
-        (ownerDocument as HTMLDocumentImpl).eventTargetManager?.addEventListener(this, type, listener)
+        (ownerDocument as HTMLDocumentImpl).eventTargetManager?.addEventListener(
+            this,
+            type,
+            listener
+        )
     }
 
     fun removeEventListener(type: String?, listener: Function?, useCapture: kotlin.Boolean) {
         // TODO
         println("node remove Event listener: " + type)
-        (ownerDocument as HTMLDocumentImpl).eventTargetManager?.removeEventListener(this, type, listener, useCapture)
+        (ownerDocument as HTMLDocumentImpl).eventTargetManager?.removeEventListener(
+            this,
+            type,
+            listener,
+            useCapture
+        )
     }
 
     /*

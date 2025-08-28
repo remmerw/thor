@@ -23,8 +23,8 @@
  */
 package io.github.remmerw.thor.cobra.html.renderer
 
-import io.github.remmerw.thor.cobra.html.domimpl.ElementImpl
 import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
 import io.github.remmerw.thor.cobra.util.gui.WrapperLayout
 import java.awt.Dimension
 import javax.swing.text.AttributeSet
@@ -45,7 +45,7 @@ internal abstract class BaseInputTextControl(modelNode: HTMLBaseInputElement?) :
      *
      * @see org.xamjwg.html.domimpl.InputContext#setMaxLength(int)
      */
-    var maxLength: Int = -1
+    override var maxLength: Int = -1
 
     init {
         this.layout = WrapperLayout.instance
@@ -57,8 +57,8 @@ internal abstract class BaseInputTextControl(modelNode: HTMLBaseInputElement?) :
         // Note: Value attribute cannot be set in reset() method.
         // Otherwise, layout revalidation causes typed values to
         // be lost (including revalidation due to hover.)
-        val element: ElementImpl = this.controlElement
-        val value = element.getAttribute("value")
+        val element: HTMLElementImpl? = this.controlElement
+        val value = element?.getAttribute("value")
         widget.text = value
 
         this.widget = widget
@@ -67,7 +67,7 @@ internal abstract class BaseInputTextControl(modelNode: HTMLBaseInputElement?) :
 
     override fun reset(availWidth: Int, availHeight: Int) {
         super.reset(availWidth, availHeight)
-        val maxLengthText = this.controlElement.getAttribute("maxlength")
+        val maxLengthText = this.controlElement?.getAttribute("maxlength")
         if (maxLengthText != null) {
             try {
                 this.maxLength = maxLengthText.toInt()
@@ -79,7 +79,7 @@ internal abstract class BaseInputTextControl(modelNode: HTMLBaseInputElement?) :
 
     protected abstract fun createTextField(): JTextComponent
 
-    var readOnly: Boolean
+    override var readOnly: Boolean
         /*
              * (non-Javadoc)
              *
@@ -95,7 +95,7 @@ internal abstract class BaseInputTextControl(modelNode: HTMLBaseInputElement?) :
             this.widget.setEditable(!readOnly)
         }
 
-    var value: String?
+    override var value: String?
         /*
              * (non-Javadoc)
              *
@@ -125,7 +125,7 @@ internal abstract class BaseInputTextControl(modelNode: HTMLBaseInputElement?) :
      *
      * @see org.xamjwg.html.domimpl.InputContext#setDisabled(boolean)
      */
-    override fun setDisabled(disabled: Boolean) {
+    fun setDisabled(disabled: Boolean) {
         super.disabled = disabled
         this.widget.isEnabled = !disabled
     }
@@ -180,13 +180,10 @@ internal abstract class BaseInputTextControl(modelNode: HTMLBaseInputElement?) :
             }
         }
 
-        companion object {
-            private const val serialVersionUID = 5095817476961455383L
-        }
     }
 
     companion object {
-        private val serialVersionUID = -4852316720577045230L
+
         private const val DEFAULT_FONT_SIZE = 14.0f
     }
 }

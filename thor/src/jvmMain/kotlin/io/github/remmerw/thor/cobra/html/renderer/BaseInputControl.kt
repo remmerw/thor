@@ -27,19 +27,11 @@ import cz.vutbr.web.css.CSSProperty.VerticalAlign
 import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement
 import io.github.remmerw.thor.cobra.html.domimpl.InputContext
 import java.awt.Graphics
+import java.io.File
 
 internal abstract class BaseInputControl(modelNode: HTMLBaseInputElement?) : BaseControl(modelNode),
     InputContext {
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#getValue()
-     *//*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#setValue(java.lang.String)
-     */
-    var value: String? = null
+
     protected var size: Int = -1
 
     init {
@@ -48,7 +40,7 @@ internal abstract class BaseInputControl(modelNode: HTMLBaseInputElement?) : Bas
 
     override fun reset(availWidth: Int, availHeight: Int) {
         super.reset(availWidth, availHeight)
-        val sizeText = this.controlElement.getAttribute("size")
+        val sizeText = this.controlElement?.getAttribute("size")
         if (sizeText != null) {
             try {
                 this.size = sizeText.toInt()
@@ -87,7 +79,7 @@ internal abstract class BaseInputControl(modelNode: HTMLBaseInputElement?) : Bas
         this.requestFocus()
     }
 
-    var checked: Boolean
+    override var checked: Boolean
         /*
              * (non-Javadoc)
              *
@@ -102,7 +94,7 @@ internal abstract class BaseInputControl(modelNode: HTMLBaseInputElement?) : Bas
         set(checked) {
         }
 
-    var disabled: Boolean
+    override var disabled: Boolean
         /*
              * (non-Javadoc)
              *
@@ -118,7 +110,7 @@ internal abstract class BaseInputControl(modelNode: HTMLBaseInputElement?) : Bas
             this.setEnabled(!disabled)
         }
 
-    var maxLength: Int
+    override var maxLength: Int
         /*
              * (non-Javadoc)
              *
@@ -133,7 +125,7 @@ internal abstract class BaseInputControl(modelNode: HTMLBaseInputElement?) : Bas
         set(maxLength) {
         }
 
-    var readOnly: Boolean
+    override var readOnly: Boolean
         /*
              * (non-Javadoc)
              *
@@ -148,7 +140,7 @@ internal abstract class BaseInputControl(modelNode: HTMLBaseInputElement?) : Bas
         set(readOnly) {
         }
 
-    var tabIndex: Int
+    override var tabIndex: Int
         /*
              * (non-Javadoc)
              *
@@ -163,7 +155,7 @@ internal abstract class BaseInputControl(modelNode: HTMLBaseInputElement?) : Bas
         set(tabIndex) {
         }
 
-    val values: Array<String?>?
+    override val values: Array<String?>?
         /**
          * Returns `null`. It should be overridden by controls that support
          * multiple values.
@@ -178,7 +170,7 @@ internal abstract class BaseInputControl(modelNode: HTMLBaseInputElement?) : Bas
     override fun select() {
     }
 
-    var controlSize: Int
+    override var controlSize: Int
         /*
              * (non-Javadoc)
              *
@@ -195,7 +187,7 @@ internal abstract class BaseInputControl(modelNode: HTMLBaseInputElement?) : Bas
             this.invalidate()
         }
 
-    var cols: Int
+    override var cols: Int
         /*
              * (non-Javadoc)
              *
@@ -210,7 +202,7 @@ internal abstract class BaseInputControl(modelNode: HTMLBaseInputElement?) : Bas
         set(cols) {
         }
 
-    var rows: Int
+    override var rows: Int
         /*
              * (non-Javadoc)
              *
@@ -248,25 +240,22 @@ internal abstract class BaseInputControl(modelNode: HTMLBaseInputElement?) : Bas
             // For selects
         }
 
-    var selectedIndex: Int
+    override var selectedIndex: Int
         get() =// For selects
             -1
         set(value) {
             // For selects
         }
 
-    var visibleSize: Int
+    override var visibleSize: Int
         get() =// For selects
             0
         set(value) {
             // For selects
         }
 
-    val fileValue: File
+    override val fileValue: File?
         get() =// For file inputs
             null
 
-    companion object {
-        private val serialVersionUID = -5300609640161763515L
-    }
 }

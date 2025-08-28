@@ -27,7 +27,7 @@ import io.github.remmerw.thor.cobra.html.style.HtmlValues
 import io.github.remmerw.thor.cobra.html.style.ListStyle
 import io.github.remmerw.thor.cobra.ua.UserAgentContext
 
-internal open class BaseRListElement(
+internal abstract class BaseRListElement(
     modelNode: NodeImpl?, listNesting: Int, pcontext: UserAgentContext?,
     rcontext: HtmlRendererContext?,
     frameContext: FrameContext?, parentContainer: RenderableContainer?

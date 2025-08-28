@@ -6,7 +6,7 @@ import java.awt.Point
 import java.awt.Rectangle
 import java.awt.event.MouseEvent
 
-internal abstract class BaseRCollection(container: RenderableContainer?, modelNode: ModelNode?) :
+internal abstract class BaseRCollection(container: RenderableContainer, modelNode: ModelNode?) :
     BaseBoundableRenderable(container, modelNode), RCollection {
     private var renderableWithMouse: BoundableRenderable? = null
 
@@ -77,18 +77,18 @@ internal abstract class BaseRCollection(container: RenderableContainer?, modelNo
             val isStart = startPoint.renderable === this
             val isEnd = endPoint.renderable === this
             if (isStart && isEnd) {
-                checkPoint1 = startPoint.getPoint()
-                checkPoint2 = endPoint.getPoint()
+                checkPoint1 = startPoint.point
+                checkPoint2 = endPoint.point
             } else if (isStart) {
-                checkPoint1 = startPoint.getPoint()
+                checkPoint1 = startPoint.point
             } else if (isEnd) {
-                checkPoint1 = endPoint.getPoint()
+                checkPoint1 = endPoint.point
             }
         } else {
             if (startPoint.renderable === this) {
-                checkPoint1 = startPoint.getPoint()
+                checkPoint1 = startPoint.point
             } else if (endPoint.renderable === this) {
-                checkPoint1 = endPoint.getPoint()
+                checkPoint1 = endPoint.point
             }
         }
         val i = this.getRenderables(true)
@@ -96,7 +96,7 @@ internal abstract class BaseRCollection(container: RenderableContainer?, modelNo
             while (i.hasNext()) {
                 val robj: Any? = i.next()
                 if (robj is BoundableRenderable) {
-                    val bounds = robj.getVisualBounds()
+                    val bounds = robj.visualBounds!!
                     if (!inSelection) {
                         if ((checkPoint1 != null) && checkStartSelection(bounds, checkPoint1)) {
                             if (checkPoint2 != null) {
@@ -160,18 +160,18 @@ internal abstract class BaseRCollection(container: RenderableContainer?, modelNo
             val isStart = startPoint.renderable === this
             val isEnd = endPoint.renderable === this
             if (isStart && isEnd) {
-                checkPoint1 = startPoint.getPoint()
-                checkPoint2 = endPoint.getPoint()
+                checkPoint1 = startPoint.point
+                checkPoint2 = endPoint.point
             } else if (isStart) {
-                checkPoint1 = startPoint.getPoint()
+                checkPoint1 = startPoint.point
             } else if (isEnd) {
-                checkPoint1 = endPoint.getPoint()
+                checkPoint1 = endPoint.point
             }
         } else {
             if (startPoint.renderable === this) {
-                checkPoint1 = startPoint.getPoint()
+                checkPoint1 = startPoint.point
             } else if (endPoint.renderable === this) {
-                checkPoint1 = endPoint.getPoint()
+                checkPoint1 = endPoint.point
             }
         }
         val i = this.getRenderables(true)

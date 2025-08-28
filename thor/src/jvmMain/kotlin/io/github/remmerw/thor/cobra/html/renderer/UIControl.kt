@@ -23,7 +23,11 @@
  */
 package io.github.remmerw.thor.cobra.html.renderer
 
+import cz.vutbr.web.css.CSSProperty
 import cz.vutbr.web.css.CSSProperty.VerticalAlign
+import java.awt.Color
+import java.awt.Component
+import java.awt.Dimension
 import java.awt.Graphics
 
 internal interface UIControl {
@@ -38,7 +42,7 @@ internal interface UIControl {
 
     val preferredSize: Dimension?
 
-    val vAlign: CSSProperty.VerticalAlign?
+    val vAlign: VerticalAlign?
         get() = VerticalAlign.BASELINE
 
     fun setBounds(x: Int, y: Int, width: Int, height: Int)
