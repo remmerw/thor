@@ -22,6 +22,8 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package io.github.remmerw.thor.cobra.ua
 
+import java.io.File
+
 /**
  * Represents a URL parameter. It may be a GET or POST parameter.
  */

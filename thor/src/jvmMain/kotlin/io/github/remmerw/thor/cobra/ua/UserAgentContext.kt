@@ -134,7 +134,7 @@ interface UserAgentContext {
             }
 
             fun numKinds(): Int {
-                return entries.toTypedArray().length
+                return entries.toTypedArray().size
             }
         }
     }
