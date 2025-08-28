@@ -23,8 +23,10 @@
  */
 package io.github.remmerw.thor.cobra.ua
 
+import org.w3c.dom.Document
 import java.io.IOException
 import java.net.URL
+import java.util.Optional
 
 /**
  * The `NetworkRequest` interface should be implemented to provide
@@ -173,7 +175,7 @@ interface NetworkRequest {
      */
     fun addNetworkRequestListener(listener: NetworkRequestListener?)
 
-    val uRL: Optional<URL?>?
+    val uRL: Optional<URL>?
 
     val isAsnyc: Boolean
 
