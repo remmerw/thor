@@ -18,98 +18,94 @@
 
  Contact info: lobochief@users.sourceforge.net
  */
+package io.github.remmerw.thor.cobra.html.style
 
-package io.github.remmerw.thor.cobra.html.style;
+import io.github.remmerw.thor.cobra.util.Urls
+import io.github.remmerw.thor.cobra.util.gui.ColorFactory
+import org.w3c.dom.css.CSS2Properties
+import java.awt.Color
+import java.awt.GraphicsEnvironment
+import java.awt.Insets
+import java.awt.Toolkit
+import java.net.MalformedURLException
+import java.net.URL
+import java.util.Locale
+import java.util.StringTokenizer
+import java.util.logging.Level
+import java.util.logging.Logger
+import kotlin.math.max
 
-import org.w3c.dom.css.CSS2Properties;
+object HtmlValues {
+    val SYSTEM_FONTS: MutableMap<String?, FontInfo?> = HashMap<String?, FontInfo?>()
+    const val DEFAULT_FONT_SIZE: Float = 16.0f
+    val DEFAULT_FONT_SIZE_INT: Int = DEFAULT_FONT_SIZE.toInt()
 
-import java.awt.Font;
-import java.awt.GraphicsEnvironment;
-import java.awt.Insets;
-import java.awt.Toolkit;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import io.github.remmerw.thor.cobra.util.Urls;
-import io.github.remmerw.thor.cobra.util.gui.ColorFactory;
-
-public class HtmlValues {
-    public static final Map<String, FontInfo> SYSTEM_FONTS = new HashMap<>();
-    public static final float DEFAULT_FONT_SIZE = 16.0f;
-    public static final int DEFAULT_FONT_SIZE_INT = (int) DEFAULT_FONT_SIZE;
     // TODO: Make the minimum font size configurable
-    public static final int MINIMUM_FONT_SIZE_PIXELS = 14;
-    public static final Float DEFAULT_FONT_SIZE_BOX = (DEFAULT_FONT_SIZE);
-    public static final int DEFAULT_BORDER_WIDTH = 2;
-    public static final int BORDER_STYLE_NONE = 0;
-    public static final int BORDER_STYLE_HIDDEN = 1;
-    public static final int BORDER_STYLE_DOTTED = 2;
-    public static final int BORDER_STYLE_DASHED = 3;
-    public static final int BORDER_STYLE_SOLID = 4;
-    public static final int BORDER_STYLE_DOUBLE = 5;
-    public static final int BORDER_STYLE_GROOVE = 6;
-    public static final int BORDER_STYLE_RIDGE = 7;
-    public static final int BORDER_STYLE_INSET = 8;
-    public static final int BORDER_STYLE_OUTSET = 9;
-    static final String BORDER_THIN_SIZE = "1px";
-    static final String BORDER_MEDIUM_SIZE = "3px";
-    static final String BORDER_THICK_SIZE = "5px";
-    private static final Logger logger = Logger.getLogger(HtmlValues.class.getName());
-    private static final InsetUpdater topUpdater = new InsetUpdater() {
-        public void updateValue(final HtmlInsets insets, final int value) {
-            insets.top = value;
+    const val MINIMUM_FONT_SIZE_PIXELS: Int = 14
+    val DEFAULT_FONT_SIZE_BOX: Float = (DEFAULT_FONT_SIZE)
+    const val DEFAULT_BORDER_WIDTH: Int = 2
+    const val BORDER_STYLE_NONE: Int = 0
+    const val BORDER_STYLE_HIDDEN: Int = 1
+    const val BORDER_STYLE_DOTTED: Int = 2
+    const val BORDER_STYLE_DASHED: Int = 3
+    const val BORDER_STYLE_SOLID: Int = 4
+    const val BORDER_STYLE_DOUBLE: Int = 5
+    const val BORDER_STYLE_GROOVE: Int = 6
+    const val BORDER_STYLE_RIDGE: Int = 7
+    const val BORDER_STYLE_INSET: Int = 8
+    const val BORDER_STYLE_OUTSET: Int = 9
+    const val BORDER_THIN_SIZE: String = "1px"
+    const val BORDER_MEDIUM_SIZE: String = "3px"
+    const val BORDER_THICK_SIZE: String = "5px"
+    private val logger: Logger = Logger.getLogger(HtmlValues::class.java.name)
+    private val topUpdater: InsetUpdater = object : InsetUpdater {
+        override fun updateValue(insets: HtmlInsets, value: Int) {
+            insets.top = value
         }
 
-        public void updateType(final HtmlInsets insets, final int type) {
-            insets.topType = type;
+        override fun updateType(insets: HtmlInsets, type: Int) {
+            insets.topType = type
         }
-    };
-    private static final InsetUpdater leftUpdater = new InsetUpdater() {
-        public void updateValue(final HtmlInsets insets, final int value) {
-            insets.left = value;
-        }
-
-        public void updateType(final HtmlInsets insets, final int type) {
-            insets.leftType = type;
-        }
-    };
-    private static final InsetUpdater bottomUpdater = new InsetUpdater() {
-        public void updateValue(final HtmlInsets insets, final int value) {
-            insets.bottom = value;
+    }
+    private val leftUpdater: InsetUpdater = object : InsetUpdater {
+        override fun updateValue(insets: HtmlInsets, value: Int) {
+            insets.left = value
         }
 
-        public void updateType(final HtmlInsets insets, final int type) {
-            insets.bottomType = type;
+        override fun updateType(insets: HtmlInsets, type: Int) {
+            insets.leftType = type
         }
-    };
-    private static final InsetUpdater rightUpdater = new InsetUpdater() {
-        public void updateValue(final HtmlInsets insets, final int value) {
-            insets.right = value;
+    }
+    private val bottomUpdater: InsetUpdater = object : InsetUpdater {
+        override fun updateValue(insets: HtmlInsets, value: Int) {
+            insets.bottom = value
         }
 
-        public void updateType(final HtmlInsets insets, final int type) {
-            insets.rightType = type;
+        override fun updateType(insets: HtmlInsets, type: Int) {
+            insets.bottomType = type
         }
-    };
+    }
+    private val rightUpdater: InsetUpdater = object : InsetUpdater {
+        override fun updateValue(insets: HtmlInsets, value: Int) {
+            insets.right = value
+        }
 
-    static {
-        final FontInfo systemFont = new FontInfo();
-        SYSTEM_FONTS.put("caption", systemFont);
-        SYSTEM_FONTS.put("icon", systemFont);
-        SYSTEM_FONTS.put("menu", systemFont);
-        SYSTEM_FONTS.put("message-box", systemFont);
-        SYSTEM_FONTS.put("small-caption", systemFont);
-        SYSTEM_FONTS.put("status-bar", systemFont);
+        override fun updateType(insets: HtmlInsets, type: Int) {
+            insets.rightType = type
+        }
     }
 
-    private HtmlValues() {
+    init {
+        val systemFont = FontInfo()
+        SYSTEM_FONTS.put("caption", systemFont)
+        SYSTEM_FONTS.put("icon", systemFont)
+        SYSTEM_FONTS.put("menu", systemFont)
+        SYSTEM_FONTS.put("message-box", systemFont)
+        SYSTEM_FONTS.put("small-caption", systemFont)
+        SYSTEM_FONTS.put("status-bar", systemFont)
     }
 
-  /* Not used by anyone
+    /* Not used by anyone
   private static int getBorderWidth(final String sizeText, final int borderStyle, final RenderState renderState) {
     if (borderStyle == BORDER_STYLE_NONE) {
       return 0;
@@ -120,159 +116,178 @@ public class HtmlValues {
       return HtmlValues.getPixelSize(sizeText, renderState, DEFAULT_BORDER_WIDTH);
     }
   }*/
-
-    public static boolean isBorderStyle(final String token) {
-        final String tokenTL = token.toLowerCase();
-        return tokenTL.equals("solid") || tokenTL.equals("dashed") || tokenTL.equals("dotted") || tokenTL.equals("double")
-                || tokenTL.equals("none") || tokenTL.equals("hidden") || tokenTL.equals("groove") || tokenTL.equals("ridge")
-                || tokenTL.equals("inset") || tokenTL.equals("outset");
+    fun isBorderStyle(token: String): Boolean {
+        val tokenTL = token.lowercase(Locale.getDefault())
+        return tokenTL == "solid" || tokenTL == "dashed" || tokenTL == "dotted" || tokenTL == "double"
+                || tokenTL == "none" || tokenTL == "hidden" || tokenTL == "groove" || tokenTL == "ridge"
+                || tokenTL == "inset" || tokenTL == "outset"
     }
 
-    public static HtmlInsets getMarginInsets(final CSS2Properties cssProperties, final RenderState renderState) {
-        HtmlInsets insets = null;
-        final String topText = cssProperties.getMarginTop();
-        insets = updateInset(insets, topText, renderState, topUpdater);
-        final String leftText = cssProperties.getMarginLeft();
-        insets = updateInset(insets, leftText, renderState, leftUpdater);
-        final String bottomText = cssProperties.getMarginBottom();
-        insets = updateInset(insets, bottomText, renderState, bottomUpdater);
-        final String rightText = cssProperties.getMarginRight();
-        insets = updateInset(insets, rightText, renderState, rightUpdater);
-        return insets;
+    fun getMarginInsets(cssProperties: CSS2Properties, renderState: RenderState?): HtmlInsets? {
+        var insets: HtmlInsets? = null
+        val topText = cssProperties.marginTop
+        insets = updateInset(insets, topText, renderState, topUpdater)
+        val leftText = cssProperties.marginLeft
+        insets = updateInset(insets, leftText, renderState, leftUpdater)
+        val bottomText = cssProperties.marginBottom
+        insets = updateInset(insets, bottomText, renderState, bottomUpdater)
+        val rightText = cssProperties.marginRight
+        insets = updateInset(insets, rightText, renderState, rightUpdater)
+        return insets
     }
 
-    public static HtmlInsets getPaddingInsets(final CSS2Properties cssProperties, final RenderState renderState) {
-        HtmlInsets insets = null;
-        final String topText = cssProperties.getPaddingTop();
-        insets = updateInset(insets, topText, renderState, topUpdater);
-        final String leftText = cssProperties.getPaddingLeft();
-        insets = updateInset(insets, leftText, renderState, leftUpdater);
-        final String bottomText = cssProperties.getPaddingBottom();
-        insets = updateInset(insets, bottomText, renderState, bottomUpdater);
-        final String rightText = cssProperties.getPaddingRight();
-        insets = updateInset(insets, rightText, renderState, rightUpdater);
-        return insets;
+    fun getPaddingInsets(cssProperties: CSS2Properties, renderState: RenderState?): HtmlInsets? {
+        var insets: HtmlInsets? = null
+        val topText = cssProperties.paddingTop
+        insets = updateInset(insets, topText, renderState, topUpdater)
+        val leftText = cssProperties.paddingLeft
+        insets = updateInset(insets, leftText, renderState, leftUpdater)
+        val bottomText = cssProperties.paddingBottom
+        insets = updateInset(insets, bottomText, renderState, bottomUpdater)
+        val rightText = cssProperties.paddingRight
+        insets = updateInset(insets, rightText, renderState, rightUpdater)
+        return insets
     }
 
     /**
-     * Populates {@link BorderInfo}.
+     * Populates [BorderInfo].
      *
      * @param binfo         A BorderInfo with its styles already populated.
      * @param cssProperties The CSS properties object.
      * @param renderState   The current render state.
      */
-    public static void populateBorderInsets(final BorderInfo binfo, final CSS2Properties cssProperties, final RenderState renderState) {
-        HtmlInsets insets = null;
-        if (binfo.topStyle != HtmlValues.BORDER_STYLE_NONE && binfo.topStyle != HtmlValues.BORDER_STYLE_HIDDEN) {
-            final String topText = cssProperties.getBorderTopWidth();
-            insets = updateBorderInset(insets, topText, renderState, topUpdater, binfo.topStyle);
+    fun populateBorderInsets(
+        binfo: BorderInfo,
+        cssProperties: CSS2Properties,
+        renderState: RenderState?
+    ) {
+        var insets: HtmlInsets? = null
+        if (binfo.topStyle != BORDER_STYLE_NONE && binfo.topStyle != BORDER_STYLE_HIDDEN) {
+            val topText = cssProperties.borderTopWidth
+            insets = updateBorderInset(insets, topText, renderState, topUpdater, binfo.topStyle)
         }
-        if (binfo.leftStyle != HtmlValues.BORDER_STYLE_NONE && binfo.leftStyle != HtmlValues.BORDER_STYLE_HIDDEN) {
-            final String leftText = cssProperties.getBorderLeftWidth();
-            insets = updateBorderInset(insets, leftText, renderState, leftUpdater, binfo.leftStyle);
+        if (binfo.leftStyle != BORDER_STYLE_NONE && binfo.leftStyle != BORDER_STYLE_HIDDEN) {
+            val leftText = cssProperties.borderLeftWidth
+            insets = updateBorderInset(insets, leftText, renderState, leftUpdater, binfo.leftStyle)
         }
-        if (binfo.bottomStyle != HtmlValues.BORDER_STYLE_NONE && binfo.bottomStyle != HtmlValues.BORDER_STYLE_HIDDEN) {
-            final String bottomText = cssProperties.getBorderBottomWidth();
-            insets = updateBorderInset(insets, bottomText, renderState, bottomUpdater, binfo.bottomStyle);
+        if (binfo.bottomStyle != BORDER_STYLE_NONE && binfo.bottomStyle != BORDER_STYLE_HIDDEN) {
+            val bottomText = cssProperties.borderBottomWidth
+            insets =
+                updateBorderInset(insets, bottomText, renderState, bottomUpdater, binfo.bottomStyle)
         }
-        if (binfo.rightStyle != HtmlValues.BORDER_STYLE_NONE && binfo.rightStyle != HtmlValues.BORDER_STYLE_HIDDEN) {
-            final String rightText = cssProperties.getBorderRightWidth();
-            insets = updateBorderInset(insets, rightText, renderState, rightUpdater, binfo.rightStyle);
+        if (binfo.rightStyle != BORDER_STYLE_NONE && binfo.rightStyle != BORDER_STYLE_HIDDEN) {
+            val rightText = cssProperties.borderRightWidth
+            insets =
+                updateBorderInset(insets, rightText, renderState, rightUpdater, binfo.rightStyle)
         }
-        binfo.insets = insets;
+        binfo.insets = insets
     }
 
-    private static HtmlInsets updateInset(HtmlInsets insets, String sizeText, final RenderState renderState, final InsetUpdater updater) {
+    private fun updateInset(
+        insets: HtmlInsets?,
+        sizeText: String?,
+        renderState: RenderState?,
+        updater: InsetUpdater
+    ): HtmlInsets? {
+        var insets = insets
+        var sizeText = sizeText
         if (sizeText == null) {
-            return insets;
+            return insets
         }
-        sizeText = sizeText.trim();
-        if (sizeText.length() == 0) {
-            return insets;
+        sizeText = sizeText.trim { it <= ' ' }
+        if (sizeText.length == 0) {
+            return insets
         }
         if (insets == null) {
-            insets = new HtmlInsets();
+            insets = HtmlInsets()
         }
-        if ("auto".equalsIgnoreCase(sizeText)) {
-            updater.updateType(insets, HtmlInsets.TYPE_AUTO);
+        if ("auto".equals(sizeText, ignoreCase = true)) {
+            updater.updateType(insets, HtmlInsets.Companion.TYPE_AUTO)
         } else if (sizeText.endsWith("%")) {
-            updater.updateType(insets, HtmlInsets.TYPE_PERCENT);
+            updater.updateType(insets, HtmlInsets.Companion.TYPE_PERCENT)
             try {
-                updater.updateValue(insets, Integer.parseInt(sizeText.substring(0, sizeText.length() - 1)));
-            } catch (final NumberFormatException nfe) {
-                updater.updateValue(insets, 0);
+                updater.updateValue(insets, sizeText.substring(0, sizeText.length - 1).toInt())
+            } catch (nfe: NumberFormatException) {
+                updater.updateValue(insets, 0)
             }
         } else {
-            updater.updateType(insets, HtmlInsets.TYPE_PIXELS);
-            updater.updateValue(insets, HtmlValues.getPixelSize(sizeText, renderState, 0));
+            updater.updateType(insets, HtmlInsets.Companion.TYPE_PIXELS)
+            updater.updateValue(insets, getPixelSize(sizeText, renderState, 0))
         }
-        return insets;
+        return insets
     }
 
-    private static HtmlInsets updateBorderInset(HtmlInsets insets, String sizeText, final RenderState renderState, final InsetUpdater updater, final int borderStyle) {
+    private fun updateBorderInset(
+        insets: HtmlInsets?,
+        sizeText: String?,
+        renderState: RenderState?,
+        updater: InsetUpdater,
+        borderStyle: Int
+    ): HtmlInsets? {
+        var sizeText = sizeText
         if (sizeText == null) {
             if (borderStyle != BORDER_STYLE_NONE) {
-                sizeText = BORDER_MEDIUM_SIZE;
+                sizeText = BORDER_MEDIUM_SIZE
             }
         }
-        return updateInset(insets, sizeText, renderState, updater);
+        return updateInset(insets, sizeText, renderState, updater)
     }
 
-    public static Insets getInsets(final String insetsSpec, final RenderState renderState, final boolean negativeOK) {
-        final int[] insetsArray = new int[4];
-        int size = 0;
-        final StringTokenizer tok = new StringTokenizer(insetsSpec);
+    fun getInsets(insetsSpec: String, renderState: RenderState?, negativeOK: Boolean): Insets? {
+        val insetsArray = IntArray(4)
+        var size = 0
+        val tok = StringTokenizer(insetsSpec)
         if (tok.hasMoreTokens()) {
-            String token = tok.nextToken();
-            insetsArray[0] = getPixelSize(token, renderState, 0);
+            var token = tok.nextToken()
+            insetsArray[0] = getPixelSize(token, renderState, 0)
             if (negativeOK || (insetsArray[0] >= 0)) {
-                size = 1;
+                size = 1
                 if (tok.hasMoreTokens()) {
-                    token = tok.nextToken();
-                    insetsArray[1] = getPixelSize(token, renderState, 0);
+                    token = tok.nextToken()
+                    insetsArray[1] = getPixelSize(token, renderState, 0)
                     if (negativeOK || (insetsArray[1] >= 0)) {
-                        size = 2;
+                        size = 2
                         if (tok.hasMoreTokens()) {
-                            token = tok.nextToken();
-                            insetsArray[2] = getPixelSize(token, renderState, 0);
+                            token = tok.nextToken()
+                            insetsArray[2] = getPixelSize(token, renderState, 0)
                             if (negativeOK || (insetsArray[2] >= 0)) {
-                                size = 3;
+                                size = 3
                                 if (tok.hasMoreTokens()) {
-                                    token = tok.nextToken();
-                                    insetsArray[3] = getPixelSize(token, renderState, 0);
-                                    size = 4;
+                                    token = tok.nextToken()
+                                    insetsArray[3] = getPixelSize(token, renderState, 0)
+                                    size = 4
                                     if (negativeOK || (insetsArray[3] >= 0)) {
                                         // nop
                                     } else {
-                                        insetsArray[3] = 0;
+                                        insetsArray[3] = 0
                                     }
                                 }
                             } else {
-                                size = 4;
-                                insetsArray[2] = 0;
+                                size = 4
+                                insetsArray[2] = 0
                             }
                         }
                     } else {
-                        size = 4;
-                        insetsArray[1] = 0;
+                        size = 4
+                        insetsArray[1] = 0
                     }
                 }
             } else {
-                size = 1;
-                insetsArray[0] = 0;
+                size = 1
+                insetsArray[0] = 0
             }
         }
         if (size == 4) {
-            return new Insets(insetsArray[0], insetsArray[3], insetsArray[2], insetsArray[1]);
+            return Insets(insetsArray[0], insetsArray[3], insetsArray[2], insetsArray[1])
         } else if (size == 1) {
-            final int val = insetsArray[0];
-            return new Insets(val, val, val, val);
+            val `val` = insetsArray[0]
+            return Insets(`val`, `val`, `val`, `val`)
         } else if (size == 2) {
-            return new Insets(insetsArray[0], insetsArray[1], insetsArray[0], insetsArray[1]);
+            return Insets(insetsArray[0], insetsArray[1], insetsArray[0], insetsArray[1])
         } else if (size == 3) {
-            return new Insets(insetsArray[0], insetsArray[1], insetsArray[2], insetsArray[1]);
+            return Insets(insetsArray[0], insetsArray[1], insetsArray[2], insetsArray[1])
         } else {
-            return null;
+            return null
         }
     }
 
@@ -281,172 +296,170 @@ public class HtmlValues {
      *
      * @param oldHtmlSpec A number from 1 to 7 or +1, etc.
      */
-    public static final int getFontNumberOldStyle(String oldHtmlSpec, final RenderState renderState) {
-        oldHtmlSpec = oldHtmlSpec.trim();
-        int tentative;
+    fun getFontNumberOldStyle(oldHtmlSpec: String, renderState: RenderState): Int {
+        var oldHtmlSpec = oldHtmlSpec
+        oldHtmlSpec = oldHtmlSpec.trim { it <= ' ' }
+        var tentative: Int
         try {
             if (oldHtmlSpec.startsWith("+")) {
-                tentative = renderState.getFontBase() + Integer.parseInt(oldHtmlSpec.substring(1));
+                tentative = renderState.getFontBase() + oldHtmlSpec.substring(1).toInt()
             } else if (oldHtmlSpec.startsWith("-")) {
-                tentative = renderState.getFontBase() + Integer.parseInt(oldHtmlSpec);
+                tentative = renderState.getFontBase() + oldHtmlSpec.toInt()
             } else {
-                tentative = Integer.parseInt(oldHtmlSpec);
+                tentative = oldHtmlSpec.toInt()
             }
             if (tentative < 1) {
-                tentative = 1;
+                tentative = 1
             } else if (tentative > 7) {
-                tentative = 7;
+                tentative = 7
             }
-        } catch (final NumberFormatException nfe) {
+        } catch (nfe: NumberFormatException) {
             // ignore
-            tentative = 3;
+            tentative = 3
         }
-        return tentative;
+        return tentative
     }
 
-    public static final float getFontSize(final int fontNumber) {
-        switch (fontNumber) {
-            case 1:
-                return 10.0f;
-            case 2:
-                return 11.0f;
-            case 3:
-                return 13.0f;
-            case 4:
-                return 16.0f;
-            case 5:
-                return 21.0f;
-            case 6:
-                return 29.0f;
-            case 7:
-                return 42.0f;
-            default:
-                return 63.0f;
+    fun getFontSize(fontNumber: Int): Float {
+        when (fontNumber) {
+            1 -> return 10.0f
+            2 -> return 11.0f
+            3 -> return 13.0f
+            4 -> return 16.0f
+            5 -> return 21.0f
+            6 -> return 29.0f
+            7 -> return 42.0f
+            else -> return 63.0f
         }
     }
 
-    public static final String getFontSizeSpec(final int fontNumber) {
-        switch (fontNumber) {
-            case 1:
-                return "10px";
-            case 2:
-                return "11px";
-            case 3:
-                return "13px";
-            case 4:
-                return "16px";
-            case 5:
-                return "21px";
-            case 6:
-                return "29px";
-            case 7:
-                return "42px";
-            default:
-                return "63px";
+    fun getFontSizeSpec(fontNumber: Int): String {
+        when (fontNumber) {
+            1 -> return "10px"
+            2 -> return "11px"
+            3 -> return "13px"
+            4 -> return "16px"
+            5 -> return "21px"
+            6 -> return "29px"
+            7 -> return "42px"
+            else -> return "63px"
         }
     }
 
-    public static final float getFontSize(final String spec, final RenderState parentRenderState) {
-        final float specifiedFontSize = getFontSizeImpl(spec, parentRenderState);
+    fun getFontSize(spec: String, parentRenderState: RenderState?): Float {
+        val specifiedFontSize = getFontSizeImpl(spec, parentRenderState)
         if (specifiedFontSize == 0f) {
-            return specifiedFontSize;
+            return specifiedFontSize
         }
-        return Math.max(MINIMUM_FONT_SIZE_PIXELS, specifiedFontSize);
+        return max(MINIMUM_FONT_SIZE_PIXELS.toFloat(), specifiedFontSize)
     }
 
-    private static final float getFontSizeImpl(final String spec, final RenderState parentRenderState) {
-        final String specTL = spec.toLowerCase();
+    private fun getFontSizeImpl(spec: String, parentRenderState: RenderState?): Float {
+        val specTL = spec.lowercase(Locale.getDefault())
         if (specTL.endsWith("em")) {
             if (parentRenderState == null) {
-                return DEFAULT_FONT_SIZE;
+                return DEFAULT_FONT_SIZE
             }
-            final Font font = parentRenderState.getFont();
-            final String pxText = specTL.substring(0, specTL.length() - 2);
-            double value;
+            val font = parentRenderState.getFont()
+            val pxText = specTL.substring(0, specTL.length - 2)
+            val value: Double
             try {
-                value = Double.parseDouble(pxText);
-            } catch (final NumberFormatException nfe) {
-                return DEFAULT_FONT_SIZE;
+                value = pxText.toDouble()
+            } catch (nfe: NumberFormatException) {
+                return DEFAULT_FONT_SIZE
             }
-            return (int) Math.round(font.getSize() * value);
-        } else if (specTL.endsWith("px") || specTL.endsWith("pt") || specTL.endsWith("cm") || specTL.endsWith("pc") || specTL.endsWith("cm")
-                || specTL.endsWith("mm") || specTL.endsWith("ex")) {
-            final int pixelSize = getPixelSize(spec, parentRenderState, DEFAULT_FONT_SIZE_INT);
+            return Math.round(font.getSize() * value).toInt().toFloat()
+        } else if (specTL.endsWith("px") || specTL.endsWith("pt") || specTL.endsWith("cm") || specTL.endsWith(
+                "pc"
+            ) || specTL.endsWith("cm")
+            || specTL.endsWith("mm") || specTL.endsWith("ex")
+        ) {
+            val pixelSize = getPixelSize(spec, parentRenderState, DEFAULT_FONT_SIZE_INT)
 
-      /* Disabling for GH-185
+            /* Disabling for GH-185
       final int dpi = getDpi();
       Normally the factor below should be 72, but the font-size concept in HTML is handled differently.
       return (pixelSize * 96f) / dpi;
       */
-
-            return pixelSize;
+            return pixelSize.toFloat()
         } else if (specTL.endsWith("%")) {
-            final String value = specTL.substring(0, specTL.length() - 1);
+            val value = specTL.substring(0, specTL.length - 1)
             try {
-                final double valued = Double.parseDouble(value);
-                final double parentFontSize = parentRenderState == null ? 14.0 : parentRenderState.getFont().getSize();
-                return (float) ((parentFontSize * valued) / 100.0);
-            } catch (final NumberFormatException nfe) {
-                return DEFAULT_FONT_SIZE;
+                val valued = value.toDouble()
+                val parentFontSize =
+                    if (parentRenderState == null) 14.0 else parentRenderState.getFont().getSize()
+                        .toDouble()
+                return ((parentFontSize * valued) / 100.0).toFloat()
+            } catch (nfe: NumberFormatException) {
+                return DEFAULT_FONT_SIZE
             }
-        } else if ("small".equals(specTL)) {
-            return 12.0f;
-        } else if ("medium".equals(specTL)) {
-            return 14.0f;
-        } else if ("large".equals(specTL)) {
-            return 20.0f;
-        } else if ("x-small".equals(specTL)) {
-            return 11.0f;
-        } else if ("xx-small".equals(specTL)) {
-            return 10.0f;
-        } else if ("x-large".equals(specTL)) {
-            return 26.0f;
-        } else if ("xx-large".equals(specTL)) {
-            return 40.0f;
-        } else if ("larger".equals(specTL)) {
-            final int parentFontSize = parentRenderState == null ? DEFAULT_FONT_SIZE_INT : parentRenderState.getFont().getSize();
-            return parentFontSize * 1.2f;
-        } else if ("smaller".equals(specTL)) {
-            final int parentFontSize = parentRenderState == null ? DEFAULT_FONT_SIZE_INT : parentRenderState.getFont().getSize();
-            return parentFontSize / 1.2f;
+        } else if ("small" == specTL) {
+            return 12.0f
+        } else if ("medium" == specTL) {
+            return 14.0f
+        } else if ("large" == specTL) {
+            return 20.0f
+        } else if ("x-small" == specTL) {
+            return 11.0f
+        } else if ("xx-small" == specTL) {
+            return 10.0f
+        } else if ("x-large" == specTL) {
+            return 26.0f
+        } else if ("xx-large" == specTL) {
+            return 40.0f
+        } else if ("larger" == specTL) {
+            val parentFontSize =
+                if (parentRenderState == null) DEFAULT_FONT_SIZE_INT else parentRenderState.getFont()
+                    .getSize()
+            return parentFontSize * 1.2f
+        } else if ("smaller" == specTL) {
+            val parentFontSize =
+                if (parentRenderState == null) DEFAULT_FONT_SIZE_INT else parentRenderState.getFont()
+                    .getSize()
+            return parentFontSize / 1.2f
         } else {
-            return getPixelSize(spec, parentRenderState, DEFAULT_FONT_SIZE_INT);
+            return getPixelSize(spec, parentRenderState, DEFAULT_FONT_SIZE_INT).toFloat()
         }
     }
 
-    public static final int getPixelSize(final String spec, final RenderState renderState, final int errorValue, final int availSize) {
+    fun getPixelSize(
+        spec: String,
+        renderState: RenderState?,
+        errorValue: Int,
+        availSize: Int
+    ): Int {
         if (spec.endsWith("%")) {
-            final String perText = spec.substring(0, spec.length() - 1);
+            val perText = spec.substring(0, spec.length - 1)
             try {
-                final double val = Double.parseDouble(perText);
-                return (int) Math.round((availSize * val) / 100.0);
-            } catch (final NumberFormatException nfe) {
-                return errorValue;
+                val `val` = perText.toDouble()
+                return Math.round((availSize * `val`) / 100.0).toInt()
+            } catch (nfe: NumberFormatException) {
+                return errorValue
             }
         } else {
-            return getPixelSize(spec, renderState, errorValue);
+            return getPixelSize(spec, renderState, errorValue)
         }
     }
 
-    public static final int getPixelSize(final String spec, final RenderState renderState, final int errorValue) {
-        final String lcSpec = spec.toLowerCase();
+    fun getPixelSize(spec: String, renderState: RenderState?, errorValue: Int): Int {
+        val lcSpec = spec.lowercase(Locale.getDefault())
         if (lcSpec.endsWith("px")) {
-            final String pxText = lcSpec.substring(0, lcSpec.length() - 2);
+            val pxText = lcSpec.substring(0, lcSpec.length - 2)
             try {
-                final double val = Double.parseDouble(pxText);
-                final int dpi = getDpi();
-                final double inches = val / 96;
-                return (int) Math.round(dpi * inches);
-            } catch (final NumberFormatException nfe) {
-                return errorValue;
+                val `val` = pxText.toDouble()
+                val dpi: Int = dpi
+                val inches = `val` / 96
+                return Math.round(dpi * inches).toInt()
+            } catch (nfe: NumberFormatException) {
+                return errorValue
             }
         } else if (lcSpec.endsWith("em") && (renderState != null)) {
-            final Font f = renderState.getFont();
-            final String valText = lcSpec.substring(0, lcSpec.length() - 2);
+            val f = renderState.getFont()
+            val valText = lcSpec.substring(0, lcSpec.length - 2)
             try {
-                final double val = Double.parseDouble(valText);
+                val `val` = valText.toDouble()
                 // Get fontSize in points (1/72 of an inch).
-                final float fontSizePt = f.getSize2D();
+                val fontSizePt = f.getSize2D()
                 /* Formula: fontSize in CSS pixels = (fontSizePt / 72.0) * 96.0;
                  *          fontSize in device pixels = (font size in css pixels * dpi) / 96.0
                  *                                    = (fontSizePt / 72.0) * dpi
@@ -454,140 +467,143 @@ public class HtmlValues {
                  * Although, we should be using the factor 72 as per above, the actual factor used below is 96.
                  * This is because the font-height is calculated differently in CSS. TODO: Add a reference for this.
                  */
-        /* Disabling for GH-185
+                /* Disabling for GH-185
         final int dpi = getDpi();
         final double fontSizeDevicePixels = (fontSizePt * dpi) / 96;
         return (int) Math.round(fontSizeDevicePixels * val);
         */
-                return (int) Math.round(fontSizePt * val);
-            } catch (final NumberFormatException nfe) {
-                return errorValue;
+                return Math.round(fontSizePt * `val`).toInt()
+            } catch (nfe: NumberFormatException) {
+                return errorValue
             }
         } else if (lcSpec.endsWith("pt")) {
-            final String valText = lcSpec.substring(0, lcSpec.length() - 2);
+            val valText = lcSpec.substring(0, lcSpec.length - 2)
             try {
-                final double val = Double.parseDouble(valText);
-                final int dpi = getDpi();
-                final double inches = val / 72;
-                return (int) Math.round(dpi * inches);
-            } catch (final NumberFormatException nfe) {
-                return errorValue;
+                val `val` = valText.toDouble()
+                val dpi: Int = dpi
+                val inches = `val` / 72
+                return Math.round(dpi * inches).toInt()
+            } catch (nfe: NumberFormatException) {
+                return errorValue
             }
         } else if (lcSpec.endsWith("in")) {
-            final String valText = lcSpec.substring(0, lcSpec.length() - 2);
+            val valText = lcSpec.substring(0, lcSpec.length - 2)
             try {
-                final double inches = Double.parseDouble(valText);
-                final int dpi = getDpi();
-                return (int) Math.round(dpi * inches);
-            } catch (final NumberFormatException nfe) {
-                return errorValue;
+                val inches = valText.toDouble()
+                val dpi: Int = dpi
+                return Math.round(dpi * inches).toInt()
+            } catch (nfe: NumberFormatException) {
+                return errorValue
             }
         } else if (lcSpec.endsWith("pc")) {
-            final String valText = lcSpec.substring(0, lcSpec.length() - 2);
+            val valText = lcSpec.substring(0, lcSpec.length - 2)
             try {
-                final double val = Double.parseDouble(valText);
-                final int dpi = getDpi();
-                final double inches = val / 6;
-                return (int) Math.round(dpi * inches);
-            } catch (final NumberFormatException nfe) {
-                return errorValue;
+                val `val` = valText.toDouble()
+                val dpi: Int = dpi
+                val inches = `val` / 6
+                return Math.round(dpi * inches).toInt()
+            } catch (nfe: NumberFormatException) {
+                return errorValue
             }
         } else if (lcSpec.endsWith("cm")) {
-            final String valText = lcSpec.substring(0, lcSpec.length() - 2);
+            val valText = lcSpec.substring(0, lcSpec.length - 2)
             try {
-                final double val = Double.parseDouble(valText);
-                final int dpi = getDpi();
-                final double inches = val / 2.54;
-                return (int) Math.round(dpi * inches);
-            } catch (final NumberFormatException nfe) {
-                return errorValue;
+                val `val` = valText.toDouble()
+                val dpi: Int = dpi
+                val inches = `val` / 2.54
+                return Math.round(dpi * inches).toInt()
+            } catch (nfe: NumberFormatException) {
+                return errorValue
             }
         } else if (lcSpec.endsWith("mm")) {
-            final String valText = lcSpec.substring(0, lcSpec.length() - 2);
+            val valText = lcSpec.substring(0, lcSpec.length - 2)
             try {
-                final double val = Double.parseDouble(valText);
-                final int dpi = getDpi();
-                final double inches = val / 25.4;
-                return (int) Math.round(dpi * inches);
-            } catch (final NumberFormatException nfe) {
-                return errorValue;
+                val `val` = valText.toDouble()
+                val dpi: Int = dpi
+                val inches = `val` / 25.4
+                return Math.round(dpi * inches).toInt()
+            } catch (nfe: NumberFormatException) {
+                return errorValue
             }
         } else if (lcSpec.endsWith("ex") && (renderState != null)) {
-            final double xHeight = renderState.getFontXHeight();
-            final String valText = lcSpec.substring(0, lcSpec.length() - 2);
+            val xHeight = renderState.getFontXHeight()
+            val valText = lcSpec.substring(0, lcSpec.length - 2)
             try {
-                final double val = Double.parseDouble(valText);
-                return (int) Math.round(xHeight * val);
-            } catch (final NumberFormatException nfe) {
-                return errorValue;
+                val `val` = valText.toDouble()
+                return Math.round(xHeight * `val`).toInt()
+            } catch (nfe: NumberFormatException) {
+                return errorValue
             }
         } else {
-            final String pxText = lcSpec;
+            val pxText = lcSpec
             try {
-                return (int) Math.round(Double.parseDouble(pxText));
-            } catch (final NumberFormatException nfe) {
-                return errorValue;
+                return Math.round(pxText.toDouble()).toInt()
+            } catch (nfe: NumberFormatException) {
+                return errorValue
             }
         }
     }
 
-    private static int getDpi() {
-        if (GraphicsEnvironment.isHeadless()) {
-            // TODO: Why is this 72? The CSS native resolution seems to be 96, so we could use that instead.
-            return 72;
-        } else {
-            final int screenResolution = Toolkit.getDefaultToolkit().getScreenResolution();
-            // TODO: Hack: converting to a multiple of 16. See GH-185
-            return (screenResolution + 15) & 0xfffffff0;
+    private val dpi: Int
+        get() {
+            if (GraphicsEnvironment.isHeadless()) {
+                // TODO: Why is this 72? The CSS native resolution seems to be 96, so we could use that instead.
+                return 72
+            } else {
+                val screenResolution =
+                    Toolkit.getDefaultToolkit().screenResolution
+                // TODO: Hack: converting to a multiple of 16. See GH-185
+                return (screenResolution + 15) and -0x10
+            }
         }
-    }
 
-    public static int scaleToDevicePixels(final double cssPixels) {
-        return (int) Math.round(cssPixels * getDpi() / 96.0);
+    fun scaleToDevicePixels(cssPixels: Double): Int {
+        return Math.round(cssPixels * dpi / 96.0).toInt()
     }
 
     // TODO: move this functionality to the attribute -> CSS style functionality
-    public static int getOldSyntaxPixelSize(String spec, final int availSize, final int errorValue) {
+    fun getOldSyntaxPixelSize(spec: String?, availSize: Int, errorValue: Int): Int {
+        var spec = spec
         if (spec == null) {
-            return errorValue;
+            return errorValue
         }
-        spec = spec.trim();
+        spec = spec.trim { it <= ' ' }
         try {
             if (spec.endsWith("%")) {
-                return (availSize * Integer.parseInt(spec.substring(0, spec.length() - 1))) / 100;
+                return (availSize * spec.substring(0, spec.length - 1).toInt()) / 100
             }
             if (spec.endsWith("px")) {
-                final double val = Double.parseDouble(spec.substring(0, spec.length() - 2));
-                return scaleToDevicePixels(val);
+                val `val` = spec.substring(0, spec.length - 2).toDouble()
+                return scaleToDevicePixels(`val`)
             } else {
-                return scaleToDevicePixels(Integer.parseInt(spec));
+                return scaleToDevicePixels(spec.toInt().toDouble())
             }
-        } catch (final NumberFormatException nfe) {
-            return errorValue;
+        } catch (nfe: NumberFormatException) {
+            return errorValue
         }
     }
 
-    public static java.net.URL getURIFromStyleValue(final String fullURLStyleValue) {
-        final String start = "url(";
-        if (!fullURLStyleValue.toLowerCase().startsWith(start)) {
-            return null;
+    fun getURIFromStyleValue(fullURLStyleValue: String): URL? {
+        val start = "url("
+        if (!fullURLStyleValue.lowercase(Locale.getDefault()).startsWith(start)) {
+            return null
         }
-        final int startIdx = start.length();
-        final int closingIdx = fullURLStyleValue.lastIndexOf(')');
+        val startIdx = start.length
+        val closingIdx = fullURLStyleValue.lastIndexOf(')')
         if (closingIdx == -1) {
-            return null;
+            return null
         }
-        final String quotedUri = fullURLStyleValue.substring(startIdx, closingIdx);
-        final String tentativeUri = unquoteAndUnescape(quotedUri);
+        val quotedUri = fullURLStyleValue.substring(startIdx, closingIdx)
+        val tentativeUri = unquoteAndUnescape(quotedUri)
         try {
-            return Urls.createURL(null, tentativeUri);
-        } catch (final java.net.MalformedURLException mfu) {
-            logger.log(Level.WARNING, "Unable to create URL for URI=[" + tentativeUri + "].", mfu);
-            return null;
+            return Urls.createURL(null, tentativeUri)
+        } catch (mfu: MalformedURLException) {
+            logger.log(Level.WARNING, "Unable to create URL for URI=[" + tentativeUri + "].", mfu)
+            return null
         }
     }
 
-  /* This was called from BodyRenderState.getMarginInsets() which has now been commented out
+    /* This was called from BodyRenderState.getMarginInsets() which has now been commented out
   public static int getOldSyntaxPixelSizeSimple(String spec, final int errorValue) {
     if (spec == null) {
       return errorValue;
@@ -599,105 +615,94 @@ public class HtmlValues {
       return errorValue;
     }
   }*/
-
-    public static String unquoteAndUnescape(final String text) {
-        final StringBuffer result = new StringBuffer();
-        int index = 0;
-        final int length = text.length();
-        boolean escape = false;
-        boolean single = false;
+    fun unquoteAndUnescape(text: String): String {
+        val result = StringBuffer()
+        var index = 0
+        val length = text.length
+        var escape = false
+        var single = false
         if (index < length) {
-            final char ch = text.charAt(index);
-            switch (ch) {
-                case '\'':
-                    single = true;
-                    break;
-                case '"':
-                    break;
-                case '\\':
-                    escape = true;
-                    break;
-                default:
-                    result.append(ch);
+            val ch = text.get(index)
+            when (ch) {
+                '\'' -> single = true
+                '"' -> {}
+                '\\' -> escape = true
+                else -> result.append(ch)
             }
-            index++;
+            index++
         }
-        OUTER:
-        for (; index < length; index++) {
-            final char ch = text.charAt(index);
-            switch (ch) {
-                case '\'':
-                    if (escape || !single) {
-                        escape = false;
-                        result.append(ch);
-                    } else {
-                        break OUTER;
-                    }
-                    break;
-                case '"':
-                    if (escape || single) {
-                        escape = false;
-                        result.append(ch);
-                    } else {
-                        break OUTER;
-                    }
-                    break;
-                case '\\':
+        OUTER@ while (index < length) {
+            val ch = text.get(index)
+            when (ch) {
+                '\'' -> if (escape || !single) {
+                    escape = false
+                    result.append(ch)
+                } else {
+                    break@OUTER
+                }
+
+                '"' -> if (escape || single) {
+                    escape = false
+                    result.append(ch)
+                } else {
+                    break@OUTER
+                }
+
+                '\\' -> if (escape) {
+                    escape = false
+                    result.append(ch)
+                } else {
+                    escape = true
+                }
+
+                else -> {
                     if (escape) {
-                        escape = false;
-                        result.append(ch);
-                    } else {
-                        escape = true;
+                        escape = false
+                        result.append('\\')
                     }
-                    break;
-                default:
-                    if (escape) {
-                        escape = false;
-                        result.append('\\');
-                    }
-                    result.append(ch);
+                    result.append(ch)
+                }
             }
+            index++
         }
-        return result.toString();
+        return result.toString()
     }
 
-    public static String quoteAndEscape(final String text) {
-        final StringBuffer result = new StringBuffer();
-        result.append("'");
-        int index = 0;
-        final int length = text.length();
+    fun quoteAndEscape(text: String): String {
+        val result = StringBuffer()
+        result.append("'")
+        var index = 0
+        val length = text.length
         while (index < length) {
-            final char ch = text.charAt(index);
-            switch (ch) {
-                case '\'':
-                    result.append("\\'");
-                    break;
-                case '\\':
-                    result.append("\\\\");
-                    break;
-                default:
-                    result.append(ch);
+            val ch = text.get(index)
+            when (ch) {
+                '\'' -> result.append("\\'")
+                '\\' -> result.append("\\\\")
+                else -> result.append(ch)
             }
-            index++;
+            index++
         }
-        result.append("'");
-        return result.toString();
+        result.append("'")
+        return result.toString()
     }
 
-    public static boolean isLength(final String token) {
-        if (token.endsWith("px") || token.endsWith("pt") || token.endsWith("pc") || token.endsWith("cm") || token.endsWith("mm")
-                || token.endsWith("ex") || token.endsWith("em")) {
-            return true;
+    fun isLength(token: String): Boolean {
+        if (token.endsWith("px") || token.endsWith("pt") || token.endsWith("pc") || token.endsWith("cm") || token.endsWith(
+                "mm"
+            )
+            || token.endsWith("ex") || token.endsWith("em")
+        ) {
+            return true
         }
         try {
-            Double.parseDouble(token);
-            return true;
-        } catch (final NumberFormatException nfe) {
-            return false;
+            token.toDouble()
+            return true
+        } catch (nfe: NumberFormatException) {
+            return false
         }
     }
 
-  /*
+    /*
   public static String getColorFromBackground(final String background) {
     final String[] backgroundParts = HtmlValues.splitCssValue(background);
     for (final String token : backgroundParts) {
@@ -708,229 +713,243 @@ public class HtmlValues {
     return null;
   }
   */
+    fun splitCssValue(cssValue: String): Array<String> {
+        val tokens = ArrayList<String?>(4)
+        val len = cssValue.length
+        var parenCount = 0
+        var currentWord: StringBuffer? = null
+        for (i in 0..<len) {
+            val ch = cssValue.get(i)
+            when (ch) {
+                '(' -> {
+                    parenCount++
+                    if (currentWord == null) {
+                        currentWord = StringBuffer()
+                    }
+                    currentWord.append(ch)
+                }
 
-    public static String[] splitCssValue(final String cssValue) {
-        final ArrayList<String> tokens = new ArrayList<>(4);
-        final int len = cssValue.length();
-        int parenCount = 0;
-        StringBuffer currentWord = null;
-        for (int i = 0; i < len; i++) {
-            final char ch = cssValue.charAt(i);
-            switch (ch) {
-                case '(':
-                    parenCount++;
+                ')' -> {
+                    parenCount--
                     if (currentWord == null) {
-                        currentWord = new StringBuffer();
+                        currentWord = StringBuffer()
                     }
-                    currentWord.append(ch);
-                    break;
-                case ')':
-                    parenCount--;
-                    if (currentWord == null) {
-                        currentWord = new StringBuffer();
-                    }
-                    currentWord.append(ch);
-                    break;
-                case ' ':
-                case '\t':
-                case '\n':
-                case '\r':
+                    currentWord.append(ch)
+                }
+
+                ' ', '\t', '\n', '\r' -> {
                     if (parenCount == 0) {
-                        tokens.add(currentWord.toString());
-                        currentWord = null;
-                        break;
+                        tokens.add(currentWord.toString())
+                        currentWord = null
+                        break
                     } else {
                         // Fall through - no break
                     }
-                default:
                     if (currentWord == null) {
-                        currentWord = new StringBuffer();
+                        currentWord = StringBuffer()
                     }
-                    currentWord.append(ch);
-                    break;
-            }
-        }
-        if (currentWord != null) {
-            tokens.add(currentWord.toString());
-        }
-        return tokens.toArray(new String[tokens.size()]);
-    }
+                    currentWord.append(ch)
+                }
 
-    public static boolean isUrl(final String token) {
-        return token.toLowerCase().startsWith("url(");
-    }
-
-    public static int getListStyleType(final String token) {
-        final String tokenTL = token.toLowerCase();
-        if ("none".equals(tokenTL)) {
-            return ListStyle.TYPE_NONE;
-        } else if ("disc".equals(tokenTL)) {
-            return ListStyle.TYPE_DISC;
-        } else if ("circle".equals(tokenTL)) {
-            return ListStyle.TYPE_CIRCLE;
-        } else if ("square".equals(tokenTL)) {
-            return ListStyle.TYPE_SQUARE;
-        } else if ("decimal".equals(tokenTL)) {
-            return ListStyle.TYPE_DECIMAL;
-        } else if ("lower-alpha".equals(tokenTL) || "lower-latin".equals(tokenTL)) {
-            return ListStyle.TYPE_LOWER_ALPHA;
-        } else if ("upper-alpha".equals(tokenTL) || "upper-latin".equals(tokenTL)) {
-            return ListStyle.TYPE_UPPER_ALPHA;
-        } else {
-            // TODO: Many types missing here
-            return ListStyle.TYPE_UNSET;
-        }
-    }
-
-    public static int getListStyleTypeDeprecated(final String token) {
-        final String tokenTL = token.toLowerCase();
-        if ("disc".equals(tokenTL)) {
-            return ListStyle.TYPE_DISC;
-        } else if ("circle".equals(tokenTL)) {
-            return ListStyle.TYPE_CIRCLE;
-        } else if ("square".equals(tokenTL)) {
-            return ListStyle.TYPE_SQUARE;
-        } else if ("1".equals(tokenTL)) {
-            return ListStyle.TYPE_DECIMAL;
-        } else if ("a".equals(tokenTL)) {
-            return ListStyle.TYPE_LOWER_ALPHA;
-        } else if ("A".equals(tokenTL)) {
-            return ListStyle.TYPE_UPPER_ALPHA;
-        } else {
-            // TODO: Missing i, I.
-            return ListStyle.TYPE_UNSET;
-        }
-    }
-
-    public static int getListStylePosition(final String token) {
-        final String tokenTL = token.toLowerCase();
-        if ("inside".equals(tokenTL)) {
-            return ListStyle.POSITION_INSIDE;
-        } else if ("outside".equals(tokenTL)) {
-            return ListStyle.POSITION_OUTSIDE;
-        } else {
-            return ListStyle.POSITION_UNSET;
-        }
-    }
-
-    public static ListStyle getListStyle(final String listStyleText) {
-        final ListStyle listStyle = new ListStyle();
-        final String[] tokens = HtmlValues.splitCssValue(listStyleText);
-        for (final String token : tokens) {
-            final int listStyleType = HtmlValues.getListStyleType(token);
-            if (listStyleType != ListStyle.TYPE_UNSET) {
-                listStyle.type = listStyleType;
-            } else if (HtmlValues.isUrl(token)) {
-                // TODO: listStyle.image
-            } else {
-                final int listStylePosition = HtmlValues.getListStylePosition(token);
-                if (listStylePosition != ListStyle.POSITION_UNSET) {
-                    listStyle.position = listStylePosition;
+                else -> {
+                    if (currentWord == null) {
+                        currentWord = StringBuffer()
+                    }
+                    currentWord.append(ch)
                 }
             }
         }
-        return listStyle;
+        if (currentWord != null) {
+            tokens.add(currentWord.toString())
+        }
+        return tokens.toTypedArray<String?>()
     }
 
-    public static boolean isFontStyle(final String token) {
-        return "italic".equals(token) || "normal".equals(token) || "oblique".equals(token);
+    fun isUrl(token: String): Boolean {
+        return token.lowercase(Locale.getDefault()).startsWith("url(")
     }
 
-    public static boolean isFontVariant(final String token) {
-        return "small-caps".equals(token) || "normal".equals(token);
+    fun getListStyleType(token: String): Int {
+        val tokenTL = token.lowercase(Locale.getDefault())
+        if ("none" == tokenTL) {
+            return ListStyle.Companion.TYPE_NONE
+        } else if ("disc" == tokenTL) {
+            return ListStyle.Companion.TYPE_DISC
+        } else if ("circle" == tokenTL) {
+            return ListStyle.Companion.TYPE_CIRCLE
+        } else if ("square" == tokenTL) {
+            return ListStyle.Companion.TYPE_SQUARE
+        } else if ("decimal" == tokenTL) {
+            return ListStyle.Companion.TYPE_DECIMAL
+        } else if ("lower-alpha" == tokenTL || "lower-latin" == tokenTL) {
+            return ListStyle.Companion.TYPE_LOWER_ALPHA
+        } else if ("upper-alpha" == tokenTL || "upper-latin" == tokenTL) {
+            return ListStyle.Companion.TYPE_UPPER_ALPHA
+        } else {
+            // TODO: Many types missing here
+            return ListStyle.Companion.TYPE_UNSET
+        }
     }
 
-    public static boolean isFontWeight(final String token) {
-        if ("bold".equals(token) || "bolder".equals(token) || "lighter".equals(token)) {
-            return true;
+    fun getListStyleTypeDeprecated(token: String): Int {
+        val tokenTL = token.lowercase(Locale.getDefault())
+        if ("disc" == tokenTL) {
+            return ListStyle.Companion.TYPE_DISC
+        } else if ("circle" == tokenTL) {
+            return ListStyle.Companion.TYPE_CIRCLE
+        } else if ("square" == tokenTL) {
+            return ListStyle.Companion.TYPE_SQUARE
+        } else if ("1" == tokenTL) {
+            return ListStyle.Companion.TYPE_DECIMAL
+        } else if ("a" == tokenTL) {
+            return ListStyle.Companion.TYPE_LOWER_ALPHA
+        } else if ("A" == tokenTL) {
+            return ListStyle.Companion.TYPE_UPPER_ALPHA
+        } else {
+            // TODO: Missing i, I.
+            return ListStyle.Companion.TYPE_UNSET
+        }
+    }
+
+    fun getListStylePosition(token: String): Int {
+        val tokenTL = token.lowercase(Locale.getDefault())
+        if ("inside" == tokenTL) {
+            return ListStyle.Companion.POSITION_INSIDE
+        } else if ("outside" == tokenTL) {
+            return ListStyle.Companion.POSITION_OUTSIDE
+        } else {
+            return ListStyle.Companion.POSITION_UNSET
+        }
+    }
+
+    fun getListStyle(listStyleText: String): ListStyle {
+        val listStyle = ListStyle()
+        val tokens = splitCssValue(listStyleText)
+        for (token in tokens) {
+            val listStyleType = getListStyleType(token)
+            if (listStyleType != ListStyle.Companion.TYPE_UNSET) {
+                listStyle.type = listStyleType
+            } else if (isUrl(token)) {
+                // TODO: listStyle.image
+            } else {
+                val listStylePosition = getListStylePosition(token)
+                if (listStylePosition != ListStyle.Companion.POSITION_UNSET) {
+                    listStyle.position = listStylePosition
+                }
+            }
+        }
+        return listStyle
+    }
+
+    fun isFontStyle(token: String?): Boolean {
+        return "italic" == token || "normal" == token || "oblique" == token
+    }
+
+    fun isFontVariant(token: String?): Boolean {
+        return "small-caps" == token || "normal" == token
+    }
+
+    fun isFontWeight(token: String): Boolean {
+        if ("bold" == token || "bolder" == token || "lighter" == token) {
+            return true
         }
         try {
-            final int value = Integer.parseInt(token);
-            return ((value % 100) == 0) && (value >= 100) && (value <= 900);
-        } catch (final NumberFormatException nfe) {
-            return false;
+            val value = token.toInt()
+            return ((value % 100) == 0) && (value >= 100) && (value <= 900)
+        } catch (nfe: NumberFormatException) {
+            return false
         }
     }
 
-    public static BorderInfo getBorderInfo(final CSS2Properties properties, final RenderState renderState) {
-        final BorderInfo binfo = new BorderInfo();
+    fun getBorderInfo(properties: CSS2Properties, renderState: RenderState): BorderInfo {
+        val binfo = BorderInfo()
 
-        binfo.topStyle = getBorderStyle(properties.getBorderTopStyle());
-        binfo.rightStyle = getBorderStyle(properties.getBorderRightStyle());
-        binfo.bottomStyle = getBorderStyle(properties.getBorderBottomStyle());
-        binfo.leftStyle = getBorderStyle(properties.getBorderLeftStyle());
+        binfo.topStyle = getBorderStyle(properties.borderTopStyle)
+        binfo.rightStyle = getBorderStyle(properties.borderRightStyle)
+        binfo.bottomStyle = getBorderStyle(properties.borderBottomStyle)
+        binfo.leftStyle = getBorderStyle(properties.borderLeftStyle)
 
-        final ColorFactory cf = ColorFactory.getInstance();
+        val cf = ColorFactory.getInstance()
 
-        binfo.topColor = getBorderColor(cf, properties.getBorderTopColor(), renderState);
-        binfo.rightColor = getBorderColor(cf, properties.getBorderRightColor(), renderState);
-        binfo.bottomColor = getBorderColor(cf, properties.getBorderBottomColor(), renderState);
-        binfo.leftColor = getBorderColor(cf, properties.getBorderLeftColor(), renderState);
+        binfo.topColor = getBorderColor(cf, properties.borderTopColor, renderState)
+        binfo.rightColor = getBorderColor(cf, properties.borderRightColor, renderState)
+        binfo.bottomColor = getBorderColor(cf, properties.borderBottomColor, renderState)
+        binfo.leftColor = getBorderColor(cf, properties.borderLeftColor, renderState)
 
-        HtmlValues.populateBorderInsets(binfo, properties, renderState);
+        populateBorderInsets(binfo, properties, renderState)
 
-        return binfo;
+        return binfo
     }
 
-    private static java.awt.Color getBorderColor(final ColorFactory cf, final String colorSpec, final RenderState renderState) {
-        if (colorSpec != null && (colorSpec.trim().length() != 0)) {
-            return cf.getColor(colorSpec);
+    private fun getBorderColor(
+        cf: ColorFactory,
+        colorSpec: String?,
+        renderState: RenderState
+    ): Color? {
+        if (colorSpec != null && (colorSpec.trim { it <= ' ' }.length != 0)) {
+            return cf.getColor(colorSpec)
         } else {
-            return renderState.getColor();
+            return renderState.getColor()
         }
     }
 
-    public static Insets getBorderStyles(final CSS2Properties properties) {
-        final int topStyle = getBorderStyle(properties.getBorderTopStyle());
-        final int rightStyle = getBorderStyle(properties.getBorderRightStyle());
-        final int bottomStyle = getBorderStyle(properties.getBorderBottomStyle());
-        final int leftStyle = getBorderStyle(properties.getBorderLeftStyle());
-        return new Insets(topStyle, leftStyle, bottomStyle, rightStyle);
+    fun getBorderStyles(properties: CSS2Properties): Insets {
+        val topStyle = getBorderStyle(properties.borderTopStyle)
+        val rightStyle = getBorderStyle(properties.borderRightStyle)
+        val bottomStyle = getBorderStyle(properties.borderBottomStyle)
+        val leftStyle = getBorderStyle(properties.borderLeftStyle)
+        return Insets(topStyle, leftStyle, bottomStyle, rightStyle)
     }
 
-    private static int getBorderStyle(final String styleText) {
-        if ((styleText == null) || (styleText.length() == 0)) {
-            return HtmlValues.BORDER_STYLE_NONE;
+    private fun getBorderStyle(styleText: String?): Int {
+        if ((styleText == null) || (styleText.length == 0)) {
+            return BORDER_STYLE_NONE
         }
-        final String stl = styleText.toLowerCase();
-        if ("solid".equals(stl)) {
-            return BORDER_STYLE_SOLID;
-        } else if ("dashed".equals(stl)) {
-            return BORDER_STYLE_DASHED;
-        } else if ("dotted".equals(stl)) {
-            return BORDER_STYLE_DOTTED;
-        } else if ("none".equals(stl)) {
-            return BORDER_STYLE_NONE;
-        } else if ("hidden".equals(stl)) {
-            return BORDER_STYLE_HIDDEN;
-        } else if ("double".equals(stl)) {
-            return BORDER_STYLE_DOUBLE;
-        } else if ("groove".equals(stl)) {
-            return BORDER_STYLE_GROOVE;
-        } else if ("ridge".equals(stl)) {
-            return BORDER_STYLE_RIDGE;
-        } else if ("inset".equals(stl)) {
-            return BORDER_STYLE_INSET;
-        } else if ("outset".equals(stl)) {
-            return BORDER_STYLE_OUTSET;
+        val stl = styleText.lowercase(Locale.getDefault())
+        if ("solid" == stl) {
+            return BORDER_STYLE_SOLID
+        } else if ("dashed" == stl) {
+            return BORDER_STYLE_DASHED
+        } else if ("dotted" == stl) {
+            return BORDER_STYLE_DOTTED
+        } else if ("none" == stl) {
+            return BORDER_STYLE_NONE
+        } else if ("hidden" == stl) {
+            return BORDER_STYLE_HIDDEN
+        } else if ("double" == stl) {
+            return BORDER_STYLE_DOUBLE
+        } else if ("groove" == stl) {
+            return BORDER_STYLE_GROOVE
+        } else if ("ridge" == stl) {
+            return BORDER_STYLE_RIDGE
+        } else if ("inset" == stl) {
+            return BORDER_STYLE_INSET
+        } else if ("outset" == stl) {
+            return BORDER_STYLE_OUTSET
         } else {
-            return BORDER_STYLE_NONE;
+            return BORDER_STYLE_NONE
         }
     }
 
-    public static boolean isBackgroundRepeat(final String repeat) {
-        final String repeatTL = repeat.toLowerCase();
-        return repeatTL.indexOf("repeat") != -1;
+    fun isBackgroundRepeat(repeat: String): Boolean {
+        val repeatTL = repeat.lowercase(Locale.getDefault())
+        return repeatTL.indexOf("repeat") != -1
     }
 
-    public static boolean isBackgroundPosition(final String token) {
-        return isLength(token) || token.endsWith("%") || token.equalsIgnoreCase("top") || token.equalsIgnoreCase("center")
-                || token.equalsIgnoreCase("bottom") || token.equalsIgnoreCase("left") || token.equalsIgnoreCase("right");
+    fun isBackgroundPosition(token: String): Boolean {
+        return isLength(token) || token.endsWith("%") || token.equals(
+            "top",
+            ignoreCase = true
+        ) || token.equals("center", ignoreCase = true)
+                || token.equals("bottom", ignoreCase = true) || token.equals(
+            "left",
+            ignoreCase = true
+        ) || token.equals("right", ignoreCase = true)
     }
 
     private interface InsetUpdater {
-        void updateValue(HtmlInsets insets, final int value);
+        fun updateValue(insets: HtmlInsets?, value: Int)
 
-        void updateType(HtmlInsets insets, final int type);
+        fun updateType(insets: HtmlInsets?, type: Int)
     }
 }

@@ -1,263 +1,271 @@
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.mozilla.javascript.Function;
-import org.w3c.dom.Document;
-import org.w3c.dom.html.HTMLIFrameElement;
+import io.github.remmerw.thor.cobra.html.BrowserFrame
+import io.github.remmerw.thor.cobra.html.js.Event
+import io.github.remmerw.thor.cobra.html.js.Executor
+import io.github.remmerw.thor.cobra.html.js.Window
+import io.github.remmerw.thor.cobra.html.js.Window.JSRunnableTask
+import io.github.remmerw.thor.cobra.html.style.IFrameRenderState
+import io.github.remmerw.thor.cobra.html.style.RenderState
+import io.github.remmerw.thor.cobra.js.HideFromJS
+import io.github.remmerw.thor.cobra.ua.UserAgentContext
+import io.github.remmerw.thor.cobra.ua.UserAgentContext.RequestKind
+import org.mozilla.javascript.Function
+import org.w3c.dom.Document
+import org.w3c.dom.html.HTMLIFrameElement
+import java.net.MalformedURLException
+import kotlin.concurrent.Volatile
 
-import java.net.URL;
+class HTMLIFrameElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLIFrameElement,
+    FrameNode {
+    @Volatile
+    private var browserFrame: BrowserFrame? = null
+    private var jobCreated = false
+    private var onload: Function? = null
 
-import io.github.remmerw.thor.cobra.html.BrowserFrame;
-import io.github.remmerw.thor.cobra.html.js.Event;
-import io.github.remmerw.thor.cobra.html.js.Executor;
-import io.github.remmerw.thor.cobra.html.js.Window;
-import io.github.remmerw.thor.cobra.html.js.Window.JSRunnableTask;
-import io.github.remmerw.thor.cobra.html.style.IFrameRenderState;
-import io.github.remmerw.thor.cobra.html.style.RenderState;
-import io.github.remmerw.thor.cobra.js.HideFromJS;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext.Request;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext.RequestKind;
-
-public class HTMLIFrameElementImpl extends HTMLAbstractUIElement implements HTMLIFrameElement, FrameNode {
-    private volatile BrowserFrame browserFrame;
-    private boolean jobCreated = false;
-    private Function onload;
-
-    public HTMLIFrameElementImpl(final String name) {
-        super(name);
-    }
-
-    private void createJob() {
-        synchronized (this) {
-            final String src = this.getAttribute("src");
+    private fun createJob() {
+        synchronized(this) {
+            val src = this.getAttribute("src")
             if (src != null) {
                 if (!jobCreated) {
-                    ((HTMLDocumentImpl) document).addJob(() -> loadURLIntoFrame(src), false);
-                    jobCreated = true;
+                    (document as HTMLDocumentImpl).addJob(Runnable { loadURLIntoFrame(src) }, false)
+                    jobCreated = true
                 } else {
-                    ((HTMLDocumentImpl) document).addJob(() -> loadURLIntoFrame(src), false, 0);
+                    (document as HTMLDocumentImpl).addJob(
+                        Runnable { loadURLIntoFrame(src) },
+                        false,
+                        0
+                    )
                 }
             } else {
-                markJobDone(0, isAttachedToDocument());
+                markJobDone(0, isAttachedToDocument())
             }
         }
     }
 
-    private void markJobDone(final int jobs, final boolean loaded) {
-        synchronized (this) {
-            ((HTMLDocumentImpl) document).markJobsFinished(jobs, false);
-            jobCreated = false;
-
+    private fun markJobDone(jobs: Int, loaded: Boolean) {
+        synchronized(this) {
+            (document as HTMLDocumentImpl).markJobsFinished(jobs, false)
+            jobCreated = false
             if (loaded) {
                 if (onload != null) {
                     // TODO: onload event object?
-                    final Window window = ((HTMLDocumentImpl) document).getWindow();
-                    window.addJSTask(new JSRunnableTask(0, "IFrame onload handler", () -> {
-                        Executor.executeFunction(HTMLIFrameElementImpl.this, onload, new Event("load", HTMLIFrameElementImpl.this), window.getContextFactory());
-                    }));
+                    val window = (document as HTMLDocumentImpl).getWindow()
+                    window.addJSTask(JSRunnableTask(0, "IFrame onload handler", Runnable {
+                        Executor.executeFunction(
+                            this@HTMLIFrameElementImpl,
+                            onload,
+                            Event("load", this@HTMLIFrameElementImpl),
+                            window.getContextFactory()
+                        )
+                    }))
                 }
 
-                dispatchEvent(new Event("load", this));
+                dispatchEvent(Event("load", this))
             }
         }
     }
 
-    public BrowserFrame getBrowserFrame() {
-        return this.browserFrame;
+    override fun getBrowserFrame(): BrowserFrame? {
+        return this.browserFrame
     }
 
     @HideFromJS
-    public void setBrowserFrame(final BrowserFrame frame) {
-        this.browserFrame = frame;
-        createJob();
+    override fun setBrowserFrame(frame: BrowserFrame?) {
+        this.browserFrame = frame
+        createJob()
     }
 
-    public String getAlign() {
-        return this.getAttribute("align");
+    override fun getAlign(): String? {
+        return this.getAttribute("align")
     }
 
-    public void setAlign(final String align) {
-        this.setAttribute("align", align);
+    override fun setAlign(align: String?) {
+        this.setAttribute("align", align)
     }
 
-    public Document getContentDocument() {
+    override fun getContentDocument(): Document? {
         // TODO: Domain-based security
-        final BrowserFrame frame = this.browserFrame;
+        val frame = this.browserFrame
         if (frame == null) {
             // Not loaded yet
-            return null;
+            return null
         }
 
-        {
+        run {
             // TODO: Remove this very ugly hack.
             // This is required because the content document is sometimes not ready, even though the browser frame is.
             // The browser frame is created by the layout thread, but the iframe is loaded in the window's JS Scheduler thread.
             // See GH #140
-            int count = 10;
-            while (count > 0 && frame.getContentDocument() == null) {
+            var count = 10
+            while (count > 0 && frame.contentDocument == null) {
                 try {
-                    Thread.sleep(100);
-                } catch (final InterruptedException e) {
-                    throw new RuntimeException("Error while waiting for iframe document");
+                    Thread.sleep(100)
+                } catch (e: InterruptedException) {
+                    throw RuntimeException("Error while waiting for iframe document")
                 }
-                count--;
+                count--
             }
         }
 
-        return frame.getContentDocument();
+        return frame.contentDocument
     }
 
-    public void setContentDocument(final Document d) {
-        final BrowserFrame frame = this.browserFrame;
+    fun setContentDocument(d: Document?) {
+        val frame = this.browserFrame
         if (frame == null) {
             // TODO: This needs to be handled.
-            return;
+            return
         }
-        frame.setContentDocument(d);
+        frame.contentDocument = d
     }
 
-    public Window getContentWindow() {
-        final BrowserFrame frame = this.browserFrame;
-        if (frame == null) {
-            // Not loaded yet
-            return null;
+    val contentWindow: Window?
+        get() {
+            val frame = this.browserFrame
+            if (frame == null) {
+                // Not loaded yet
+                return null
+            }
+            return Window.getWindow(frame.htmlRendererContext)
         }
-        return Window.getWindow(frame.getHtmlRendererContext());
+
+    override fun getFrameBorder(): String? {
+        return this.getAttribute("frameborder")
     }
 
-    public String getFrameBorder() {
-        return this.getAttribute("frameborder");
+    override fun setFrameBorder(frameBorder: String?) {
+        this.setAttribute("frameborder", frameBorder)
     }
 
-    public void setFrameBorder(final String frameBorder) {
-        this.setAttribute("frameborder", frameBorder);
+    override fun getHeight(): String? {
+        return this.getAttribute("height")
     }
 
-    public String getHeight() {
-        return this.getAttribute("height");
+    override fun setHeight(height: String?) {
+        this.setAttribute("height", height)
     }
 
-    public void setHeight(final String height) {
-        this.setAttribute("height", height);
+    override fun getLongDesc(): String? {
+        return this.getAttribute("longdesc")
     }
 
-    public String getLongDesc() {
-        return this.getAttribute("longdesc");
+    override fun setLongDesc(longDesc: String?) {
+        this.setAttribute("longdesc", longDesc)
     }
 
-    public void setLongDesc(final String longDesc) {
-        this.setAttribute("longdesc", longDesc);
+    override fun getMarginHeight(): String? {
+        return this.getAttribute("marginheight")
     }
 
-    public String getMarginHeight() {
-        return this.getAttribute("marginheight");
+    override fun setMarginHeight(marginHeight: String?) {
+        this.setAttribute("marginHeight", marginHeight)
     }
 
-    public void setMarginHeight(final String marginHeight) {
-        this.setAttribute("marginHeight", marginHeight);
+    override fun getMarginWidth(): String? {
+        return this.getAttribute("marginwidth")
     }
 
-    public String getMarginWidth() {
-        return this.getAttribute("marginwidth");
+    override fun setMarginWidth(marginWidth: String?) {
+        this.setAttribute("marginWidth", marginWidth)
     }
 
-    public void setMarginWidth(final String marginWidth) {
-        this.setAttribute("marginWidth", marginWidth);
+    override fun getName(): String? {
+        return this.getAttribute("name")
     }
 
-    public String getName() {
-        return this.getAttribute("name");
+    override fun setName(name: String?) {
+        this.setAttribute("name", name)
     }
 
-    public void setName(final String name) {
-        this.setAttribute("name", name);
+    override fun getScrolling(): String? {
+        return this.getAttribute("scrolling")
     }
 
-    public String getScrolling() {
-        return this.getAttribute("scrolling");
+    override fun setScrolling(scrolling: String?) {
+        this.setAttribute("scrolling", scrolling)
     }
 
-    public void setScrolling(final String scrolling) {
-        this.setAttribute("scrolling", scrolling);
+    override fun getSrc(): String? {
+        return this.getAttribute("src")
     }
 
-    public String getSrc() {
-        return this.getAttribute("src");
+    override fun setSrc(src: String?) {
+        this.setAttribute("src", src)
     }
 
-    public void setSrc(final String src) {
-        this.setAttribute("src", src);
+    override fun getWidth(): String? {
+        return this.getAttribute("width")
     }
 
-    public String getWidth() {
-        return this.getAttribute("width");
+    override fun setWidth(width: String?) {
+        this.setAttribute("width", width)
     }
 
-    public void setWidth(final String width) {
-        this.setAttribute("width", width);
-    }
-
-    @Override
-    protected void handleAttributeChanged(String name, String oldValue, String newValue) {
-        super.handleAttributeChanged(name, oldValue, newValue);
-        if ("src".equals(name)) {
-            createJob();
+    override fun handleAttributeChanged(name: String?, oldValue: String?, newValue: String?) {
+        super.handleAttributeChanged(name, oldValue, newValue)
+        if ("src" == name) {
+            createJob()
         }
     }
 
-    @Override
-    protected void handleDocumentAttachmentChanged() {
-        super.handleDocumentAttachmentChanged();
+    override fun handleDocumentAttachmentChanged() {
+        super.handleDocumentAttachmentChanged()
         if (isAttachedToDocument()) {
             if (hasAttribute("onload")) {
-                setOnload(getEventFunction(null, "onload"));
+                setOnload(getEventFunction(null, "onload"))
             }
         }
     }
 
-    public Function getOnload() {
-        return this.getEventFunction(this.onload, "onload");
+    fun getOnload(): Function? {
+        return this.getEventFunction(this.onload, "onload")
     }
 
-    public void setOnload(final Function onload) {
-        this.onload = onload;
+    fun setOnload(onload: Function?) {
+        this.onload = onload
     }
 
-    private void loadURLIntoFrame(final String value) {
-        final BrowserFrame frame = this.browserFrame;
+    private fun loadURLIntoFrame(value: String?) {
+        val frame = this.browserFrame
         if (frame != null) {
             try {
-                final URL fullURL = value == null ? null : this.getFullURL(value);
+                val fullURL = if (value == null) null else this.getFullURL(value)
                 if (fullURL != null) {
-                    if (getUserAgentContext().isRequestPermitted(new Request(fullURL, RequestKind.Frame))) {
-                        frame.getHtmlRendererContext().setJobFinishedHandler(new Runnable() {
-                            public void run() {
-                                System.out.println("Iframes window's job over!");
-                                markJobDone(1, true);
+                    if (getUserAgentContext().isRequestPermitted(
+                            UserAgentContext.Request(
+                                fullURL,
+                                RequestKind.Frame
+                            )
+                        )
+                    ) {
+                        frame.htmlRendererContext.setJobFinishedHandler(object : Runnable {
+                            override fun run() {
+                                println("Iframes window's job over!")
+                                markJobDone(1, true)
                             }
-                        });
+                        })
                         // frame.loadURL(fullURL);
                         // ^^ Using window.open is better because it fires the various events correctly.
-                        getContentWindow().open(fullURL.toExternalForm(), "iframe", "", true);
+                        this.contentWindow.open(fullURL.toExternalForm(), "iframe", "", true)
                     } else {
-                        System.out.println("Request not permitted: " + fullURL);
-                        markJobDone(1, false);
+                        println("Request not permitted: " + fullURL)
+                        markJobDone(1, false)
                     }
                 } else {
-                    this.warn("Can't load URL: " + value);
+                    this.warn("Can't load URL: " + value)
                     // TODO: Plug: marking as load=true because we are not handling javascript URIs currently.
                     //       javascript URI is being used in some of the web-platform-tests.
-                    markJobDone(1, true);
+                    markJobDone(1, true)
                 }
-            } catch (final java.net.MalformedURLException mfu) {
-                this.warn("loadURLIntoFrame(): Unable to navigate to src.", mfu);
-                markJobDone(1, false);
+            } catch (mfu: MalformedURLException) {
+                this.warn("loadURLIntoFrame(): Unable to navigate to src.", mfu)
+                markJobDone(1, false)
             }
         }
     }
 
-    @Override
-    protected @NonNull RenderState createRenderState(final RenderState prevRenderState) {
-        return new IFrameRenderState(prevRenderState, this);
+    override fun createRenderState(prevRenderState: RenderState?): RenderState {
+        return IFrameRenderState(prevRenderState, this)
     }
 }

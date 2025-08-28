@@ -19,24 +19,24 @@ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-package io.github.remmerw.thor.cobra.ua;
+*/
+package io.github.remmerw.thor.cobra.ua
 
 /**
  * Represents the user agent, browser or clientlet engine.
  *
  * @author J. H. S.
  */
-public interface UserAgent {
+interface UserAgent {
     /**
      * Gets the user agent name.
      */
-    String getName();
+    val name: String?
 
     /**
      * Gets the user agent version.
      */
-    String getVersion();
+    val version: String?
 
     // /**
     // * Gets the earliest XAMJ version this user agent
@@ -44,23 +44,25 @@ public interface UserAgent {
     // * non-subsets of XAMJ versions are not allowed.)
     // */
     // public String getXamjVersion();
-
     /**
      * Gets the user agent name followed by the version.
      */
-    String getNameAndVersion();
+    val nameAndVersion: String?
 
     /**
      * Optional URL with information about the user agent.
      */
-    String getInfoUrl();
+    val infoUrl: String?
 
     /**
      * Gets the value the User-Agent header should be set to.
-     */
-    String getUserAgentString();
+     */ // (unavalilable for now)
+    val userAgentString: String?
+        /**
+         * Gets the value the User-Agent header should be set to.
+         */
+        get // (unavalilable for now)
 
-    // (unavalilable for now)
     // /**
     // * Gets an ID that is nearly guaranteed to be globally unique
     // * for a browser session and a protocol-host pair. The session ID

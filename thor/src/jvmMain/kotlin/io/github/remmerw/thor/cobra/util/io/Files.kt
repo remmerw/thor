@@ -18,41 +18,42 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.util.io;
+package io.github.remmerw.thor.cobra.util.io
 
-import java.io.File;
+import java.io.File
 
-public class Files {
-    private Files() {
-    }
-
+object Files {
     /**
      * Guesses the right content-type for a local file, and includes a charset if
      * appropriate.
      */
-    public static String getContentType(final File file) {
+    fun getContentType(file: File): String {
         // Not very complete at the moment :)
-        final String name = file.getName();
-        final int dotIdx = name.lastIndexOf('.');
-        final String extension = dotIdx == -1 ? null : name.substring(dotIdx + 1);
-        if ("txt".equalsIgnoreCase(extension)) {
-            return "text/plain; charset=\"" + System.getProperty("file.encoding") + "\"";
+        val name = file.name
+        val dotIdx = name.lastIndexOf('.')
+        val extension = if (dotIdx == -1) null else name.substring(dotIdx + 1)
+        if ("txt".equals(extension, ignoreCase = true)) {
+            return "text/plain; charset=\"" + System.getProperty("file.encoding") + "\""
         }
-        if ("html".equalsIgnoreCase(extension) || "htm".equalsIgnoreCase(extension)) {
-            return "text/html; charset=\"" + System.getProperty("file.encoding") + "\"";
+        if ("html".equals(extension, ignoreCase = true) || "htm".equals(
+                extension,
+                ignoreCase = true
+            )
+        ) {
+            return "text/html; charset=\"" + System.getProperty("file.encoding") + "\""
         } else {
-            return "application/octet-stream";
+            return "application/octet-stream"
         }
     }
 
     /**
      * Appends path components to a given directory
      */
-    public static File joinPaths(final File start, final String... components) {
-        File result = start;
-        for (final String component : components) {
-            result = new File(result, component);
+    fun joinPaths(start: File?, vararg components: String): File? {
+        var result = start
+        for (component in components) {
+            result = File(result, component)
         }
-        return result;
+        return result
     }
 }

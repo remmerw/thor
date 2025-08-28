@@ -20,21 +20,21 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.github.remmerw.thor.cobra.ua;
+package io.github.remmerw.thor.cobra.ua
 
 /**
  * Represents a collection of URL parameters.
  *
  * @author J. H. S.
  */
-public interface ParameterInfo {
+interface ParameterInfo {
     /**
      * Gets the POST encoding for the parameters.
      */
-    String getEncoding();
+    val encoding: String?
 
     /**
      * Gets the array of parameters.
      */
-    Parameter[] getParameters();
+    val parameters: Array<Parameter?>?
 }

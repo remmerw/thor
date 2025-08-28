@@ -20,55 +20,50 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.github.remmerw.thor.cobra.clientlet;
+package io.github.remmerw.thor.cobra.clientlet
 
-import java.awt.Component;
+import java.awt.Component
 
 /**
- * Abstract implementation of {@link ComponentContent}. It is recommended that
- * <code>ComponentContent</code> implementations extend this class for forward
+ * Abstract implementation of [ComponentContent]. It is recommended that
+ * `ComponentContent` implementations extend this class for forward
  * compatibility.
  */
-public abstract class AbstractComponentContent implements ComponentContent {
-    public AbstractComponentContent() {
+abstract class AbstractComponentContent : ComponentContent {
+    override fun canCopy(): Boolean {
+        return false
     }
 
-    public boolean canCopy() {
-        return false;
+    override fun copy(): Boolean {
+        return false
     }
 
-    public boolean copy() {
-        return false;
+    abstract override fun getComponent(): Component?
+
+    abstract override fun getSourceCode(): String?
+
+    abstract override fun getTitle(): String?
+
+    override fun getDescription(): String {
+        return ""
     }
 
-    public abstract Component getComponent();
-
-    public abstract String getSourceCode();
-
-    public abstract String getTitle();
-
-    public String getDescription() {
-        return "";
+    override fun addNotify() {
     }
 
-    public void addNotify() {
+    override fun removeNotify() {
     }
 
-    public void removeNotify() {
+    override fun getContentObject(): Any? {
+        return null
     }
 
-    public Object getContentObject() {
-        return null;
+    override fun getMimeType(): String? {
+        return null
     }
 
-    public String getMimeType() {
-        return null;
-    }
-
-    public void setProperty(final String name, final Object value) {
+    override fun setProperty(name: String?, value: Any?) {
         // NOP
-    }
-
-    // Backward compatibility note: Additional methods should provide an empty
+    } // Backward compatibility note: Additional methods should provide an empty
     // body.
 }

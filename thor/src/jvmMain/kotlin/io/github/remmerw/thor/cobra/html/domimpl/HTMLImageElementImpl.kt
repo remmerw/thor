@@ -21,54 +21,50 @@
 /*
  * Created on Nov 19, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.mozilla.javascript.Function;
-import org.w3c.dom.UserDataHandler;
-import org.w3c.dom.html.HTMLImageElement;
+import io.github.remmerw.thor.cobra.html.js.Executor
+import io.github.remmerw.thor.cobra.html.parser.HtmlParser
+import io.github.remmerw.thor.cobra.html.style.ImageRenderState
+import io.github.remmerw.thor.cobra.html.style.RenderState
+import io.github.remmerw.thor.cobra.ua.ImageResponse
+import org.mozilla.javascript.Function
+import org.w3c.dom.UserDataHandler
+import org.w3c.dom.html.HTMLImageElement
+import java.lang.Boolean
+import kotlin.Any
+import kotlin.Array
+import kotlin.String
+import kotlin.synchronized
 
-import java.util.ArrayList;
+class HTMLImageElementImpl : HTMLAbstractUIElement, HTMLImageElement {
+    private val listeners = ArrayList<ImageListener?>(1)
+    var onload: Function? = null
+        get() = this.getEventFunction(field, "onload")
+    private var imageResponse = ImageResponse()
+    private var imageSrc: String? = null
 
-import io.github.remmerw.thor.cobra.html.js.Executor;
-import io.github.remmerw.thor.cobra.html.js.Window;
-import io.github.remmerw.thor.cobra.html.parser.HtmlParser;
-import io.github.remmerw.thor.cobra.html.style.ImageRenderState;
-import io.github.remmerw.thor.cobra.html.style.RenderState;
-import io.github.remmerw.thor.cobra.ua.ImageResponse;
-import io.github.remmerw.thor.cobra.ua.ImageResponse.State;
+    constructor() : super("IMG")
 
-public class HTMLImageElementImpl extends HTMLAbstractUIElement implements HTMLImageElement {
-    private final ArrayList<ImageListener> listeners = new ArrayList<>(1);
-    private Function onload;
-    private @NonNull ImageResponse imageResponse = new ImageResponse();
-    private String imageSrc;
+    constructor(name: String?) : super(name)
 
-    public HTMLImageElementImpl() {
-        super("IMG");
+    override fun getName(): String? {
+        return this.getAttribute("name")
     }
 
-    public HTMLImageElementImpl(final String name) {
-        super(name);
+    override fun setName(name: String?) {
+        this.setAttribute("name", name)
     }
 
-    public String getName() {
-        return this.getAttribute("name");
+    override fun getAlign(): String? {
+        return this.getAttribute("align")
     }
 
-    public void setName(final String name) {
-        this.setAttribute("name", name);
+    override fun setAlign(align: String?) {
+        this.setAttribute("align", align)
     }
 
-    public String getAlign() {
-        return this.getAttribute("align");
-    }
-
-    public void setAlign(final String align) {
-        this.setAttribute("align", align);
-    }
-
-  /*
+    /*
   public int getHeight() {
     final UINode r = this.uiNode;
     return r == null ? 0 : r.getBounds().height;
@@ -85,67 +81,65 @@ public class HTMLImageElementImpl extends HTMLAbstractUIElement implements HTMLI
   public void setHspace(final int hspace) {
     this.setAttribute("hspace", String.valueOf("hspace"));
   } */
-
-    public String getAlt() {
-        return this.getAttribute("alt");
+    override fun getAlt(): String? {
+        return this.getAttribute("alt")
     }
 
-    public void setAlt(final String alt) {
-        this.setAttribute("alt", alt);
+    override fun setAlt(alt: String?) {
+        this.setAttribute("alt", alt)
     }
 
-    public String getBorder() {
-        return this.getAttribute("border");
+    override fun getBorder(): String? {
+        return this.getAttribute("border")
     }
 
-    public void setBorder(final String border) {
-        this.setAttribute("border", border);
+    override fun setBorder(border: String?) {
+        this.setAttribute("border", border)
     }
 
-    public String getHeight() {
-        final UINode r = this.uiNode;
-        final int height = r == null ? 0 : r.getBounds().height;
-        return String.valueOf(height);
+    override fun getHeight(): String {
+        val r = this.uiNode
+        val height = if (r == null) 0 else r.getBounds().height
+        return height.toString()
     }
 
-    public void setHeight(final String height) {
-        this.setAttribute("height", height);
+    override fun setHeight(height: String?) {
+        this.setAttribute("height", height)
     }
 
-    public String getHspace() {
-        return this.getAttribute("hspace");
+    override fun getHspace(): String? {
+        return this.getAttribute("hspace")
     }
 
-    public void setHspace(final String hspace) {
-        this.setAttribute("hspace", hspace);
+    override fun setHspace(hspace: String?) {
+        this.setAttribute("hspace", hspace)
     }
 
-    public boolean getIsMap() {
-        return this.getAttributeAsBoolean("isMap");
+    override fun getIsMap(): Boolean {
+        return this.getAttributeAsBoolean("isMap")
     }
 
-    public void setIsMap(final boolean isMap) {
-        this.setAttribute("isMap", isMap ? "isMap" : null);
+    override fun setIsMap(isMap: Boolean) {
+        this.setAttribute("isMap", if (isMap) "isMap" else null)
     }
 
-    public String getLongDesc() {
-        return this.getAttribute("longDesc");
+    override fun getLongDesc(): String? {
+        return this.getAttribute("longDesc")
     }
 
-    public void setLongDesc(final String longDesc) {
-        this.setAttribute("longDesc", longDesc);
+    override fun setLongDesc(longDesc: String?) {
+        this.setAttribute("longDesc", longDesc)
     }
 
-  /* public int getVspace() {
+    /* public int getVspace() {
     return this.getAttributeAsInt("vspace", 0);
   }
 
   public void setVspace(final int vspace) {
     this.setAttribute("vspace", String.valueOf(vspace));
   } */
-
-    public String getSrc() {
-        return this.getAttribute("src");
+    override fun getSrc(): String? {
+        return this.getAttribute("src")
     }
 
     /**
@@ -153,11 +147,11 @@ public class HTMLImageElementImpl extends HTMLAbstractUIElement implements HTMLI
      * HtmlRendererContext should be available to the HTML document for images to
      * be loaded.
      */
-    public void setSrc(final String src) {
-        this.setAttribute("src", src);
+    override fun setSrc(src: String?) {
+        this.setAttribute("src", src)
     }
 
-  /* public int getWidth() {
+    /* public int getWidth() {
     final UINode r = this.uiNode;
     return r == null ? 0 : r.getBounds().width;
   }
@@ -165,71 +159,60 @@ public class HTMLImageElementImpl extends HTMLAbstractUIElement implements HTMLI
   public void setWidth(final int width) {
     this.setAttribute("width", String.valueOf(width));
   }*/
-
-    public String getUseMap() {
-        return this.getAttribute("useMap");
+    override fun getUseMap(): String? {
+        return this.getAttribute("useMap")
     }
 
-    public void setUseMap(final String useMap) {
-        this.setAttribute("useMap", useMap);
+    override fun setUseMap(useMap: String?) {
+        this.setAttribute("useMap", useMap)
     }
 
-    public String getVspace() {
-        return this.getAttribute("vspace");
+    override fun getVspace(): String? {
+        return this.getAttribute("vspace")
     }
 
-    public void setVspace(final String vspace) {
-        this.setAttribute("vspace", vspace);
+    override fun setVspace(vspace: String?) {
+        this.setAttribute("vspace", vspace)
     }
 
-    public String getWidth() {
-        final UINode r = this.uiNode;
-        final int width = r == null ? 0 : r.getBounds().width;
-        return String.valueOf(width);
+    override fun getWidth(): String {
+        val r = this.uiNode
+        val width = if (r == null) 0 else r.getBounds().width
+        return width.toString()
     }
 
-    public void setWidth(final String width) {
-        this.setAttribute("width", width);
+    override fun setWidth(width: String?) {
+        this.setAttribute("width", width)
     }
 
-    @Override
-    protected void handleAttributeChanged(final String name, final String oldValue, final String newValue) {
-        super.handleAttributeChanged(name, oldValue, newValue);
-        if ("src".equals(name)) {
-            ((HTMLDocumentImpl) document).addJob(() -> loadImage(getSrc()), false);
+    override fun handleAttributeChanged(name: String?, oldValue: String?, newValue: String?) {
+        super.handleAttributeChanged(name, oldValue, newValue)
+        if ("src" == name) {
+            (document as HTMLDocumentImpl).addJob(Runnable { loadImage(src) }, false)
         }
     }
 
-    public Function getOnload() {
-        return this.getEventFunction(this.onload, "onload");
-    }
-
-    public void setOnload(final Function onload) {
-        this.onload = onload;
-    }
-
-    private void loadImage(final String src) {
-        final HTMLDocumentImpl document = (HTMLDocumentImpl) this.document;
+    private fun loadImage(src: String?) {
+        val document = this.document as HTMLDocumentImpl?
         if (document != null) {
-            synchronized (this.listeners) {
-                this.imageSrc = src;
-                this.imageResponse = new ImageResponse();
+            synchronized(this.listeners) {
+                this.imageSrc = src
+                this.imageResponse = ImageResponse()
             }
             if (src != null) {
-                document.loadImage(src, new LocalImageListener(src));
+                document.loadImage(src, HTMLImageElementImpl.LocalImageListener(src))
             } else {
-                document.markJobsFinished(1, false);
+                document.markJobsFinished(1, false)
             }
         }
     }
 
-    @Override
-    public Object setUserData(final String key, final Object data, final UserDataHandler handler) {
-        if (HtmlParser.MODIFYING_KEY.equals(key) && (data != Boolean.TRUE)) {
-            ((HTMLDocumentImpl) document).addJob(() -> loadImage(getSrc()), false);
+    override fun setUserData(key: String?, data: Any?, handler: UserDataHandler?): Any? {
+        if (HtmlParser.MODIFYING_KEY == key && (data !== Boolean.TRUE)) {
+            (document as HTMLDocumentImpl).addJob(Runnable { loadImage(src) }, false)
             // this.loadImage(getSrc());
         }
-        return super.setUserData(key, data, handler);
+        return super.setUserData(key, data, handler)
     }
 
     /**
@@ -238,84 +221,82 @@ public class HTMLImageElementImpl extends HTMLAbstractUIElement implements HTMLI
      *
      * @param listener
      */
-    public void addImageListener(final ImageListener listener) {
-        final ArrayList<ImageListener> l = this.listeners;
-        ImageResponse currentImageResponse;
-        synchronized (l) {
-            currentImageResponse = this.imageResponse;
-            l.add(listener);
+    fun addImageListener(listener: ImageListener) {
+        val l = this.listeners
+        val currentImageResponse: ImageResponse?
+        synchronized(l) {
+            currentImageResponse = this.imageResponse
+            l.add(listener)
         }
-        if (currentImageResponse.state != State.loading) {
+        if (currentImageResponse!!.state != ImageResponse.State.loading) {
             // Call listener right away if there's already an
             // image; holding no locks.
-            listener.imageLoaded(new ImageEvent(this, currentImageResponse));
+            listener.imageLoaded(ImageEvent(this, currentImageResponse))
             // Should not call onload handler here. That's taken
             // care of otherwise.
         }
     }
 
-    public void removeImageListener(final ImageListener listener) {
-        final ArrayList<ImageListener> l = this.listeners;
-        synchronized (l) {
-            l.remove(listener);
+    fun removeImageListener(listener: ImageListener?) {
+        val l = this.listeners
+        synchronized(l) {
+            l.remove(listener)
         }
     }
 
-    private void dispatchEvent(final String expectedImgSrc, final ImageEvent event) {
-        final ArrayList<ImageListener> l = this.listeners;
-        ImageListener[] listenerArray;
-        synchronized (l) {
-            if (!expectedImgSrc.equals(this.imageSrc)) {
-                return;
+    private fun dispatchEvent(expectedImgSrc: String, event: ImageEvent) {
+        val l = this.listeners
+        val listenerArray: Array<ImageListener?>?
+        synchronized(l) {
+            if (expectedImgSrc != this.imageSrc) {
+                return
             }
-            this.imageResponse = event.imageResponse;
+            this.imageResponse = event.imageResponse
             // Get array of listeners while holding lock.
-            listenerArray = l.toArray(ImageListener.EMPTY_ARRAY);
+            listenerArray = l.toArray<ImageListener?>(ImageListener.Companion.EMPTY_ARRAY)
         }
-        final int llength = listenerArray.length;
-        for (int i = 0; i < llength; i++) {
+        val llength = listenerArray!!.size
+        for (i in 0..<llength) {
             // Inform listener, holding no lock.
-            listenerArray[i].imageLoaded(event);
+            listenerArray[i]!!.imageLoaded(event)
         }
-        final Function onload = this.getOnload();
+        val onload = this.onload
         if (onload != null) {
             // TODO: onload event object?
-            final Window window = ((HTMLDocumentImpl) document).getWindow();
-            Executor.executeFunction(HTMLImageElementImpl.this, onload, null, window.getContextFactory());
+            val window = (document as HTMLDocumentImpl).getWindow()
+            Executor.executeFunction(
+                this@HTMLImageElementImpl,
+                onload,
+                null,
+                window.getContextFactory()
+            )
         }
     }
 
-    @Override
-    protected @NonNull RenderState createRenderState(final RenderState prevRenderState) {
-        return new ImageRenderState(prevRenderState, this);
+    override fun createRenderState(prevRenderState: RenderState?): RenderState {
+        return ImageRenderState(prevRenderState, this)
     }
 
-    public String getLowSrc() {
+    override fun getLowSrc(): String? {
         // TODO
-        return null;
+        return null
     }
 
-    public void setLowSrc(final String lowSrc) {
+    override fun setLowSrc(lowSrc: String?) {
         // TODO
     }
 
-    private class LocalImageListener implements ImageListener {
-        private final String expectedImgSrc;
-
-        public LocalImageListener(final String imgSrc) {
-            this.expectedImgSrc = imgSrc;
-        }
-
-        public void imageLoaded(final ImageEvent event) {
-            dispatchEvent(this.expectedImgSrc, event);
-            if (document instanceof HTMLDocumentImpl htmlDocumentImpl) {
-                htmlDocumentImpl.markJobsFinished(1, false);
+    private inner class LocalImageListener(private val expectedImgSrc: String) : ImageListener {
+        override fun imageLoaded(event: ImageEvent) {
+            dispatchEvent(this.expectedImgSrc, event)
+            if (document is HTMLDocumentImpl) {
+                document.markJobsFinished(1, false)
             }
         }
 
-        public void imageAborted() {
-            if (document instanceof HTMLDocumentImpl htmlDocumentImpl) {
-                htmlDocumentImpl.markJobsFinished(1, false);
+        override fun imageAborted() {
+            if (document is HTMLDocumentImpl) {
+                document.markJobsFinished(1, false)
             }
         }
     }

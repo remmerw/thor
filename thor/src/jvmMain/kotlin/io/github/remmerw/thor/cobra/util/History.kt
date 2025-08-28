@@ -21,198 +21,177 @@
 /*
  * Created on Jun 6, 2005
  */
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.io.IOException
+import java.io.ObjectInputStream
+import java.io.Serializable
+import java.util.Arrays
+import java.util.LinkedList
+import java.util.SortedSet
+import java.util.TreeSet
 
 /**
  * @author J. H. S.
  */
 // TODO: Looks like it is not used
-public class History implements java.io.Serializable {
-    private static final long serialVersionUID = 2257845000800300100L;
-    private final SortedSet<String> historySortedSet = new TreeSet<>();
-    private final Map<String, TimedEntry> historyMap = new HashMap<>();
-    private final SortedSet<TimedEntry> historyTimedSet = new TreeSet<>();
-    private transient ArrayList<String> historySequence;
-    private int sequenceCapacity;
-    private int commonEntriesCapacity;
+class History(
+    /**
+     * @param sequenceCapacity The sequenceCapacity to set.
+     */
+    var sequenceCapacity: Int,
+    /**
+     * @param commonEntriesCapacity The commonEntriesCapacity to set.
+     */
+    var commonEntriesCapacity: Int
+) : Serializable {
+    private val historySortedSet: SortedSet<String?> = TreeSet<String?>()
+    private val historyMap: MutableMap<String?, TimedEntry?> = HashMap<String?, TimedEntry?>()
+    private val historyTimedSet: SortedSet<TimedEntry> = TreeSet<TimedEntry>()
 
-    private transient int sequenceIndex;
+    @Transient
+    private var historySequence: ArrayList<String?>
+    /**
+     * @return Returns the sequenceCapacity.
+     */
+    /**
+     * @return Returns the commonEntriesCapacity.
+     */
+
+    @Transient
+    private var sequenceIndex: Int
 
     /**
      * @param sequenceCapacity
      * @param commonEntriesCapacity
      */
-    public History(final int sequenceCapacity, final int commonEntriesCapacity) {
-        super();
-        this.historySequence = new ArrayList<>();
-        this.sequenceIndex = -1;
-        this.sequenceCapacity = sequenceCapacity;
-        this.commonEntriesCapacity = commonEntriesCapacity;
+    init {
+        this.historySequence = ArrayList<String?>()
+        this.sequenceIndex = -1
     }
 
-    private void readObject(final java.io.ObjectInputStream in) throws ClassNotFoundException, java.io.IOException {
-        this.historySequence = new ArrayList<>();
-        this.sequenceIndex = -1;
-        in.defaultReadObject();
+    @Throws(ClassNotFoundException::class, IOException::class)
+    private fun readObject(`in`: ObjectInputStream) {
+        this.historySequence = ArrayList<String?>()
+        this.sequenceIndex = -1
+        `in`.defaultReadObject()
     }
 
-    /**
-     * @return Returns the commonEntriesCapacity.
-     */
-    public int getCommonEntriesCapacity() {
-        return commonEntriesCapacity;
-    }
-
-    /**
-     * @param commonEntriesCapacity The commonEntriesCapacity to set.
-     */
-    public void setCommonEntriesCapacity(final int commonEntriesCapacity) {
-        this.commonEntriesCapacity = commonEntriesCapacity;
-    }
-
-    /**
-     * @return Returns the sequenceCapacity.
-     */
-    public int getSequenceCapacity() {
-        return sequenceCapacity;
-    }
-
-    /**
-     * @param sequenceCapacity The sequenceCapacity to set.
-     */
-    public void setSequenceCapacity(final int sequenceCapacity) {
-        this.sequenceCapacity = sequenceCapacity;
-    }
-
-    public String getCurrentItem() {
-        if (this.sequenceIndex >= 0) {
-            return this.historySequence.get(this.sequenceIndex);
-        } else {
-            return null;
-        }
-    }
-
-    public String back() {
-        if (this.sequenceIndex > 0) {
-            this.sequenceIndex--;
-            return this.getCurrentItem();
-        } else {
-            return null;
-        }
-    }
-
-    public String forward() {
-        if ((this.sequenceIndex + 1) < this.historySequence.size()) {
-            this.sequenceIndex++;
-            return this.getCurrentItem();
-        } else {
-            return null;
-        }
-    }
-
-    public Collection<String> getRecentItems(final int maxNumItems) {
-        final Collection<String> items = new LinkedList<>();
-        final Iterator<TimedEntry> i = this.historyTimedSet.iterator();
-        int count = 0;
-        while (i.hasNext() && (count++ < maxNumItems)) {
-            final TimedEntry entry = i.next();
-            items.add(entry.value);
-        }
-        return items;
-    }
-
-    public Collection<String> getHeadMatchItems(final String item, final int maxNumItems) {
-        final String[] array = ArrayUtilities.copy(this.historySortedSet, String.class);
-        final int idx = Arrays.binarySearch(array, item);
-        final int startIdx = idx >= 0 ? idx : (-idx - 1);
-        int count = 0;
-        final Collection<String> items = new LinkedList<>();
-        for (int i = startIdx; (i < array.length) && (count++ < maxNumItems); i++) {
-            final String potentialItem = array[i];
-            if (potentialItem.startsWith(item)) {
-                items.add(potentialItem);
+    val currentItem: String?
+        get() {
+            if (this.sequenceIndex >= 0) {
+                return this.historySequence.get(this.sequenceIndex)
             } else {
-                break;
+                return null
             }
         }
-        return items;
-    }
 
-    public void addAsRecentOnly(final String item) {
-        TimedEntry entry = this.historyMap.get(item);
-        if (entry != null) {
-            this.historyTimedSet.remove(entry);
-            entry.touch();
-            this.historyTimedSet.add(entry);
+    fun back(): String? {
+        if (this.sequenceIndex > 0) {
+            this.sequenceIndex--
+            return this.currentItem
         } else {
-            entry = new TimedEntry(item);
-            this.historyTimedSet.add(entry);
-            this.historyMap.put(item, entry);
-            this.historySortedSet.add(item);
-            if (this.historyTimedSet.size() > this.commonEntriesCapacity) {
+            return null
+        }
+    }
+
+    fun forward(): String? {
+        if ((this.sequenceIndex + 1) < this.historySequence.size) {
+            this.sequenceIndex++
+            return this.currentItem
+        } else {
+            return null
+        }
+    }
+
+    fun getRecentItems(maxNumItems: Int): MutableCollection<String?> {
+        val items: MutableCollection<String?> = LinkedList<String?>()
+        val i = this.historyTimedSet.iterator()
+        var count = 0
+        while (i.hasNext() && (count++ < maxNumItems)) {
+            val entry = i.next()
+            items.add(entry.value)
+        }
+        return items
+    }
+
+    fun getHeadMatchItems(item: String, maxNumItems: Int): MutableCollection<String?> {
+        val array = ArrayUtilities.copy<String?>(this.historySortedSet, String::class.java)
+        val idx = Arrays.binarySearch(array, item)
+        val startIdx = if (idx >= 0) idx else (-idx - 1)
+        var count = 0
+        val items: MutableCollection<String?> = LinkedList<String?>()
+        var i = startIdx
+        while ((i < array.size) && (count++ < maxNumItems)) {
+            val potentialItem = array[i]
+            if (potentialItem.startsWith(item)) {
+                items.add(potentialItem)
+            } else {
+                break
+            }
+            i++
+        }
+        return items
+    }
+
+    fun addAsRecentOnly(item: String) {
+        var entry = this.historyMap.get(item)
+        if (entry != null) {
+            this.historyTimedSet.remove(entry)
+            entry.touch()
+            this.historyTimedSet.add(entry)
+        } else {
+            entry = TimedEntry(item)
+            this.historyTimedSet.add(entry)
+            this.historyMap.put(item, entry)
+            this.historySortedSet.add(item)
+            if (this.historyTimedSet.size > this.commonEntriesCapacity) {
                 // Most outdated goes last
-                final TimedEntry entryToRemove = this.historyTimedSet.last();
-                this.historyMap.remove(entryToRemove.value);
-                this.historySortedSet.remove(entryToRemove.value);
-                this.historyTimedSet.remove(entryToRemove);
+                val entryToRemove = this.historyTimedSet.last()
+                this.historyMap.remove(entryToRemove.value)
+                this.historySortedSet.remove(entryToRemove.value)
+                this.historyTimedSet.remove(entryToRemove)
             }
         }
     }
 
-    public void addItem(final String item, final boolean updateAsRecent) {
-        final int newIndex = this.sequenceIndex + 1;
+    fun addItem(item: String, updateAsRecent: Boolean) {
+        val newIndex = this.sequenceIndex + 1
 
-        while (newIndex >= this.historySequence.size()) {
-            this.historySequence.add(null);
+        while (newIndex >= this.historySequence.size) {
+            this.historySequence.add(null)
         }
-        this.historySequence.set(newIndex, item);
-        this.sequenceIndex = newIndex;
+        this.historySequence.set(newIndex, item)
+        this.sequenceIndex = newIndex
 
-        final int expectedSize = newIndex + 1;
-        while (this.historySequence.size() > expectedSize) {
-            this.historySequence.remove(expectedSize);
+        val expectedSize = newIndex + 1
+        while (this.historySequence.size > expectedSize) {
+            this.historySequence.removeAt(expectedSize)
         }
 
-        while (this.historySequence.size() > this.sequenceCapacity) {
-            this.historySequence.remove(0);
-            this.sequenceIndex--;
+        while (this.historySequence.size > this.sequenceCapacity) {
+            this.historySequence.removeAt(0)
+            this.sequenceIndex--
         }
 
         if (updateAsRecent) {
-            this.addAsRecentOnly(item);
+            this.addAsRecentOnly(item)
         }
     }
 
-    private class TimedEntry implements Comparable<TimedEntry>, java.io.Serializable {
-        private static final long serialVersionUID = 2257845000000000200L;
-        private final String value;
-        private long timestamp = System.currentTimeMillis();
+    private inner class TimedEntry
+    /**
+     * @param value
+     */(private val value: String) : Comparable<TimedEntry?>, Serializable {
+        private var timestamp = System.currentTimeMillis()
 
-        /**
-         * @param value
-         */
-        public TimedEntry(final String value) {
-            this.value = value;
+        fun touch() {
+            this.timestamp = System.currentTimeMillis()
         }
 
-        public void touch() {
-            this.timestamp = System.currentTimeMillis();
-        }
-
-        @Override
-        public boolean equals(final Object obj) {
-            final TimedEntry other = (TimedEntry) obj;
-            return other.value.equals(this.value);
+        override fun equals(obj: Any?): Boolean {
+            val other: TimedEntry = obj as TimedEntry
+            return other.value == this.value
         }
 
         /*
@@ -220,25 +199,32 @@ public class History implements java.io.Serializable {
          *
          * @see java.lang.Comparable#compareTo(java.lang.Object)
          */
-        public int compareTo(final TimedEntry other) {
-            if (this.equals(other)) {
-                return 0;
+        override fun compareTo(other: TimedEntry): Int {
+            if (this == other) {
+                return 0
             }
-            final long time1 = this.timestamp;
-            final long time2 = other.timestamp;
+            val time1 = this.timestamp
+            val time2 = other.timestamp
             if (time1 > time2) {
                 // More recent goes first
-                return -1;
+                return -1
             } else if (time2 > time1) {
-                return +1;
+                return +1
             } else {
-                final int diff = System.identityHashCode(this) - System.identityHashCode(other);
+                val diff = System.identityHashCode(this) - System.identityHashCode(other)
                 if (diff == 0) {
-                    return +1;
+                    return +1
                 }
-                return diff;
+                return diff
             }
+        }
+
+        companion object {
+            private const val serialVersionUID = 2257845000000000200L
         }
     }
 
+    companion object {
+        private const val serialVersionUID = 2257845000800300100L
+    }
 }

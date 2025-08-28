@@ -21,26 +21,18 @@
 /*
  * Created on Apr 15, 2005
  */
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
 
-import java.util.EventObject;
+import java.util.EventObject
 
 /**
  * @author J. H. S.
  */
-public class InputProgressEvent extends EventObject {
-    private static final long serialVersionUID = -4768022316827973086L;
-    private final int progress;
-
-    /**
-     * @param arg0
-     */
-    public InputProgressEvent(final Object arg0, final int progress) {
-        super(arg0);
-        this.progress = progress;
-    }
-
-    public int getProgress() {
-        return this.progress;
+class InputProgressEvent
+/**
+ * @param arg0
+ */(arg0: Any, val progress: Int) : EventObject(arg0) {
+    companion object {
+        private val serialVersionUID = -4768022316827973086L
     }
 }

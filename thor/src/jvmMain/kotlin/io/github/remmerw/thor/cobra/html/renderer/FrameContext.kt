@@ -18,18 +18,18 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl;
+import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
 
 /**
  * Provides direct access to the GUI component where the document is rendered,
  * typically a browser frame of some sort.
  */
-public interface FrameContext {
-    void resetSelection(RenderableSpot rpoint);
+interface FrameContext {
+    fun resetSelection(rpoint: RenderableSpot?)
 
-    void expandSelection(RenderableSpot rpoint);
+    fun expandSelection(rpoint: RenderableSpot?)
 
-    void delayedRelayout(NodeImpl node);
+    fun delayedRelayout(node: NodeImpl?)
 }

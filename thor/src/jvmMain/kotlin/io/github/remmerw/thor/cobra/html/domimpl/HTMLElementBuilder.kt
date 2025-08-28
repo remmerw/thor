@@ -21,300 +21,257 @@
 /*
  * Created on Oct 8, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.html.HTMLDocument;
-import org.w3c.dom.html.HTMLElement;
+import org.w3c.dom.html.HTMLDocument
+import org.w3c.dom.html.HTMLElement
 
-public abstract class HTMLElementBuilder {
-    public final HTMLElement create(final HTMLDocument document, final String name) {
-        final HTMLElementImpl element = this.build(name);
-        element.setOwnerDocument(document);
-        return element;
+abstract class HTMLElementBuilder {
+    fun create(document: HTMLDocument?, name: String?): HTMLElement {
+        val element = this.build(name)
+        element.setOwnerDocument(document)
+        return element
     }
 
-    protected abstract HTMLElementImpl build(String name);
+    protected abstract fun build(name: String?): HTMLElementImpl
 
-    public static class Html extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLHtmlElementImpl(name);
+    class Html : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLHtmlElementImpl(name)
         }
     }
 
-    public static class Title extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLTitleElementImpl(name);
+    class Title : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLTitleElementImpl(name)
         }
     }
 
-    public static class Base extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLBaseElementImpl(name);
+    class Base : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLBaseElementImpl(name)
         }
     }
 
-    public static class Body extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLBodyElementImpl(name);
+    class Body : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLBodyElementImpl(name)
         }
     }
 
-    public static class Span extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLSpanElementImpl(name);
+    class Span : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLSpanElementImpl(name)
         }
     }
 
-    public static class Script extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLScriptElementImpl(name);
+    class Script : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLScriptElementImpl(name)
         }
     }
 
-    public static class Img extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLImageElementImpl(name);
+    class Img : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLImageElementImpl(name)
         }
     }
 
-    public static class Style extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLStyleElementImpl(name);
+    class Style : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLStyleElementImpl(name)
         }
     }
 
-    public static class Table extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLTableElementImpl(name);
+    class Table : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLTableElementImpl(name)
         }
     }
 
-    public static class Td extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLTableCellElementImpl(name);
+    class Td : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLTableCellElementImpl(name)
         }
     }
 
-    public static class Th extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLTableHeadElementImpl(name);
+    class Th : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLTableHeadElementImpl(name)
         }
     }
 
-    public static class Tr extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLTableRowElementImpl(name);
+    class Tr : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLTableRowElementImpl(name)
         }
     }
 
-    public static class Link extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLLinkElementImpl(name);
+    class Link : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLLinkElementImpl(name)
         }
     }
 
-    public static class Anchor extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLLinkElementImpl(name);
+    class Anchor : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLLinkElementImpl(name)
         }
     }
 
-    public static class Form extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLFormElementImpl(name);
+    class Form : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLFormElementImpl(name)
         }
     }
 
-    public static class Input extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLInputElementImpl(name);
+    class Input : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLInputElementImpl(name)
         }
     }
 
-    public static class Button extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLButtonElementImpl(name);
+    class Button : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLButtonElementImpl(name)
         }
     }
 
-    public static class Textarea extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLTextAreaElementImpl(name);
+    class Textarea : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLTextAreaElementImpl(name)
         }
     }
 
-    public static class Select extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLSelectElementImpl(name);
+    class Select : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLSelectElementImpl(name)
         }
     }
 
-    public static class Option extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLOptionElementImpl(name);
+    class Option : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLOptionElementImpl(name)
         }
     }
 
-    public static class Frameset extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLFrameSetElementImpl(name);
+    class Frameset : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLFrameSetElementImpl(name)
         }
     }
 
-    public static class Frame extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLFrameElementImpl(name);
+    class Frame : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLFrameElementImpl(name)
         }
     }
 
-    public static class Ul extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLUListElementImpl(name);
+    class Ul : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLUListElementImpl(name)
         }
     }
 
-    public static class Ol extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLOListElementImpl(name);
+    class Ol : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLOListElementImpl(name)
         }
     }
 
-    public static class Li extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLLIElementImpl(name);
+    class Li : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLLIElementImpl(name)
         }
     }
 
-    public static class Pre extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLPreElementImpl(name);
+    class Pre : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLPreElementImpl(name)
         }
     }
 
-    public static class Div extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLDivElementImpl(name);
+    class Div : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLDivElementImpl(name)
         }
     }
 
-    public static class Quote extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLQuoteElementImpl(name);
+    class Quote : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLQuoteElementImpl(name)
         }
     }
 
-    public static class Hr extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLHRElementImpl(name);
+    class Hr : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLHRElementImpl(name)
         }
     }
 
-    public static class Br extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLBRElementImpl(name);
+    class Br : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLBRElementImpl(name)
         }
     }
 
-    public static class P extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLPElementImpl(name);
+    class P : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLPElementImpl(name)
         }
     }
 
-    public static class GenericMarkup extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLGenericMarkupElement(name);
+    class GenericMarkup : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLGenericMarkupElement(name)
         }
     }
 
-    public static class HtmlObject extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLObjectElementImpl(name);
+    class HtmlObject : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLObjectElementImpl(name)
         }
     }
 
-    public static class Applet extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLAppletElementImpl(name);
+    class Applet : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLAppletElementImpl(name)
         }
     }
 
-    public static class IFrame extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLIFrameElementImpl(name);
+    class IFrame : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLIFrameElementImpl(name)
         }
     }
 
-    public static class BaseFont extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLBaseFontElementImpl(name);
+    class BaseFont : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLBaseFontElementImpl(name)
         }
     }
 
-    public static class Font extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLFontElementImpl(name);
+    class Font : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLFontElementImpl(name)
         }
     }
 
-    public static class Heading extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLHeadingElementImpl(name);
+    class Heading : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLHeadingElementImpl(name)
         }
     }
 
-    public static class NonStandard extends HTMLElementBuilder {
-        @Override
-        public HTMLElementImpl build(final String name) {
-            return new HTMLNonStandardElement(name);
+    class NonStandard : HTMLElementBuilder() {
+        public override fun build(name: String?): HTMLElementImpl {
+            return HTMLNonStandardElement(name)
         }
     }
 
-    public static final class Canvas extends HTMLElementBuilder {
-
-        @Override
-        protected HTMLElementImpl build(String name) {
-            return new HTMLCanvasElementImpl();
+    class Canvas : HTMLElementBuilder() {
+        override fun build(name: String?): HTMLElementImpl {
+            return HTMLCanvasElementImpl()
         }
-
     }
-
 }

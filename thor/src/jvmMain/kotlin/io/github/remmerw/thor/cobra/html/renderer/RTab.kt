@@ -17,68 +17,76 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
  */
+package io.github.remmerw.thor.cobra.html.renderer
 
-package io.github.remmerw.thor.cobra.html.renderer;
+import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
+import java.awt.FontMetrics
 
-import java.awt.FontMetrics;
-
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode;
-
-public class RTab extends RWord {
-
-    public RTab(final ModelNode me, final RenderableContainer container, final FontMetrics fontMetrics, final int descent, final int ascentPlusLeading,
-                final int height, final int numSpaces) {
-        super(me, "\t", container, fontMetrics, descent, ascentPlusLeading, height, 0);
-        this.width = fontMetrics.charWidth(' ') * numSpaces;
+class RTab(
+    me: ModelNode?,
+    container: RenderableContainer?,
+    fontMetrics: FontMetrics,
+    descent: Int,
+    ascentPlusLeading: Int,
+    height: Int,
+    numSpaces: Int
+) : RWord(me, "\t", container, fontMetrics, descent, ascentPlusLeading, height, 0) {
+    init {
+        this.width = fontMetrics.charWidth(' ') * numSpaces
     }
 
-    public boolean extractSelectionText(final StringBuffer buffer, final boolean inSelection, final RenderableSpot startPoint, final RenderableSpot endPoint) {
-        int startX = -1;
-        int endX = -1;
-        if (this == startPoint.renderable) {
-            startX = startPoint.x;
+    override fun extractSelectionText(
+        buffer: StringBuffer,
+        inSelection: Boolean,
+        startPoint: RenderableSpot,
+        endPoint: RenderableSpot
+    ): Boolean {
+        var startX = -1
+        var endX = -1
+        if (this === startPoint.renderable) {
+            startX = startPoint.x
         }
-        if (this == endPoint.renderable) {
-            endX = endPoint.x;
+        if (this === endPoint.renderable) {
+            endX = endPoint.x
         }
         if (!inSelection && (startX == -1) && (endX == -1)) {
-            return false;
+            return false
         }
         if ((startX != -1) && (endX != -1)) {
             if (endX < startX) {
-                final int temp = startX;
-                startX = endX;
-                endX = temp;
+                val temp = startX
+                startX = endX
+                endX = temp
             }
         } else if ((startX != -1) && (endX == -1) && inSelection) {
-            endX = startX;
-            startX = -1;
+            endX = startX
+            startX = -1
         } else if ((startX == -1) && (endX != -1) && !inSelection) {
-            startX = endX;
-            endX = -1;
+            startX = endX
+            endX = -1
         }
-        int index1 = -1;
-        int index2 = -1;
+        var index1 = -1
+        var index2 = -1
         if (startX != -1) {
-            index1 = 0;
+            index1 = 0
         }
         if (endX != -1) {
-            index2 = 0;
+            index2 = 0
         }
         if ((index1 != -1) || (index2 != -1)) {
             if (index2 == -1) {
-                buffer.append('\t');
+                buffer.append('\t')
             }
         } else {
             if (inSelection) {
-                buffer.append('\t');
-                return true;
+                buffer.append('\t')
+                return true
             }
         }
         if ((index1 != -1) && (index2 != -1)) {
-            return false;
+            return false
         } else {
-            return !inSelection;
+            return !inSelection
         }
     }
 }

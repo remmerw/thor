@@ -13,70 +13,60 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+package io.github.remmerw.thor.cobra.css.domimpl
 
-package io.github.remmerw.thor.cobra.css.domimpl;
+import cz.vutbr.web.css.RuleFontFace
+import cz.vutbr.web.css.RuleMedia
+import cz.vutbr.web.css.RulePage
+import cz.vutbr.web.css.RuleSet
+import cz.vutbr.web.css.StyleSheet
+import org.w3c.dom.css.CSSRule
+import org.w3c.dom.css.CSSRuleList
 
-import org.w3c.dom.css.CSSRule;
-import org.w3c.dom.css.CSSRuleList;
-
-import cz.vutbr.web.css.RuleBlock;
-import cz.vutbr.web.css.RuleFontFace;
-import cz.vutbr.web.css.RuleMedia;
-import cz.vutbr.web.css.RulePage;
-import cz.vutbr.web.css.RuleSet;
-import cz.vutbr.web.css.StyleSheet;
-
-final class CSSRuleListImpl implements CSSRuleList {
-
-    private final JStyleSheetWrapper parentStyleSheet;
-    final private StyleSheet jSheet;
-
-    CSSRuleListImpl(final StyleSheet jSheet, final JStyleSheetWrapper parentStyleSheet) {
-        this.parentStyleSheet = parentStyleSheet;
-        this.jSheet = jSheet;
-    }
-
+internal class CSSRuleListImpl(
+    private val jSheet: StyleSheet,
+    private val parentStyleSheet: JStyleSheetWrapper?
+) : CSSRuleList {
     /**
-     * @return The number of <code>CSSRules</code> in the list. The range of valid
-     * child rule indices is <code>0</code> to <code>length-1</code>
+     * @return The number of `CSSRules` in the list. The range of valid
+     * child rule indices is `0` to `length-1`
      * inclusive.
      */
-    public int getLength() {
-        return this.jSheet.size();
+    override fun getLength(): Int {
+        return this.jSheet.size
     }
 
     /**
      * Used to retrieve a CSS rule by ordinal index. The order in this collection
      * represents the order of the rules in the CSS style sheet. If index is
      * greater than or equal to the number of rules in the list, this returns
-     * <code>null</code>.
+     * `null`.
      *
      * @param index Index into the collection
-     * @return The style rule at the <code>index</code> position in the
-     * <code>CSSRuleList</code>, or <code>null</code> if that is not a
+     * @return The style rule at the `index` position in the
+     * `CSSRuleList`, or `null` if that is not a
      * valid index.
      */
-    public CSSRule item(final int index) {
+    override fun item(index: Int): CSSRule? {
         try {
-            final RuleBlock<?> ruleBlock = jSheet.asList().get(index);
-            if (ruleBlock instanceof RuleSet ruleSet) {
-                return new CSSStyleRuleImpl(ruleSet, parentStyleSheet);
-            } else if (ruleBlock instanceof RuleFontFace ruleFontFace) {
-                return new CSSFontFaceRuleImpl(ruleFontFace, parentStyleSheet);
-            } else if (ruleBlock instanceof RulePage rulePage) {
-                return new CSSPageRuleImpl(rulePage, parentStyleSheet);
-            } else if (ruleBlock instanceof RuleMedia mediaRule) {
-                return new CSSMediaRuleImpl(mediaRule, parentStyleSheet);
+            val ruleBlock = jSheet.asList().get(index)
+            if (ruleBlock is RuleSet) {
+                return CSSStyleRuleImpl(ruleBlock, parentStyleSheet)
+            } else if (ruleBlock is RuleFontFace) {
+                return CSSFontFaceRuleImpl(ruleBlock, parentStyleSheet)
+            } else if (ruleBlock is RulePage) {
+                return CSSPageRuleImpl(ruleBlock, parentStyleSheet)
+            } else if (ruleBlock is RuleMedia) {
+                return CSSMediaRuleImpl(ruleBlock, parentStyleSheet)
             } else {
                 // TODO need to return the other types of RuleBlocks as well.
                 // * Import Rule
                 // * Charset Rule
                 // Currently returning Unknown rule
-                return new CSSUnknownRuleImpl(parentStyleSheet);
+                return CSSUnknownRuleImpl(parentStyleSheet)
             }
-        } catch (final ArrayIndexOutOfBoundsException e) {
-            return null;
+        } catch (e: ArrayIndexOutOfBoundsException) {
+            return null
         }
     }
-
 }

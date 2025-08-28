@@ -20,48 +20,43 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.github.remmerw.thor.cobra.ua;
+package io.github.remmerw.thor.cobra.ua
 
-import org.eclipse.jdt.annotation.NonNull;
-
-import java.awt.Component;
-import java.net.URL;
-import java.util.Optional;
-import java.util.Properties;
-
-import io.github.remmerw.thor.cobra.clientlet.ClientletContext;
-import io.github.remmerw.thor.cobra.clientlet.ClientletResponse;
-import io.github.remmerw.thor.cobra.clientlet.ComponentContent;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext.Request;
+import io.github.remmerw.thor.cobra.clientlet.ClientletResponse
+import io.github.remmerw.thor.cobra.clientlet.ComponentContent
+import java.net.MalformedURLException
+import java.net.URL
+import java.util.Properties
 
 /**
  * Represents a navigator frame. In many ways this interface parallels the
  * JavaScript "Window" object.
  */
-public interface NavigatorFrame {
+interface NavigatorFrame {
     /**
      * Opens a URL in a separate window.
      *
      * @param urlOrPath The absolute URL or file path to open.
-     * @throws java.net.MalformedURLException
+     * @throws MalformedURLException
      */
-    NavigatorFrame open(String urlOrPath) throws java.net.MalformedURLException;
+    @Throws(MalformedURLException::class)
+    fun open(urlOrPath: String?): NavigatorFrame?
 
     /**
      * Opens a URL in a separate window.
      *
      * @param url The URL to open.
      */
-    NavigatorFrame open(@NonNull URL url);
+    fun open(url: URL): NavigatorFrame?
 
     /**
      * Opens a URL in a separate window using the properties provided.
      *
      * @param url              The URL to open.
      * @param windowProperties Window properties, following Javascript Window.open() conventions.
-     * @throws java.net.MalformedURLException
+     * @throws MalformedURLException
      */
-    NavigatorFrame open(@NonNull URL url, Properties windowProperties);
+    fun open(url: URL, windowProperties: Properties?): NavigatorFrame?
 
     /**
      * Opens a URL in a separate window.
@@ -71,7 +66,13 @@ public interface NavigatorFrame {
      * @param method           The request method, e.g. GET.
      * @param pinfo            The URL parameter information.
      */
-    NavigatorFrame open(@NonNull URL url, String method, ParameterInfo pinfo, String windowId, Properties windowProperties);
+    fun open(
+        url: URL,
+        method: String?,
+        pinfo: ParameterInfo?,
+        windowId: String?,
+        windowProperties: Properties?
+    ): NavigatorFrame?
 
     /**
      * Opens a URL in a separate window.
@@ -80,29 +81,31 @@ public interface NavigatorFrame {
      * @param method The request method, e.g. GET.
      * @param pinfo  The URL parameter information.
      */
-    NavigatorFrame open(@NonNull URL url, String method, ParameterInfo pinfo);
+    fun open(url: URL, method: String?, pinfo: ParameterInfo?): NavigatorFrame?
 
     /**
      * Navigates to a URL in the current frame.
      *
-     * @param urlOrPath An <i>absolute</i> URL or file path.
+     * @param urlOrPath An *absolute* URL or file path.
      */
-    void navigate(String urlOrPath) throws java.net.MalformedURLException;
+    @Throws(MalformedURLException::class)
+    fun navigate(urlOrPath: String?)
 
     /**
      * Navigates to a URL in the current frame.
      *
-     * @param urlOrPath   An <i>absolute</i> URL or file path.
+     * @param urlOrPath   An *absolute* URL or file path.
      * @param requestType The request type.
      */
-    void navigate(String urlOrPath, RequestType requestType) throws java.net.MalformedURLException;
+    @Throws(MalformedURLException::class)
+    fun navigate(urlOrPath: String?, requestType: RequestType?)
 
     /**
      * Navigates to a URL in the current frame.
      *
      * @param url An absolute URL.
      */
-    void navigate(@NonNull URL url);
+    fun navigate(url: URL)
 
     /**
      * Navigates to a URL in the current frame.
@@ -110,7 +113,7 @@ public interface NavigatorFrame {
      * @param url         An absolute URL.
      * @param requestType The request type.
      */
-    void navigate(@NonNull URL url, RequestType requestType);
+    fun navigate(url: URL, requestType: RequestType?)
 
     /**
      * Navigates to a URL in the current frame.
@@ -121,7 +124,13 @@ public interface NavigatorFrame {
      * @param targetType  The frame target type.
      * @param requestType The request type.
      */
-    void navigate(@NonNull URL url, String method, ParameterInfo paramInfo, TargetType targetType, RequestType requestType);
+    fun navigate(
+        url: URL,
+        method: String?,
+        paramInfo: ParameterInfo?,
+        targetType: TargetType?,
+        requestType: RequestType?
+    )
 
     /**
      * Navigates to a URL in the current frame. This method should be used when
@@ -134,46 +143,52 @@ public interface NavigatorFrame {
      * @param requestType      The request type.
      * @param originatingFrame The frame where the request originated.
      */
-    void navigate(@NonNull URL url, String method, ParameterInfo paramInfo, TargetType targetType, RequestType requestType,
-                  NavigatorFrame originatingFrame);
+    fun navigate(
+        url: URL,
+        method: String?,
+        paramInfo: ParameterInfo?,
+        targetType: TargetType?,
+        requestType: RequestType?,
+        originatingFrame: NavigatorFrame?
+    )
 
     /**
      * Similar to
-     * {@link #navigate(URL, String, ParameterInfo, TargetType, RequestType)}
+     * [.navigate]
      * , except this method should be called when navigation is triggered by a
      * user click.
      *
      * @param url        An absolute or relative URL.
      * @param targetType The frame target type.
      * @param linkObject An implementation-dependent object representing what was clicked.
-     *                   For example, in HTML documents the <code>linkObject</code> might
-     *                   be of type <code>org.w3c.dom.html2.HTMLElement</code>.
+     * For example, in HTML documents the `linkObject` might
+     * be of type `org.w3c.dom.html2.HTMLElement`.
      */
-    void linkClicked(@NonNull URL url, TargetType targetType, Object linkObject);
+    fun linkClicked(url: URL, targetType: TargetType?, linkObject: Any?)
 
     /**
      * Closes the current window, if allowed.
      *
      * @throws SecurityException If closing the window is now allowed in the current context.
      */
-    void closeWindow();
+    fun closeWindow()
 
     /**
      * Executes a task later in the event dispatch thread.
      */
-    void invokeLater(Runnable runnable);
+    fun invokeLater(runnable: Runnable?)
 
     /**
      * Sends the window of this clientlet context to the back and may cause it to
      * lose focus.
      */
-    void windowToBack();
+    fun windowToBack()
 
     /**
      * Sends the window of this clientlet context to the front and may cause it to
      * request focus.
      */
-    void windowToFront();
+    fun windowToFront()
 
     /**
      * Opens a Yes/No confirmation dialog.
@@ -181,7 +196,7 @@ public interface NavigatorFrame {
      * @param message The question text.
      * @return True only if Yes is selected.
      */
-    boolean confirm(String message);
+    fun confirm(message: String?): Boolean
 
     /**
      * Opens a prompt dialog.
@@ -190,119 +205,111 @@ public interface NavigatorFrame {
      * @param inputDefault The default prompt value.
      * @return The text entered by the user.
      */
-    String prompt(String message, String inputDefault);
+    fun prompt(message: String?, inputDefault: String?): String?
 
     /**
      * Gets a component for the current frame which could be serve as the parent
-     * of pop-up dialogs. This is <i>not</i> the rendered component.
+     * of pop-up dialogs. This is *not* the rendered component.
      *
-     * @see #getComponentContent()
+     * @see .getComponentContent
      */
-    Component getComponent();
+    val component: Component?
 
     /**
      * Opens an alert dialog.
      *
      * @param message The message shown in the alert dialog.
      */
-    void alert(String message);
+    fun alert(message: String?)
 
     /**
      * Gets the most recent progress event.
      *
-     * @see #setProgressEvent(NavigatorProgressEvent)t
+     * @see .setProgressEvent
      */
-    NavigatorProgressEvent getProgressEvent();
-
     /**
      * Requests the frame to update its progress state.
      *
      * @param event The progress event object.
-     * @see #getProgressEvent()
+     * @see .getProgressEvent
      */
-    void setProgressEvent(NavigatorProgressEvent event);
+    var progressEvent: NavigatorProgressEvent?
 
     /**
      * Gets the frame that contains the current one, if any. Returns
-     * <code>null</code> for the top frame.
+     * `null` for the top frame.
      */
-    NavigatorFrame getParentFrame();
+    val parentFrame: NavigatorFrame?
 
     /**
      * Gets the top-most frame in the window. Returns the current frame if its
-     * parent is <code>null</code>.
+     * parent is `null`.
      */
-    NavigatorFrame getTopFrame();
+    val topFrame: NavigatorFrame?
 
     // (commenting out - gives opportunity to retain objects)
     // public void setItem(String name, Object value);
     // public Object getItem(String name);
+    fun back(): Boolean
 
-    boolean back();
+    fun forward(): Boolean
 
-    boolean forward();
+    fun canForward(): Boolean
 
-    boolean canForward();
+    fun canBack(): Boolean
 
-    boolean canBack();
+    fun createFrame(): NavigatorFrame?
 
-    NavigatorFrame createFrame();
+    var defaultStatus: String?
 
-    String getDefaultStatus();
+    val windowId: String?
 
-    void setDefaultStatus(String value);
+    val openerFrame: NavigatorFrame?
 
-    String getWindowId();
+    var status: String?
 
-    NavigatorFrame getOpenerFrame();
+    val isWindowClosed: Boolean
 
-    String getStatus();
-
-    void setStatus(String status);
-
-    boolean isWindowClosed();
-
-    void reload();
+    fun reload()
 
     /**
      * Replaces the content of the frame.
      *
      * @throws java.security.SecurityException Thrown when the caller does not have permission to replace the
-     *                                         content of the frame.
-     * @see ClientletContext#setResultingContent(Component)
+     * content of the frame.
+     * @see ClientletContext.setResultingContent
      */
-    void replaceContent(ClientletResponse response, ComponentContent component);
+    fun replaceContent(response: ClientletResponse?, component: ComponentContent?)
 
     /**
      * A simple alternative to
-     * {@link #replaceContent(ClientletResponse, ComponentContent)}
+     * [.replaceContent]
      * provided for convenience.
      *
      * @param component
-     *          A AWT or Swing component.
+     * A AWT or Swing component.
      */
-  /*
+    /*
   public void replaceContent(Component component);
   */
-
     /**
      * Gets source code for content currently showing, if any.
      *
      * @throws java.security.SecurityException Thrown when the caller does not have permission to get the source
-     *                                         code.
+     * code.
      */
-    String getSourceCode();
+    val sourceCode: String?
 
     /**
-     * Creates a {@link NetworkRequest} object that can be used to load data over
+     * Creates a [NetworkRequest] object that can be used to load data over
      * HTTP and other network protocols.
      */
-    NetworkRequest createNetworkRequest();
+    fun createNetworkRequest(): NetworkRequest?
 
     /**
      * Gets the component content currently set in the frame.
      */
-    ComponentContent getComponentContent();
+    val componentContent: ComponentContent?
 
     /**
      * Resizes the browser window.
@@ -310,7 +317,7 @@ public interface NavigatorFrame {
      * @param width  The new window width.
      * @param height The new window height.
      */
-    void resizeWindowTo(int width, int height);
+    fun resizeWindowTo(width: Int, height: Int)
 
     /**
      * Resizes the browser window.
@@ -318,54 +325,54 @@ public interface NavigatorFrame {
      * @param byWidth  The number of pixels to expand the width by.
      * @param byHeight The number of pixels to expand the height by.
      */
-    void resizeWindowBy(int byWidth, int byHeight);
+    fun resizeWindowBy(byWidth: Int, byHeight: Int)
 
     /**
      * Gets an object that represents the current navigation entry in the frame's
      * history.
      */
-    NavigationEntry getCurrentNavigationEntry();
+    val currentNavigationEntry: NavigationEntry?
 
-    Optional<NavigationEntry> getPreviousNavigationEntry();
+    val previousNavigationEntry: Optional<NavigationEntry?>?
 
-    Optional<NavigationEntry> getNextNavigationEntry();
+    val nextNavigationEntry: Optional<NavigationEntry?>?
 
     /**
      * Switches to a new navigation entry in the frame's history, according to the
      * given offset.
      *
      * @param offset A positive or negative number, where -1 is equivalent to
-     *               {@link #back()} and +1 is equivalent to {@link #forward()}.
+     * [.back] and +1 is equivalent to [.forward].
      */
-    void moveInHistory(int offset);
+    fun moveInHistory(offset: Int)
 
     /**
      * Navigates to a URL that exists in the frame's history.
      *
      * @param absoluteURL The target URL.
      */
-    void navigateInHistory(String absoluteURL);
+    fun navigateInHistory(absoluteURL: String?)
 
     /**
      * Gets the length for the frame's history.
      */
-    int getHistoryLength();
+    val historyLength: Int
 
     /**
      * Sets an implementation-dependent property of the underlying component
      * currently rendered. For example, a Cobra-based HTML component accepts
-     * properties such as <code>defaultMarginInsets</code> (java.awt.Inset),
-     * <code>defaultOverflowX</code> and <code>defaultOverflowY</code>.
+     * properties such as `defaultMarginInsets` (java.awt.Inset),
+     * `defaultOverflowX` and `defaultOverflowY`.
      *
      * @param name  The name of the property.
      * @param value The value of the property. The type of the value depends on the
-     *              property and the underlying implementation.
+     * property and the underlying implementation.
      */
-    void setProperty(String name, Object value);
+    fun setProperty(name: String?, value: Any?)
 
-    boolean isRequestPermitted(Request request);
+    fun isRequestPermitted(request: UserAgentContext.Request?): Boolean
 
-    void manageRequests(Object initiator);
+    fun manageRequests(initiator: Any?)
 
-    void allowAllFirstPartyRequests();
+    fun allowAllFirstPartyRequests()
 }

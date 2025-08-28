@@ -18,173 +18,163 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.js;
+package io.github.remmerw.thor.cobra.js
 
-import org.mozilla.javascript.Callable;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.EvaluatorException;
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.WrappedException;
-import org.w3c.dom.DOMException;
+import io.github.remmerw.thor.cobra.util.Objects
+import org.mozilla.javascript.Callable
+import org.mozilla.javascript.Context
+import org.mozilla.javascript.EvaluatorException
+import org.mozilla.javascript.Function
+import org.mozilla.javascript.Scriptable
+import org.mozilla.javascript.ScriptableObject
+import org.mozilla.javascript.WrappedException
+import org.w3c.dom.DOMException
+import java.lang.reflect.Array
+import java.lang.reflect.InvocationTargetException
+import java.lang.reflect.Method
+import java.util.Arrays
+import java.util.logging.Level
+import java.util.logging.Logger
 
-import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+class JavaFunctionObject(private val methodName: String?, private val className: String?) :
+    ScriptableObject(), Function {
+    private val methods = ArrayList<Method>()
 
-import io.github.remmerw.thor.cobra.util.Objects;
-
-public class JavaFunctionObject extends ScriptableObject implements Function {
-    private static final long serialVersionUID = 3716471130167741876L;
-    private static final Logger logger = Logger.getLogger(JavaFunctionObject.class.getName());
-    private static final boolean loggableInfo = logger.isLoggable(Level.INFO);
-    private final String methodName;
-    private final String className;
-    private final ArrayList<Method> methods = new ArrayList<>();
-
-    public JavaFunctionObject(final String name, final String className) {
-        super();
-        this.methodName = name;
-        this.className = className;
-
+    init {
         // TODO: Review
         // Quick hack for issue #98
-        defineProperty("call", new Callable() {
-
-            public Object call(final Context cx, final Scriptable scope, final Scriptable thisObj, final Object[] args) {
-                if ((args.length > 0) && (args[0] instanceof JavaObjectWrapper javaObjectWrapper)) {
-                    return JavaFunctionObject.this.call(cx, scope, javaObjectWrapper, Arrays.copyOfRange(args, 1, args.length));
+        defineProperty("call", object : Callable {
+            override fun call(
+                cx: Context?,
+                scope: Scriptable?,
+                thisObj: Scriptable?,
+                args: Array<Any?>
+            ): Any? {
+                if ((args.size > 0) && (args[0] is JavaObjectWrapper)) {
+                    return this@JavaFunctionObject.call(
+                        cx,
+                        scope,
+                        javaObjectWrapper,
+                        Arrays.copyOfRange<Any?>(args, 1, args.size)
+                    )
                 } else {
-                    throw new RuntimeException("Unexpected condition");
+                    throw RuntimeException("Unexpected condition")
                 }
             }
-
-        }, ScriptableObject.READONLY);
+        }, READONLY)
     }
 
-    private static Object[] convertArgs(final Object[] args, final int numConvert, final Class<?>[] actualArgTypes) {
-        final JavaScript manager = JavaScript.getInstance();
-        final Object[] actualArgs = args == null ? new Object[0] : new Object[numConvert];
-        if (args != null) {
-            for (int i = 0; i < numConvert; i++) {
-                final Object arg = args[i];
-                actualArgs[i] = manager.getJavaObject(arg, actualArgTypes[i]);
-            }
-        }
-        return actualArgs;
+    fun addMethod(m: Method?) {
+        this.methods.add(m!!)
     }
 
-    public void addMethod(final Method m) {
-        this.methods.add(m);
-    }
-
-  /*
+    /*
   private static String getTypeName(final Object object) {
     return object == null ? "[null]" : object.getClass().getName();
   }*/
-
-    @Override
-    public String getClassName() {
-        return "JavaFunctionObject";
+    override fun getClassName(): String {
+        return "JavaFunctionObject"
     }
 
-    private MethodAndArguments getExactMethod(final Object[] args) {
-        final ArrayList<Method> methods = this.methods;
-        final int size = methods.size();
-        for (int i = 0; i < size; i++) {
-            final Method m = methods.get(i);
-            final Class<?>[] parameterTypes = m.getParameterTypes();
+    private fun getExactMethod(args: Array<Any?>?): MethodAndArguments? {
+        val methods = this.methods
+        val size = methods.size
+        for (i in 0..<size) {
+            val m = methods.get(i)
+            val parameterTypes = m.parameterTypes
             if (args == null) {
-                if ((parameterTypes == null) || (parameterTypes.length == 0)) {
-                    return new MethodAndArguments(m, null);
+                if ((parameterTypes == null) || (parameterTypes.size == 0)) {
+                    return MethodAndArguments(m, null)
                 }
             } else if (parameterTypes != null) {
-                if (args.length == parameterTypes.length) {
+                if (args.size == parameterTypes.size) {
                     if (Objects.areSameTo(args, parameterTypes)) {
-                        return new MethodAndArguments(m, args);
+                        return MethodAndArguments(m, args)
                     }
-                } else if ((parameterTypes.length == 1) && parameterTypes[0].isArray()) {
-                    final Class<?> arrayType = parameterTypes[0].getComponentType();
-                    final boolean allSame = true;
-                    for (int j = 0; j < args.length; j++) {
+                } else if ((parameterTypes.size == 1) && parameterTypes[0].isArray) {
+                    val arrayType = parameterTypes[0].componentType
+                    val allSame = true
+                    for (j in args.indices) {
                         if (!Objects.isSameOrBox(args[j], arrayType)) {
-                            break;
+                            break
                         }
                     }
                     if (allSame) {
-                        final Object[] argsInArray = (Object[]) Array.newInstance(arrayType, args.length);
-                        System.arraycopy(args, 0, argsInArray, 0, args.length);
-                        return new MethodAndArguments(m, new Object[]{argsInArray});
+                        val argsInArray =
+                            Array.newInstance(arrayType, args.size) as kotlin.Array<Any?>
+                        System.arraycopy(args, 0, argsInArray, 0, args.size)
+                        return MethodAndArguments(m, arrayOf<Any>(argsInArray))
                     }
-
                 }
             }
         }
-        return null;
+        return null
     }
 
-    private MethodAndArguments getBestMethod(final Object[] args) {
-        final MethodAndArguments exactMethod = getExactMethod(args);
+    private fun getBestMethod(args: kotlin.Array<Any?>?): MethodAndArguments? {
+        val exactMethod = getExactMethod(args)
         if (exactMethod != null) {
-            return exactMethod;
+            return exactMethod
         }
 
-        final ArrayList<Method> methods = this.methods;
-        final int size = methods.size();
-        int matchingNumParams = 0;
-        Method matchingMethod = null;
-        for (int i = 0; i < size; i++) {
-            final Method m = methods.get(i);
-            final Class<?>[] parameterTypes = m.getParameterTypes();
+        val methods = this.methods
+        val size = methods.size
+        var matchingNumParams = 0
+        var matchingMethod: Method? = null
+        for (i in 0..<size) {
+            val m = methods.get(i)
+            val parameterTypes = m.parameterTypes
             if (args == null) {
-                if ((parameterTypes == null) || (parameterTypes.length == 0)) {
-                    return new MethodAndArguments(m, new Object[0]);
+                if ((parameterTypes == null) || (parameterTypes.size == 0)) {
+                    return MethodAndArguments(m, arrayOfNulls<Any>(0))
                 }
-            } else if ((parameterTypes != null) && (args.length >= parameterTypes.length)) {
+            } else if ((parameterTypes != null) && (args.size >= parameterTypes.size)) {
                 if (Objects.areAssignableTo(args, parameterTypes)) {
-                    final Object[] actualArgs = convertArgs(args, parameterTypes.length, parameterTypes);
-                    return new MethodAndArguments(m, actualArgs);
+                    val actualArgs: kotlin.Array<Any?> =
+                        convertArgs(args, parameterTypes.size, parameterTypes)
+                    return MethodAndArguments(m, actualArgs)
                 }
-                if ((matchingMethod == null) || (parameterTypes.length > matchingNumParams)) {
-                    matchingNumParams = parameterTypes.length;
-                    matchingMethod = m;
+                if ((matchingMethod == null) || (parameterTypes.size > matchingNumParams)) {
+                    matchingNumParams = parameterTypes.size
+                    matchingMethod = m
                 }
             }
         }
-        if (size == 0) {
-            throw new IllegalStateException("zero methods");
-        }
+        check(size != 0) { "zero methods" }
         if (matchingMethod == null) {
-            return null;
+            return null
         } else {
-            final Class<?>[] actualArgTypes = matchingMethod.getParameterTypes();
-            final Object[] actualArgs = convertArgs(args, matchingNumParams, actualArgTypes);
-            return new MethodAndArguments(matchingMethod, actualArgs);
+            val actualArgTypes = matchingMethod.parameterTypes
+            val actualArgs: kotlin.Array<Any?> =
+                convertArgs(args, matchingNumParams, actualArgTypes)
+            return MethodAndArguments(matchingMethod, actualArgs)
         }
     }
 
-    public Object call(final Context cx, final Scriptable scope, final Scriptable thisObj, final Object[] args) {
-        final MethodAndArguments methodAndArguments = this.getBestMethod(args);
+    override fun call(
+        cx: Context?,
+        scope: Scriptable?,
+        thisObj: Scriptable?,
+        args: kotlin.Array<Any?>?
+    ): Any? {
+        val methodAndArguments = this.getBestMethod(args)
         if (methodAndArguments == null) {
-            throw new EvaluatorException("No method matching " + this.methodName + " with " + (args == null ? 0 : args.length) + " arguments in "
-                    + className + " .");
+            throw EvaluatorException(
+                ("No method matching " + this.methodName + " with " + (if (args == null) 0 else args.size) + " arguments in "
+                        + className + " .")
+            )
         }
-        final JavaScript manager = JavaScript.getInstance();
+        val manager: JavaScript = JavaScript.Companion.getInstance()
         try {
-            if (thisObj instanceof JavaObjectWrapper jcw) {
+            if (thisObj is JavaObjectWrapper) {
                 // if(linfo) {
                 // Object javaObject = jcw.getJavaObject();
                 // logger.info("call(): Calling method " + method.getName() +
                 // " on object " + javaObject + " of type " +
                 // this.getTypeName(javaObject));
                 // }
-                final Object raw = methodAndArguments.invoke(jcw.getJavaObject());
-                return manager.getJavascriptObject(raw, scope);
+                val raw = methodAndArguments.invoke(thisObj.getJavaObject())
+                return manager.getJavascriptObject(raw, scope)
             } else {
                 // if (args[0] instanceof Function ) {
                 // Function func = (Function) args[0];
@@ -192,67 +182,102 @@ public class JavaFunctionObject extends ScriptableObject implements Function {
                 // args.length));
                 // return manager.getJavascriptObject(raw, scope);
                 // } else {
-                final Object raw = methodAndArguments.invoke(thisObj);
-                return manager.getJavascriptObject(raw, scope);
+                val raw = methodAndArguments.invoke(thisObj)
+                return manager.getJavascriptObject(raw, scope)
+
                 // }
 
                 // Based on http://stackoverflow.com/a/16479685/161257
                 // return call(cx, scope, getParentScope(), args);
             }
-        } catch (final IllegalAccessException iae) {
-            throw new IllegalStateException("Unable to call " + this.methodName + ".", iae);
-        } catch (final InvocationTargetException ite) {
-            if (ite.getCause() instanceof DOMException domException) {
-                throw new WrappedException(domException);
+        } catch (iae: IllegalAccessException) {
+            throw IllegalStateException("Unable to call " + this.methodName + ".", iae)
+        } catch (ite: InvocationTargetException) {
+            if (ite.cause is DOMException) {
+                throw WrappedException(domException)
             }
-            throw new WrappedException(
-                    new InvocationTargetException(ite.getCause(), "Unable to call " + this.methodName + " on " + thisObj + "."));
-        } catch (final IllegalArgumentException iae) {
-            final StringBuffer argTypes = new StringBuffer();
-            for (int i = 0; i < methodAndArguments.args.length; i++) {
+            throw WrappedException(
+                InvocationTargetException(
+                    ite.cause,
+                    "Unable to call " + this.methodName + " on " + thisObj + "."
+                )
+            )
+        } catch (iae: IllegalArgumentException) {
+            val argTypes = StringBuffer()
+            var i = 0
+            while (i < methodAndArguments.args.size) {
                 if (i > 0) {
-                    argTypes.append(", ");
+                    argTypes.append(", ")
                 }
-                argTypes.append(methodAndArguments.args[i] == null ? "<null>" : methodAndArguments.args[i].getClass().getName());
+                argTypes.append(if (methodAndArguments.args[i] == null) "<null>" else methodAndArguments.args[i]!!.javaClass.name)
+                i++
             }
-            throw new WrappedException(new IllegalArgumentException("Unable to call " + this.methodName + " in " + className
-                    + ". Argument types: " + argTypes + "." + "\n  on method: " + methodAndArguments.method,
-                    iae));
+            throw WrappedException(
+                IllegalArgumentException(
+                    ("Unable to call " + this.methodName + " in " + className
+                            + ". Argument types: " + argTypes + "." + "\n  on method: " + methodAndArguments.method),
+                    iae
+                )
+            )
         }
     }
 
-    @Override
-    public Object getDefaultValue(final Class<?> hint) {
+    override fun getDefaultValue(hint: Class<*>?): Any? {
         if (loggableInfo) {
-            logger.info("getDefaultValue(): hint=" + hint + ",this=" + this);
+            logger.info("getDefaultValue(): hint=" + hint + ",this=" + this)
         }
-        if ((hint == null) || String.class.equals(hint)) {
-            return "function " + this.methodName;
+        if ((hint == null) || String::class.java == hint) {
+            return "function " + this.methodName
         } else {
-            return super.getDefaultValue(hint);
+            return super.getDefaultValue(hint)
         }
     }
 
-    public Scriptable construct(final Context cx, final Scriptable scope, final Object[] args) {
-        throw new UnsupportedOperationException();
+    override fun construct(
+        cx: Context?,
+        scope: Scriptable?,
+        args: kotlin.Array<Any?>?
+    ): Scriptable? {
+        throw UnsupportedOperationException()
     }
 
-    private final static class MethodAndArguments {
-        private final Method method;
-        private final Object[] args;
-
-        public MethodAndArguments(final Method method, final Object[] args) {
-            this.method = method;
-            this.args = args;
+    private class MethodAndArguments(
+        private val method: Method,
+        private val args: kotlin.Array<Any?>
+    ) {
+        @Throws(
+            IllegalAccessException::class,
+            IllegalArgumentException::class,
+            InvocationTargetException::class
+        )
+        fun invoke(javaObject: Any?): Any? {
+            return method.invoke(javaObject, *args)
         }
 
-        public Object invoke(final Object javaObject) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-            return method.invoke(javaObject, args);
+        override fun toString(): String {
+            return "MethodAndArguments [method=" + method + ", args=" + args.contentToString() + "]"
         }
+    }
 
-        @Override
-        public String toString() {
-            return "MethodAndArguments [method=" + method + ", args=" + Arrays.toString(args) + "]";
+    companion object {
+        private const val serialVersionUID = 3716471130167741876L
+        private val logger: Logger = Logger.getLogger(JavaFunctionObject::class.java.name)
+        private val loggableInfo: Boolean = logger.isLoggable(Level.INFO)
+        private fun convertArgs(
+            args: kotlin.Array<Any?>?,
+            numConvert: Int,
+            actualArgTypes: kotlin.Array<Class<*>?>
+        ): kotlin.Array<Any?> {
+            val manager: JavaScript = JavaScript.Companion.getInstance()
+            val actualArgs =
+                if (args == null) arrayOfNulls<Any>(0) else arrayOfNulls<Any>(numConvert)
+            if (args != null) {
+                for (i in 0..<numConvert) {
+                    val arg = args[i]
+                    actualArgs[i] = manager.getJavaObject(arg, actualArgTypes[i])
+                }
+            }
+            return actualArgs
         }
     }
 }

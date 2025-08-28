@@ -18,72 +18,63 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import org.eclipse.jdt.annotation.NonNull;
+import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
+import io.github.remmerw.thor.cobra.ua.UserAgentContext
+import java.awt.Insets
 
-import java.awt.Dimension;
-import java.awt.Insets;
-
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext;
-
-public class RImgControl extends RUIControl {
-    public RImgControl(final ModelNode me, final ImgControl widget, final RenderableContainer container, final FrameContext frameContext,
-                       final UserAgentContext ucontext) {
-        super(me, widget, container, frameContext, ucontext);
-    }
-
+class RImgControl(
+    me: ModelNode?,
+    widget: ImgControl,
+    container: RenderableContainer?,
+    frameContext: FrameContext?,
+    ucontext: UserAgentContext?
+) : RUIControl(me, widget, container, frameContext, ucontext) {
     // TODO: This is a hack. RUIControl excludes border insets from the UI control. Images need to exclude padding as well.
     // Hence, we are returning getInsets() from getBorderInsets().
     // A better way would be to create two methods: one for excluded space and one for included space and implement as per convenience.
     // Yet another idea: check if RImgControl really needs to sub-class RUIControl or it can directly sub-class BaseElementRenderable.
-    @Override
-    public @NonNull Insets getBorderInsets() {
-        return getInsets(false, false);
+    override fun getBorderInsets(): Insets {
+        return getInsets(false, false)
     }
 
-    @Override
-    public void doLayout(int availWidth, int availHeight, boolean sizeOnly) {
-        super.doLayout(availWidth, availHeight, sizeOnly);
-        updateWidthHeight();
+    override fun doLayout(availWidth: Int, availHeight: Int, sizeOnly: Boolean) {
+        super.doLayout(availWidth, availHeight, sizeOnly)
+        updateWidthHeight()
     }
 
-    private void updateWidthHeight() {
-        final boolean widthConstrained = isWidthConstrained();
-        final boolean heightConstrained = isHeightConstrained();
+    private fun updateWidthHeight() {
+        val widthConstrained = isWidthConstrained()
+        val heightConstrained = isHeightConstrained()
         if (!widthConstrained && heightConstrained) {
-            final Dimension prefSize = widget.getPreferredSize();
+            val prefSize = widget.getPreferredSize()
             if (prefSize.height != 0) {
-                this.width = (prefSize.width * getInnerMostHeight()) / prefSize.height;
+                this.width = (prefSize.width * getInnerMostHeight()) / prefSize.height
             }
         } else if (!heightConstrained && widthConstrained) {
-            final Dimension prefSize = widget.getPreferredSize();
+            val prefSize = widget.getPreferredSize()
             if (prefSize.width != 0) {
-                this.height = (prefSize.height * getInnerMostWidth()) / prefSize.width;
+                this.height = (prefSize.height * getInnerMostWidth()) / prefSize.width
             }
         }
     }
 
-    @Override
-    public void setInnerWidth(final Integer newWidth) {
-        super.setInnerWidth(newWidth);
-        updateWidthHeight();
+    override fun setInnerWidth(newWidth: Int?) {
+        super.setInnerWidth(newWidth)
+        updateWidthHeight()
     }
 
-    @Override
-    public void setInnerHeight(final Integer newHeight) {
-        super.setInnerHeight(newHeight);
-        updateWidthHeight();
+    override fun setInnerHeight(newHeight: Int?) {
+        super.setInnerHeight(newHeight)
+        updateWidthHeight()
     }
 
-    @Override
-    public boolean isReadyToPaint() {
-        return super.isReadyToPaint() && widget.isReadyToPaint();
+    override fun isReadyToPaint(): Boolean {
+        return super.isReadyToPaint() && widget.isReadyToPaint()
     }
 
-    @Override
-    public String toString() {
-        return "RImgControl : " + modelNode;
+    override fun toString(): String {
+        return "RImgControl : " + modelNode
     }
 }

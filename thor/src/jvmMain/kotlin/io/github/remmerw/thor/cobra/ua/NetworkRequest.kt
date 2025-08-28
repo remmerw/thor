@@ -21,115 +21,79 @@
 /*
  * Created on Nov 13, 2005
  */
-package io.github.remmerw.thor.cobra.ua;
+package io.github.remmerw.thor.cobra.ua
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.w3c.dom.Document;
-
-import java.net.URL;
-import java.util.List;
-import java.util.Optional;
-
-import io.github.remmerw.thor.cobra.ua.UserAgentContext.Request;
+import java.io.IOException
+import java.net.URL
 
 /**
- * The <code>NetworkRequest</code> interface should be implemented to provide
+ * The `NetworkRequest` interface should be implemented to provide
  * network request capabilities.
- * <p>
- * It is used in a similar manner to <code>XMLHttpRequest</code> in Javascript
- * (AJAX). Normally, a listener will be added by calling
- * {@link #addReadyStateChangeListener(ReadyStateChangeListener)}, the method
- * {@link #open(String, URL, boolean, String, String) open} will be called, and
- * finally, {@link #send(String)} will be called to complete the request.
  *
- * @see UserAgentContext#createNetworkRequest()
- * <p>
- * This class supercedes HttpRequest class of yore.
+ *
+ * It is used in a similar manner to `XMLHttpRequest` in Javascript
+ * (AJAX). Normally, a listener will be added by calling
+ * [.addReadyStateChangeListener], the method
+ * [open][.open] will be called, and
+ * finally, [.send] will be called to complete the request.
+ *
+ * @see UserAgentContext.createNetworkRequest
  */
-public interface NetworkRequest {
-    /**
-     * The uninitialized request state.
-     */
-    int STATE_UNINITIALIZED = 0;
-
-    /**
-     * The loading request state. The <code>open</code> method has been called,
-     * but a response has not been received yet.
-     */
-    int STATE_LOADING = 1;
-
-    /**
-     * The loaded request state. Headers and status are now available.
-     */
-    int STATE_LOADED = 2;
-
-    /**
-     * The interactive request state. Downloading response.
-     */
-    int STATE_INTERACTIVE = 3;
-
-    /**
-     * The complete request state. All operations are finished.
-     */
-    int STATE_COMPLETE = 4;
-
-    int STATE_ABORTED = 5;
-
+interface NetworkRequest {
     /**
      * Gets the state of the request, a value between 0 and 4.
      *
      * @return A value corresponding to one of the STATE* constants in this class.
      */
-    int getReadyState();
+    val readyState: Int
 
     /**
      * Gets the request response as text.
      */
-    String getResponseText();
+    val responseText: String?
 
     /**
      * Gets the request response as an XML DOM.
      */
-    Document getResponseXML();
+    val responseXML: Document?
 
     /**
      * Gets the request response as an AWT image, if that's possible.
      */
-    @NonNull
-    ImageResponse getResponseImage();
+    val responseImage: ImageResponse
 
     /**
      * Gets the request response bytes.
      */
-    byte[] getResponseBytes();
+    val responseBytes: ByteArray?
 
     /**
      * Gets the status of the response. Note that this can be 0 for file requests
      * in addition to 200 for successful HTTP requests.
      */
-    int getStatus();
+    val status: Int
 
     /**
      * Gets the status text of the request, e.g. "OK" for 200.
      */
-    String getStatusText();
+    val statusText: String?
 
     /**
      * Aborts an ongoing request.
      */
-    void abort();
+    fun abort()
 
     /**
      * Gets a string with all the response headers.
      */
-    String getAllResponseHeaders(final List<String> excludedHeadersLowerCase);
+    fun getAllResponseHeaders(excludedHeadersLowerCase: MutableList<String?>?): String?
 
     /**
      * Gets a response header value.
      *
      * @param headerName The name of the header.
      */
-    String getResponseHeader(String headerName);
+    fun getResponseHeader(headerName: String?): String?
 
     /**
      * Starts an asynchronous request.
@@ -137,7 +101,8 @@ public interface NetworkRequest {
      * @param method The request method.
      * @param url    The destination URL.
      */
-    void open(String method, String url) throws java.io.IOException;
+    @Throws(IOException::class)
+    fun open(method: String?, url: String?)
 
     /**
      * Opens an asynchronous request.
@@ -145,7 +110,8 @@ public interface NetworkRequest {
      * @param method The request method.
      * @param url    The destination URL.
      */
-    void open(String method, @NonNull URL url) throws java.io.IOException;
+    @Throws(IOException::class)
+    fun open(method: String?, url: URL)
 
     /**
      * Opens an request.
@@ -154,7 +120,8 @@ public interface NetworkRequest {
      * @param url       The destination URL.
      * @param asyncFlag Whether the request is asynchronous.
      */
-    void open(String method, @NonNull URL url, boolean asyncFlag) throws java.io.IOException;
+    @Throws(IOException::class)
+    fun open(method: String?, url: URL, asyncFlag: Boolean)
 
     /**
      * Opens a request.
@@ -163,7 +130,8 @@ public interface NetworkRequest {
      * @param url       The destination URL.
      * @param asyncFlag Whether the request should be asynchronous.
      */
-    void open(String method, String url, boolean asyncFlag) throws java.io.IOException;
+    @Throws(IOException::class)
+    fun open(method: String?, url: String?, asyncFlag: Boolean)
 
     /**
      * Opens a request.
@@ -173,7 +141,8 @@ public interface NetworkRequest {
      * @param asyncFlag Whether the request should be asynchronous.
      * @param userName  The HTTP authentication user name.
      */
-    void open(String method, @NonNull URL url, boolean asyncFlag, String userName) throws java.io.IOException;
+    @Throws(IOException::class)
+    fun open(method: String?, url: URL, asyncFlag: Boolean, userName: String?)
 
     /**
      * Opens a request.
@@ -184,27 +153,59 @@ public interface NetworkRequest {
      * @param userName  The HTTP authentication user name.
      * @param password  The HTTP authentication password.
      */
-    void open(String method, @NonNull URL url, boolean asyncFlag, String userName, String password) throws java.io.IOException;
+    @Throws(IOException::class)
+    fun open(method: String?, url: URL, asyncFlag: Boolean, userName: String?, password: String?)
 
     /**
      * Sends POST content if any.
      *
-     * @param content POST content or <code>null</code> for GET requests.
-     * @throws java.io.IOException
+     * @param content POST content or `null` for GET requests.
+     * @throws IOException
      */
-    void send(String content, Request requestType) throws java.io.IOException;
+    @Throws(IOException::class)
+    fun send(content: String?, requestType: UserAgentContext.Request?)
 
     /**
      * Adds a listener of ReadyState changes. The listener should be invoked even
      * in the case of errors.
      *
-     * @param listener An instanceof of {@link NetworkRequestListener}.
+     * @param listener An instanceof of [NetworkRequestListener].
      */
-    void addNetworkRequestListener(NetworkRequestListener listener);
+    fun addNetworkRequestListener(listener: NetworkRequestListener?)
 
-    Optional<URL> getURL();
+    val uRL: Optional<URL?>?
 
-    boolean isAsnyc();
+    val isAsnyc: Boolean
 
-    void addRequestedHeader(String header, String value);
+    fun addRequestedHeader(header: String?, value: String?)
+
+    companion object {
+        /**
+         * The uninitialized request state.
+         */
+        const val STATE_UNINITIALIZED: Int = 0
+
+        /**
+         * The loading request state. The `open` method has been called,
+         * but a response has not been received yet.
+         */
+        const val STATE_LOADING: Int = 1
+
+        /**
+         * The loaded request state. Headers and status are now available.
+         */
+        const val STATE_LOADED: Int = 2
+
+        /**
+         * The interactive request state. Downloading response.
+         */
+        const val STATE_INTERACTIVE: Int = 3
+
+        /**
+         * The complete request state. All operations are finished.
+         */
+        const val STATE_COMPLETE: Int = 4
+
+        const val STATE_ABORTED: Int = 5
+    }
 }

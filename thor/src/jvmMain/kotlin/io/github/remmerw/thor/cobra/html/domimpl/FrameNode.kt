@@ -1,12 +1,11 @@
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import io.github.remmerw.thor.cobra.html.BrowserFrame;
+import io.github.remmerw.thor.cobra.html.BrowserFrame
 
 /**
  * Tag interface for frame nodes.
  */
-public interface FrameNode {
-    BrowserFrame getBrowserFrame();
-
-    void setBrowserFrame(BrowserFrame frame);
+interface FrameNode {
+    @JvmField
+    var browserFrame: BrowserFrame?
 }

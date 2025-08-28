@@ -21,37 +21,28 @@
 /*
  * Created on Jun 12, 2005
  */
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
+
+import java.io.Serializable
 
 /**
  * @author J. H. S.
  */
-public class NameValuePair implements java.io.Serializable {
-    private static final long serialVersionUID = 22574500600001010L;
-    public final String name;
-    public final String value;
-
-    /**
-     * @param name
-     * @param value
-     */
-    public NameValuePair(final String name, final String value) {
-        super();
-        this.name = name;
-        this.value = value;
-    }
-
+class NameValuePair
+/**
+ * @param name
+ * @param value
+ */(
     /**
      * @return Returns the name.
      */
-    public String getName() {
-        return name;
-    }
-
+    val name: String?,
     /**
      * @return Returns the value.
      */
-    public String getValue() {
-        return value;
+    val value: String?
+) : Serializable {
+    companion object {
+        private const val serialVersionUID = 22574500600001010L
     }
 }

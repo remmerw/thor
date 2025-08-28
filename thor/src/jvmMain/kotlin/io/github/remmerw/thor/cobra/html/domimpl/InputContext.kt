@@ -21,68 +21,44 @@
 /*
  * Created on Jan 15, 2006
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-public interface InputContext {
-    boolean getChecked();
+interface InputContext {
+    var checked: Boolean
 
-    void setChecked(boolean checked);
+    var disabled: Boolean
 
-    boolean getDisabled();
+    var maxLength: Int
 
-    void setDisabled(boolean disabled);
+    var name: String?
 
-    int getMaxLength();
+    var readOnly: Boolean
 
-    void setMaxLength(int maxLength);
+    var controlSize: Int
 
-    String getName();
+    var tabIndex: Int
 
-    void setName(String name);
+    var value: String?
 
-    boolean getReadOnly();
+    val values: Array<String?>?
 
-    void setReadOnly(boolean readOnly);
+    fun blur()
 
-    int getControlSize();
+    fun focus()
 
-    void setControlSize(int size);
+    fun select()
 
-    int getTabIndex();
+    fun click()
 
-    void setTabIndex(int tabIndex);
+    var rows: Int
 
-    String getValue();
+    var cols: Int
 
-    void setValue(String value);
+    var selectedIndex: Int
 
-    String[] getValues();
+    var visibleSize: Int
 
-    void blur();
+    val fileValue: File?
 
-    void focus();
-
-    void select();
-
-    void click();
-
-    int getRows();
-
-    void setRows(int rows);
-
-    int getCols();
-
-    void setCols(int cols);
-
-    int getSelectedIndex();
-
-    void setSelectedIndex(int value);
-
-    int getVisibleSize();
-
-    void setVisibleSize(int value);
-
-    java.io.File getFileValue();
-
-    void resetInput();
+    fun resetInput()
 }

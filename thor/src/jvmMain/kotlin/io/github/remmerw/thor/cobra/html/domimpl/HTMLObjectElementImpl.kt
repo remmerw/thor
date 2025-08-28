@@ -1,199 +1,187 @@
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.Document;
-import org.w3c.dom.html.HTMLFormElement;
-import org.w3c.dom.html.HTMLObjectElement;
+import org.w3c.dom.Document
+import org.w3c.dom.html.HTMLFormElement
+import org.w3c.dom.html.HTMLObjectElement
 
-public class HTMLObjectElementImpl extends HTMLAbstractUIElement implements HTMLObjectElement {
-    public HTMLObjectElementImpl(final String name) {
-        super(name);
+class HTMLObjectElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLObjectElement {
+    override fun getAlign(): String? {
+        return this.getAttribute("align")
     }
 
-    public String getAlign() {
-        return this.getAttribute("align");
+    override fun setAlign(align: String?) {
+        this.setAttribute("align", align)
     }
 
-    public void setAlign(final String align) {
-        this.setAttribute("align", align);
+    var alt: String?
+        get() = this.getAttribute("alt")
+        set(alt) {
+            this.setAttribute("alt", alt)
+        }
+
+    override fun getArchive(): String? {
+        return this.getAttribute("archive")
     }
 
-    public String getAlt() {
-        return this.getAttribute("alt");
+    override fun setArchive(archive: String?) {
+        this.setAttribute("archive", archive)
     }
 
-    public void setAlt(final String alt) {
-        this.setAttribute("alt", alt);
+    override fun getCode(): String? {
+        return this.getAttribute("code")
     }
 
-    public String getArchive() {
-        return this.getAttribute("archive");
+    override fun setCode(code: String?) {
+        this.setAttribute("code", code)
     }
 
-    public void setArchive(final String archive) {
-        this.setAttribute("archive", archive);
+    override fun getCodeBase(): String? {
+        return this.getAttribute("codebase")
     }
 
-    public String getCode() {
-        return this.getAttribute("code");
+    override fun setCodeBase(codeBase: String?) {
+        this.setAttribute("codebase", codeBase)
     }
 
-    public void setCode(final String code) {
-        this.setAttribute("code", code);
+    override fun getHeight(): String? {
+        return this.getAttribute("height")
     }
 
-    public String getCodeBase() {
-        return this.getAttribute("codebase");
+    override fun setHeight(height: String?) {
+        this.setAttribute("height", height)
     }
 
-    public void setCodeBase(final String codeBase) {
-        this.setAttribute("codebase", codeBase);
+    override fun getName(): String? {
+        return this.getAttribute("name")
     }
 
-    public String getHeight() {
-        return this.getAttribute("height");
+    override fun setName(name: String?) {
+        this.setAttribute("name", name)
     }
 
-    public void setHeight(final String height) {
-        this.setAttribute("height", height);
+    var `object`: String?
+        get() = this.getAttribute("object")
+        set(object) {
+            this.setAttribute("object", `object`)
+        }
+
+    override fun getWidth(): String? {
+        return this.getAttribute("width")
     }
 
-    public String getName() {
-        return this.getAttribute("name");
+    override fun setWidth(width: String?) {
+        this.setAttribute("width", width)
     }
 
-    public void setName(final String name) {
-        this.setAttribute("name", name);
+    override fun getBorder(): String? {
+        return this.getAttribute("border")
     }
 
-    public String getObject() {
-        return this.getAttribute("object");
+    override fun setBorder(border: String?) {
+        this.setAttribute("border", border)
     }
 
-    public void setObject(final String object) {
-        this.setAttribute("object", object);
+    override fun getCodeType(): String? {
+        return this.getAttribute("codetype")
     }
 
-    public String getWidth() {
-        return this.getAttribute("width");
+    override fun setCodeType(codeType: String?) {
+        this.setAttribute("codetype", codeType)
     }
 
-    public void setWidth(final String width) {
-        this.setAttribute("width", width);
+    override fun getContentDocument(): Document? {
+        return this.ownerDocument
     }
 
-    public String getBorder() {
-        return this.getAttribute("border");
+    override fun getData(): String? {
+        return this.getAttribute("data")
     }
 
-    public void setBorder(final String border) {
-        this.setAttribute("border", border);
-    }
-
-    public String getCodeType() {
-        return this.getAttribute("codetype");
-    }
-
-    public void setCodeType(final String codeType) {
-        this.setAttribute("codetype", codeType);
-    }
-
-    public Document getContentDocument() {
-        return this.getOwnerDocument();
-    }
-
-    public String getData() {
-        return this.getAttribute("data");
-    }
-
-  /* public int getHspace() {
+    /* public int getHspace() {
     try {
       return Integer.parseInt(this.getAttribute("hspace"));
     } catch (final Exception err) {
       return 0;
     }
   }*/
-
-    public void setData(final String data) {
-        this.setAttribute("data", data);
+    override fun setData(data: String?) {
+        this.setAttribute("data", data)
     }
 
-    public boolean getDeclare() {
-        return "declare".equalsIgnoreCase(this.getAttribute("declare"));
+    override fun getDeclare(): Boolean {
+        return "declare".equals(this.getAttribute("declare"), ignoreCase = true)
     }
 
-    public void setDeclare(final boolean declare) {
-        this.setAttribute("declare", declare ? "declare" : null);
+    override fun setDeclare(declare: Boolean) {
+        this.setAttribute("declare", if (declare) "declare" else null)
     }
 
-    public HTMLFormElement getForm() {
-        return (HTMLFormElement) this.getAncestorForJavaClass(HTMLFormElement.class);
+    override fun getForm(): HTMLFormElement? {
+        return this.getAncestorForJavaClass(HTMLFormElement::class.java) as HTMLFormElement?
     }
 
-    public String getHspace() {
-        return this.getAttribute("hspace");
+    override fun getHspace(): String? {
+        return this.getAttribute("hspace")
     }
 
-  /* public int getVspace() {
+    /* public int getVspace() {
     try {
       return Integer.parseInt(this.getAttribute("vspace"));
     } catch (final Exception err) {
       return 0;
     }
   }*/
-
-    public void setHspace(final String hspace) {
-        this.setAttribute("hspace", hspace);
+    override fun setHspace(hspace: String?) {
+        this.setAttribute("hspace", hspace)
     }
 
-    public String getStandby() {
-        return this.getAttribute("standby");
+    override fun getStandby(): String? {
+        return this.getAttribute("standby")
     }
 
-    public void setStandby(final String standby) {
-        this.setAttribute("standby", standby);
+    override fun setStandby(standby: String?) {
+        this.setAttribute("standby", standby)
     }
 
-    public int getTabIndex() {
+    override fun getTabIndex(): Int {
         try {
-            return Integer.parseInt(this.getAttribute("tabindex"));
-        } catch (final Exception err) {
-            return 0;
+            return this.getAttribute("tabindex").toInt()
+        } catch (err: Exception) {
+            return 0
         }
     }
 
-    public void setTabIndex(final int tabIndex) {
-        this.setAttribute("tabindex", String.valueOf(tabIndex));
+    override fun setTabIndex(tabIndex: Int) {
+        this.setAttribute("tabindex", tabIndex.toString())
     }
 
-  /* public void setHspace(final int hspace) {
+    /* public void setHspace(final int hspace) {
     this.setAttribute("hspace", String.valueOf(hspace));
   }*/
-
-    public String getType() {
-        return this.getAttribute("type");
+    override fun getType(): String? {
+        return this.getAttribute("type")
     }
 
-    public void setType(final String type) {
-        this.setAttribute("type", type);
+    override fun setType(type: String?) {
+        this.setAttribute("type", type)
     }
 
-    public String getUseMap() {
-        return this.getAttribute("usemap");
+    override fun getUseMap(): String? {
+        return this.getAttribute("usemap")
     }
 
-    public void setUseMap(final String useMap) {
-        this.setAttribute("usemap", useMap);
+    override fun setUseMap(useMap: String?) {
+        this.setAttribute("usemap", useMap)
     }
 
-    public String getVspace() {
-        return this.getAttribute("vspace");
+    override fun getVspace(): String? {
+        return this.getAttribute("vspace")
     }
 
-  /* public void setVspace(final int vspace) {
+    /* public void setVspace(final int vspace) {
     this.setAttribute("vspace", String.valueOf(vspace));
   }*/
-
-    public void setVspace(final String vspace) {
-        this.setAttribute("vspace", vspace);
+    override fun setVspace(vspace: String?) {
+        this.setAttribute("vspace", vspace)
     }
 }

@@ -1,157 +1,155 @@
-package io.github.remmerw.thor.cobra.ua;
+package io.github.remmerw.thor.cobra.ua
 
-import java.net.URL;
-
-import io.github.remmerw.thor.cobra.html.HtmlRendererContext;
-import io.github.remmerw.thor.cobra.html.parser.DocumentBuilderImpl;
+import java.net.URL
 
 /**
  * Provides information about the user agent (browser) driving the parser and/or
  * renderer.
- * <p>
- * A simple implementation of this interface is provided in
- * {@link org.cobraparser.html.test.SimpleUserAgentContext}.
  *
- * @see HtmlRendererContext#getUserAgentContext()
- * @see DocumentBuilderImpl#DocumentBuilderImpl(UserAgentContext)
+ *
+ * A simple implementation of this interface is provided in
+ * [org.cobraparser.html.test.SimpleUserAgentContext].
+ *
+ * @see HtmlRendererContext.getUserAgentContext
+ * @see DocumentBuilderImpl.DocumentBuilderImpl
  */
-public interface UserAgentContext {
-    boolean isRequestPermitted(final Request request);
+interface UserAgentContext {
+    fun isRequestPermitted(request: Request?): Boolean
 
     /**
-     * Creates an instance of {@link org.cobraparser.html.HttpRequest} which can
+     * Creates an instance of [org.cobraparser.html.HttpRequest] which can
      * be used by the renderer to load images, scripts, external style sheets, and
      * implement the Javascript XMLHttpRequest class (AJAX).
      */
-    NetworkRequest createHttpRequest();
+    fun createHttpRequest(): NetworkRequest?
 
     /**
      * Gets browser "code" name.
      */
-    String getAppCodeName();
+    fun getAppCodeName(): String?
 
     /**
      * Gets browser application name.
      */
-    String getAppName();
+    fun getAppName(): String?
 
     /**
      * Gets browser application version.
      */
-    String getAppVersion();
+    fun getAppVersion(): String?
 
     /**
      * Gets browser application minor version.
      */
-    String getAppMinorVersion();
+    fun getAppMinorVersion(): String?
 
     /**
-     * Gets browser language code. See <a
-     * href="http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes">ISO 639-1
-     * codes</a>.
+     * Gets browser language code. See [ISO 639-1
+ * codes](http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).
      */
-    String getBrowserLanguage();
+    fun getBrowserLanguage(): String?
 
     /**
      * Returns a boolean value indicating whether cookies are enabled in the user
      * agent. This value is used for reporting purposes only. TODO: Remove
      */
-    boolean isCookieEnabled();
+    fun isCookieEnabled(): Boolean
 
     /**
      * Returns a boolean value indicating whether scripting is enabled in the user
-     * agent. If this value is <code>false</code>, the parser will not process
+     * agent. If this value is `false`, the parser will not process
      * scripts and Javascript element attributes will have no effect. TODO: Remove
      */
-    boolean isScriptingEnabled();
+    fun isScriptingEnabled(): Boolean
 
     /**
      * Returns a boolean value indicating whether remote (non-inline) CSS
      * documents should be loaded. TODO: Remove
      */
-    boolean isExternalCSSEnabled();
+    fun isExternalCSSEnabled(): Boolean
 
     /**
      * Returns a boolean value indicating whether STYLE tags should be processed.
      * TODO: Remove
      */
-    boolean isInternalCSSEnabled();
+    fun isInternalCSSEnabled(): Boolean
 
     /**
      * Gets the name of the user's operating system.
      */
-    String getPlatform();
+    fun getPlatform(): String?
 
     /**
      * Should return the string used in the User-Agent header.
      */
-    String getUserAgent();
+    fun getUserAgent(): String?
 
     /**
-     * Method used to implement Javascript <code>document.cookie</code> property.
+     * Method used to implement Javascript `document.cookie` property.
      */
-    String getCookie(URL url);
+    fun getCookie(url: URL?): String?
 
     /**
-     * Method used to implement <code>document.cookie</code> property.
+     * Method used to implement `document.cookie` property.
      *
      * @param cookieSpec Specification of cookies, as they would appear in the Set-Cookie
-     *                   header value of HTTP.
+     * header value of HTTP.
      */
-    void setCookie(URL url, String cookieSpec);
+    fun setCookie(url: URL?, cookieSpec: String?)
 
 
     /**
      * Gets the scripting optimization level, which is a value equivalent to
      * Rhino's optimization level.
      */
-    int getScriptingOptimizationLevel();
+    fun getScriptingOptimizationLevel(): Int
 
     /**
      * Returns true if the current media matches the name provided.
      *
-     * @param mediaName Media name, which may be <code>screen</code>, <code>tty</code>,
-     *                  etc. (See <a href=
-     *                  "http://www.w3.org/TR/REC-html40/types.html#type-media-descriptors"
-     *                  >HTML Specification</a>).
+     * @param mediaName Media name, which may be `screen`, `tty`,
+     * etc. (See [HTML Specification](http://www.w3.org/TR/REC-html40/types.html#type-media-descriptors)).
      */
-    boolean isMedia(String mediaName);
+    fun isMedia(mediaName: String?): Boolean
 
-    String getVendor();
+    fun getVendor(): String?
 
-    String getProduct();
+    fun getProduct(): String?
 
-    enum RequestKind {
-        Image("Img"), CSS("CSS"), Cookie("Cookie"), JavaScript("JS"), Frame("Frame"), XHR("XHR"), Referrer("Referrer");
+    enum class RequestKind(shortName: String) {
+        Image("Img"), CSS("CSS"), Cookie("Cookie"), JavaScript("JS"), Frame("Frame"), XHR("XHR"), Referrer(
+            "Referrer"
+        );
 
-        private static final RequestKind[] VALUES = RequestKind.values();
-        public final String shortName;
+        val shortName: String?
 
-        RequestKind(final String shortName) {
-            this.shortName = shortName;
+        init {
+            this.shortName = shortName
         }
 
-        public static RequestKind forOrdinal(final int o) {
-            return VALUES[o];
-        }
+        companion object {
+            private val VALUES: Array<RequestKind?> = entries.toTypedArray()
+            fun forOrdinal(o: Int): RequestKind? {
+                return VALUES[o]
+            }
 
-        public static int numKinds() {
-            return values().length;
+            fun numKinds(): Int {
+                return entries.toTypedArray().length
+            }
         }
     }
 
-    class Request {
-        final public RequestKind kind;
-        final public URL url;
+    class Request(url: URL?, kind: RequestKind) {
+        val kind: RequestKind
+        val url: URL?
 
-        public Request(final URL url, final RequestKind kind) {
-            this.kind = kind;
-            this.url = url;
+        init {
+            this.kind = kind
+            this.url = url
         }
 
-        @Override
-        public String toString() {
-            return kind.toString() + ": " + url;
+        override fun toString(): String {
+            return kind.toString() + ": " + url
         }
     }
 }

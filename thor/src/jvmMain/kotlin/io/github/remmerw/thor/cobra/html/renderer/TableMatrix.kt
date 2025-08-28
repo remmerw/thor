@@ -18,559 +18,395 @@ GNU LESSER GENERAL PUBLIC LICENSE
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
+import io.github.remmerw.thor.cobra.html.HtmlRendererContext
+import io.github.remmerw.thor.cobra.html.domimpl.AnonymousNodeImpl
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
+import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
+import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
+import io.github.remmerw.thor.cobra.html.domimpl.TextImpl
+import io.github.remmerw.thor.cobra.html.style.HtmlInsets
+import io.github.remmerw.thor.cobra.html.style.HtmlLength
+import io.github.remmerw.thor.cobra.html.style.HtmlValues
+import io.github.remmerw.thor.cobra.html.style.RenderState
+import io.github.remmerw.thor.cobra.html.style.RenderThreadState
+import io.github.remmerw.thor.cobra.ua.UserAgentContext
+import java.awt.Color
+import java.awt.Dimension
+import java.awt.Graphics
+import java.awt.Insets
+import java.awt.event.MouseEvent
+import kotlin.math.max
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Insets;
-import java.awt.Rectangle;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+internal class TableMatrix(
+    element: HTMLElementImpl, uaContext: UserAgentContext?, rcontext: HtmlRendererContext?,
+    frameContext: FrameContext?,
+    tableAsContainer: RenderableContainer?, relement: RElement?
+) {
+    private val ROWS = ArrayList<Row>()
+    private val ROW_GROUPS: ArrayList<RowGroup> = ArrayList<RowGroup>()
+    private val ALL_CELLS = ArrayList<RAbstractCell>()
+    private val tableElement: HTMLElementImpl
+    private val uaContext: UserAgentContext?
+    private val rendererContext: HtmlRendererContext?
+    private val frameContext: FrameContext?
+    private val relement: RElement?
+    private val container: RenderableContainer?
 
-import io.github.remmerw.thor.cobra.html.HtmlRendererContext;
-import io.github.remmerw.thor.cobra.html.domimpl.AnonymousNodeImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode;
-import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.TextImpl;
-import io.github.remmerw.thor.cobra.html.style.BorderInfo;
-import io.github.remmerw.thor.cobra.html.style.HtmlInsets;
-import io.github.remmerw.thor.cobra.html.style.HtmlLength;
-import io.github.remmerw.thor.cobra.html.style.HtmlValues;
-import io.github.remmerw.thor.cobra.html.style.JStyleProperties;
-import io.github.remmerw.thor.cobra.html.style.RenderState;
-import io.github.remmerw.thor.cobra.html.style.RenderThreadState;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext;
-
-final class TableMatrix {
-    private final ArrayList<Row> ROWS = new ArrayList<>();
-    private final ArrayList<RowGroup> ROW_GROUPS = new ArrayList<>();
-    private final ArrayList<@NonNull RAbstractCell> ALL_CELLS = new ArrayList<>();
-    private final HTMLElementImpl tableElement;
-    private final UserAgentContext uaContext;
-    private final HtmlRendererContext rendererContext;
-    private final FrameContext frameContext;
-    private final RElement relement;
-    private final RenderableContainer container;
-
-    private ColSizeInfo[] columnSizes;
-    private RowSizeInfo[] rowSizes;
-    private int tableWidth;
-    private int tableHeight;
-
-    /*
-     * This is so that we can draw the lines inside the table that appear when a
-     * border attribute is used.
-     */
-    private int hasOldStyleBorder;
-    // private int border;
-    private int cellSpacingY;
-    private int cellSpacingX;
-    private int widthsOfExtras;
-    private int heightsOfExtras;
-    private HtmlLength tableWidthLength;
-    private ArrayList<RowGroupSizeInfo> rowGroupSizes;
-    private BoundableRenderable armedRenderable;
-    private int maxRowGroupLeft;
-    private int maxRowGroupRight;
-
-    /**
-     * @param element
-     */
-    public TableMatrix(final HTMLElementImpl element, final UserAgentContext uaContext, final HtmlRendererContext rcontext,
-                       final FrameContext frameContext,
-                       final RenderableContainer tableAsContainer, final RElement relement) {
-        this.tableElement = element;
-        this.uaContext = uaContext;
-        this.rendererContext = rcontext;
-        this.frameContext = frameContext;
-        this.relement = relement;
-        this.container = tableAsContainer;
-    }
-
-    private static HtmlLength getWidthLength(final HTMLElementImpl element, final int availWidth) {
-        try {
-            final JStyleProperties props = element.getCurrentStyle();
-            final String widthText = props.getWidth();
-            if (widthText == null) {
-                // TODO: convert attributes to CSS properties
-                final String widthAttr = element.getAttribute("width");
-                if (widthAttr == null) {
-                    return null;
-                }
-                return new HtmlLength(HtmlValues.getPixelSize(widthAttr, element.getRenderState(), 0, availWidth));
-            } else {
-                return new HtmlLength(HtmlValues.getPixelSize(widthText, element.getRenderState(), 0, availWidth));
-            }
-        } catch (final NumberFormatException err) {
-            System.out.println("Exception while parsing width: " + err);
-            return null;
-        }
-    }
-
-    private static HtmlLength getHeightLength(final HTMLElementImpl element, final int availHeight) {
-        try {
-            final JStyleProperties props = element.getCurrentStyle();
-            final String heightText = props.getHeight();
-            if (heightText == null) {
-                final String ha = element.getAttribute("height");
-                if (ha == null) {
-                    return null;
-                } else {
-                    return new HtmlLength(HtmlValues.getPixelSize(ha, element.getRenderState(), 0, availHeight));
-                }
-            } else {
-                return new HtmlLength(HtmlValues.getPixelSize(heightText, element.getRenderState(), 0, availHeight));
-            }
-        } catch (final NumberFormatException err) {
-            System.out.println("Exception while parsing height: " + err);
-            return null;
-        }
-    }
-
-    static Insets getCSSInsets(final RenderState rs) {
-        final BorderInfo borderInfo = rs.getBorderInfo();
-        final HtmlInsets elemBorderHtmlInsets = borderInfo == null ? null : borderInfo.insets;
-        return elemBorderHtmlInsets == null ? RBlockViewport.ZERO_INSETS : elemBorderHtmlInsets.getAWTInsets(0, 0, 0, 0, 0, 0, 0, 0);
-    }
-
-    /**
-     * This method sets the tentative actual sizes of columns (rows) based on
-     * specified widths (heights) if available.
-     *
-     * @param columnSizes
-     * @param widthsOfExtras
-     * @param cellAvailWidth
-     */
-    private static void determineTentativeSizes(final ColSizeInfo[] columnSizes, final int widthsOfExtras, final int cellAvailWidth,
-                                                final boolean setNoWidthColumns) {
-        final int numCols = columnSizes.length;
-
-        // Look at percentages first
-        int widthUsedByPercent = 0;
-        for (int i = 0; i < numCols; i++) {
-            final ColSizeInfo colSizeInfo = columnSizes[i];
-            final HtmlLength widthLength = colSizeInfo.htmlLength;
-            if ((widthLength != null) && (widthLength.getLengthType() == HtmlLength.LENGTH)) {
-                final int actualSizeInt = widthLength.getLength(cellAvailWidth);
-                widthUsedByPercent += actualSizeInt;
-                colSizeInfo.actualSize = actualSizeInt;
-            }
-        }
-
-        // Look at columns with absolute sizes
-        int widthUsedByAbsolute = 0;
-        int numNoWidthColumns = 0;
-        for (int i = 0; i < numCols; i++) {
-            final ColSizeInfo colSizeInfo = columnSizes[i];
-            final HtmlLength widthLength = colSizeInfo.htmlLength;
-            if ((widthLength != null) && (widthLength.getLengthType() != HtmlLength.LENGTH)) {
-                // TODO: MULTI-LENGTH not supported
-                final int actualSizeInt = widthLength.getRawValue();
-                widthUsedByAbsolute += actualSizeInt;
-                colSizeInfo.actualSize = actualSizeInt;
-            } else if (widthLength == null) {
-                numNoWidthColumns++;
-            }
-        }
-
-        // Tentative width of all columns without a declared
-        // width is set to zero. The pre-render will determine
-        // a better size.
-
-        // // Assign all columns without widths now
-        // int widthUsedByUnspecified = 0;
-        // if(setNoWidthColumns) {
-        // int remainingWidth = cellAvailWidth - widthUsedByAbsolute -
-        // widthUsedByPercent;
-        // if(remainingWidth > 0) {
-        // for(int i = 0; i < numCols; i++) {
-        // SizeInfo colSizeInfo = columnSizes[i];
-        // HtmlLength widthLength = colSizeInfo.htmlLength;
-        // if(widthLength == null) {
-        // int actualSizeInt = remainingWidth / numNoWidthColumns;
-        // widthUsedByUnspecified += actualSizeInt;
-        // colSizeInfo.actualSize = actualSizeInt;
-        // }
-        // }
-        // }
-        // }
-
-        // Contract if necessary. This is done again later, but this is
-        // an optimization, as it may prevent re-layout. It is only done
-        // if all columns have some kind of declared width.
-
-        if (numNoWidthColumns == 0) {
-            int totalWidthUsed = widthUsedByPercent + widthUsedByAbsolute;
-            int difference = totalWidthUsed - cellAvailWidth;
-            // See if absolutes need to be contracted
-            if (difference > 0) {
-                if (widthUsedByAbsolute > 0) {
-                    int expectedAbsoluteWidthTotal = widthUsedByAbsolute - difference;
-                    if (expectedAbsoluteWidthTotal < 0) {
-                        expectedAbsoluteWidthTotal = 0;
-                    }
-                    final double ratio = (double) expectedAbsoluteWidthTotal / widthUsedByAbsolute;
-                    for (int i = 0; i < numCols; i++) {
-                        final ColSizeInfo sizeInfo = columnSizes[i];
-                        final HtmlLength widthLength = columnSizes[i].htmlLength;
-                        if ((widthLength != null) && (widthLength.getLengthType() != HtmlLength.LENGTH)) {
-                            final int oldActualSize = sizeInfo.actualSize;
-                            final int newActualSize = (int) Math.round(oldActualSize * ratio);
-                            sizeInfo.actualSize = newActualSize;
-                            totalWidthUsed += (newActualSize - oldActualSize);
-                        }
-                    }
-                    difference = totalWidthUsed - cellAvailWidth;
-                }
-
-                // See if percentages need to be contracted
-                if (difference > 0) {
-                    if (widthUsedByPercent > 0) {
-                        int expectedPercentWidthTotal = widthUsedByPercent - difference;
-                        if (expectedPercentWidthTotal < 0) {
-                            expectedPercentWidthTotal = 0;
-                        }
-                        final double ratio = (double) expectedPercentWidthTotal / widthUsedByPercent;
-                        for (int i = 0; i < numCols; i++) {
-                            final ColSizeInfo sizeInfo = columnSizes[i];
-                            final HtmlLength widthLength = columnSizes[i].htmlLength;
-                            if ((widthLength != null) && (widthLength.getLengthType() == HtmlLength.LENGTH)) {
-                                final int oldActualSize = sizeInfo.actualSize;
-                                final int newActualSize = (int) Math.round(oldActualSize * ratio);
-                                sizeInfo.actualSize = newActualSize;
-                                totalWidthUsed += (newActualSize - oldActualSize);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Expands column sizes according to layout sizes.
-     */
-    private static void adjustForLayoutWidths(final ColSizeInfo[] columnSizes, final int hasBorder, final int cellSpacing,
-                                              final boolean tableWidthKnown) {
-        final int numCols = columnSizes.length;
-        for (int i = 0; i < numCols; i++) {
-            final ColSizeInfo si = columnSizes[i];
-            if (si.actualSize < si.layoutSize) {
-                si.actualSize = si.layoutSize;
-            }
-            if (si.fullActualSize < si.fullLayoutSize) {
-                si.fullActualSize = si.fullLayoutSize;
-            }
-            // else if(si.htmlLength == null) {
-            // // For cells without a declared width, see if
-            // // their tentative width is a bit too big.
-            // if(si.actualSize > si.layoutSize) {
-            // si.actualSize = si.layoutSize;
-            // }
-            // }
-        }
-    }
-
-    public int getNumRows() {
-        return this.ROWS.size();
-    }
-
-    public int getNumColumns() {
-        return this.columnSizes.length;
-    }
-
-    /**
-     * @return Returns the tableHeight.
-     */
-    public int getTableHeight() {
-        return this.tableHeight;
-    }
+    private var columnSizes: Array<ColSizeInfo>
+    private var rowSizes: Array<RowSizeInfo>
 
     /**
      * @return Returns the tableWidth.
      */
-    public int getTableWidth() {
-        return this.tableWidth;
+    var tableWidth: Int = 0
+        private set
+
+    /**
+     * @return Returns the tableHeight.
+     */
+    var tableHeight: Int = 0
+        private set
+
+    /*
+    * This is so that we can draw the lines inside the table that appear when a
+    * border attribute is used.
+    */
+    private var hasOldStyleBorder = 0
+
+    // private int border;
+    private var cellSpacingY = 0
+    private var cellSpacingX = 0
+    private var widthsOfExtras = 0
+    private var heightsOfExtras = 0
+    private var tableWidthLength: HtmlLength? = null
+    private var rowGroupSizes: ArrayList<RowGroupSizeInfo>? = null
+    private var armedRenderable: BoundableRenderable? = null
+    private var maxRowGroupLeft = 0
+    private var maxRowGroupRight = 0
+
+    /**
+     * @param element
+     */
+    init {
+        this.tableElement = element
+        this.uaContext = uaContext
+        this.rendererContext = rcontext
+        this.frameContext = frameContext
+        this.relement = relement
+        this.container = tableAsContainer
     }
+
+    val numRows: Int
+        get() = this.ROWS.size
+
+    val numColumns: Int
+        get() = this.columnSizes.size
 
     /**
      * Called on every relayout. Element children might have changed.
      */
-    public void reset(final Insets insets, final int availWidth, final int availHeight) {
+    fun reset(insets: Insets, availWidth: Int, availHeight: Int) {
         // TODO: Incorporate into build() and calculate
         // sizes properly based on parameters.
-        ROW_GROUPS.clear();
-        ROWS.clear();
-        ALL_CELLS.clear();
-        rowGroupSizes = null;
+        ROW_GROUPS.clear()
+        ROWS.clear()
+        ALL_CELLS.clear()
+        rowGroupSizes = null
         // TODO: Does it need this old-style border?
-        final int border = getBorderAttribute();
-        final int cellSpacing = getCellSpacingAttribute();
+        val border = this.borderAttribute
+        val cellSpacing = this.cellSpacingAttribute
 
-        this.cellSpacingX = cellSpacing;
-        this.cellSpacingY = cellSpacing;
+        this.cellSpacingX = cellSpacing
+        this.cellSpacingY = cellSpacing
 
-        this.tableWidthLength = TableMatrix.getWidthLength(this.tableElement, availWidth);
+        this.tableWidthLength = getWidthLength(this.tableElement, availWidth)
 
-        this.populateRows();
-        this.adjustForCellSpans();
-        this.createSizeArrays();
+        this.populateRows()
+        this.adjustForCellSpans()
+        this.createSizeArrays()
 
         // Calculate widths of extras
-        final ColSizeInfo[] columnSizes = this.columnSizes;
-        final int numCols = columnSizes.length;
-        int widthsOfExtras = insets.left + insets.right + ((numCols + 1) * cellSpacing);
+        val columnSizes = this.columnSizes
+        val numCols = columnSizes.size
+        var widthsOfExtras = insets.left + insets.right + ((numCols + 1) * cellSpacing)
         if (border > 0) {
-            widthsOfExtras += (numCols * 2);
+            widthsOfExtras += (numCols * 2)
         }
-        this.widthsOfExtras = widthsOfExtras;
+        this.widthsOfExtras = widthsOfExtras
 
         // Calculate heights of extras
-        final RowSizeInfo[] rowSizes = this.rowSizes;
-        final int numRows = rowSizes.length;
-        int heightsOfExtras = insets.top + insets.bottom + ((numRows + 1) * cellSpacing);
+        val rowSizes = this.rowSizes
+        val numRows = rowSizes.size
+        var heightsOfExtras = insets.top + insets.bottom + ((numRows + 1) * cellSpacing)
         if (border > 0) {
-            heightsOfExtras += (numRows * 2);
+            heightsOfExtras += (numRows * 2)
         }
-        this.heightsOfExtras = heightsOfExtras;
-        this.hasOldStyleBorder = border > 0 ? 1 : 0;
+        this.heightsOfExtras = heightsOfExtras
+        this.hasOldStyleBorder = if (border > 0) 1 else 0
     }
 
-    private int getCellSpacingAttribute() {
-        int cellSpacing = 0;
-        final String cellSpacingText = this.tableElement.getAttribute("cellspacing");
-        if (cellSpacingText != null) {
-            try {
-                // TODO: cellSpacing can be a percentage as well
-                cellSpacing = Integer.parseInt(cellSpacingText);
-                if (cellSpacing < 0) {
-                    cellSpacing = 0;
-                }
-            } catch (final NumberFormatException nfe) {
-                System.out.println("Exception while parsing cellSpacing: " + nfe);
-                // ignore
-            }
-        }
-        return cellSpacing;
-    }
-
-    private int getBorderAttribute() {
-        int border = 0;
-        final String borderText = this.tableElement.getAttribute("border");
-        if (borderText != null) {
-            if (borderText.length() == 0) {
-                border = 1;
-            } else {
+    private val cellSpacingAttribute: Int
+        get() {
+            var cellSpacing = 0
+            val cellSpacingText = this.tableElement.getAttribute("cellspacing")
+            if (cellSpacingText != null) {
                 try {
-                    border = Integer.parseInt(borderText);
-                    if (border < 0) {
-                        border = 0;
+                    // TODO: cellSpacing can be a percentage as well
+                    cellSpacing = cellSpacingText.toInt()
+                    if (cellSpacing < 0) {
+                        cellSpacing = 0
                     }
-                } catch (final NumberFormatException nfe) {
-                    System.out.println("Exception while parsing border: " + nfe);
+                } catch (nfe: NumberFormatException) {
+                    println("Exception while parsing cellSpacing: " + nfe)
                     // ignore
                 }
             }
+            return cellSpacing
         }
-        return border;
-    }
 
-    public void build(final int availWidth, final int availHeight, final boolean sizeOnly) {
-        final int hasBorder = this.hasOldStyleBorder;
-        this.determineColumnSizes(hasBorder, this.cellSpacingX, this.cellSpacingY, availWidth);
-        this.determineRowSizes(hasBorder, this.cellSpacingY, availHeight, sizeOnly);
+    private val borderAttribute: Int
+        get() {
+            var border = 0
+            val borderText = this.tableElement.getAttribute("border")
+            if (borderText != null) {
+                if (borderText.length == 0) {
+                    border = 1
+                } else {
+                    try {
+                        border = borderText.toInt()
+                        if (border < 0) {
+                            border = 0
+                        }
+                    } catch (nfe: NumberFormatException) {
+                        println("Exception while parsing border: " + nfe)
+                        // ignore
+                    }
+                }
+            }
+            return border
+        }
+
+    fun build(availWidth: Int, availHeight: Int, sizeOnly: Boolean) {
+        val hasBorder = this.hasOldStyleBorder
+        this.determineColumnSizes(hasBorder, this.cellSpacingX, this.cellSpacingY, availWidth)
+        this.determineRowSizes(hasBorder, this.cellSpacingY, availHeight, sizeOnly)
     }
 
     /**
      * Populates the ROWS and ALL_CELLS collections.
      */
-    private ArrayList<HTMLElementImpl> populateRows() {
-        final HTMLElementImpl te = this.tableElement;
-        final ArrayList<HTMLElementImpl> rowElements = new ArrayList<>();
-        final NodeImpl[] tChildren = te.getChildrenArray();
-        final TableRelation rowRelation = new TableRelation(this.ROWS, this.ROW_GROUPS);
+    private fun populateRows(): ArrayList<HTMLElementImpl?> {
+        val te = this.tableElement
+        val rowElements = ArrayList<HTMLElementImpl?>()
+        val tChildren = te.childrenArray
+        val rowRelation = TableRelation(this.ROWS, this.ROW_GROUPS)
 
         if (tChildren != null) {
-            for (final NodeImpl cn : tChildren) {
-                if (cn instanceof HTMLElementImpl ce) {
-                    final int display = ce.getRenderState().getDisplay();
-                    if (display == RenderState.DISPLAY_TABLE_ROW_GROUP || display == RenderState.DISPLAY_TABLE_HEADER_GROUP
-                            || display == RenderState.DISPLAY_TABLE_FOOTER_GROUP) {
-                        processRowGroup(ce, rowRelation);
+            for (cn in tChildren) {
+                if (cn is HTMLElementImpl) {
+                    val display = cn.getRenderState().display
+                    if (display == RenderState.DISPLAY_TABLE_ROW_GROUP || display == RenderState.DISPLAY_TABLE_HEADER_GROUP || display == RenderState.DISPLAY_TABLE_FOOTER_GROUP) {
+                        processRowGroup(cn, rowRelation)
                     } else if (display == RenderState.DISPLAY_TABLE_ROW) {
-                        processRow(ce, null, rowRelation);
+                        processRow(cn, null, rowRelation)
                     } else if (display == RenderState.DISPLAY_TABLE_CELL) {
-                        processCell(ce, null, null, rowRelation);
+                        processCell(cn, null, null, rowRelation)
                     } else if (display != RenderState.DISPLAY_TABLE_COLUMN && display != RenderState.DISPLAY_TABLE_COLUMN_GROUP) {
-                        addAnonCell(rowRelation, null, null, cn);
+                        addAnonCell(rowRelation, null, null, cn)
                     }
-                } else if (cn instanceof TextImpl) {
-                    addAnonTextCell(rowRelation, null, null, (TextImpl) cn);
+                } else if (cn is TextImpl) {
+                    addAnonTextCell(rowRelation, null, null, cn)
                 }
             }
         }
 
-        rowRelation.finish();
+        rowRelation.finish()
 
-        {
+        run {
             // Find the max insets among row group elements
-            maxRowGroupLeft = 0;
-            maxRowGroupRight = 0;
-            for (final RowGroup rowGroup : this.ROW_GROUPS) {
-                final HtmlInsets groupInsets = rowGroup.getGroupBorderInsets();
+            maxRowGroupLeft = 0
+            maxRowGroupRight = 0
+            for (rowGroup in this.ROW_GROUPS) {
+                val groupInsets = rowGroup.groupBorderInsets
                 if (groupInsets != null) {
                     if (groupInsets.left > maxRowGroupLeft) {
-                        maxRowGroupLeft = groupInsets.left;
+                        maxRowGroupLeft = groupInsets.left
                     }
                     if (groupInsets.right > maxRowGroupRight) {
-                        maxRowGroupRight = groupInsets.right;
+                        maxRowGroupRight = groupInsets.right
                     }
                 }
             }
         }
 
-        return rowElements;
+        return rowElements
     }
 
-    private void processCell(HTMLElementImpl ce, HTMLElementImpl rowGroupElem, HTMLElementImpl rowElem, TableRelation rowRelation) {
-        RTableCell ac = new RTableCell(ce, this.uaContext, this.rendererContext, this.frameContext, this.container);
-        ac.setParent(this.relement);
-        ce.setUINode(ac);
-        final VirtualCell vc = new VirtualCell(ac, true);
-        ac.setTopLeftVirtualCell(vc);
-        rowRelation.associate(rowGroupElem, rowElem, vc);
-        this.ALL_CELLS.add(ac);
+    private fun processCell(
+        ce: HTMLElementImpl,
+        rowGroupElem: HTMLElementImpl?,
+        rowElem: HTMLElementImpl?,
+        rowRelation: TableRelation
+    ) {
+        val ac =
+            RTableCell(ce, this.uaContext, this.rendererContext, this.frameContext, this.container)
+        ac.setParent(this.relement)
+        ce.uINode = ac
+        val vc = VirtualCell(ac, true)
+        ac.setTopLeftVirtualCell(vc)
+        rowRelation.associate(rowGroupElem, rowElem, vc)
+        this.ALL_CELLS.add(ac)
     }
 
-    private void processRow(HTMLElementImpl rowE, HTMLElementImpl rowGroupElem, TableRelation rowRelation) {
-        final NodeImpl[] rChildren = rowE.getChildrenArray();
+    private fun processRow(
+        rowE: HTMLElementImpl,
+        rowGroupElem: HTMLElementImpl?,
+        rowRelation: TableRelation
+    ) {
+        val rChildren = rowE.childrenArray
         if (rChildren != null) {
-            for (final NodeImpl cn : rChildren) {
-                if (cn instanceof HTMLElementImpl ce) {
-                    final int display = ce.getRenderState().getDisplay();
+            for (cn in rChildren) {
+                if (cn is HTMLElementImpl) {
+                    val display = cn.getRenderState().display
                     if (display == RenderState.DISPLAY_TABLE_CELL) {
-                        processCell(ce, rowGroupElem, rowE, rowRelation);
+                        processCell(cn, rowGroupElem, rowE, rowRelation)
                     } else {
-                        addAnonCell(rowRelation, rowGroupElem, rowE, cn);
+                        addAnonCell(rowRelation, rowGroupElem, rowE, cn)
                     }
-                } else if (cn instanceof TextImpl) {
-                    addAnonTextCell(rowRelation, rowGroupElem, rowE, (TextImpl) cn);
+                } else if (cn is TextImpl) {
+                    addAnonTextCell(rowRelation, rowGroupElem, rowE, cn)
                 }
             }
         }
     }
 
-    private void processRowGroup(HTMLElementImpl rowGroupElem, TableRelation rowRelation) {
-        final NodeImpl[] rChildren = rowGroupElem.getChildrenArray();
+    private fun processRowGroup(rowGroupElem: HTMLElementImpl, rowRelation: TableRelation) {
+        val rChildren = rowGroupElem.childrenArray
         if (rChildren != null) {
-            for (final NodeImpl cn : rChildren) {
-                if (cn instanceof HTMLElementImpl ce) {
-                    final int display = ce.getRenderState().getDisplay();
+            for (cn in rChildren) {
+                if (cn is HTMLElementImpl) {
+                    val display = cn.getRenderState().display
                     if (display == RenderState.DISPLAY_TABLE_ROW) {
-                        processRow(ce, rowGroupElem, rowRelation);
+                        processRow(cn, rowGroupElem, rowRelation)
                     } else {
-                        addAnonCell(rowRelation, rowGroupElem, null, cn);
+                        addAnonCell(rowRelation, rowGroupElem, null, cn)
                     }
-                } else if (cn instanceof TextImpl) {
-                    addAnonTextCell(rowRelation, rowGroupElem, null, (TextImpl) cn);
+                } else if (cn is TextImpl) {
+                    addAnonTextCell(rowRelation, rowGroupElem, null, cn)
                 }
             }
         }
     }
 
-    private void addAnonTextCell(final TableRelation rowRelation, HTMLElementImpl rowGroupElem, HTMLElementImpl rowElem, final TextImpl tn) {
+    private fun addAnonTextCell(
+        rowRelation: TableRelation,
+        rowGroupElem: HTMLElementImpl?,
+        rowElem: HTMLElementImpl?,
+        tn: TextImpl
+    ) {
         if (!tn.isElementContentWhitespace()) {
-            addAnonCell(rowRelation, rowGroupElem, rowElem, tn);
+            addAnonCell(rowRelation, rowGroupElem, rowElem, tn)
         }
     }
 
-    private void addAnonCell(final TableRelation rowRelation, HTMLElementImpl rowGroupElem, HTMLElementImpl rowElem, final NodeImpl node) {
-        final AnonymousNodeImpl acn = new AnonymousNodeImpl(node.getParentNode());
-        acn.appendChildSilently(node);
-        final RAnonTableCell ac = new RAnonTableCell(acn, this.uaContext, this.rendererContext, this.frameContext, this.container);
-        ac.setParent(this.relement);
-        acn.setUINode(ac);
-        final VirtualCell vc = new VirtualCell(ac, true);
-        ac.setTopLeftVirtualCell(vc);
-        rowRelation.associate(rowGroupElem, rowElem, vc);
-        this.ALL_CELLS.add(ac);
+    private fun addAnonCell(
+        rowRelation: TableRelation,
+        rowGroupElem: HTMLElementImpl?,
+        rowElem: HTMLElementImpl?,
+        node: NodeImpl
+    ) {
+        val acn = AnonymousNodeImpl(node.parentNode)
+        acn.appendChildSilently(node)
+        val ac = RAnonTableCell(
+            acn,
+            this.uaContext,
+            this.rendererContext,
+            this.frameContext,
+            this.container
+        )
+        ac.setParent(this.relement)
+        acn.uINode = ac
+        val vc = VirtualCell(ac, true)
+        ac.setTopLeftVirtualCell(vc)
+        rowRelation.associate(rowGroupElem, rowElem, vc)
+        this.ALL_CELLS.add(ac)
     }
 
     /**
      * Based on colspans and rowspans, creates additional virtual cells from
      * actual table cells.
      */
-    private void adjustForCellSpans() {
-        final ArrayList<Row> rows = this.ROWS;
-        int numRows = rows.size();
-        for (int r = 0; r < numRows; r++) {
-            final Row row = rows.get(r);
-            int numCols = row.size();
-            for (int c = 0; c < numCols; c++) {
-                final VirtualCell vc = row.get(c);
-                if ((vc != null) && vc.isTopLeft()) {
-                    final RAbstractCell ac = vc.getActualCell();
-                    int colspan = ac.getColSpan();
-                    if (colspan < 1) {
-                        colspan = 1;
-                    }
-                    int rowspan = ac.getRowSpan();
-                    if (rowspan < 1) {
-                        rowspan = 1;
-                    }
+    private fun adjustForCellSpans() {
+        val rows = this.ROWS
+        var numRows = rows.size
+        run {
+            var r = 0
+            while (r < numRows) {
+                val row = rows.get(r)
+                var numCols = row.size()
+                var c = 0
+                while (c < numCols) {
+                    val vc = row.get(c)
+                    if ((vc != null) && vc.isTopLeft()) {
+                        val ac = vc.getActualCell()
+                        var colspan = ac.getColSpan()
+                        if (colspan < 1) {
+                            colspan = 1
+                        }
+                        var rowspan = ac.getRowSpan()
+                        if (rowspan < 1) {
+                            rowspan = 1
+                        }
 
-                    // Can't go beyond last row (Fix bug #2022584)
-                    final int targetRows = r + rowspan;
-                    if (numRows < targetRows) {
-                        rowspan = numRows - r;
-                        ac.setRowSpan(rowspan);
-                    }
+                        // Can't go beyond last row (Fix bug #2022584)
+                        val targetRows = r + rowspan
+                        if (numRows < targetRows) {
+                            rowspan = numRows - r
+                            ac.setRowSpan(rowspan)
+                        }
 
-                    numRows = rows.size();
-                    for (int y = 0; y < rowspan; y++) {
-                        if ((colspan > 1) || (y > 0)) {
-                            // Get row
-                            final int nr = r + y;
-                            final Row newRow = rows.get(nr);
+                        numRows = rows.size
+                        for (y in 0..<rowspan) {
+                            if ((colspan > 1) || (y > 0)) {
+                                // Get row
+                                val nr = r + y
+                                val newRow = rows.get(nr)
 
-                            // Insert missing cells in row
-                            final int xstart = y == 0 ? 1 : 0;
+                                // Insert missing cells in row
+                                val xstart = if (y == 0) 1 else 0
 
-                            // Insert virtual cells, potentially
-                            // shifting others to the right.
-                            for (int cc = xstart; cc < colspan; cc++) {
-                                final int nc = c + cc;
-                                while (newRow.size() < nc) {
-                                    newRow.add(null);
+                                // Insert virtual cells, potentially
+                                // shifting others to the right.
+                                for (cc in xstart..<colspan) {
+                                    val nc = c + cc
+                                    while (newRow.size() < nc) {
+                                        newRow.add(null)
+                                    }
+                                    newRow.add(nc, VirtualCell(ac, false))
                                 }
-                                newRow.add(nc, new VirtualCell(ac, false));
-                            }
-                            if (row == newRow) {
-                                numCols = row.size();
+                                if (row == newRow) {
+                                    numCols = row.size()
+                                }
                             }
                         }
                     }
+                    c++
                 }
+                r++
             }
         }
 
         // Adjust row and column of virtual cells
-        for (int r = 0; r < numRows; r++) {
-            final Row row = rows.get(r);
-            final int numCols = row.size();
-            for (int c = 0; c < numCols; c++) {
-                final VirtualCell vc = row.get(c);
+        for (r in 0..<numRows) {
+            val row = rows.get(r)
+            val numCols = row.size()
+            for (c in 0..<numCols) {
+                val vc = row.get(c)
                 if (vc != null) {
-                    vc.setColumn(c);
-                    vc.setRow(r);
+                    vc.setColumn(c)
+                    vc.setRow(r)
                 }
             }
         }
@@ -580,365 +416,394 @@ final class TableMatrix {
      * Populates the columnSizes and rowSizes arrays, setting htmlLength in each
      * element.
      */
-    private void createSizeArrays() {
-        int numCols = 0;
-        final ArrayList<Row> rows = this.ROWS;
-        final int numRows = rows.size();
+    private fun createSizeArrays() {
+        var numCols = 0
+        val rows = this.ROWS
+        val numRows = rows.size
 
-        {
-            final RowSizeInfo[] rowSizes = new RowSizeInfo[numRows];
-            this.rowSizes = rowSizes;
-            for (int i = 0; i < numRows; i++) {
-                final Row row = rows.get(i);
-                final int numColsInThisRow = row.size();
+        run {
+            val rowSizes: Array<RowSizeInfo> = arrayOfNulls<RowSizeInfo>(numRows)
+            this.rowSizes = rowSizes
+            for (i in 0..<numRows) {
+                val row = rows.get(i)
+                val numColsInThisRow = row.size()
                 if (numColsInThisRow > numCols) {
-                    numCols = numColsInThisRow;
+                    numCols = numColsInThisRow
                 }
-                final RowSizeInfo rowSizeInfo = new RowSizeInfo();
-                rowSizes[i] = rowSizeInfo;
+                val rowSizeInfo = RowSizeInfo()
+                rowSizes[i] = rowSizeInfo
 
-                HtmlLength bestHeightLength = null;
-                for (int x = 0; x < numColsInThisRow; x++) {
-                    final VirtualCell vc = row.get(x);
+                var bestHeightLength: HtmlLength? = null
+                for (x in 0..<numColsInThisRow) {
+                    val vc = row.get(x)
                     if (vc != null) {
-                        final HtmlLength vcHeightLength = vc.getHeightLength();
-                        if ((vcHeightLength != null) && vcHeightLength.isPreferredOver(bestHeightLength)) {
-                            bestHeightLength = vcHeightLength;
+                        val vcHeightLength = vc.getHeightLength()
+                        if ((vcHeightLength != null) && vcHeightLength.isPreferredOver(
+                                bestHeightLength
+                            )
+                        ) {
+                            bestHeightLength = vcHeightLength
                         }
-                        rowSizeInfo.offsetX = maxRowGroupLeft;
+                        rowSizeInfo.offsetX = maxRowGroupLeft
                     }
                 }
-                rowSizeInfo.htmlLength = bestHeightLength;
+                rowSizeInfo.htmlLength = bestHeightLength
 
-                @Nullable HtmlInsets rowGroupInsets = row.rowGroup.getGroupBorderInsets();
+                val rowGroupInsets = row.rowGroup!!.groupBorderInsets
                 if (row.firstInGroup && rowGroupInsets != null) {
-                    rowSizeInfo.marginTop = Math.max(0, rowGroupInsets.top);
+                    rowSizeInfo.marginTop = max(0, rowGroupInsets.top)
                 }
                 if (row.lastInGroup && rowGroupInsets != null) {
-                    rowSizeInfo.marginBottom = Math.max(0, rowGroupInsets.bottom - row.maxCellBorderBottom);
+                    rowSizeInfo.marginBottom =
+                        max(0, rowGroupInsets.bottom - row.maxCellBorderBottom)
                 }
             }
         }
 
-        final ColSizeInfo[] columnSizes = new ColSizeInfo[numCols];
-        this.columnSizes = columnSizes;
-        for (int i = 0; i < numCols; i++) {
-            HtmlLength bestWidthLength = null;
+        val columnSizes: Array<ColSizeInfo> = arrayOfNulls<ColSizeInfo>(numCols)
+        this.columnSizes = columnSizes
+        for (i in 0..<numCols) {
+            var bestWidthLength: HtmlLength? = null
 
             // Cells with colspan==1 first.
-            for (int y = 0; y < numRows; y++) {
-                final Row row = rows.get(y);
-                VirtualCell vc;
+            for (y in 0..<numRows) {
+                val row = rows.get(y)
+                var vc: VirtualCell?
                 try {
-                    vc = row.get(i);
-                } catch (final IndexOutOfBoundsException iob) {
-                    vc = null;
+                    vc = row.get(i)
+                } catch (iob: IndexOutOfBoundsException) {
+                    vc = null
                 }
                 if (vc != null) {
-                    final RAbstractCell ac = vc.getActualCell();
+                    val ac = vc.getActualCell()
                     if (ac.getColSpan() == 1) {
-                        final HtmlLength vcWidthLength = vc.getWidthLength();
+                        val vcWidthLength = vc.getWidthLength()
                         if ((vcWidthLength != null) && vcWidthLength.isPreferredOver(bestWidthLength)) {
-                            bestWidthLength = vcWidthLength;
+                            bestWidthLength = vcWidthLength
                         }
                     }
                 }
             }
             // Now cells with colspan>1.
             if (bestWidthLength == null) {
-                for (int y = 0; y < numRows; y++) {
-                    final Row row = rows.get(y);
-                    VirtualCell vc;
+                for (y in 0..<numRows) {
+                    val row = rows.get(y)
+                    var vc: VirtualCell?
                     try {
-                        vc = row.get(i);
-                    } catch (final IndexOutOfBoundsException iob) {
-                        vc = null;
+                        vc = row.get(i)
+                    } catch (iob: IndexOutOfBoundsException) {
+                        vc = null
                     }
                     if (vc != null) {
-                        final RAbstractCell ac = vc.getActualCell();
+                        val ac = vc.getActualCell()
                         if (ac.getColSpan() > 1) {
-                            final HtmlLength vcWidthLength = vc.getWidthLength();
-                            if ((vcWidthLength != null) && vcWidthLength.isPreferredOver(bestWidthLength)) {
-                                bestWidthLength = vcWidthLength;
+                            val vcWidthLength = vc.getWidthLength()
+                            if ((vcWidthLength != null) && vcWidthLength.isPreferredOver(
+                                    bestWidthLength
+                                )
+                            ) {
+                                bestWidthLength = vcWidthLength
                             }
                         }
                     }
                 }
             }
-            final ColSizeInfo colSizeInfo = new ColSizeInfo();
-            colSizeInfo.htmlLength = bestWidthLength;
-            columnSizes[i] = colSizeInfo;
+            val colSizeInfo = ColSizeInfo()
+            colSizeInfo.htmlLength = bestWidthLength
+            columnSizes[i] = colSizeInfo
         }
     }
 
     /**
      * Determines the size of each column, and the table width. Does the
      * following:
-     * <ol>
-     * <li>Determine tentative widths. This is done by looking at declared column
+     *
+     *  1. Determine tentative widths. This is done by looking at declared column
      * widths, any table width, and filling in the blanks. No rendering is done.
      * The tentative width of columns with no declared width is zero.
      *
-     * <li>Render all cell blocks. It uses the tentative widths from the previous
+     *  1. Render all cell blocks. It uses the tentative widths from the previous
      * step as a desired width. The resulting width is considered a sort of
      * minimum. If the column width is not defined, use a NOWRAP override flag to
      * render.
      *
-     * <li>Check if cell widths are too narrow for the rendered width. In the case
+     *  1. Check if cell widths are too narrow for the rendered width. In the case
      * of columns without a declared width, check if they are too wide.
      *
-     * <li>Finally, adjust widths considering the expected max table size. Columns
+     *  1. Finally, adjust widths considering the expected max table size. Columns
      * are layed out again if necessary to determine if they can really be shrunk.
-     * </ol>
+     *
      *
      * @param cellSpacingX
      * @param cellSpacingY
      * @param availWidth
      */
-    private void determineColumnSizes(final int hasBorder, final int cellSpacingX, final int cellSpacingY, final int availWidth) {
-        final HtmlLength tableWidthLength = this.tableWidthLength;
-        int tableWidth;
-        boolean widthKnown;
+    private fun determineColumnSizes(
+        hasBorder: Int,
+        cellSpacingX: Int,
+        cellSpacingY: Int,
+        availWidth: Int
+    ) {
+        val tableWidthLength = this.tableWidthLength
+        var tableWidth: Int
+        val widthKnown: Boolean
         if (tableWidthLength != null) {
-            tableWidth = tableWidthLength.getLength(availWidth);
-            widthKnown = true;
+            tableWidth = tableWidthLength.getLength(availWidth)
+            widthKnown = true
         } else {
-            tableWidth = availWidth;
-            widthKnown = false;
+            tableWidth = availWidth
+            widthKnown = false
         }
-        tableWidth -= (this.maxRowGroupLeft + this.maxRowGroupRight) / 2;
+        tableWidth -= (this.maxRowGroupLeft + this.maxRowGroupRight) / 2
 
-        final ColSizeInfo[] columnSizes = this.columnSizes;
-        final int widthsOfExtras = this.widthsOfExtras;
-        int cellAvailWidth = tableWidth - widthsOfExtras;
+        val columnSizes = this.columnSizes
+        val widthsOfExtras = this.widthsOfExtras
+        var cellAvailWidth = tableWidth - widthsOfExtras
         if (cellAvailWidth < 0) {
-            tableWidth += (-cellAvailWidth);
-            cellAvailWidth = 0;
+            tableWidth += (-cellAvailWidth)
+            cellAvailWidth = 0
         }
 
         // Determine tentative column widths based on specified cell widths
-
-        determineTentativeSizes(columnSizes, widthsOfExtras, cellAvailWidth, widthKnown);
+        determineTentativeSizes(columnSizes, widthsOfExtras, cellAvailWidth, widthKnown)
 
         // Pre-layout cells. This will give the minimum width of each cell,
         // in addition to the minimum height.
-
-        this.preLayout(hasBorder, cellSpacingX, cellSpacingY, widthKnown);
+        this.preLayout(hasBorder, cellSpacingX, cellSpacingY, widthKnown)
 
         // Increases column widths if they are less than minimums of each cell.
-
-        adjustForLayoutWidths(columnSizes, hasBorder, cellSpacingX, widthKnown);
+        adjustForLayoutWidths(columnSizes, hasBorder, cellSpacingX, widthKnown)
 
         // Adjust for expected total width
-
-        this.adjustWidthsForExpectedMax(columnSizes, cellAvailWidth, widthKnown);
+        this.adjustWidthsForExpectedMax(columnSizes, cellAvailWidth, widthKnown)
     }
 
-    private void layoutColumn(final ColSizeInfo[] columnSizes, final ColSizeInfo colSize, final int col, final int cellSpacingX, final int hasBorder) {
-        final RowSizeInfo[] rowSizes = this.rowSizes;
-        final ArrayList<Row> rows = this.ROWS;
-        final int numRows = rows.size();
-        final int actualSize = colSize.actualSize;
-        colSize.layoutSize = 0;
-        for (int rowIndx = 0; rowIndx < numRows; ) {
+    private fun layoutColumn(
+        columnSizes: Array<ColSizeInfo>,
+        colSize: ColSizeInfo,
+        col: Int,
+        cellSpacingX: Int,
+        hasBorder: Int
+    ) {
+        val rowSizes = this.rowSizes
+        val rows = this.ROWS
+        val numRows = rows.size
+        val actualSize = colSize.actualSize
+        colSize.layoutSize = 0
+        var rowIndx = 0
+        while (rowIndx < numRows) {
             // SizeInfo rowSize = rowSizes[row];
-            final Row row = rows.get(rowIndx);
-            VirtualCell vc = null;
+            val row = rows.get(rowIndx)
+            var vc: VirtualCell? = null
             try {
-                vc = row.get(col);
-            } catch (final IndexOutOfBoundsException iob) {
-                vc = null;
+                vc = row.get(col)
+            } catch (iob: IndexOutOfBoundsException) {
+                vc = null
             }
-            final RAbstractCell ac = vc == null ? null : vc.getActualCell();
+            val ac = if (vc == null) null else vc.getActualCell()
             if (ac != null) {
                 if (ac.getVirtualRow() == rowIndx) {
                     // Only process actual cells with a row
                     // beginning at the current row being processed.
-                    final int colSpan = ac.getColSpan();
+                    val colSpan = ac.getColSpan()
                     if (colSpan > 1) {
-                        final int firstCol = ac.getVirtualColumn();
-                        final int cellExtras = (colSpan - 1) * (cellSpacingX + (2 * hasBorder));
-                        int vcActualWidth = cellExtras;
-                        for (int x = 0; x < colSpan; x++) {
-                            vcActualWidth += columnSizes[firstCol + x].actualSize;
+                        val firstCol = ac.getVirtualColumn()
+                        val cellExtras = (colSpan - 1) * (cellSpacingX + (2 * hasBorder))
+                        var vcActualWidth = cellExtras
+                        for (x in 0..<colSpan) {
+                            vcActualWidth += columnSizes[firstCol + x].actualSize
                         }
                         // TODO: better height possible
-                        final Dimension size = ac.doCellLayout(vcActualWidth, 0, true, true, true);
-                        final int vcRenderWidth = size.width;
+                        val size = ac.doCellLayout(vcActualWidth, 0, true, true, true)
+                        val vcRenderWidth = size.width
 
-                        final int denominator = (vcActualWidth - cellExtras);
-                        int newTentativeCellWidth;
+                        val denominator = (vcActualWidth - cellExtras)
+                        val newTentativeCellWidth: Int
                         if (denominator > 0) {
-                            newTentativeCellWidth = (actualSize * (vcRenderWidth - cellExtras)) / denominator;
+                            newTentativeCellWidth =
+                                (actualSize * (vcRenderWidth - cellExtras)) / denominator
                         } else {
-                            newTentativeCellWidth = (vcRenderWidth - cellExtras) / colSpan;
+                            newTentativeCellWidth = (vcRenderWidth - cellExtras) / colSpan
                         }
                         if (newTentativeCellWidth > colSize.layoutSize) {
-                            colSize.layoutSize = newTentativeCellWidth;
+                            colSize.layoutSize = newTentativeCellWidth
                         }
-                        final int rowSpan = ac.getRowSpan();
-                        final int vch = (size.height - ((rowSpan - 1) * (this.cellSpacingY + (2 * hasBorder)))) / rowSpan;
-                        for (int y = 0; y < rowSpan; y++) {
+                        val rowSpan = ac.getRowSpan()
+                        val vch =
+                            (size.height - ((rowSpan - 1) * (this.cellSpacingY + (2 * hasBorder)))) / rowSpan
+                        for (y in 0..<rowSpan) {
                             if (rowSizes[rowIndx + y].minSize < vch) {
-                                rowSizes[rowIndx + y].minSize = vch;
+                                rowSizes[rowIndx + y].minSize = vch
                             }
                         }
                     } else {
                         // TODO: better height possible
-                        final Dimension size = ac.doCellLayout(actualSize, 0, true, true, true);
+                        val size = ac.doCellLayout(actualSize, 0, true, true, true)
                         if (size.width > colSize.layoutSize) {
-                            colSize.layoutSize = size.width;
+                            colSize.layoutSize = size.width
                         }
 
-                        @NonNull Insets cbi = ac.getBorderInsets();
-                        final int cellFullLayoutWidth = size.width + cbi.left + cbi.right;
+                        val cbi = ac.getBorderInsets()
+                        val cellFullLayoutWidth = size.width + cbi.left + cbi.right
                         if (cellFullLayoutWidth > colSize.fullLayoutSize) {
-                            colSize.fullLayoutSize = cellFullLayoutWidth;
+                            colSize.fullLayoutSize = cellFullLayoutWidth
                         }
 
-                        final int rowSpan = ac.getRowSpan();
-                        final int vch = (size.height - ((rowSpan - 1) * (this.cellSpacingY + (2 * hasBorder)))) / rowSpan;
-                        for (int y = 0; y < rowSpan; y++) {
+                        val rowSpan = ac.getRowSpan()
+                        val vch =
+                            (size.height - ((rowSpan - 1) * (this.cellSpacingY + (2 * hasBorder)))) / rowSpan
+                        for (y in 0..<rowSpan) {
                             if (rowSizes[rowIndx + y].minSize < vch) {
-                                rowSizes[rowIndx + y].minSize = vch;
+                                rowSizes[rowIndx + y].minSize = vch
                             }
                         }
                     }
                 }
             }
             // row = (ac == null ? row + 1 : ac.getVirtualRow() + ac.getRowSpan());
-            rowIndx++;
+            rowIndx++
         }
     }
 
-    private int adjustWidthsForExpectedMax(final ColSizeInfo[] columnSizes, final int cellAvailWidth, final boolean expand) {
-        final int hasBorder = this.hasOldStyleBorder;
-        final int cellSpacingX = this.cellSpacingX;
-        int currentTotal = 0;
-        final int numCols = columnSizes.length;
-        for (int i = 0; i < numCols; i++) {
-            currentTotal += columnSizes[i].fullActualSize;
+    private fun adjustWidthsForExpectedMax(
+        columnSizes: Array<ColSizeInfo>,
+        cellAvailWidth: Int,
+        expand: Boolean
+    ): Int {
+        val hasBorder = this.hasOldStyleBorder
+        val cellSpacingX = this.cellSpacingX
+        var currentTotal = 0
+        val numCols = columnSizes.size
+        for (i in 0..<numCols) {
+            currentTotal += columnSizes[i].fullActualSize
         }
-        int difference = currentTotal - (this.widthsOfExtras + cellAvailWidth);
+        var difference = currentTotal - (this.widthsOfExtras + cellAvailWidth)
         // int difference = currentTotal - (cellAvailWidth);
         if ((difference > 0) || ((difference < 0) && expand)) {
             // First, try to contract/expand columns with no width
-            int noWidthTotal = 0;
-            int numNoWidth = 0;
-            for (int i = 0; i < numCols; i++) {
+            var noWidthTotal = 0
+            var numNoWidth = 0
+            for (i in 0..<numCols) {
                 if (columnSizes[i].htmlLength == null) {
-                    numNoWidth++;
-                    noWidthTotal += columnSizes[i].fullActualSize;
+                    numNoWidth++
+                    noWidthTotal += columnSizes[i].fullActualSize
                 }
             }
             if (numNoWidth > 0) {
                 // TODO: This is not shrinking correctly.
-                int expectedNoWidthTotal = noWidthTotal - difference - this.widthsOfExtras;
+                var expectedNoWidthTotal = noWidthTotal - difference - this.widthsOfExtras
                 if (expectedNoWidthTotal < 0) {
-                    expectedNoWidthTotal = 0;
+                    expectedNoWidthTotal = 0
                 }
-                final double ratio = ((double) expectedNoWidthTotal) / noWidthTotal;
-                int noWidthCount = 0;
-                for (int i = 0; i < numCols; i++) {
-                    final ColSizeInfo sizeInfo = columnSizes[i];
+                val ratio = (expectedNoWidthTotal.toDouble()) / noWidthTotal
+                var noWidthCount = 0
+                for (i in 0..<numCols) {
+                    val sizeInfo = columnSizes[i]
                     if (sizeInfo.htmlLength == null) {
-                        final int oldActualSize = sizeInfo.fullActualSize;
-                        int newActualSize;
+                        val oldActualSize = sizeInfo.fullActualSize
+                        var newActualSize: Int
                         if (++noWidthCount == numNoWidth) {
                             // Last column without a width.
-                            final int currentDiff = currentTotal - cellAvailWidth;
-                            newActualSize = oldActualSize - currentDiff;
+                            val currentDiff = currentTotal - cellAvailWidth
+                            newActualSize = oldActualSize - currentDiff
                             if (newActualSize < 0) {
-                                newActualSize = 0;
+                                newActualSize = 0
                             }
                         } else {
-                            newActualSize = (int) Math.round(oldActualSize * ratio);
+                            newActualSize = Math.round(oldActualSize * ratio).toInt()
                         }
-                        sizeInfo.actualSize = newActualSize;
+                        sizeInfo.actualSize = newActualSize
                         if (newActualSize < sizeInfo.fullLayoutSize) {
                             // See if it actually fits.
-                            this.layoutColumn(columnSizes, sizeInfo, i, cellSpacingX, hasBorder);
+                            this.layoutColumn(columnSizes, sizeInfo, i, cellSpacingX, hasBorder)
                             if (newActualSize < sizeInfo.layoutSize) {
                                 // Didn't fit.
-                                newActualSize = sizeInfo.layoutSize;
-                                sizeInfo.actualSize = newActualSize;
+                                newActualSize = sizeInfo.layoutSize
+                                sizeInfo.actualSize = newActualSize
                             }
                         }
-                        currentTotal += (newActualSize - oldActualSize);
+                        currentTotal += (newActualSize - oldActualSize)
                     }
                 }
-                difference = currentTotal - cellAvailWidth;
+                difference = currentTotal - cellAvailWidth
             }
 
             // See if absolutes need to be contracted
             if ((difference > 0) || ((difference < 0) && expand)) {
-                int absoluteWidthTotal = 0;
-                for (int i = 0; i < numCols; i++) {
-                    final HtmlLength widthLength = columnSizes[i].htmlLength;
-                    if ((widthLength != null) && (widthLength.getLengthType() != HtmlLength.LENGTH)) {
-                        absoluteWidthTotal += columnSizes[i].fullActualSize;
+                var absoluteWidthTotal = 0
+                for (i in 0..<numCols) {
+                    val widthLength = columnSizes[i].htmlLength
+                    if ((widthLength != null) && (widthLength.lengthType != HtmlLength.LENGTH)) {
+                        absoluteWidthTotal += columnSizes[i].fullActualSize
                     }
                 }
                 if (absoluteWidthTotal > 0) {
-                    int expectedAbsoluteWidthTotal = absoluteWidthTotal - difference - this.widthsOfExtras;
+                    var expectedAbsoluteWidthTotal =
+                        absoluteWidthTotal - difference - this.widthsOfExtras
                     if (expectedAbsoluteWidthTotal < 0) {
-                        expectedAbsoluteWidthTotal = 0;
+                        expectedAbsoluteWidthTotal = 0
                     }
-                    final double ratio = ((double) expectedAbsoluteWidthTotal) / absoluteWidthTotal;
-                    for (int i = 0; i < numCols; i++) {
-                        final ColSizeInfo sizeInfo = columnSizes[i];
-                        final HtmlLength widthLength = columnSizes[i].htmlLength;
-                        if ((widthLength != null) && (widthLength.getLengthType() != HtmlLength.LENGTH)) {
-                            final int oldActualSize = sizeInfo.fullActualSize;
-                            int newActualSize = (int) Math.round(oldActualSize * ratio);
-                            sizeInfo.actualSize = newActualSize;
+                    val ratio = (expectedAbsoluteWidthTotal.toDouble()) / absoluteWidthTotal
+                    for (i in 0..<numCols) {
+                        val sizeInfo = columnSizes[i]
+                        val widthLength = columnSizes[i].htmlLength
+                        if ((widthLength != null) && (widthLength.lengthType != HtmlLength.LENGTH)) {
+                            val oldActualSize = sizeInfo.fullActualSize
+                            var newActualSize = Math.round(oldActualSize * ratio).toInt()
+                            sizeInfo.actualSize = newActualSize
                             if (newActualSize < sizeInfo.fullLayoutSize) {
                                 // See if it actually fits.
-                                this.layoutColumn(columnSizes, sizeInfo, i, cellSpacingX, hasBorder);
+                                this.layoutColumn(columnSizes, sizeInfo, i, cellSpacingX, hasBorder)
                                 if (newActualSize < sizeInfo.layoutSize) {
                                     // Didn't fit.
-                                    newActualSize = sizeInfo.layoutSize;
-                                    sizeInfo.actualSize = newActualSize;
+                                    newActualSize = sizeInfo.layoutSize
+                                    sizeInfo.actualSize = newActualSize
                                 }
                             }
-                            currentTotal += (newActualSize - oldActualSize);
+                            currentTotal += (newActualSize - oldActualSize)
                         }
                     }
-                    difference = currentTotal - cellAvailWidth;
+                    difference = currentTotal - cellAvailWidth
                 }
 
                 // See if percentages need to be contracted
                 if ((difference > 0) || ((difference < 0) && expand)) {
-                    int percentWidthTotal = 0;
-                    for (int i = 0; i < numCols; i++) {
-                        final HtmlLength widthLength = columnSizes[i].htmlLength;
-                        if ((widthLength != null) && (widthLength.getLengthType() == HtmlLength.LENGTH)) {
-                            percentWidthTotal += columnSizes[i].actualSize;
+                    var percentWidthTotal = 0
+                    for (i in 0..<numCols) {
+                        val widthLength = columnSizes[i].htmlLength
+                        if ((widthLength != null) && (widthLength.lengthType == HtmlLength.LENGTH)) {
+                            percentWidthTotal += columnSizes[i].actualSize
                         }
                     }
                     if (percentWidthTotal > 0) {
-                        int expectedPercentWidthTotal = percentWidthTotal - difference;
+                        var expectedPercentWidthTotal = percentWidthTotal - difference
                         if (expectedPercentWidthTotal < 0) {
-                            expectedPercentWidthTotal = 0;
+                            expectedPercentWidthTotal = 0
                         }
-                        final double ratio = (double) expectedPercentWidthTotal / percentWidthTotal;
-                        for (int i = 0; i < numCols; i++) {
-                            final ColSizeInfo sizeInfo = columnSizes[i];
-                            final HtmlLength widthLength = columnSizes[i].htmlLength;
-                            if ((widthLength != null) && (widthLength.getLengthType() == HtmlLength.LENGTH)) {
-                                final int oldActualSize = sizeInfo.actualSize;
-                                int newActualSize = (int) Math.round(oldActualSize * ratio);
-                                sizeInfo.actualSize = newActualSize;
+                        val ratio = expectedPercentWidthTotal.toDouble() / percentWidthTotal
+                        for (i in 0..<numCols) {
+                            val sizeInfo = columnSizes[i]
+                            val widthLength = columnSizes[i].htmlLength
+                            if ((widthLength != null) && (widthLength.lengthType == HtmlLength.LENGTH)) {
+                                val oldActualSize = sizeInfo.actualSize
+                                var newActualSize = Math.round(oldActualSize * ratio).toInt()
+                                sizeInfo.actualSize = newActualSize
                                 if (newActualSize < sizeInfo.layoutSize) {
                                     // See if it actually fits.
-                                    this.layoutColumn(columnSizes, sizeInfo, i, cellSpacingX, hasBorder);
+                                    this.layoutColumn(
+                                        columnSizes,
+                                        sizeInfo,
+                                        i,
+                                        cellSpacingX,
+                                        hasBorder
+                                    )
                                     if (newActualSize < sizeInfo.layoutSize) {
                                         // Didn't fit.
-                                        newActualSize = sizeInfo.layoutSize;
-                                        sizeInfo.actualSize = newActualSize;
+                                        newActualSize = sizeInfo.layoutSize
+                                        sizeInfo.actualSize = newActualSize
                                     }
                                 }
-                                currentTotal += (newActualSize - oldActualSize);
+                                currentTotal += (newActualSize - oldActualSize)
                             }
                         }
                     }
@@ -946,389 +811,411 @@ final class TableMatrix {
             }
         } else {
             if (expand) {
-                for (int i = 0; i < numCols; i++) {
-                    final ColSizeInfo sizeInfo = columnSizes[i];
-                    sizeInfo.actualSize = sizeInfo.fullActualSize;
+                for (i in 0..<numCols) {
+                    val sizeInfo = columnSizes[i]
+                    sizeInfo.actualSize = sizeInfo.fullActualSize
                 }
             }
         }
-        return currentTotal;
+        return currentTotal
     }
 
     /**
      * This method renders each cell using already set actual column widths. It
      * sets minimum row heights based on this.
      */
-    private void preLayout(final int hasBorder, final int cellSpacingX, final int cellSpacingY, final boolean tableWidthKnown) {
+    private fun preLayout(
+        hasBorder: Int,
+        cellSpacingX: Int,
+        cellSpacingY: Int,
+        tableWidthKnown: Boolean
+    ) {
         // TODO: Fix for table without width that has a subtable with width=100%.
         // TODO: Maybe it can be addressed when NOWRAP is implemented.
         // TODO: Maybe it's possible to eliminate this pre-layout altogether.
 
-        final ColSizeInfo[] colSizes = this.columnSizes;
-        final RowSizeInfo[] rowSizes = this.rowSizes;
+        val colSizes = this.columnSizes
+        val rowSizes = this.rowSizes
 
         // Initialize minSize in rows
-        final int numRows = rowSizes.length;
-        for (int i = 0; i < numRows; i++) {
-            rowSizes[i].minSize = 0;
+        val numRows = rowSizes.size
+        for (i in 0..<numRows) {
+            rowSizes[i].minSize = 0
         }
 
         // Initialize layoutSize in columns
-        final int numCols = colSizes.length;
-        for (int i = 0; i < numCols; i++) {
-            colSizes[i].layoutSize = 0;
-            colSizes[i].fullLayoutSize = 0;
+        val numCols = colSizes.size
+        for (i in 0..<numCols) {
+            colSizes[i].layoutSize = 0
+            colSizes[i].fullLayoutSize = 0
         }
 
-        for (@NonNull RAbstractCell cell : this.ALL_CELLS) {
-            final int col = cell.getVirtualColumn();
-            final int colSpan = cell.getColSpan();
-            int cellsTotalWidth;
-            int cellsUsedWidth;
-            boolean widthDeclared = false;
+        for (cell in this.ALL_CELLS) {
+            val col = cell.getVirtualColumn()
+            val colSpan = cell.getColSpan()
+            val cellsTotalWidth: Int
+            var cellsUsedWidth: Int
+            var widthDeclared = false
             if (colSpan > 1) {
-                cellsUsedWidth = 0;
-                for (int x = 0; x < colSpan; x++) {
-                    final ColSizeInfo colSize = colSizes[col + x];
+                cellsUsedWidth = 0
+                for (x in 0..<colSpan) {
+                    val colSize = colSizes[col + x]
                     if (colSize.htmlLength != null) {
-                        widthDeclared = true;
+                        widthDeclared = true
                     }
-                    cellsUsedWidth += colSize.actualSize;
+                    cellsUsedWidth += colSize.actualSize
                 }
-                cellsTotalWidth = cellsUsedWidth + ((colSpan - 1) * (cellSpacingX + (2 * hasBorder)));
+                cellsTotalWidth =
+                    cellsUsedWidth + ((colSpan - 1) * (cellSpacingX + (2 * hasBorder)))
             } else {
-                final ColSizeInfo colSize = colSizes[col];
+                val colSize = colSizes[col]
                 if (colSize.htmlLength != null) {
-                    widthDeclared = true;
+                    widthDeclared = true
                 }
-                cellsUsedWidth = cellsTotalWidth = colSize.actualSize;
+                cellsTotalWidth = colSize.actualSize
+                cellsUsedWidth = cellsTotalWidth
             }
 
             // TODO: A tentative height could be used here: Height of
             // table divided by number of rows.
-
-            Dimension size;
-            final RenderThreadState state = RenderThreadState.getState();
-            final boolean prevOverrideNoWrap = state.overrideNoWrap;
+            var size: Dimension
+            val state = RenderThreadState.getState()
+            val prevOverrideNoWrap = state.overrideNoWrap
             try {
                 if (!prevOverrideNoWrap) {
-                    state.overrideNoWrap = !widthDeclared;
+                    state.overrideNoWrap = !widthDeclared
                 }
-                size = cell.doCellLayout(cellsTotalWidth, 0, true, true, true);
+                size = cell.doCellLayout(cellsTotalWidth, 0, true, true, true)
             } finally {
-                state.overrideNoWrap = prevOverrideNoWrap;
+                state.overrideNoWrap = prevOverrideNoWrap
             }
             // Set render widths
-            final int cellLayoutWidth = size.width;
-            @NonNull Insets cbi = cell.getBorderInsets();
-            final int cellFullLayoutWidth = size.width + cbi.left + cbi.right;
+            val cellLayoutWidth = size.width
+            val cbi = cell.getBorderInsets()
+            val cellFullLayoutWidth = size.width + cbi.left + cbi.right
             if (colSpan > 1) {
                 // TODO: set fullLayoutSize
                 if (cellsUsedWidth > 0) {
-                    final double ratio = (double) cellLayoutWidth / cellsUsedWidth;
-                    for (int x = 0; x < colSpan; x++) {
-                        final ColSizeInfo si = colSizes[col + x];
-                        final int newLayoutSize = (int) Math.round(si.actualSize * ratio);
+                    val ratio = cellLayoutWidth.toDouble() / cellsUsedWidth
+                    for (x in 0..<colSpan) {
+                        val si = colSizes[col + x]
+                        val newLayoutSize = Math.round(si.actualSize * ratio).toInt()
                         if (si.layoutSize < newLayoutSize) {
-                            si.layoutSize = newLayoutSize;
+                            si.layoutSize = newLayoutSize
                         }
                     }
                 } else {
-                    final int newLayoutSize = cellLayoutWidth / colSpan;
-                    for (int x = 0; x < colSpan; x++) {
-                        final ColSizeInfo si = colSizes[col + x];
+                    val newLayoutSize = cellLayoutWidth / colSpan
+                    for (x in 0..<colSpan) {
+                        val si = colSizes[col + x]
                         if (si.layoutSize < newLayoutSize) {
-                            si.layoutSize = newLayoutSize;
+                            si.layoutSize = newLayoutSize
                         }
                     }
                 }
             } else {
-                final ColSizeInfo colSizeInfo = colSizes[col];
+                val colSizeInfo = colSizes[col]
                 if (colSizeInfo.layoutSize < cellLayoutWidth) {
-                    colSizeInfo.layoutSize = cellLayoutWidth;
+                    colSizeInfo.layoutSize = cellLayoutWidth
                 }
                 if (colSizeInfo.fullLayoutSize < cellFullLayoutWidth) {
-                    colSizeInfo.fullLayoutSize = cellFullLayoutWidth;
+                    colSizeInfo.fullLayoutSize = cellFullLayoutWidth
                 }
             }
 
             // Set minimum heights
-            final int actualCellHeight = size.height;
-            final int row = cell.getVirtualRow();
-            final int rowSpan = cell.getRowSpan();
+            val actualCellHeight = size.height
+            val row = cell.getVirtualRow()
+            val rowSpan = cell.getRowSpan()
             if (rowSpan > 1) {
-                final int vch = (actualCellHeight - ((rowSpan - 1) * (cellSpacingY + (2 * hasBorder)))) / rowSpan;
-                for (int y = 0; y < rowSpan; y++) {
+                val vch =
+                    (actualCellHeight - ((rowSpan - 1) * (cellSpacingY + (2 * hasBorder)))) / rowSpan
+                for (y in 0..<rowSpan) {
                     if (rowSizes[row + y].minSize < vch) {
-                        rowSizes[row + y].minSize = vch;
+                        rowSizes[row + y].minSize = vch
                     }
                 }
             } else {
                 if (rowSizes[row].minSize < actualCellHeight) {
-                    rowSizes[row].minSize = actualCellHeight;
+                    rowSizes[row].minSize = actualCellHeight
                 }
             }
         }
     }
 
-    private void determineRowSizes(final int hasBorder, final int cellSpacing, final int availHeight, final boolean sizeOnly) {
-        final HtmlLength tableHeightLength = TableMatrix.getHeightLength(this.tableElement, availHeight);
-        int tableHeight;
-        final RowSizeInfo[] rowSizes = this.rowSizes;
-        final int numRows = rowSizes.length;
-        final int heightsOfExtras = this.heightsOfExtras;
+    private fun determineRowSizes(
+        hasBorder: Int,
+        cellSpacing: Int,
+        availHeight: Int,
+        sizeOnly: Boolean
+    ) {
+        val tableHeightLength: HtmlLength? = getHeightLength(this.tableElement, availHeight)
+        var tableHeight: Int
+        val rowSizes = this.rowSizes
+        val numRows = rowSizes.size
+        val heightsOfExtras = this.heightsOfExtras
         if (tableHeightLength != null) {
-            tableHeight = tableHeightLength.getLength(availHeight);
-            this.determineRowSizesFixedTH(hasBorder, cellSpacing, availHeight, tableHeight, sizeOnly);
+            tableHeight = tableHeightLength.getLength(availHeight)
+            this.determineRowSizesFixedTH(
+                hasBorder,
+                cellSpacing,
+                availHeight,
+                tableHeight,
+                sizeOnly
+            )
         } else {
-            tableHeight = heightsOfExtras;
-            for (int row = 0; row < numRows; row++) {
-                tableHeight += rowSizes[row].minSize;
+            tableHeight = heightsOfExtras
+            for (row in 0..<numRows) {
+                tableHeight += rowSizes[row].minSize
             }
-            this.determineRowSizesFlexibleTH(hasBorder, cellSpacing, availHeight, sizeOnly);
+            this.determineRowSizesFlexibleTH(hasBorder, cellSpacing, availHeight, sizeOnly)
         }
     }
 
-    private void determineRowSizesFixedTH(final int hasBorder, final int cellSpacing, final int availHeight, final int tableHeight,
-                                          final boolean sizeOnly) {
-        final RowSizeInfo[] rowSizes = this.rowSizes;
-        final int numRows = rowSizes.length;
-        final int heightsOfExtras = this.heightsOfExtras;
-        int cellAvailHeight = tableHeight - heightsOfExtras;
+    private fun determineRowSizesFixedTH(
+        hasBorder: Int, cellSpacing: Int, availHeight: Int, tableHeight: Int,
+        sizeOnly: Boolean
+    ) {
+        val rowSizes = this.rowSizes
+        val numRows = rowSizes.size
+        val heightsOfExtras = this.heightsOfExtras
+        var cellAvailHeight = tableHeight - heightsOfExtras
         if (cellAvailHeight < 0) {
-            cellAvailHeight = 0;
+            cellAvailHeight = 0
         }
 
         // Look at percentages first
-
-        int heightUsedbyPercent = 0;
-        int otherMinSize = 0;
-        for (int i = 0; i < numRows; i++) {
-            final RowSizeInfo rowSizeInfo = rowSizes[i];
-            final HtmlLength heightLength = rowSizeInfo.htmlLength;
-            if ((heightLength != null) && (heightLength.getLengthType() == HtmlLength.LENGTH)) {
-                int actualSizeInt = heightLength.getLength(cellAvailHeight);
+        var heightUsedbyPercent = 0
+        var otherMinSize = 0
+        for (i in 0..<numRows) {
+            val rowSizeInfo = rowSizes[i]
+            val heightLength = rowSizeInfo.htmlLength
+            if ((heightLength != null) && (heightLength.lengthType == HtmlLength.LENGTH)) {
+                var actualSizeInt = heightLength.getLength(cellAvailHeight)
                 if (actualSizeInt < rowSizeInfo.minSize) {
-                    actualSizeInt = rowSizeInfo.minSize;
+                    actualSizeInt = rowSizeInfo.minSize
                 }
-                heightUsedbyPercent += actualSizeInt;
-                rowSizeInfo.actualSize = actualSizeInt;
+                heightUsedbyPercent += actualSizeInt
+                rowSizeInfo.actualSize = actualSizeInt
             } else {
-                otherMinSize += rowSizeInfo.minSize;
+                otherMinSize += rowSizeInfo.minSize
             }
         }
 
         // Check if rows with percent are bigger than they should be
-
         if ((heightUsedbyPercent + otherMinSize) > cellAvailHeight) {
-            final double ratio = (double) (cellAvailHeight - otherMinSize) / heightUsedbyPercent;
-            for (int i = 0; i < numRows; i++) {
-                final RowSizeInfo rowSizeInfo = rowSizes[i];
-                final HtmlLength heightLength = rowSizeInfo.htmlLength;
-                if ((heightLength != null) && (heightLength.getLengthType() == HtmlLength.LENGTH)) {
-                    final int actualSize = rowSizeInfo.actualSize;
-                    final int prevActualSize = actualSize;
-                    int newActualSize = (int) Math.round(prevActualSize * ratio);
+            val ratio = (cellAvailHeight - otherMinSize).toDouble() / heightUsedbyPercent
+            for (i in 0..<numRows) {
+                val rowSizeInfo = rowSizes[i]
+                val heightLength = rowSizeInfo.htmlLength
+                if ((heightLength != null) && (heightLength.lengthType == HtmlLength.LENGTH)) {
+                    val actualSize = rowSizeInfo.actualSize
+                    val prevActualSize = actualSize
+                    var newActualSize = Math.round(prevActualSize * ratio).toInt()
                     if (newActualSize < rowSizeInfo.minSize) {
-                        newActualSize = rowSizeInfo.minSize;
+                        newActualSize = rowSizeInfo.minSize
                     }
-                    heightUsedbyPercent += (newActualSize - prevActualSize);
-                    rowSizeInfo.actualSize = newActualSize;
+                    heightUsedbyPercent += (newActualSize - prevActualSize)
+                    rowSizeInfo.actualSize = newActualSize
                 }
             }
         }
 
         // Look at rows with absolute sizes
-
-        int heightUsedByAbsolute = 0;
-        int noHeightMinSize = 0;
-        int numNoHeightColumns = 0;
-        for (int i = 0; i < numRows; i++) {
-            final RowSizeInfo rowSizeInfo = rowSizes[i];
-            final HtmlLength heightLength = rowSizeInfo.htmlLength;
-            if ((heightLength != null) && (heightLength.getLengthType() != HtmlLength.LENGTH)) {
+        var heightUsedByAbsolute = 0
+        var noHeightMinSize = 0
+        var numNoHeightColumns = 0
+        for (i in 0..<numRows) {
+            val rowSizeInfo = rowSizes[i]
+            val heightLength = rowSizeInfo.htmlLength
+            if ((heightLength != null) && (heightLength.lengthType != HtmlLength.LENGTH)) {
                 // TODO: MULTI-LENGTH not supported
-                int actualSizeInt = heightLength.getRawValue();
+                var actualSizeInt = heightLength.getRawValue()
                 if (actualSizeInt < rowSizeInfo.minSize) {
-                    actualSizeInt = rowSizeInfo.minSize;
+                    actualSizeInt = rowSizeInfo.minSize
                 }
-                heightUsedByAbsolute += actualSizeInt;
-                rowSizeInfo.actualSize = actualSizeInt;
+                heightUsedByAbsolute += actualSizeInt
+                rowSizeInfo.actualSize = actualSizeInt
             } else if (heightLength == null) {
-                numNoHeightColumns++;
-                noHeightMinSize += rowSizeInfo.minSize;
+                numNoHeightColumns++
+                noHeightMinSize += rowSizeInfo.minSize
             }
         }
 
         // Check if absolute sizing is too much
-
         if ((heightUsedByAbsolute + heightUsedbyPercent + noHeightMinSize) > cellAvailHeight) {
-            final double ratio = (double) (cellAvailHeight - noHeightMinSize - heightUsedbyPercent) / heightUsedByAbsolute;
-            for (int i = 0; i < numRows; i++) {
-                final RowSizeInfo rowSizeInfo = rowSizes[i];
-                final HtmlLength heightLength = rowSizeInfo.htmlLength;
-                if ((heightLength != null) && (heightLength.getLengthType() != HtmlLength.LENGTH)) {
-                    final int actualSize = rowSizeInfo.actualSize;
-                    final int prevActualSize = actualSize;
-                    int newActualSize = (int) Math.round(prevActualSize * ratio);
+            val ratio =
+                (cellAvailHeight - noHeightMinSize - heightUsedbyPercent).toDouble() / heightUsedByAbsolute
+            for (i in 0..<numRows) {
+                val rowSizeInfo = rowSizes[i]
+                val heightLength = rowSizeInfo.htmlLength
+                if ((heightLength != null) && (heightLength.lengthType != HtmlLength.LENGTH)) {
+                    val actualSize = rowSizeInfo.actualSize
+                    val prevActualSize = actualSize
+                    var newActualSize = Math.round(prevActualSize * ratio).toInt()
                     if (newActualSize < rowSizeInfo.minSize) {
-                        newActualSize = rowSizeInfo.minSize;
+                        newActualSize = rowSizeInfo.minSize
                     }
-                    heightUsedByAbsolute += (newActualSize - prevActualSize);
-                    rowSizeInfo.actualSize = newActualSize;
+                    heightUsedByAbsolute += (newActualSize - prevActualSize)
+                    rowSizeInfo.actualSize = newActualSize
                 }
             }
         }
 
         // Assign all rows without heights now
-
-        final int remainingHeight = cellAvailHeight - heightUsedByAbsolute - heightUsedbyPercent;
-        int heightUsedByRemaining = 0;
-        for (int i = 0; i < numRows; i++) {
-            final RowSizeInfo rowSizeInfo = rowSizes[i];
-            final HtmlLength heightLength = rowSizeInfo.htmlLength;
+        val remainingHeight = cellAvailHeight - heightUsedByAbsolute - heightUsedbyPercent
+        var heightUsedByRemaining = 0
+        for (i in 0..<numRows) {
+            val rowSizeInfo = rowSizes[i]
+            val heightLength = rowSizeInfo.htmlLength
             if (heightLength == null) {
-                int actualSizeInt = remainingHeight / numNoHeightColumns;
+                var actualSizeInt = remainingHeight / numNoHeightColumns
                 if (actualSizeInt < rowSizeInfo.minSize) {
-                    actualSizeInt = rowSizeInfo.minSize;
+                    actualSizeInt = rowSizeInfo.minSize
                 }
-                heightUsedByRemaining += actualSizeInt;
-                rowSizeInfo.actualSize = actualSizeInt;
+                heightUsedByRemaining += actualSizeInt
+                rowSizeInfo.actualSize = actualSizeInt
             }
         }
 
         // Calculate actual table width
-
-        final int totalUsed = heightUsedByAbsolute + heightUsedbyPercent + heightUsedByRemaining;
+        val totalUsed = heightUsedByAbsolute + heightUsedbyPercent + heightUsedByRemaining
         if (totalUsed >= cellAvailHeight) {
-            this.tableHeight = totalUsed + heightsOfExtras;
+            this.tableHeight = totalUsed + heightsOfExtras
         } else {
             // Rows too short; expand them
-            final double ratio = (double) cellAvailHeight / totalUsed;
-            for (int i = 0; i < numRows; i++) {
-                final RowSizeInfo rowSizeInfo = rowSizes[i];
-                final int actualSize = rowSizeInfo.actualSize;
-                rowSizeInfo.actualSize = (int) Math.round(actualSize * ratio);
+            val ratio = cellAvailHeight.toDouble() / totalUsed
+            for (i in 0..<numRows) {
+                val rowSizeInfo = rowSizes[i]
+                val actualSize = rowSizeInfo.actualSize
+                rowSizeInfo.actualSize = Math.round(actualSize * ratio).toInt()
             }
-            this.tableHeight = tableHeight;
+            this.tableHeight = tableHeight
         }
 
         // TODO:
         // This final render is probably unnecessary. Avoid exponential rendering
         // by setting a single height of subcell. Verify that IE only sets height
         // of subcells when height of row or table are specified.
-
-        this.finalLayout(hasBorder, cellSpacing, sizeOnly);
+        this.finalLayout(hasBorder, cellSpacing, sizeOnly)
     }
 
-    private void determineRowSizesFlexibleTH(final int hasBorder, final int cellSpacing, final int availHeight, final boolean sizeOnly) {
-        final RowSizeInfo[] rowSizes = this.rowSizes;
-        final int numRows = rowSizes.length;
-        final int heightsOfExtras = this.heightsOfExtras;
+    private fun determineRowSizesFlexibleTH(
+        hasBorder: Int,
+        cellSpacing: Int,
+        availHeight: Int,
+        sizeOnly: Boolean
+    ) {
+        val rowSizes = this.rowSizes
+        val numRows = rowSizes.size
+        val heightsOfExtras = this.heightsOfExtras
 
         // Look at rows with absolute sizes
-        int heightUsedByAbsolute = 0;
-        int percentSum = 0;
-        for (int i = 0; i < numRows; i++) {
-            final RowSizeInfo rowSizeInfo = rowSizes[i];
-            final HtmlLength heightLength = rowSizeInfo.htmlLength;
-            if ((heightLength != null) && (heightLength.getLengthType() == HtmlLength.PIXELS)) {
+        var heightUsedByAbsolute = 0
+        var percentSum = 0
+        for (i in 0..<numRows) {
+            val rowSizeInfo = rowSizes[i]
+            val heightLength = rowSizeInfo.htmlLength
+            if ((heightLength != null) && (heightLength.lengthType == HtmlLength.PIXELS)) {
                 // TODO: MULTI-LENGTH not supported
-                int actualSizeInt = heightLength.getRawValue();
+                var actualSizeInt = heightLength.getRawValue()
                 if (actualSizeInt < rowSizeInfo.minSize) {
-                    actualSizeInt = rowSizeInfo.minSize;
+                    actualSizeInt = rowSizeInfo.minSize
                 }
-                heightUsedByAbsolute += actualSizeInt;
-                rowSizeInfo.actualSize = actualSizeInt;
-            } else if ((heightLength != null) && (heightLength.getLengthType() == HtmlLength.LENGTH)) {
-                percentSum += heightLength.getRawValue();
+                heightUsedByAbsolute += actualSizeInt
+                rowSizeInfo.actualSize = actualSizeInt
+            } else if ((heightLength != null) && (heightLength.lengthType == HtmlLength.LENGTH)) {
+                percentSum += heightLength.getRawValue()
             }
         }
 
         // Look at rows with no specified heights
-        int heightUsedByNoSize = 0;
+        var heightUsedByNoSize = 0
 
         // Set sizes to in row height
-        for (int i = 0; i < numRows; i++) {
-            final RowSizeInfo rowSizeInfo = rowSizes[i];
-            final HtmlLength widthLength = rowSizeInfo.htmlLength;
+        for (i in 0..<numRows) {
+            val rowSizeInfo = rowSizes[i]
+            val widthLength = rowSizeInfo.htmlLength
             if (widthLength == null) {
-                final int actualSizeInt = rowSizeInfo.minSize;
-                heightUsedByNoSize += actualSizeInt;
-                rowSizeInfo.actualSize = actualSizeInt;
+                val actualSizeInt = rowSizeInfo.minSize
+                heightUsedByNoSize += actualSizeInt
+                rowSizeInfo.actualSize = actualSizeInt
             }
         }
 
         // Calculate actual total cell width
-        final int expectedTotalCellHeight = (int) Math.round((heightUsedByAbsolute + heightUsedByNoSize) / (1 - (percentSum / 100.0)));
+        val expectedTotalCellHeight =
+            Math.round((heightUsedByAbsolute + heightUsedByNoSize) / (1 - (percentSum / 100.0)))
+                .toInt()
 
         // Set widths of columns with percentages
-        int heightUsedByPercent = 0;
-        for (int i = 0; i < numRows; i++) {
-            final RowSizeInfo rowSizeInfo = rowSizes[i];
-            final HtmlLength heightLength = rowSizeInfo.htmlLength;
-            if ((heightLength != null) && (heightLength.getLengthType() == HtmlLength.LENGTH)) {
-                int actualSizeInt = heightLength.getLength(expectedTotalCellHeight);
+        var heightUsedByPercent = 0
+        for (i in 0..<numRows) {
+            val rowSizeInfo = rowSizes[i]
+            val heightLength = rowSizeInfo.htmlLength
+            if ((heightLength != null) && (heightLength.lengthType == HtmlLength.LENGTH)) {
+                var actualSizeInt = heightLength.getLength(expectedTotalCellHeight)
                 if (actualSizeInt < rowSizeInfo.minSize) {
-                    actualSizeInt = rowSizeInfo.minSize;
+                    actualSizeInt = rowSizeInfo.minSize
                 }
-                heightUsedByPercent += actualSizeInt;
-                rowSizeInfo.actualSize = actualSizeInt;
+                heightUsedByPercent += actualSizeInt
+                rowSizeInfo.actualSize = actualSizeInt
             }
         }
 
         // Set width of table
-        this.tableHeight = heightUsedByAbsolute + heightUsedByNoSize + heightUsedByPercent + heightsOfExtras;
+        this.tableHeight =
+            heightUsedByAbsolute + heightUsedByNoSize + heightUsedByPercent + heightsOfExtras
 
         // Do a final layouts to set actual cell sizes
-        this.finalLayout(hasBorder, cellSpacing, sizeOnly);
+        this.finalLayout(hasBorder, cellSpacing, sizeOnly)
     }
 
     /**
      * This method layouts each cell using already set actual column widths. It
      * sets minimum row heights based on this.
      */
-    private void finalLayout(final int hasBorder, final int cellSpacing, final boolean sizeOnly) {
+    private fun finalLayout(hasBorder: Int, cellSpacing: Int, sizeOnly: Boolean) {
         // finalLayout needs to adjust actualSize of columns and rows
         // given that things might change as we layout one last time.
-        final ColSizeInfo[] colSizes = this.columnSizes;
-        final RowSizeInfo[] rowSizes = this.rowSizes;
-        for (@NonNull RAbstractCell cell : this.ALL_CELLS) {
-            final int col = cell.getVirtualColumn();
-            final int colSpan = cell.getColSpan();
-            int totalCellWidth;
+        val colSizes = this.columnSizes
+        val rowSizes = this.rowSizes
+        for (cell in this.ALL_CELLS) {
+            val col = cell.getVirtualColumn()
+            val colSpan = cell.getColSpan()
+            var totalCellWidth: Int
             if (colSpan > 1) {
-                totalCellWidth = (colSpan - 1) * (cellSpacing + (2 * hasBorder));
-                for (int x = 0; x < colSpan; x++) {
-                    totalCellWidth += colSizes[col + x].actualSize;
+                totalCellWidth = (colSpan - 1) * (cellSpacing + (2 * hasBorder))
+                for (x in 0..<colSpan) {
+                    totalCellWidth += colSizes[col + x].actualSize
                 }
             } else {
-                totalCellWidth = colSizes[col].actualSize;
+                totalCellWidth = colSizes[col].actualSize
             }
-            final int row = cell.getVirtualRow();
-            final int rowSpan = cell.getRowSpan();
-            int totalCellHeight;
+            val row = cell.getVirtualRow()
+            val rowSpan = cell.getRowSpan()
+            var totalCellHeight: Int
             if (rowSpan > 1) {
-                totalCellHeight = (rowSpan - 1) * (cellSpacing + (2 * hasBorder));
-                for (int y = 0; y < rowSpan; y++) {
-                    totalCellHeight += rowSizes[row + y].actualSize;
+                totalCellHeight = (rowSpan - 1) * (cellSpacing + (2 * hasBorder))
+                for (y in 0..<rowSpan) {
+                    totalCellHeight += rowSizes[row + y].actualSize
                 }
             } else {
-                totalCellHeight = rowSizes[row].actualSize;
+                totalCellHeight = rowSizes[row].actualSize
             }
-            final Dimension size = cell.doCellLayout(totalCellWidth, totalCellHeight, true, true, sizeOnly);
+            val size = cell.doCellLayout(totalCellWidth, totalCellHeight, true, true, sizeOnly)
             if (size.width > totalCellWidth) {
                 if (colSpan == 1) {
-                    colSizes[col].actualSize = size.width;
+                    colSizes[col].actualSize = size.width
                 } else {
-                    colSizes[col].actualSize += (size.width - totalCellWidth);
+                    colSizes[col].actualSize += (size.width - totalCellWidth)
                 }
             }
             if (size.height > totalCellHeight) {
                 if (rowSpan == 1) {
-                    rowSizes[row].actualSize = size.height;
+                    rowSizes[row].actualSize = size.height
                 } else {
-                    rowSizes[row].actualSize += (size.height - totalCellHeight);
+                    rowSizes[row].actualSize += (size.height - totalCellHeight)
                 }
             }
         }
@@ -1390,70 +1277,66 @@ final class TableMatrix {
     // }
     // }
     // }
-
     /**
      * Sets bounds of each cell's component, and sums up table width and height.
      */
-    public void doLayout(final Insets insets) {
-
+    fun doLayout(insets: Insets) {
         // Set row offsets
 
-        final RowSizeInfo[] rowSizes = this.rowSizes;
-        final int numRows = rowSizes.length;
-        int yoffset = insets.top;
-        final int cellSpacingY = this.cellSpacingY;
-        final int hasBorder = this.hasOldStyleBorder;
-        for (int i = 0; i < numRows; i++) {
-            yoffset += cellSpacingY;
-            yoffset += hasBorder;
-            final RowSizeInfo rowSizeInfo = rowSizes[i];
-            yoffset += rowSizeInfo.marginTop;
-            rowSizeInfo.offsetY = yoffset;
-            rowSizeInfo.insetLeft = insets.left;
-            rowSizeInfo.insetRight = insets.right;
-            yoffset += rowSizeInfo.actualSize;
-            yoffset += hasBorder;
-            yoffset += rowSizeInfo.marginBottom;
+        val rowSizes = this.rowSizes
+        val numRows = rowSizes.size
+        var yoffset = insets.top
+        val cellSpacingY = this.cellSpacingY
+        val hasBorder = this.hasOldStyleBorder
+        for (i in 0..<numRows) {
+            yoffset += cellSpacingY
+            yoffset += hasBorder
+            val rowSizeInfo = rowSizes[i]
+            yoffset += rowSizeInfo.marginTop
+            rowSizeInfo.offsetY = yoffset
+            rowSizeInfo.insetLeft = insets.left
+            rowSizeInfo.insetRight = insets.right
+            yoffset += rowSizeInfo.actualSize
+            yoffset += hasBorder
+            yoffset += rowSizeInfo.marginBottom
         }
-        this.tableHeight = yoffset + cellSpacingY + insets.bottom;
+        this.tableHeight = yoffset + cellSpacingY + insets.bottom
 
         // Set column offsets
-
-        final ColSizeInfo[] colSizes = this.columnSizes;
-        final int numColumns = colSizes.length;
-        int xoffset = insets.left;
-        final int cellSpacingX = this.cellSpacingX;
-        for (int i = 0; i < numColumns; i++) {
-            xoffset += cellSpacingX;
-            xoffset += hasBorder;
-            final ColSizeInfo colSizeInfo = colSizes[i];
-            colSizeInfo.offsetX = xoffset;
-            xoffset += colSizeInfo.actualSize;
-            xoffset += hasBorder;
+        val colSizes = this.columnSizes
+        val numColumns = colSizes.size
+        var xoffset = insets.left
+        val cellSpacingX = this.cellSpacingX
+        for (i in 0..<numColumns) {
+            xoffset += cellSpacingX
+            xoffset += hasBorder
+            val colSizeInfo = colSizes[i]
+            colSizeInfo.offsetX = xoffset
+            xoffset += colSizeInfo.actualSize
+            xoffset += hasBorder
         }
-        this.tableWidth = xoffset + cellSpacingX + insets.right + (maxRowGroupRight / 2);
+        this.tableWidth = xoffset + cellSpacingX + insets.right + (maxRowGroupRight / 2)
 
         // Set offsets of each cell
-
-        for (@NonNull RAbstractCell cell : this.ALL_CELLS) {
-            cell.setCellBounds(colSizes, rowSizes, hasBorder, cellSpacingX, cellSpacingY);
+        for (cell in this.ALL_CELLS) {
+            cell.setCellBounds(colSizes, rowSizes, hasBorder, cellSpacingX, cellSpacingY)
         }
-        this.rowGroupSizes = prepareRowGroupSizes();
+        this.rowGroupSizes = prepareRowGroupSizes()
     }
 
-    public void paint(final Graphics g, final Dimension size) {
+    fun paint(g: Graphics, size: Dimension?) {
         // Paint row group backgrounds
-        for (final RowGroupSizeInfo rgsi : rowGroupSizes) {
-            rgsi.prePaintBackground(g);
+        for (rgsi in rowGroupSizes!!) {
+            rgsi.prePaintBackground(g)
         }
 
-        for (final @NonNull RAbstractCell cell : this.ALL_CELLS) {
+        for (cell in this.ALL_CELLS) {
             // Should clip table cells, just in case.
-            final Graphics newG = g.create(cell.x, cell.y, cell.width, cell.height);
+            val newG = g.create(cell.x, cell.y, cell.width, cell.height)
             try {
-                cell.paint(newG);
+                cell.paint(newG)
             } finally {
-                newG.dispose();
+                newG.dispose()
             }
         }
 
@@ -1472,51 +1355,55 @@ final class TableMatrix {
 
             // Paint cell borders
 
-            g.setColor(Color.GRAY);
-            for (@NonNull RAbstractCell cell : this.ALL_CELLS) {
-                final int cx = cell.getX() - 1;
-                final int cy = cell.getY() - 1;
-                final int cwidth = cell.getWidth() + 1;
-                final int cheight = cell.getHeight() + 1;
-                g.drawRect(cx, cy, cwidth, cheight);
+            g.color = Color.GRAY
+            for (cell in this.ALL_CELLS) {
+                val cx = cell.getX() - 1
+                val cy = cell.getY() - 1
+                val cwidth = cell.getWidth() + 1
+                val cheight = cell.getHeight() + 1
+                g.drawRect(cx, cy, cwidth, cheight)
             }
         }
 
         // Paint row group borders
-        for (final RowGroupSizeInfo rgsi : rowGroupSizes) {
-            rgsi.prePaintBorder(g);
+        for (rgsi in rowGroupSizes!!) {
+            rgsi.prePaintBorder(g)
         }
     }
 
     // Called during paint
-    private ArrayList<RowGroupSizeInfo> prepareRowGroupSizes() {
-        final ArrayList<RowGroupSizeInfo> rowGroupSizes = new ArrayList<>();
-        {
-            final RowSizeInfo[] rowSizesLocal = this.rowSizes;
-            for (final RowGroup rowGroup : this.ROW_GROUPS) {
+    private fun prepareRowGroupSizes(): ArrayList<RowGroupSizeInfo> {
+        val rowGroupSizes: ArrayList<RowGroupSizeInfo> = ArrayList<RowGroupSizeInfo>()
+        run {
+            val rowSizesLocal = this.rowSizes
+            for (rowGroup in this.ROW_GROUPS) {
                 if (rowGroup.rowGroupElem != null) {
-                    final Row firstRow = rowGroup.rows.get(0);
-                    final Row lastRow = rowGroup.rows.get(rowGroup.rows.size() - 1);
-                    final RowSizeInfo firstRowSize = rowSizesLocal[firstRow.rowIndex];
-                    final RowSizeInfo lastRowSize = rowSizesLocal[lastRow.rowIndex];
+                    val firstRow = rowGroup.rows.get(0)
+                    val lastRow = rowGroup.rows.get(rowGroup.rows.size - 1)
+                    val firstRowSize = rowSizesLocal[firstRow.rowIndex]
+                    val lastRowSize = rowSizesLocal[lastRow.rowIndex]
 
-                    final int groupHeight = lastRowSize.actualSize + lastRowSize.offsetY - (firstRowSize.offsetY);
-                    final int groupWidth = this.tableWidth - (firstRowSize.insetRight + firstRowSize.insetLeft);
-                    final RTableRowGroup rRowGroup = new RTableRowGroup(this.container, firstRow.rowGroupElem, this.uaContext,
-                            rowGroup.borderOverrider);
-                    final int x = firstRowSize.offsetX + firstRowSize.insetLeft;
-                    final int y = firstRowSize.offsetY;
-                    rRowGroup.setX(x);
-                    rRowGroup.setY(y);
-                    rRowGroup.setWidth(groupWidth);
-                    rRowGroup.setHeight(groupHeight);
-                    rRowGroup.applyStyle(groupWidth, groupHeight, true);
-                    final RowGroupSizeInfo rgsi = new RowGroupSizeInfo(groupWidth, groupHeight, rRowGroup, x, y);
-                    rowGroupSizes.add(rgsi);
+                    val groupHeight =
+                        lastRowSize.actualSize + lastRowSize.offsetY - (firstRowSize.offsetY)
+                    val groupWidth =
+                        this.tableWidth - (firstRowSize.insetRight + firstRowSize.insetLeft)
+                    val rRowGroup = RTableRowGroup(
+                        this.container, firstRow.rowGroupElem, this.uaContext,
+                        rowGroup.borderOverrider
+                    )
+                    val x = firstRowSize.offsetX + firstRowSize.insetLeft
+                    val y = firstRowSize.offsetY
+                    rRowGroup.setX(x)
+                    rRowGroup.setY(y)
+                    rRowGroup.setWidth(groupWidth)
+                    rRowGroup.setHeight(groupHeight)
+                    rRowGroup.applyStyle(groupWidth, groupHeight, true)
+                    val rgsi = RowGroupSizeInfo(groupWidth, groupHeight, rRowGroup, x, y)
+                    rowGroupSizes.add(rgsi)
                 }
             }
         }
-        return rowGroupSizes;
+        return rowGroupSizes
     }
 
     /*
@@ -1525,17 +1412,17 @@ final class TableMatrix {
      * @see org.xamjwg.html.renderer.BoundableRenderable#getRenderablePoint(int,
      * int)
      */
-    public RenderableSpot getLowestRenderableSpot(final int x, final int y) {
-        for (@NonNull RAbstractCell cell : this.ALL_CELLS) {
-            final Rectangle bounds = cell.getVisualBounds();
+    fun getLowestRenderableSpot(x: Int, y: Int): RenderableSpot? {
+        for (cell in this.ALL_CELLS) {
+            val bounds = cell.getVisualBounds()
             if (bounds.contains(x, y)) {
-                final RenderableSpot rp = cell.getLowestRenderableSpot(x - bounds.x, y - bounds.y);
+                val rp = cell.getLowestRenderableSpot(x - bounds.x, y - bounds.y)
                 if (rp != null) {
-                    return rp;
+                    return rp
                 }
             }
         }
-        return null;
+        return null
     }
 
     // public boolean paintSelection(Graphics g, boolean inSelection,
@@ -1577,7 +1464,6 @@ final class TableMatrix {
     // }
     // return inSelection;
     // }
-
     /*
      * (non-Javadoc)
      *
@@ -1585,30 +1471,30 @@ final class TableMatrix {
      * org.xamjwg.html.renderer.BoundableRenderable#onMouseClick(java.awt.event
      * .MouseEvent, int, int)
      */
-    public boolean onMouseClick(final MouseEvent event, final int x, final int y) {
-        for (@NonNull RAbstractCell cell : this.ALL_CELLS) {
-            final Rectangle bounds = cell.getVisualBounds();
+    fun onMouseClick(event: MouseEvent?, x: Int, y: Int): Boolean {
+        for (cell in this.ALL_CELLS) {
+            val bounds = cell.getVisualBounds()
             if (bounds.contains(x, y)) {
                 if (!cell.onMouseClick(event, x - bounds.x, y - bounds.y)) {
-                    return false;
+                    return false
                 }
-                break;
+                break
             }
         }
-        return true;
+        return true
     }
 
-    public boolean onDoubleClick(final MouseEvent event, final int x, final int y) {
-        for (@NonNull RAbstractCell cell : this.ALL_CELLS) {
-            final Rectangle bounds = cell.getVisualBounds();
+    fun onDoubleClick(event: MouseEvent?, x: Int, y: Int): Boolean {
+        for (cell in this.ALL_CELLS) {
+            val bounds = cell.getVisualBounds()
             if (bounds.contains(x, y)) {
                 if (!cell.onDoubleClick(event, x - bounds.x, y - bounds.y)) {
-                    return false;
+                    return false
                 }
-                break;
+                break
             }
         }
-        return true;
+        return true
     }
 
     /*
@@ -1618,13 +1504,13 @@ final class TableMatrix {
      * org.xamjwg.html.renderer.BoundableRenderable#onMouseDisarmed(java.awt.event
      * .MouseEvent)
      */
-    public boolean onMouseDisarmed(final MouseEvent event) {
-        final BoundableRenderable ar = this.armedRenderable;
+    fun onMouseDisarmed(event: MouseEvent?): Boolean {
+        val ar = this.armedRenderable
         if (ar != null) {
-            this.armedRenderable = null;
-            return ar.onMouseDisarmed(event);
+            this.armedRenderable = null
+            return ar.onMouseDisarmed(event)
         } else {
-            return true;
+            return true
         }
     }
 
@@ -1635,21 +1521,21 @@ final class TableMatrix {
      * org.xamjwg.html.renderer.BoundableRenderable#onMousePressed(java.awt.event
      * .MouseEvent, int, int)
      */
-    public boolean onMousePressed(final MouseEvent event, final int x, final int y) {
-        final ArrayList<RAbstractCell> allCells = this.ALL_CELLS;
-        final int numCells = allCells.size();
-        for (int i = 0; i < numCells; i++) {
-            final RAbstractCell cell = allCells.get(i);
-            final Rectangle bounds = cell.getVisualBounds();
+    fun onMousePressed(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val allCells = this.ALL_CELLS
+        val numCells = allCells.size
+        for (i in 0..<numCells) {
+            val cell = allCells.get(i)
+            val bounds = cell.getVisualBounds()
             if (bounds.contains(x, y)) {
                 if (!cell.onMousePressed(event, x - bounds.x, y - bounds.y)) {
-                    this.armedRenderable = cell;
-                    return false;
+                    this.armedRenderable = cell
+                    return false
                 }
-                break;
+                break
             }
         }
-        return true;
+        return true
     }
 
     /*
@@ -1659,193 +1545,196 @@ final class TableMatrix {
      * org.xamjwg.html.renderer.BoundableRenderable#onMouseReleased(java.awt.event
      * .MouseEvent, int, int)
      */
-    public boolean onMouseReleased(final MouseEvent event, final int x, final int y) {
-        final ArrayList<RAbstractCell> allCells = this.ALL_CELLS;
-        final int numCells = allCells.size();
-        boolean found = false;
-        for (int i = 0; i < numCells; i++) {
-            final RAbstractCell cell = allCells.get(i);
-            final Rectangle bounds = cell.getVisualBounds();
+    fun onMouseReleased(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val allCells = this.ALL_CELLS
+        val numCells = allCells.size
+        var found = false
+        for (i in 0..<numCells) {
+            val cell = allCells.get(i)
+            val bounds = cell.getVisualBounds()
             if (bounds.contains(x, y)) {
-                found = true;
-                final BoundableRenderable oldArmedRenderable = this.armedRenderable;
-                if ((oldArmedRenderable != null) && (cell != oldArmedRenderable)) {
-                    oldArmedRenderable.onMouseDisarmed(event);
-                    this.armedRenderable = null;
+                found = true
+                val oldArmedRenderable = this.armedRenderable
+                if ((oldArmedRenderable != null) && (cell !== oldArmedRenderable)) {
+                    oldArmedRenderable.onMouseDisarmed(event)
+                    this.armedRenderable = null
                 }
                 if (!cell.onMouseReleased(event, x - bounds.x, y - bounds.y)) {
-                    return false;
+                    return false
                 }
-                break;
+                break
             }
         }
         if (!found) {
-            final BoundableRenderable oldArmedRenderable = this.armedRenderable;
+            val oldArmedRenderable = this.armedRenderable
             if (oldArmedRenderable != null) {
-                oldArmedRenderable.onMouseDisarmed(event);
-                this.armedRenderable = null;
+                oldArmedRenderable.onMouseDisarmed(event)
+                this.armedRenderable = null
             }
         }
-        return true;
+        return true
     }
 
-    Iterator<@NonNull RAbstractCell> getCells() {
-        return this.ALL_CELLS.iterator();
-    }
+    val cells: MutableIterator<RAbstractCell>
+        get() = this.ALL_CELLS.iterator()
 
-    public Iterator<@NonNull RTableRowGroup> getRowGroups() {
-        return this.rowGroupSizes.stream().map(rgs -> rgs.r).iterator();
-    }
+    val rowGroups: MutableIterator<RTableRowGroup>
+        get() = this.rowGroupSizes!!.stream()
+            .map<RTableRowGroup> { rgs: RowGroupSizeInfo? -> rgs.r }
+            .iterator()
 
-    private static final class RowGroup {
-        final ArrayList<Row> rows = new ArrayList<>();
-        final BorderOverrider borderOverrider = new BorderOverrider();
-        private final HTMLElementImpl rowGroupElem;
+    private class RowGroup(rowGroupElem: HTMLElementImpl?) {
+        val rows: ArrayList<Row> = ArrayList<Row>()
+        val borderOverrider: BorderOverrider = BorderOverrider()
+        private val rowGroupElem: HTMLElementImpl?
 
-        public RowGroup(final HTMLElementImpl rowGroupElem) {
-            this.rowGroupElem = rowGroupElem;
+        init {
+            this.rowGroupElem = rowGroupElem
         }
 
-        void add(final Row row) {
-            rows.add(row);
-            row.rowGroup = this;
+        fun add(row: Row) {
+            rows.add(row)
+            row.rowGroup = this
         }
 
-        public void finish() {
-            final int numRows = rows.size();
-            int minCellBorderLeft = -1;
-            int minCellBorderRight = -1;
-            for (int i = 0; i < numRows; i++) {
-                final Row r = rows.get(i);
-                final int cellBorderLeftMost = r.getCellBorderLeftMost();
+        fun finish() {
+            val numRows = rows.size
+            var minCellBorderLeft = -1
+            var minCellBorderRight = -1
+            for (i in 0..<numRows) {
+                val r = rows.get(i)
+                val cellBorderLeftMost = r.cellBorderLeftMost
                 if ((minCellBorderLeft == -1) || (cellBorderLeftMost < minCellBorderLeft)) {
-                    minCellBorderLeft = cellBorderLeftMost;
+                    minCellBorderLeft = cellBorderLeftMost
                 }
-                final int cellBorderRightMost = r.getCellBorderRightMost();
+                val cellBorderRightMost = r.cellBorderRightMost
                 if ((minCellBorderRight == -1) || (cellBorderRightMost < minCellBorderRight)) {
-                    minCellBorderRight = cellBorderRightMost;
+                    minCellBorderRight = cellBorderRightMost
                 }
             }
-            final int minCellBorderTop = rows.get(0).minCellBorderTop;
-            final int minCellBorderBottom = rows.get(0).minCellBorderBottom;
+            val minCellBorderTop = rows.get(0).minCellBorderTop
+            val minCellBorderBottom = rows.get(0).minCellBorderBottom
 
-            final Insets groupBorderInsets = rowGroupElem == null ? null : getCSSInsets(rowGroupElem.getRenderState());
+            val groupBorderInsets: Insets? =
+                if (rowGroupElem == null) null else getCSSInsets(rowGroupElem.getRenderState())
 
             if (groupBorderInsets != null) {
                 if (groupBorderInsets.top <= minCellBorderTop) {
-                    borderOverrider.topOverridden = true;
+                    borderOverrider.topOverridden = true
                 } else {
-                    final Row firstRow = rows.get(0);
-                    for (final VirtualCell cell : firstRow.cells) {
+                    val firstRow = rows.get(0)
+                    for (cell in firstRow.cells) {
                         // TODO: Only override if cells border is less than minCellBorderTop (?)
-                        cell.getActualCell().borderOverrider.topOverridden = true;
+                        cell.getActualCell().borderOverrider.topOverridden = true
                     }
                 }
 
                 if (groupBorderInsets.bottom <= minCellBorderBottom) {
-                    borderOverrider.bottomOverridden = true;
+                    borderOverrider.bottomOverridden = true
                 } else {
-                    final Row lastRow = rows.get(rows.size() - 1);
-                    for (final VirtualCell cell : lastRow.cells) {
+                    val lastRow = rows.get(rows.size - 1)
+                    for (cell in lastRow.cells) {
                         // TODO: Only override if cells border is less than minCellBorderBottom (?)
-                        cell.getActualCell().borderOverrider.bottomOverridden = true;
+                        cell.getActualCell().borderOverrider.bottomOverridden = true
                     }
                 }
 
                 if (groupBorderInsets.left <= minCellBorderLeft) {
-                    borderOverrider.leftOverridden = true;
+                    borderOverrider.leftOverridden = true
                 } else {
-                    for (final Row row : rows) {
-                        row.getLeftMostCell().getActualCell().borderOverrider.leftOverridden = true;
+                    for (row in rows) {
+                        row.leftMostCell!!.getActualCell().borderOverrider.leftOverridden = true
                     }
                 }
                 if (groupBorderInsets.right <= minCellBorderRight) {
-                    borderOverrider.rightOverridden = true;
+                    borderOverrider.rightOverridden = true
                 } else {
-                    for (final Row row : rows) {
-                        row.getRightMostCell().getActualCell().borderOverrider.rightOverridden = true;
+                    for (row in rows) {
+                        row.rightMostCell!!.getActualCell().borderOverrider.rightOverridden = true
                     }
                 }
             }
         }
 
-        @Nullable
-        HtmlInsets getGroupBorderInsets() {
-            final BorderInfo borderInfo = rowGroupElem == null ? null : rowGroupElem.getRenderState().getBorderInfo();
-            return borderInfo == null ? null : borderOverrider.get(borderInfo.insets);
-        }
-
+        val groupBorderInsets: HtmlInsets?
+            get() {
+                val borderInfo =
+                    if (rowGroupElem == null) null else rowGroupElem.getRenderState()
+                        .borderInfo
+                return if (borderInfo == null) null else borderOverrider.get(borderInfo.insets)
+            }
     }
 
-    private static final class Row {
-        final ArrayList<VirtualCell> cells = new ArrayList<>();
-        final HTMLElementImpl rowGroupElem;
+    private class Row(rowGroup: HTMLElementImpl?) {
+        val cells: ArrayList<VirtualCell> = ArrayList<VirtualCell>()
+        val rowGroupElem: HTMLElementImpl?
+
         // TODO: Add getters and make private for the following four
-        public boolean firstInGroup;
-        public boolean lastInGroup;
-        public int maxCellBorderTop = 0;
-        public int maxCellBorderBottom = 0;
-        RowGroup rowGroup;
-        int minCellBorderBottom = -1;
-        int minCellBorderTop = -1;
-        int rowIndex;
+        var firstInGroup: Boolean = false
+        var lastInGroup: Boolean = false
+        var maxCellBorderTop: Int = 0
+        var maxCellBorderBottom: Int = 0
+        var rowGroup: RowGroup? = null
+        var minCellBorderBottom: Int = -1
+        var minCellBorderTop: Int = -1
+        var rowIndex: Int = 0
 
-        Row(final HTMLElementImpl rowGroup) {
-            this.rowGroupElem = rowGroup;
+        init {
+            this.rowGroupElem = rowGroup
         }
 
-        VirtualCell getLeftMostCell() {
-            return cells.get(0);
-        }
+        val leftMostCell: VirtualCell?
+            get() = cells.get(0)
 
-        VirtualCell getRightMostCell() {
-            return cells.get(cells.size() - 1);
-        }
+        val rightMostCell: VirtualCell?
+            get() = cells.get(cells.size - 1)
 
-        int getCellBorderRightMost() {
-            return getCSSInsets(getLeftMostCell().getActualCell().getRenderState()).right;
-        }
+        val cellBorderRightMost: Int
+            get() = getCSSInsets(
+                this.leftMostCell.getActualCell().getRenderState()
+            )!!.right
 
-        int getCellBorderLeftMost() {
-            return getCSSInsets(getLeftMostCell().getActualCell().getRenderState()).left;
-        }
+        val cellBorderLeftMost: Int
+            get() = getCSSInsets(
+                this.leftMostCell.getActualCell().getRenderState()
+            )!!.left
 
-        void add(final @Nullable VirtualCell cell) {
+        fun add(cell: VirtualCell?) {
             if (cell != null) {
-                final RAbstractCell ac = cell.getActualCell();
-                final @NonNull RenderState rs = ac.getRenderState();
-                BorderInfo binfo = rs.getBorderInfo();
+                val ac = cell.getActualCell()
+                val rs = ac.getRenderState()
+                val binfo = rs.getBorderInfo()
                 if (binfo != null) {
-                    final HtmlInsets bi = binfo.insets;
+                    val bi = binfo.insets
                     if (bi != null) {
                         if (bi.top > maxCellBorderTop) {
-                            maxCellBorderTop = bi.top;
+                            maxCellBorderTop = bi.top
                         }
                         if ((bi.top < minCellBorderTop) || (minCellBorderTop == -1)) {
-                            minCellBorderTop = bi.top;
+                            minCellBorderTop = bi.top
                         }
                         if (bi.bottom > maxCellBorderBottom) {
-                            maxCellBorderBottom = bi.bottom;
+                            maxCellBorderBottom = bi.bottom
                         }
                         if ((bi.bottom < minCellBorderBottom) || (minCellBorderBottom == -1)) {
-                            minCellBorderBottom = bi.bottom;
+                            minCellBorderBottom = bi.bottom
                         }
                     }
                 }
             }
-            cells.add(cell);
+            cells.add(cell!!)
         }
 
-        public void add(int nc, VirtualCell virtualCell) {
-            cells.add(nc, virtualCell);
+        fun add(nc: Int, virtualCell: VirtualCell?) {
+            cells.add(nc, virtualCell!!)
         }
 
-        public int size() {
-            return cells.size();
+        fun size(): Int {
+            return cells.size
         }
 
-        public VirtualCell get(int c) {
-            return cells.get(c);
+        fun get(c: Int): VirtualCell? {
+            return cells.get(c)
         }
     }
 
@@ -1854,181 +1743,421 @@ final class TableMatrix {
      * non-existing parents by creating a place holder.
      * For example, helps map table rows to virtual cells (which are delegates for table columns).
      */
-    private static final class TableRelation {
-        private final Map<HTMLElementImpl, Row> elementToRow = new HashMap<>(2);
-        private final ArrayList<Row> listOfRows;
-        private final ArrayList<RowGroup> listOfRowGroups;
-        private Row currentFallbackRow = null;
+    private class TableRelation(listOfRows: ArrayList<Row>, listOfRowGroups: ArrayList<RowGroup>) {
+        private val elementToRow: MutableMap<HTMLElementImpl?, Row?> =
+            HashMap<HTMLElementImpl?, Row?>(2)
+        private val listOfRows: ArrayList<Row>
+        private val listOfRowGroups: ArrayList<RowGroup>
+        private var currentFallbackRow: Row? = null
 
-        public TableRelation(final ArrayList<Row> listOfRows, final ArrayList<RowGroup> listOfRowGroups) {
-            this.listOfRows = listOfRows;
-            this.listOfRowGroups = listOfRowGroups;
+        init {
+            this.listOfRows = listOfRows
+            this.listOfRowGroups = listOfRowGroups
         }
 
-        void associate(final HTMLElementImpl rowGroupElem, final HTMLElementImpl rowElem, final VirtualCell cell) {
-            Row row;
+        fun associate(
+            rowGroupElem: HTMLElementImpl?,
+            rowElem: HTMLElementImpl?,
+            cell: VirtualCell?
+        ) {
+            var row: Row?
             if (rowElem != null) {
-                currentFallbackRow = null;
-                row = elementToRow.get(rowElem);
+                currentFallbackRow = null
+                row = elementToRow.get(rowElem)
                 if (row == null) {
-                    row = createRow(rowGroupElem);
-                    elementToRow.put(rowElem, row);
+                    row = createRow(rowGroupElem)
+                    elementToRow.put(rowElem, row)
                 }
             } else {
                 // Doesn't have a parent. Let's add a list just for itself.
                 if (currentFallbackRow != null) {
-                    row = currentFallbackRow;
+                    row = currentFallbackRow
                 } else {
-                    row = createRow(rowGroupElem);
-                    currentFallbackRow = row;
+                    row = createRow(rowGroupElem)
+                    currentFallbackRow = row
                 }
             }
-            row.add(cell);
+            row!!.add(cell)
         }
 
-        private Row createRow(final HTMLElementImpl rowGroupElem) {
-            final Row row = new Row(rowGroupElem);
-            row.rowIndex = this.listOfRows.size();
-            this.listOfRows.add(row);
-            return row;
+        fun createRow(rowGroupElem: HTMLElementImpl?): Row {
+            val row = Row(rowGroupElem)
+            row.rowIndex = this.listOfRows.size
+            this.listOfRows.add(row)
+            return row
         }
 
-        void finish() {
-            HTMLElementImpl prevRowGroupElem = null;
-            RowGroup currentRowGroup = null;
-            int numRows = listOfRows.size();
-            for (int i = 0; i < numRows; i++) {
-                final Row row = listOfRows.get(i);
-                row.firstInGroup = (i == 0) || (row.rowGroupElem != prevRowGroupElem);
-                row.lastInGroup = (i == numRows - 1) || (listOfRows.get(i + 1).rowGroupElem != row.rowGroupElem);
+        fun finish() {
+            var prevRowGroupElem: HTMLElementImpl? = null
+            var currentRowGroup: RowGroup? = null
+            val numRows = listOfRows.size
+            for (i in 0..<numRows) {
+                val row = listOfRows.get(i)
+                row.firstInGroup = (i == 0) || (row.rowGroupElem !== prevRowGroupElem)
+                row.lastInGroup =
+                    (i == numRows - 1) || (listOfRows.get(i + 1).rowGroupElem !== row.rowGroupElem)
                 if (row.firstInGroup) {
-                    currentRowGroup = new RowGroup(row.rowGroupElem);
-                    this.listOfRowGroups.add(currentRowGroup);
+                    currentRowGroup = RowGroup(row.rowGroupElem)
+                    this.listOfRowGroups.add(currentRowGroup)
                 }
-                assert (currentRowGroup != null);
-                currentRowGroup.add(row);
+                checkNotNull(currentRowGroup)
+                currentRowGroup.add(row)
                 if (row.lastInGroup) {
-                    currentRowGroup.finish();
+                    currentRowGroup.finish()
                 }
-                prevRowGroupElem = row.rowGroupElem;
+                prevRowGroupElem = row.rowGroupElem
             }
         }
     }
 
-    static class RTableRowGroup extends BaseElementRenderable {
-
-        public RTableRowGroup(RenderableContainer container, ModelNode modelNode, UserAgentContext ucontext, final BorderOverrider borderOverrider) {
-            super(container, modelNode, ucontext);
-            this.borderOverrider.copyFrom(borderOverrider);
+    internal class RTableRowGroup(
+        container: RenderableContainer?,
+        modelNode: ModelNode?,
+        ucontext: UserAgentContext?,
+        borderOverrider: BorderOverrider
+    ) : BaseElementRenderable(container, modelNode, ucontext) {
+        init {
+            this.borderOverrider.copyFrom(borderOverrider)
         }
 
-        @Override
-        public Iterator<@NonNull ? extends Renderable> getRenderables(boolean topFirst) {
-            return null;
+        override fun getRenderables(topFirst: Boolean): MutableIterator<out Renderable>? {
+            return null
         }
 
-        @Override
-        public RenderableSpot getLowestRenderableSpot(int x, int y) {
-            return null;
+        override fun getLowestRenderableSpot(x: Int, y: Int): RenderableSpot? {
+            return null
         }
 
-        @Override
-        public boolean onMouseReleased(MouseEvent event, int x, int y) {
-            return false;
+        override fun onMouseReleased(event: MouseEvent?, x: Int, y: Int): Boolean {
+            return false
         }
 
-        @Override
-        public boolean onMouseDisarmed(MouseEvent event) {
-            return false;
+        override fun onMouseDisarmed(event: MouseEvent?): Boolean {
+            return false
         }
 
-        @Override
-        public boolean onDoubleClick(MouseEvent event, int x, int y) {
-            return false;
+        override fun onDoubleClick(event: MouseEvent?, x: Int, y: Int): Boolean {
+            return false
         }
 
-        @Override
-        public void repaint() {
-            container.repaint(x, y, width, height);
+        override fun repaint() {
+            container.repaint(x, y, width, height)
         }
 
-        @Override
-        public void repaint(ModelNode modelNode) {
+        override fun repaint(modelNode: ModelNode?) {
             // TODO Auto-generated method stub
         }
 
-        @Override
-        public Color getPaintedBackgroundColor() {
+        override fun getPaintedBackgroundColor(): Color? {
             // TODO Auto-generated method stub
-            return null;
+            return null
         }
 
-        @Override
-        protected void paintShifted(Graphics g) {
+        override fun paintShifted(g: Graphics?) {
             // TODO Auto-generated method stub
         }
 
-        @Override
-        protected void doLayout(int availWidth, int availHeight, boolean sizeOnly) {
+        override fun doLayout(availWidth: Int, availHeight: Int, sizeOnly: Boolean) {
             // TODO Auto-generated method stub
         }
 
-        @Override
-        public @NonNull Insets getBorderInsets() {
-            return borderOverrider.get(super.getBorderInsets());
+        override fun getBorderInsets(): Insets {
+            return borderOverrider.get(super.getBorderInsets())
         }
     }
 
-    static final class ColSizeInfo {
-        HtmlLength htmlLength;
-        int actualSize;
-        int fullActualSize; // Full size including border and padding
-        int layoutSize;
-        int fullLayoutSize; // Full size including border and padding
-        int minSize;
-        int offsetX;
+    internal class ColSizeInfo {
+        var htmlLength: HtmlLength? = null
+        var actualSize: Int = 0
+        var fullActualSize: Int = 0 // Full size including border and padding
+        var layoutSize: Int = 0
+        var fullLayoutSize: Int = 0 // Full size including border and padding
+        var minSize: Int = 0
+        var offsetX: Int = 0
     }
 
-    static final class RowSizeInfo {
-        int insetLeft;
-        int insetRight;
-        HtmlLength htmlLength;
-        int actualSize;
-        int minSize;
+    internal class RowSizeInfo {
+        var insetLeft: Int = 0
+        var insetRight: Int = 0
+        var htmlLength: HtmlLength? = null
+        var actualSize: Int = 0
+        var minSize: Int = 0
 
-        int offsetX;
-        int offsetY;
+        var offsetX: Int = 0
+        var offsetY: Int = 0
 
-        int marginTop;
-        int marginBottom;
+        var marginTop: Int = 0
+        var marginBottom: Int = 0
     }
 
-    private static final class RowGroupSizeInfo {
-        private final int height;
-        private final int width;
-        private final int x;
-        private final int y;
+    private class RowGroupSizeInfo(width: Int, height: Int, r: RTableRowGroup, x: Int, y: Int) {
+        private val height: Int
+        private val width: Int
+        private val x: Int
+        private val y: Int
 
-        private final @NonNull RTableRowGroup r;
+        private val r: RTableRowGroup
 
-        RowGroupSizeInfo(final int width, final int height, final @NonNull RTableRowGroup r, final int x, final int y) {
-            this.height = height;
-            this.width = width;
-            this.r = r;
-            this.x = x;
-            this.y = y;
+        init {
+            this.height = height
+            this.width = width
+            this.r = r
+            this.x = x
+            this.y = y
         }
 
 
-        void prePaintBackground(final Graphics g) {
-            final Insets bi = r.getBorderInsets();
-            final ModelNode rowGroupElem = r.getModelNode();
-            r.prePaintBackground(g, width - (bi.left / 2), height, x, y, rowGroupElem, rowGroupElem.getRenderState(), bi);
+        fun prePaintBackground(g: Graphics) {
+            val bi = r.getBorderInsets()
+            val rowGroupElem = r.getModelNode()
+            r.prePaintBackground(
+                g,
+                width - (bi.left / 2),
+                height,
+                x,
+                y,
+                rowGroupElem,
+                rowGroupElem.renderState,
+                bi
+            )
         }
 
-        void prePaintBorder(final Graphics g) {
-            final Insets bi = r.getBorderInsets();
-            r.prePaintBorder(g, width + (bi.left) / 2 + bi.right, height + bi.top + bi.bottom, x - bi.left, y - bi.top, bi);
+        fun prePaintBorder(g: Graphics?) {
+            val bi = r.getBorderInsets()
+            r.prePaintBorder(
+                g,
+                width + (bi.left) / 2 + bi.right,
+                height + bi.top + bi.bottom,
+                x - bi.left,
+                y - bi.top,
+                bi
+            )
+        }
+    }
+
+    companion object {
+        private fun getWidthLength(element: HTMLElementImpl, availWidth: Int): HtmlLength? {
+            try {
+                val props = element.getCurrentStyle()
+                val widthText = props.width
+                if (widthText == null) {
+                    // TODO: convert attributes to CSS properties
+                    val widthAttr = element.getAttribute("width")
+                    if (widthAttr == null) {
+                        return null
+                    }
+                    return HtmlLength(
+                        HtmlValues.getPixelSize(
+                            widthAttr,
+                            element.getRenderState(),
+                            0,
+                            availWidth
+                        )
+                    )
+                } else {
+                    return HtmlLength(
+                        HtmlValues.getPixelSize(
+                            widthText,
+                            element.getRenderState(),
+                            0,
+                            availWidth
+                        )
+                    )
+                }
+            } catch (err: NumberFormatException) {
+                println("Exception while parsing width: " + err)
+                return null
+            }
+        }
+
+        private fun getHeightLength(element: HTMLElementImpl, availHeight: Int): HtmlLength? {
+            try {
+                val props = element.getCurrentStyle()
+                val heightText = props.height
+                if (heightText == null) {
+                    val ha = element.getAttribute("height")
+                    if (ha == null) {
+                        return null
+                    } else {
+                        return HtmlLength(
+                            HtmlValues.getPixelSize(
+                                ha,
+                                element.getRenderState(),
+                                0,
+                                availHeight
+                            )
+                        )
+                    }
+                } else {
+                    return HtmlLength(
+                        HtmlValues.getPixelSize(
+                            heightText,
+                            element.getRenderState(),
+                            0,
+                            availHeight
+                        )
+                    )
+                }
+            } catch (err: NumberFormatException) {
+                println("Exception while parsing height: " + err)
+                return null
+            }
+        }
+
+        fun getCSSInsets(rs: RenderState): Insets? {
+            val borderInfo = rs.borderInfo
+            val elemBorderHtmlInsets = if (borderInfo == null) null else borderInfo.insets
+            return if (elemBorderHtmlInsets == null) RBlockViewport.Companion.ZERO_INSETS else elemBorderHtmlInsets.getAWTInsets(
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            )
+        }
+
+        /**
+         * This method sets the tentative actual sizes of columns (rows) based on
+         * specified widths (heights) if available.
+         *
+         * @param columnSizes
+         * @param widthsOfExtras
+         * @param cellAvailWidth
+         */
+        private fun determineTentativeSizes(
+            columnSizes: Array<ColSizeInfo>, widthsOfExtras: Int, cellAvailWidth: Int,
+            setNoWidthColumns: Boolean
+        ) {
+            val numCols = columnSizes.size
+
+            // Look at percentages first
+            var widthUsedByPercent = 0
+            for (i in 0..<numCols) {
+                val colSizeInfo = columnSizes[i]
+                val widthLength = colSizeInfo.htmlLength
+                if ((widthLength != null) && (widthLength.lengthType == HtmlLength.LENGTH)) {
+                    val actualSizeInt = widthLength.getLength(cellAvailWidth)
+                    widthUsedByPercent += actualSizeInt
+                    colSizeInfo.actualSize = actualSizeInt
+                }
+            }
+
+            // Look at columns with absolute sizes
+            var widthUsedByAbsolute = 0
+            var numNoWidthColumns = 0
+            for (i in 0..<numCols) {
+                val colSizeInfo = columnSizes[i]
+                val widthLength = colSizeInfo.htmlLength
+                if ((widthLength != null) && (widthLength.lengthType != HtmlLength.LENGTH)) {
+                    // TODO: MULTI-LENGTH not supported
+                    val actualSizeInt = widthLength.getRawValue()
+                    widthUsedByAbsolute += actualSizeInt
+                    colSizeInfo.actualSize = actualSizeInt
+                } else if (widthLength == null) {
+                    numNoWidthColumns++
+                }
+            }
+
+            // Tentative width of all columns without a declared
+            // width is set to zero. The pre-render will determine
+            // a better size.
+
+            // // Assign all columns without widths now
+            // int widthUsedByUnspecified = 0;
+            // if(setNoWidthColumns) {
+            // int remainingWidth = cellAvailWidth - widthUsedByAbsolute -
+            // widthUsedByPercent;
+            // if(remainingWidth > 0) {
+            // for(int i = 0; i < numCols; i++) {
+            // SizeInfo colSizeInfo = columnSizes[i];
+            // HtmlLength widthLength = colSizeInfo.htmlLength;
+            // if(widthLength == null) {
+            // int actualSizeInt = remainingWidth / numNoWidthColumns;
+            // widthUsedByUnspecified += actualSizeInt;
+            // colSizeInfo.actualSize = actualSizeInt;
+            // }
+            // }
+            // }
+            // }
+
+            // Contract if necessary. This is done again later, but this is
+            // an optimization, as it may prevent re-layout. It is only done
+            // if all columns have some kind of declared width.
+            if (numNoWidthColumns == 0) {
+                var totalWidthUsed = widthUsedByPercent + widthUsedByAbsolute
+                var difference = totalWidthUsed - cellAvailWidth
+                // See if absolutes need to be contracted
+                if (difference > 0) {
+                    if (widthUsedByAbsolute > 0) {
+                        var expectedAbsoluteWidthTotal = widthUsedByAbsolute - difference
+                        if (expectedAbsoluteWidthTotal < 0) {
+                            expectedAbsoluteWidthTotal = 0
+                        }
+                        val ratio = expectedAbsoluteWidthTotal.toDouble() / widthUsedByAbsolute
+                        for (i in 0..<numCols) {
+                            val sizeInfo = columnSizes[i]
+                            val widthLength = columnSizes[i].htmlLength
+                            if ((widthLength != null) && (widthLength.lengthType != HtmlLength.LENGTH)) {
+                                val oldActualSize = sizeInfo.actualSize
+                                val newActualSize = Math.round(oldActualSize * ratio).toInt()
+                                sizeInfo.actualSize = newActualSize
+                                totalWidthUsed += (newActualSize - oldActualSize)
+                            }
+                        }
+                        difference = totalWidthUsed - cellAvailWidth
+                    }
+
+                    // See if percentages need to be contracted
+                    if (difference > 0) {
+                        if (widthUsedByPercent > 0) {
+                            var expectedPercentWidthTotal = widthUsedByPercent - difference
+                            if (expectedPercentWidthTotal < 0) {
+                                expectedPercentWidthTotal = 0
+                            }
+                            val ratio = expectedPercentWidthTotal.toDouble() / widthUsedByPercent
+                            for (i in 0..<numCols) {
+                                val sizeInfo = columnSizes[i]
+                                val widthLength = columnSizes[i].htmlLength
+                                if ((widthLength != null) && (widthLength.lengthType == HtmlLength.LENGTH)) {
+                                    val oldActualSize = sizeInfo.actualSize
+                                    val newActualSize = Math.round(oldActualSize * ratio).toInt()
+                                    sizeInfo.actualSize = newActualSize
+                                    totalWidthUsed += (newActualSize - oldActualSize)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /**
+         * Expands column sizes according to layout sizes.
+         */
+        private fun adjustForLayoutWidths(
+            columnSizes: Array<ColSizeInfo>, hasBorder: Int, cellSpacing: Int,
+            tableWidthKnown: Boolean
+        ) {
+            val numCols = columnSizes.size
+            for (i in 0..<numCols) {
+                val si = columnSizes[i]
+                if (si.actualSize < si.layoutSize) {
+                    si.actualSize = si.layoutSize
+                }
+                if (si.fullActualSize < si.fullLayoutSize) {
+                    si.fullActualSize = si.fullLayoutSize
+                }
+                // else if(si.htmlLength == null) {
+                // // For cells without a declared width, see if
+                // // their tentative width is a bit too big.
+                // if(si.actualSize > si.layoutSize) {
+                // si.actualSize = si.layoutSize;
+                // }
+                // }
+            }
         }
     }
 }

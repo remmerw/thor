@@ -13,61 +13,50 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+package io.github.remmerw.thor.cobra.css.domimpl
 
-package io.github.remmerw.thor.cobra.css.domimpl;
+import cz.vutbr.web.css.Declaration
+import cz.vutbr.web.css.RulePage
+import org.w3c.dom.DOMException
+import org.w3c.dom.css.CSSPageRule
+import org.w3c.dom.css.CSSStyleDeclaration
 
-import org.w3c.dom.DOMException;
-import org.w3c.dom.css.CSSPageRule;
-import org.w3c.dom.css.CSSRule;
-import org.w3c.dom.css.CSSStyleDeclaration;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import cz.vutbr.web.css.Declaration;
-import cz.vutbr.web.css.Rule;
-import cz.vutbr.web.css.RulePage;
-
-final class CSSPageRuleImpl extends AbstractCSSRule implements CSSPageRule {
-
-    private final RulePage rule;
-
-    CSSPageRuleImpl(final RulePage rule, final JStyleSheetWrapper containingStyleSheet) {
-        super(containingStyleSheet);
-        this.rule = rule;
+internal class CSSPageRuleImpl(
+    private val rule: RulePage,
+    containingStyleSheet: JStyleSheetWrapper?
+) : AbstractCSSRule(containingStyleSheet), CSSPageRule {
+    override fun getType(): Short {
+        return PAGE_RULE
     }
 
-    public short getType() {
-        return CSSRule.PAGE_RULE;
+    override fun getCssText(): String? {
+        return rule.toString()
     }
 
-    public String getCssText() {
-        return rule.toString();
-    }
-
-    public void setCssText(final String cssText) throws DOMException {
+    @Throws(DOMException::class)
+    override fun setCssText(cssText: String?) {
         // TODO implement this method
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
 
-    public String getSelectorText() {
+    override fun getSelectorText(): String? {
         // TODO implement this method
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
 
-    public void setSelectorText(final String selectorText) throws DOMException {
+    @Throws(DOMException::class)
+    override fun setSelectorText(selectorText: String?) {
         // TODO implement this method
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
 
-    public CSSStyleDeclaration getStyle() {
-        final List<Declaration> declarations = new ArrayList<Declaration>();
-        for (final Rule<?> r : rule) {
-            if (r instanceof Declaration declaration) {
-                declarations.add(declaration);
+    override fun getStyle(): CSSStyleDeclaration {
+        val declarations: MutableList<Declaration?> = ArrayList<Declaration?>()
+        for (r in rule) {
+            if (r is Declaration) {
+                declarations.add(r)
             }
         }
-        return new CSSStyleDeclarationImpl(declarations, this);
+        return CSSStyleDeclarationImpl(declarations, this)
     }
-
 }

@@ -20,75 +20,75 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.github.remmerw.thor.cobra.clientlet;
+package io.github.remmerw.thor.cobra.clientlet
 
 
 /**
- * Content set by a {@link Clientlet}. To ensure backward compatibility, it is
- * recommended that {@link AbstractComponentContent} be extended instead of
+ * Content set by a [Clientlet]. To ensure backward compatibility, it is
+ * recommended that [AbstractComponentContent] be extended instead of
  * implementing this interface whenever possible.
  *
- * @see ClientletContext#setResultingContent(ComponentContent)
+ * @see ClientletContext.setResultingContent
  */
-public interface ComponentContent {
-    default void disableRenderHints() {
+interface ComponentContent {
+    fun disableRenderHints() {
         // NOP
     }
 
-    java.awt.Component getComponent();
+    val component: Component?
 
-    String getTitle();
+    val title: String?
 
-    String getDescription();
+    val description: String?
 
     /**
      * Determines whether it's possible to copy content to the clipboard. This
      * method can be used by the platform to determine if a menu item should be
      * enabled.
      */
-    boolean canCopy();
+    fun canCopy(): Boolean
 
     /**
      * Copies content to the clipboard.
      *
      * @return True if the operation succeeded.
      */
-    boolean copy();
+    fun copy(): Boolean
 
     /**
      * Gets the source code associated with the content.
      */
-    String getSourceCode();
+    val sourceCode: String?
 
     /**
      * Called after the content has been added to a container for display.
      */
-    void addNotify();
+    fun addNotify()
 
     /**
      * Called after the addNotify and navigation updated
      */
-    void navigatedNotify();
+    fun navigatedNotify()
 
     /**
      * Called after the content has been removed from the display container. This
      * method may be used to dispose associated resources.
      */
-    void removeNotify();
+    fun removeNotify()
 
     /**
      * Gets an implementation-dependent object that represents the content. For
      * example, if the content is HTML, the object returned by this method may be
      * of type HTMLDocument.
      */
-    Object getContentObject();
+    val contentObject: Any?
 
     /**
      * Gets a mime-type that can be said to be associated with the object returned
-     * by {@link #getContentObject()}. This may differ from the mime-type of the
-     * response that produced the content, and it may also be <code>null</code>.
+     * by [.getContentObject]. This may differ from the mime-type of the
+     * response that produced the content, and it may also be `null`.
      */
-    String getMimeType();
+    val mimeType: String?
 
     /**
      * Sets a property of the content. Property names are
@@ -97,9 +97,8 @@ public interface ComponentContent {
      * @param name
      * @param value
      */
-    void setProperty(String name, Object value);
+    fun setProperty(name: String?, value: Any?)
 
-    default boolean isReadyToPaint() {
-        return true;
-    }
+    val isReadyToPaint: Boolean
+        get() = true
 }

@@ -18,26 +18,23 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
+package io.github.remmerw.thor.cobra.html.style
 
-package io.github.remmerw.thor.cobra.html.style;
-
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLDocumentImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl;
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLDocumentImpl
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
 
 /**
  * Render state for elements that are displayed as blocks by default.
  */
-public class BlockRenderState extends StyleSheetRenderState {
-    public BlockRenderState(final RenderState prevRenderState, final HTMLElementImpl element) {
-        super(prevRenderState, element);
-    }
+class BlockRenderState : StyleSheetRenderState {
+    constructor(prevRenderState: RenderState?, element: HTMLElementImpl) : super(
+        prevRenderState,
+        element
+    )
 
-    public BlockRenderState(final HTMLDocumentImpl document) {
-        super(document);
-    }
+    constructor(document: HTMLDocumentImpl?) : super(document)
 
-    @Override
-    public int getDefaultDisplay() {
-        return DISPLAY_BLOCK;
+    public override fun getDefaultDisplay(): Int {
+        return RenderState.Companion.DISPLAY_BLOCK
     }
 }

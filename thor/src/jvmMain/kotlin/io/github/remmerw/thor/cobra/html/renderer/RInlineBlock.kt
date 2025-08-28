@@ -17,131 +17,118 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import org.eclipse.jdt.annotation.NonNull;
+import io.github.remmerw.thor.cobra.html.HtmlRendererContext
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
+import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
+import io.github.remmerw.thor.cobra.html.style.RenderState
+import io.github.remmerw.thor.cobra.ua.UserAgentContext
+import io.github.remmerw.thor.cobra.util.CollectionUtilities
+import java.awt.Color
+import java.awt.Component
+import java.awt.Graphics
+import java.awt.event.MouseEvent
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.event.MouseEvent;
-import java.util.Iterator;
+class RInlineBlock(
+    container: RenderableContainer?, modelNode: HTMLElementImpl, uacontext: UserAgentContext?,
+    rendererContext: HtmlRendererContext?, frameContext: FrameContext?
+) : BaseElementRenderable(container, modelNode, uacontext) {
+    private val child: BaseBlockyRenderable
 
-import io.github.remmerw.thor.cobra.html.HtmlRendererContext;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode;
-import io.github.remmerw.thor.cobra.html.style.RenderState;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext;
-import io.github.remmerw.thor.cobra.util.CollectionUtilities;
-
-public class RInlineBlock extends BaseElementRenderable {
-    private final @NonNull BaseBlockyRenderable child;
-
-    public RInlineBlock(final RenderableContainer container, final HTMLElementImpl modelNode, final UserAgentContext uacontext,
-                        final HtmlRendererContext rendererContext, final FrameContext frameContext) {
-        super(container, modelNode, uacontext);
-        final int display = modelNode.getRenderState().getDisplay();
-        final BaseBlockyRenderable child = display == RenderState.DISPLAY_INLINE_TABLE
-                ? new RTable(modelNode, userAgentContext, rendererContext, frameContext, this)
-                : new RBlock(modelNode, 0, userAgentContext, rendererContext, frameContext, this);
-        child.setOriginalParent(this);
-        child.setParent(this);
-        this.child = child;
+    init {
+        val display = modelNode.getRenderState().display
+        val child = if (display == RenderState.DISPLAY_INLINE_TABLE)
+            RTable(modelNode, userAgentContext, rendererContext, frameContext, this)
+        else
+            RBlock(modelNode, 0, userAgentContext, rendererContext, frameContext, this)
+        child.setOriginalParent(this)
+        child.setParent(this)
+        this.child = child
     }
 
-    private void assignDimension() {
-        this.width = child.getWidth();
-        this.height = child.getHeight();
+    private fun assignDimension() {
+        this.width = child.getWidth()
+        this.height = child.getHeight()
     }
 
-    public Iterator<@NonNull ? extends Renderable> getRenderables(final boolean topFirst) {
-        return CollectionUtilities.singletonIterator((@NonNull Renderable) this.child);
+    override fun getRenderables(topFirst: Boolean): MutableIterator<out Renderable> {
+        return CollectionUtilities.singletonIterator<Renderable?>(this.child as Renderable)
     }
 
-    public RenderableSpot getLowestRenderableSpot(final int x, final int y) {
-        return this.child.getLowestRenderableSpot(x, y);
+    override fun getLowestRenderableSpot(x: Int, y: Int): RenderableSpot? {
+        return this.child.getLowestRenderableSpot(x, y)
     }
 
-    public boolean onDoubleClick(final MouseEvent event, final int x, final int y) {
-        return this.child.onDoubleClick(event, x, y);
+    override fun onDoubleClick(event: MouseEvent?, x: Int, y: Int): Boolean {
+        return this.child.onDoubleClick(event, x, y)
     }
 
-    public boolean onMouseClick(final MouseEvent event, final int x, final int y) {
-        return this.child.onMouseClick(event, x, y);
+    override fun onMouseClick(event: MouseEvent?, x: Int, y: Int): Boolean {
+        return this.child.onMouseClick(event, x, y)
     }
 
-    public boolean onMouseDisarmed(final MouseEvent event) {
-        return this.child.onMouseDisarmed(event);
+    override fun onMouseDisarmed(event: MouseEvent?): Boolean {
+        return this.child.onMouseDisarmed(event)
     }
 
-    public boolean onMousePressed(final MouseEvent event, final int x, final int y) {
-        return this.child.onMousePressed(event, x, y);
+    override fun onMousePressed(event: MouseEvent?, x: Int, y: Int): Boolean {
+        return this.child.onMousePressed(event, x, y)
     }
 
-    public boolean onMouseReleased(final MouseEvent event, final int x, final int y) {
-        return this.child.onMouseReleased(event, x, y);
+    override fun onMouseReleased(event: MouseEvent?, x: Int, y: Int): Boolean {
+        return this.child.onMouseReleased(event, x, y)
     }
 
-    @Override
-    public void paintShifted(final Graphics g) {
-        this.child.paint(g);
+    public override fun paintShifted(g: Graphics?) {
+        this.child.paint(g)
     }
 
-    @Override
-    public void repaint(final ModelNode modelNode) {
+    override fun repaint(modelNode: ModelNode?) {
         // TODO: Who calls this?
-        this.child.repaint(modelNode);
+        this.child.repaint(modelNode)
     }
 
-    @Override
-    public Color getPaintedBackgroundColor() {
-        return this.backgroundColor;
+    override fun getPaintedBackgroundColor(): Color? {
+        return this.backgroundColor
     }
 
-    @Override
-    protected void doLayout(final int availWidth, final int availHeight, final boolean sizeOnly) {
-        this.child.layout(availWidth, availHeight, false, false, null, sizeOnly);
+    public override fun doLayout(availWidth: Int, availHeight: Int, sizeOnly: Boolean) {
+        this.child.layout(availWidth, availHeight, false, false, null, sizeOnly)
         // this.child.doLayout(availWidth, availHeight, sizeOnly);
-        sendDelayedPairsToParent();
-        assignDimension();
-        markLayoutValid();
+        sendDelayedPairsToParent()
+        assignDimension()
+        markLayoutValid()
     }
 
-    @Override
-    public Component addComponent(final Component component) {
-        this.container.addComponent(component);
-        return super.addComponent(component);
+    override fun addComponent(component: Component?): Component? {
+        this.container.addComponent(component)
+        return super.addComponent(component)
     }
 
-    @Override
-    public String toString() {
-        return "RInlineBlock [" + this.child + "]";
+    override fun toString(): String {
+        return "RInlineBlock [" + this.child + "]"
     }
 
-    @Override
-    protected void applyLook() {
-        this.child.applyLook();
+    protected override fun applyLook() {
+        this.child.applyLook()
     }
 
-    @Override
-    protected void invalidateLayoutLocal() {
-        super.invalidateLayoutLocal();
-        this.child.invalidateLayoutLocal();
+    protected override fun invalidateLayoutLocal() {
+        super.invalidateLayoutLocal()
+        this.child.invalidateLayoutLocal()
     }
 
-    @Override
-    public void markLayoutValid() {
-        super.markLayoutValid();
-        this.child.markLayoutValid();
+    override fun markLayoutValid() {
+        super.markLayoutValid()
+        this.child.markLayoutValid()
     }
 
-    @Override
-    public int getZIndex() {
-        return this.child.getZIndex();
+    override fun getZIndex(): Int {
+        return this.child.getZIndex()
     }
 
-    @Override
-    public boolean isReadyToPaint() {
-        return child.isReadyToPaint();
+    override fun isReadyToPaint(): Boolean {
+        return child.isReadyToPaint()
     }
 }

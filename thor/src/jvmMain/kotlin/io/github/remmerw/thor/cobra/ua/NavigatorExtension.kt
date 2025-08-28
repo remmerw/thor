@@ -20,35 +20,36 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.github.remmerw.thor.cobra.ua;
+package io.github.remmerw.thor.cobra.ua
 
-import io.github.remmerw.thor.cobra.clientlet.ClientletSelector;
+import io.github.remmerw.thor.cobra.clientlet.ClientletSelector
 
 /**
  * This interface must be implemented by a platform extension or plugin.
  */
-public interface NavigatorExtension {
+interface NavigatorExtension {
     /**
      * Invoked when the platform first loads the extension. At this point the
-     * extension can register {@link ClientletSelector}s (extra content handlers)
+     * extension can register [ClientletSelector]s (extra content handlers)
      * by invoking
-     * {@link NavigatorExtensionContext#addClientletSelector(ClientletSelector)}.
+     * [NavigatorExtensionContext.addClientletSelector].
      *
      * @param pcontext The extension context. It provides extensions with access to
-     *                 browser functionality.
+     * browser functionality.
      */
-    void init(NavigatorExtensionContext pcontext);
+    fun init(pcontext: NavigatorExtensionContext?)
 
     /**
      * Invoked right before the platform opens a new window. At this point the
      * extension can add custom widgets to the platform window.
-     * <p>
+     *
+     *
      * Note that this method may not be invoked if the window does not require any
      * toolbars, status bars, address bars or menus.
      *
      * @param wcontext
      */
-    void windowOpening(NavigatorWindow wcontext);
+    fun windowOpening(wcontext: NavigatorWindow?)
 
     /**
      * Invoked when a window is about to close. At this point the extension can
@@ -56,11 +57,11 @@ public interface NavigatorExtension {
      *
      * @param wcontext
      */
-    void windowClosing(NavigatorWindow wcontext);
+    fun windowClosing(wcontext: NavigatorWindow?)
 
     /**
      * Invoked when the platform needs to unload the extension. This method should
      * release any resources used by the extension.
      */
-    void destroy();
+    fun destroy()
 }

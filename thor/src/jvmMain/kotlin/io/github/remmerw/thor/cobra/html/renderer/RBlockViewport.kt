@@ -20,51 +20,41 @@
 /*
  * Created on Apr 16, 2005
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.w3c.dom.Node;
-import org.w3c.dom.html.HTMLDocument;
-import org.w3c.dom.html.HTMLHtmlElement;
-
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.function.Function;
-import java.util.logging.Level;
-
-import io.github.remmerw.thor.cobra.html.BrowserFrame;
-import io.github.remmerw.thor.cobra.html.HtmlObject;
-import io.github.remmerw.thor.cobra.html.HtmlRendererContext;
-import io.github.remmerw.thor.cobra.html.domimpl.DocumentFragmentImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLCanvasElementImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLIFrameElementImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLImageElementImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLTableElementImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode;
-import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.UINode;
-import io.github.remmerw.thor.cobra.html.style.HtmlInsets;
-import io.github.remmerw.thor.cobra.html.style.JStyleProperties;
-import io.github.remmerw.thor.cobra.html.style.RenderState;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext;
-import io.github.remmerw.thor.cobra.util.ArrayUtilities;
-import io.github.remmerw.thor.cobra.util.CollectionUtilities;
+import io.github.remmerw.thor.cobra.html.HtmlObject
+import io.github.remmerw.thor.cobra.html.HtmlRendererContext
+import io.github.remmerw.thor.cobra.html.domimpl.DocumentFragmentImpl
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLCanvasElementImpl
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLIFrameElementImpl
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLImageElementImpl
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLTableElementImpl
+import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
+import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
+import io.github.remmerw.thor.cobra.html.style.HtmlInsets
+import io.github.remmerw.thor.cobra.html.style.JStyleProperties
+import io.github.remmerw.thor.cobra.html.style.RenderState
+import io.github.remmerw.thor.cobra.ua.UserAgentContext
+import io.github.remmerw.thor.cobra.util.ArrayUtilities
+import io.github.remmerw.thor.cobra.util.CollectionUtilities
+import org.w3c.dom.Node
+import org.w3c.dom.html.HTMLDocument
+import org.w3c.dom.html.HTMLHtmlElement
+import java.awt.Graphics
+import java.awt.Insets
+import java.awt.Point
+import java.awt.Rectangle
+import java.awt.event.MouseEvent
+import java.util.LinkedList
+import java.util.Locale
+import java.util.SortedSet
+import java.util.TreeSet
+import java.util.function.Function
+import java.util.logging.Level
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  * A substantial portion of the HTML rendering logic of the package can be found
@@ -75,93 +65,54 @@ import io.github.remmerw.thor.cobra.util.CollectionUtilities;
  *
  * @author J. H. S.
  */
-public class RBlockViewport extends BaseRCollection {
-    // GENERAL NOTES
-    // An RBlockViewport basically consists of two collections:
-    // seqRenderables and positionedRenderables. The seqRenderables
-    // collection is a sequential list of RLine's and RBlock's
-    // that is amenable to a binary search by Y position. The
-    // positionedRenderables collection is a z-index ordered
-    // collection meant for blocks with position=absolute and such.
-    //
-    // HOW FLOATS WORK
-    // Float boxes are scheduled to be added on the next available line.
-    // Line layout is bounded by the current floatBounds.
-    // When a float is placed with placeFloat(), an absolutely positioned
-    // box is added. Whether the float height expands the RBlockViewport
-    // height is determined by isFloatLimit().
-    //
-    // FloatingBounds are inherited by sub-boxes, but the bounds are
-    // shifted.
-    //
-    // The RBlockViewport also publishes a collection of "exporatable
-    // floating bounds." These are float boxes that go beyond the bounds
-    // of the RBlockViewport, so ancestor blocks can obtain them to adjust
-    // their own bounds.
-
-    public static final @NonNull Insets ZERO_INSETS = new Insets(0, 0, 0, 0);
-    private static final Map<String, MarkupLayout> elementLayout = new HashMap<>(70);
-    private static final MarkupLayout commonLayout = new CommonLayout();
-    private static final SizeExceededException SEE = new SizeExceededException();
-
-    static {
-        final Map<String, MarkupLayout> el = elementLayout;
-        el.put("BR", new BrLayout());
-        el.put("NOSCRIPT", new NoScriptLayout());
-        final NopLayout nop = new NopLayout();
-        el.put("SCRIPT", nop);
-        el.put("HEAD", nop);
-        el.put("TITLE", nop);
-        el.put("META", nop);
-        el.put("STYLE", nop);
-        el.put("LINK", nop);
-        el.put("IMG", new ImgLayout());
-        el.put("INPUT", new InputLayout2());
-        el.put("TEXTAREA", new TextAreaLayout2());
-        el.put("SELECT", new SelectLayout());
-        el.put("HR", new HrLayout());
-        final ObjectLayout ol = new ObjectLayout(false, true);
-        el.put("OBJECT", new ObjectLayout(true, true));
-        el.put("APPLET", ol);
-        el.put("EMBED", ol);
-        el.put("IFRAME", new IFrameLayout());
-
-        el.put("CANVAS", new CanvasLayout());
-    }
-
+class RBlockViewport(
+    modelNode: ModelNode?, container: RenderableContainer?, listNesting: Int,
+    pcontext: UserAgentContext,
+    rcontext: HtmlRendererContext, frameContext: FrameContext?, parent: RCollection?
+) : BaseRCollection(container, modelNode) {
     // private final ArrayList awtComponents = new ArrayList();
-    private final int listNesting;
-    private final UserAgentContext userAgentContext;
-    private final HtmlRendererContext rendererContext;
-    private final FrameContext frameContext;
-    int scrollX = 0, scrollY = 0;
-    private SortedSet<PositionedRenderable> positionedRenderables;
-    private ArrayList<@NonNull BoundableRenderable> seqRenderables = null;
-    private ArrayList<ExportableFloat> exportableFloats = null;
+    private val listNesting: Int
+    private val userAgentContext: UserAgentContext
+    private val rendererContext: HtmlRendererContext
+    private val frameContext: FrameContext?
+    var scrollX: Int = 0
+    var scrollY: Int = 0
+    private var positionedRenderables: SortedSet<PositionedRenderable?>? = null
+    private var seqRenderables: ArrayList<BoundableRenderable>? = null
+    private var exportableFloats: ArrayList<ExportableFloat?>? = null
+
     // private Collection exportedRenderables;
-    private RLine currentLine;
-    private int maxX;
-    private int maxY;
+    private var currentLine: RLine? = null
+    private var maxX = 0
+    private var maxY = 0
+
     // private int availHeight;
-    private int desiredWidth; // includes insets
-    private int desiredHeight; // includes insets
-    private int availContentHeight; // does not include insets
-    private int availContentWidth; // does not include insets
-    private int yLimit;
-    private int positionedOrdinal;
-    private int currentCollapsibleMargin;
-    private Insets paddingInsets;
-    private boolean overrideNoWrap;
-    private FloatingBounds floatBounds = null;
-    private boolean sizeOnly;
-    private BoundableRenderable lastSeqBlock;
-    private boolean firstElementProcessed = false;
-    private boolean lastElementBeingProcessed = false;
-    private BoundableRenderable armedRenderable;
-    private Collection<RFloatInfo> pendingFloats = null;
-    private Boolean isFloatLimit = null;
-    private Integer cachedVisualHeight = null;
-    private Integer cachedVisualWidth = null;
+    private var desiredWidth = 0 // includes insets
+    private var desiredHeight = 0 // includes insets
+    private var availContentHeight = 0 // does not include insets
+
+    // private void addParagraphBreak(ModelNode startNode) {
+    // // This needs to get replaced with paragraph collapsing
+    // this.addLineBreak(startNode, LineBreak.NONE);
+    // this.addLineBreak(startNode, LineBreak.NONE);
+    // }
+    var availContentWidth: Int = 0 // does not include insets
+        private set
+    private var yLimit = 0
+    private var positionedOrdinal = 0
+    private var currentCollapsibleMargin = 0
+    private var paddingInsets: Insets? = null
+    private val overrideNoWrap = false
+    private var floatBounds: FloatingBounds? = null
+    private var sizeOnly = false
+    private var lastSeqBlock: BoundableRenderable? = null
+    private var firstElementProcessed = false
+    private var lastElementBeingProcessed = false
+    private var armedRenderable: BoundableRenderable? = null
+    private var pendingFloats: MutableCollection<RFloatInfo?>? = null
+    private var isFloatLimit: Boolean? = null
+    private var cachedVisualHeight: Int? = null
+    private var cachedVisualWidth: Int? = null
 
     /**
      * Constructs an HtmlBlockLayout.
@@ -170,256 +121,31 @@ public class RBlockViewport extends BaseRCollection {
      * @param listNesting  The nesting level for lists. This is zero except inside a list.
      * @param pcontext     The HTMLParserContext instance.
      * @param frameContext This is usually going to be HtmlBlock, an object where text
-     *                     selections are contained.
-     * @param parent       This is usually going to be the parent of <code>container</code>.
+     * selections are contained.
+     * @param parent       This is usually going to be the parent of `container`.
      */
-    public RBlockViewport(final ModelNode modelNode, final RenderableContainer container, final int listNesting,
-                          final UserAgentContext pcontext,
-                          final HtmlRendererContext rcontext, final FrameContext frameContext, final RCollection parent) {
-        super(container, modelNode);
-        this.parent = parent;
-        this.userAgentContext = pcontext;
-        this.rendererContext = rcontext;
-        this.frameContext = frameContext;
-        this.listNesting = listNesting;
+    init {
+        this.parent = parent
+        this.userAgentContext = pcontext
+        this.rendererContext = rcontext
+        this.frameContext = frameContext
+        this.listNesting = listNesting
         // Layout here can always be "invalidated"
-        this.layoutUpTreeCanBeInvalidated = true;
+        this.layoutUpTreeCanBeInvalidated = true
     }
 
-    private static boolean isLastElement(final int indx, final NodeImpl[] childrenArray) {
-        for (int i = indx + 1; i < childrenArray.length; i++) {
-            if (childrenArray[i].getNodeType() == Node.ELEMENT_NODE) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    // final RBlockViewport getParentViewportForAlign() {
-    // // Use originalParent, which for one, is not going to be null during
-    // layout.
-    // Object parent = this.getOriginalOrCurrentParent();
-    // if(parent instanceof RBlock) {
-    // RBlock block = (RBlock) parent;
-    // if(!block.couldBeScrollable()) {
-    // parent = ((BaseElementRenderable) parent).getOriginalOrCurrentParent();
-    // if(parent instanceof RBlockViewport) {
-    // return (RBlockViewport) parent;
-    // }
-    // }
-    // }
-    // return null;
-    // }
-    //
-    private static int getPosition(final HTMLElementImpl element) {
-        final RenderState rs = element.getRenderState();
-        return rs.getPosition();
-    }
-
-    private static boolean isCollapsibleBlock(final RBlock block, final Function<HtmlInsets, Boolean> insetChecker) {
-        final ModelNode mn = block.getModelNode();
-        final RenderState rs = mn.getRenderState();
-        final boolean isDisplayBlock = rs.getDisplay() == RenderState.DISPLAY_BLOCK;
-        final boolean isPosStaticOrRelative = rs.getPosition() == RenderState.POSITION_STATIC || rs.getPosition() == RenderState.POSITION_RELATIVE;
-        final HtmlInsets borderInsets = rs.getBorderInfo().insets;
-        final HtmlInsets paddingInsets = rs.getPaddingInsets();
-        final boolean isZeroBorderAndPadding = insetChecker.apply(borderInsets) && insetChecker.apply(paddingInsets);
-        return (!(mn instanceof HTMLHtmlElement)) && isDisplayBlock && isPosStaticOrRelative && isZeroBorderAndPadding;
-    }
-
-    private static boolean checkTopInset(final HtmlInsets insets) {
-        return insets == null || insets.top == 0;
-    }
-
-    private static boolean checkBottomInset(final HtmlInsets insets) {
-        return insets == null || insets.bottom == 0;
-    }
-
-    private static boolean isCollapsibleParentBlock(final RBlock block, final Function<HtmlInsets, Boolean> insetChecker) {
-        final ModelNode mn = block.getModelNode();
-        final RenderState rs = mn.getRenderState();
-        return isCollapsibleBlock(block, insetChecker) && isOverflowVisibleOrNone(rs);
-    }
-
-    private static boolean isOverflowVisibleOrNone(final RenderState rs) {
-        final int overflowX = rs.getOverflowX();
-        final int overflowY = rs.getOverflowY();
-        final boolean xOverflowFine = (overflowX == RenderState.OVERFLOW_VISIBLE) || (overflowX == RenderState.OVERFLOW_NONE);
-        final boolean yOverflowFine = (overflowY == RenderState.OVERFLOW_VISIBLE) || (overflowY == RenderState.OVERFLOW_NONE);
-        final boolean overflowFine = xOverflowFine && yOverflowFine;
-        return overflowFine;
-    }
-
-    /**
-     * @param others                 An ordered collection.
-     * @param seqRenderablesIterator
-     * @param destination
-     */
-    private static void populateZIndexGroups(final Collection<PositionedRenderable> others,
-                                             final Iterator<? extends Renderable> seqRenderablesIterator,
-                                             final ArrayList<Renderable> destination) {
-        // First, others with z-index < 0
-        final Iterator<PositionedRenderable> i1 = others.iterator();
-        Renderable pending = null;
-        while (i1.hasNext()) {
-            final PositionedRenderable pr = i1.next();
-            final BoundableRenderable r = pr.renderable;
-            if (r.getZIndex() >= 0) {
-                pending = pr;
-                break;
-            }
-            destination.add(pr);
-        }
-
-        // Second, sequential renderables
-        final Iterator<? extends Renderable> i2 = seqRenderablesIterator;
-        if (i2 != null) {
-            while (i2.hasNext()) {
-                destination.add(i2.next());
-            }
-        }
-
-        // Third, other renderables with z-index >= 0.
-        if (pending != null) {
-            destination.add(pending);
-            while (i1.hasNext()) {
-                final PositionedRenderable pr = i1.next();
-                destination.add(pr);
-            }
-        }
-    }
-
-    private static void populateZIndexGroupsTopFirst(final List<PositionedRenderable> others,
-                                                     final Iterator<? extends Renderable> seqRenderablesIterator,
-                                                     final ArrayList<Renderable> destination) {
-        // First, others with z-index >= 0
-        final Iterator<PositionedRenderable> i1 = CollectionUtilities.reverseIterator(others);
-        Renderable pending = null;
-        while (i1.hasNext()) {
-            final PositionedRenderable pr = i1.next();
-            final BoundableRenderable r = pr.renderable;
-            if (r.getZIndex() < 0) {
-                pending = pr;
-                break;
-            }
-            destination.add(pr);
-        }
-
-        // Second, sequential renderables
-        final Iterator<? extends Renderable> i2 = seqRenderablesIterator;
-        if (i2 != null) {
-            while (i2.hasNext()) {
-                destination.add(i2.next());
-            }
-        }
-
-        // Third, other renderables with z-index >= 0.
-        if (pending != null) {
-            destination.add(pending);
-            while (i1.hasNext()) {
-                final PositionedRenderable pr = i1.next();
-                destination.add(pr);
-            }
-        }
-    }
-
-    private final static BaseInputControl createInputControl(final HTMLBaseInputElement markupElement) {
-        String type = markupElement.getAttribute("type");
-        if (type == null) {
-            return new InputTextControl(markupElement);
-        }
-        type = type.toLowerCase();
-        if ("text".equals(type) || "url".equals(type) || "number".equals(type) || "search".equals(type) || (type.length() == 0)) {
-            return new InputTextControl(markupElement);
-        } else if ("hidden".equals(type)) {
-            return null;
-        } else if ("submit".equals(type)) {
-            return new InputButtonControl(markupElement);
-        } else if ("password".equals(type)) {
-            return new InputPasswordControl(markupElement);
-        } else if ("radio".equals(type)) {
-            return new InputRadioControl(markupElement);
-        } else if ("checkbox".equals(type)) {
-            return new InputCheckboxControl(markupElement);
-        } else if ("image".equals(type)) {
-            return new InputImageControl(markupElement);
-        } else if ("reset".equals(type)) {
-            return new InputButtonControl(markupElement);
-        } else if ("button".equals(type)) {
-            return new InputButtonControl(markupElement);
-        } else if ("file".equals(type)) {
-            return new InputFileControl(markupElement);
-        } else {
-            return null;
-        }
-    }
-
-    private static RenderableContainer getRootContainer(final RenderableContainer container) {
-        RenderableContainer c = container.getParentContainer();
-        RenderableContainer prevC = container;
-        for (; ; ) {
-            final RenderableContainer newContainer = c.getParentContainer();
-            if (newContainer == null) {
-                break;
-            }
-            prevC = c;
-            c = newContainer;
-        }
-        return prevC;
-    }
-
-    /**
-     * Gets an ancestor which is "positioned" (that is whose position is not static).
-     * Stops searching when HTML element is encountered.
-     */
-    private static RenderableContainer getPositionedAncestor(RenderableContainer containingBlock) {
-        for (; ; ) {
-            if (containingBlock instanceof Renderable) {
-                final ModelNode node = ((Renderable) containingBlock).getModelNode();
-                if (node instanceof HTMLElementImpl element) {
-                    final int position = getPosition(element);
-                    // if (position != RenderState.POSITION_STATIC || (element instanceof HTMLHtmlElement)) {
-                    if (position != RenderState.POSITION_STATIC) {
-                        break;
-                    }
-                    final RenderableContainer newContainer = containingBlock.getParentContainer();
-                    if (newContainer == null) {
-                        break;
-                    }
-                    containingBlock = newContainer;
-                } else {
-                    break;
-                }
-            } else {
-                break;
-            }
-        }
-        return containingBlock;
-    }
-
-    @Override
-    public void invalidateLayoutLocal() {
+    public override fun invalidateLayoutLocal() {
         // Workaround for fact that RBlockViewport does not
         // get validated or invalidated.
-        this.layoutUpTreeCanBeInvalidated = true;
+        this.layoutUpTreeCanBeInvalidated = true
     }
 
-    // private void addParagraphBreak(ModelNode startNode) {
-    // // This needs to get replaced with paragraph collapsing
-    // this.addLineBreak(startNode, LineBreak.NONE);
-    // this.addLineBreak(startNode, LineBreak.NONE);
-    // }
-
-    public int getAvailContentWidth() {
-        return this.availContentWidth;
-    }
-
-    private int initCollapsibleMargin() {
-        final Object parent = this.parent;
-        if (!(parent instanceof RBlock parentBlock)) {
-            return 0;
+    private fun initCollapsibleMargin(): Int {
+        val parent: Any? = this.parent
+        if (parent !is RBlock) {
+            return 0
         }
-        return parentBlock.getCollapsibleMarginTop();
+        return parent.getCollapsibleMarginTop()
     }
 
     // final RBlockViewport getParentViewport(ExportedRenderable er) {
@@ -439,170 +165,176 @@ public class RBlockViewport extends BaseRCollection {
     // return this.getParentViewportForAlign() == null;
     // }
     // }
-
     /**
      * Builds the layout/renderer tree from scratch. Note: Returned dimension
      * needs to be actual size needed for rendered content, not the available
      * container size. This is relied upon by table layout.
      *
-     * @param yLimit If other than -1, <code>layout</code> will throw
-     *               <code>SizeExceededException</code> in the event that the layout
-     *               goes beyond this y-coordinate point.
+     * @param yLimit If other than -1, `layout` will throw
+     * `SizeExceededException` in the event that the layout
+     * goes beyond this y-coordinate point.
      */
-    public void layout(final int desiredWidth, final int desiredHeight, final Insets paddingInsets, final int yLimit,
-                       final FloatingBounds floatBounds, final boolean sizeOnly) {
-        this.cachedVisualHeight = null;
-        this.cachedVisualWidth = null;
+    fun layout(
+        desiredWidth: Int, desiredHeight: Int, paddingInsets: Insets, yLimit: Int,
+        floatBounds: FloatingBounds?, sizeOnly: Boolean
+    ) {
+        this.cachedVisualHeight = null
+        this.cachedVisualWidth = null
 
         // final RenderableContainer container = this.container;
-        this.paddingInsets = paddingInsets;
-        this.yLimit = yLimit;
-        this.desiredHeight = desiredHeight;
-        this.desiredWidth = desiredWidth;
-        this.floatBounds = floatBounds;
-        this.isFloatLimit = null;
-        this.pendingFloats = null;
-        this.sizeOnly = sizeOnly;
-        this.lastSeqBlock = null;
+        this.paddingInsets = paddingInsets
+        this.yLimit = yLimit
+        this.desiredHeight = desiredHeight
+        this.desiredWidth = desiredWidth
+        this.floatBounds = floatBounds
+        this.isFloatLimit = null
+        this.pendingFloats = null
+        this.sizeOnly = sizeOnly
+        this.lastSeqBlock = null
         // this.currentCollapsibleMargin = this.initCollapsibleMargin();
-        this.currentCollapsibleMargin = 0;
+        this.currentCollapsibleMargin = 0
 
         // maxX and maxY should not be reset by layoutPass.
-        this.maxX = paddingInsets.left;
-        this.maxY = paddingInsets.top;
+        this.maxX = paddingInsets.left
+        this.maxY = paddingInsets.top
 
-        int availw = desiredWidth - paddingInsets.left - paddingInsets.right;
+        var availw = desiredWidth - paddingInsets.left - paddingInsets.right
         if (availw < 0) {
-            availw = 0;
+            availw = 0
         }
-        int availh = desiredHeight - paddingInsets.top - paddingInsets.bottom;
+        var availh = desiredHeight - paddingInsets.top - paddingInsets.bottom
         if (availh == 0) {
-            availh = 0;
+            availh = 0
         }
-        this.availContentHeight = availh;
-        this.availContentWidth = availw;
+        this.availContentHeight = availh
+        this.availContentWidth = availw
 
         // New floating algorithm.
-        this.layoutPass((NodeImpl) this.modelNode);
+        this.layoutPass((this.modelNode as NodeImpl?)!!)
 
         // Compute maxY according to last block.
-        int maxY = this.maxY;
-        int maxYWholeBlock = maxY;
-        final BoundableRenderable lastSeqBlock = this.lastSeqBlock;
+        var maxY = this.maxY
+        var maxYWholeBlock = maxY
+        val lastSeqBlock = this.lastSeqBlock
         if (lastSeqBlock != null) {
-            final int effBlockHeight = this.getEffectiveBlockHeight(lastSeqBlock);
+            val effBlockHeight = this.getEffectiveBlockHeight(lastSeqBlock)
             if ((lastSeqBlock.getY() + effBlockHeight) > maxY) {
-                this.maxY = maxY = lastSeqBlock.getY() + effBlockHeight;
-                maxYWholeBlock = lastSeqBlock.getY() + lastSeqBlock.getHeight();
+                maxY = lastSeqBlock.getY() + effBlockHeight
+                this.maxY = maxY
+                maxYWholeBlock = lastSeqBlock.getY() + lastSeqBlock.getHeight()
             }
         }
 
         // See if line should increase maxY. Empty
         // lines shouldn't, except in cases where
         // there was a BR.
-        final RLine lastLine = this.currentLine;
-        final Rectangle lastBounds = lastLine.getBounds();
+        val lastLine = this.currentLine!!
+        val lastBounds = lastLine.getBounds()
         if ((lastBounds.height > 0) || (lastBounds.y > maxYWholeBlock)) {
-            final int lastTopX = lastBounds.x + lastBounds.width;
+            val lastTopX = lastBounds.x + lastBounds.width
             if (lastTopX > this.maxX) {
-                this.maxX = lastTopX;
+                this.maxX = lastTopX
             }
-            final int lastTopY = lastBounds.y + lastBounds.height;
+            val lastTopY = lastBounds.y + lastBounds.height
             if (lastTopY > maxY) {
-                this.maxY = maxY = lastTopY;
+                maxY = lastTopY
+                this.maxY = maxY
             }
         }
 
         // Check positioned renderables for maxX and maxY
-        final SortedSet<PositionedRenderable> posRenderables = this.positionedRenderables;
+        val posRenderables = this.positionedRenderables
         if (posRenderables != null) {
-            final boolean isFloatLimit = this.isFloatLimit();
-            final Iterator<PositionedRenderable> i = posRenderables.iterator();
+            val isFloatLimit = this.isFloatLimit()
+            val i: MutableIterator<PositionedRenderable> = posRenderables.iterator()
             while (i.hasNext()) {
-                final PositionedRenderable pr = i.next();
-                final BoundableRenderable br = pr.renderable;
+                val pr = i.next()
+                val br = pr.renderable
                 if ((br.getX() + br.getWidth()) > this.maxX) {
-                    this.maxX = br.getX() + br.getWidth();
+                    this.maxX = br.getX() + br.getWidth()
                 }
                 if (isFloatLimit || !pr.isFloat) {
                     if ((br.getY() + br.getHeight()) > maxY) {
-                        this.maxY = maxY = br.getY() + br.getHeight();
+                        maxY = br.getY() + br.getHeight()
+                        this.maxY = maxY
                     }
                 }
             }
         }
 
-        this.width = paddingInsets.right + this.maxX;
-        this.height = paddingInsets.bottom + maxY;
+        this.width = paddingInsets.right + this.maxX
+        this.height = paddingInsets.bottom + maxY
     }
 
-    private void layoutPass(final NodeImpl rootNode) {
-        final RenderableContainer container = this.container;
-        container.clearDelayedPairs();
-        this.positionedOrdinal = 0;
+    private fun layoutPass(rootNode: NodeImpl) {
+        val container = this.container
+        container.clearDelayedPairs()
+        this.positionedOrdinal = 0
 
         // Remove sequential renderables...
-        this.seqRenderables = null;
+        this.seqRenderables = null
 
         // Remove other renderables...
-        this.positionedRenderables = null;
+        this.positionedRenderables = null
 
         // Remove exporatable floats...
-        this.exportableFloats = null;
+        this.exportableFloats = null
 
-        this.cachedVisualHeight = null;
-        this.cachedVisualWidth = null;
+        this.cachedVisualHeight = null
+        this.cachedVisualWidth = null
         // Call addLine after setting margins
-        this.currentLine = this.addLine(rootNode, null, this.paddingInsets.top);
+        this.currentLine = this.addLine(rootNode, null, this.paddingInsets!!.top)
 
         // Start laying out...
         // The parent is expected to have set the RenderState already.
-        this.layoutChildren(rootNode);
+        this.layoutChildren(rootNode)
 
         // This adds last-line floats.
-        this.lineDone(this.currentLine);
+        this.lineDone(this.currentLine)
     }
 
     /**
      * Applies any horizonal aLignment. It may adjust height if necessary.
      *
      * @param canvasWidth   The new width of the viewport. It could be different to the
-     *                      previously calculated width.
+     * previously calculated width.
      * @param paddingInsets
      */
-    public void alignX(final int alignXPercent, final int canvasWidth, final Insets paddingInsets) {
-        final int prevMaxY = this.maxY;
+    fun alignX(alignXPercent: Int, canvasWidth: Int, paddingInsets: Insets?) {
+        val prevMaxY = this.maxY
         // Horizontal alignment
         if (alignXPercent > 0) {
-            final ArrayList<@NonNull BoundableRenderable> renderables = this.seqRenderables;
+            val renderables = this.seqRenderables
             if (renderables != null) {
-                final Insets insets = this.paddingInsets;
+                val insets = this.paddingInsets!!
                 // final FloatingBounds floatBounds = this.floatBounds;
-                final int numRenderables = renderables.size();
-                final int yoffset = 0; // This may get adjusted due to blocks and floats.
-                for (int i = 0; i < numRenderables; i++) {
-                    final Object r = renderables.get(i);
-                    if (r instanceof BoundableRenderable seqRenderable) {
-                        final int y = seqRenderable.getY();
-                        int newY;
+                val numRenderables = renderables.size
+                val yoffset = 0 // This may get adjusted due to blocks and floats.
+                for (i in 0..<numRenderables) {
+                    val r: Any = renderables.get(i)
+                    if (r is BoundableRenderable) {
+                        val y = r.getY()
+                        val newY: Int
                         if (yoffset > 0) {
-                            newY = y + yoffset;
-                            seqRenderable.setY(newY);
-                            if ((newY + seqRenderable.getHeight()) > this.maxY) {
-                                this.maxY = newY + seqRenderable.getHeight();
+                            newY = y + yoffset
+                            r.setY(newY)
+                            if ((newY + r.getHeight()) > this.maxY) {
+                                this.maxY = newY + r.getHeight()
                             }
                         } else {
-                            newY = y;
+                            newY = y
                         }
-                        final boolean isVisibleBlock = (seqRenderable instanceof RBlock) && ((RBlock) seqRenderable).isOverflowVisibleX();
-                        final int leftOffset = isVisibleBlock ? insets.left : this.fetchLeftOffset(y);
-                        final int rightOffset = isVisibleBlock ? insets.right : this.fetchRightOffset(y);
-                        final int actualAvailWidth = canvasWidth - leftOffset - rightOffset;
-                        final int difference = actualAvailWidth - seqRenderable.getWidth();
+                        val isVisibleBlock = (r is RBlock) && r.isOverflowVisibleX()
+                        val leftOffset =
+                            if (isVisibleBlock) insets.left else this.fetchLeftOffset(y)
+                        val rightOffset =
+                            if (isVisibleBlock) insets.right else this.fetchRightOffset(y)
+                        val actualAvailWidth = canvasWidth - leftOffset - rightOffset
+                        val difference = actualAvailWidth - r.getWidth()
                         if (difference > 0) {
                             // The difference check means that only
                             // blocks with a declared width would get adjusted?
-              /*
+                            /*
               if (floatBounds != null && isVisibleBlock) {
                 RBlock block = (RBlock) seqRenderable;
                 // Block needs to layed out again. Contents need
@@ -613,10 +345,10 @@ public class RBlockViewport extends BaseRCollection {
                 FloatingBoundsSource floatBoundsSource = new ParentFloatingBoundsSource(blockShiftRight, expectedWidth, newX, newY, floatBounds);
                 block.layout(actualAvailWidth, this.availContentHeight, true, false, floatBoundsSource, true);
               }*/
-                            final int shift = (difference * alignXPercent) / 100;
+                            val shift = (difference * alignXPercent) / 100
                             if (!isVisibleBlock) {
-                                final int newX = leftOffset + shift;
-                                seqRenderable.setX(newX);
+                                val newX = leftOffset + shift
+                                r.setX(newX)
                             }
                         }
                     }
@@ -624,7 +356,7 @@ public class RBlockViewport extends BaseRCollection {
             }
         }
         if (prevMaxY != this.maxY) {
-            this.height += (this.maxY - prevMaxY);
+            this.height += (this.maxY - prevMaxY)
         }
     }
 
@@ -634,25 +366,25 @@ public class RBlockViewport extends BaseRCollection {
      * @param canvasHeight
      * @param paddingInsets
      */
-    public void alignY(final int alignYPercent, final int canvasHeight, final Insets paddingInsets) {
-        final int prevMaxY = this.maxY;
+    fun alignY(alignYPercent: Int, canvasHeight: Int, paddingInsets: Insets) {
+        val prevMaxY = this.maxY
         if (alignYPercent > 0) {
-            final int availContentHeight = canvasHeight - paddingInsets.top - paddingInsets.bottom;
-            final int usedHeight = this.maxY - paddingInsets.top;
-            final int difference = availContentHeight - usedHeight;
+            val availContentHeight = canvasHeight - paddingInsets.top - paddingInsets.bottom
+            val usedHeight = this.maxY - paddingInsets.top
+            val difference = availContentHeight - usedHeight
             if (difference > 0) {
-                final int shift = (difference * alignYPercent) / 100;
-                final ArrayList<BoundableRenderable> rlist = this.seqRenderables;
+                val shift = (difference * alignYPercent) / 100
+                val rlist = this.seqRenderables
                 if (rlist != null) {
                     // Try sequential renderables first.
-                    final Iterator<BoundableRenderable> renderables = rlist.iterator();
+                    val renderables: MutableIterator<BoundableRenderable?> = rlist.iterator()
                     while (renderables.hasNext()) {
-                        final Object r = renderables.next();
-                        if (r instanceof BoundableRenderable line) {
-                            final int newY = line.getY() + shift;
-                            line.setY(newY);
-                            if ((newY + line.getHeight()) > this.maxY) {
-                                this.maxY = newY + line.getHeight();
+                        val r: Any? = renderables.next()
+                        if (r is BoundableRenderable) {
+                            val newY = r.getY() + shift
+                            r.setY(newY)
+                            if ((newY + r.getHeight()) > this.maxY) {
+                                this.maxY = newY + r.getHeight()
                             }
                         }
                     }
@@ -660,17 +392,17 @@ public class RBlockViewport extends BaseRCollection {
 
                 // Now other renderables, but only those that can be
                 // vertically aligned
-                final Set<PositionedRenderable> others = this.positionedRenderables;
+                val others: MutableSet<PositionedRenderable?>? = this.positionedRenderables
                 if (others != null) {
-                    final Iterator<PositionedRenderable> i2 = others.iterator();
+                    val i2: MutableIterator<PositionedRenderable> = others.iterator()
                     while (i2.hasNext()) {
-                        final PositionedRenderable pr = i2.next();
+                        val pr = i2.next()
                         if (pr.verticalAlignable) {
-                            final BoundableRenderable br = pr.renderable;
-                            final int newY = br.getY() + shift;
-                            br.setY(newY);
+                            val br = pr.renderable
+                            val newY = br.getY() + shift
+                            br.setY(newY)
                             if ((newY + br.getHeight()) > this.maxY) {
-                                this.maxY = newY + br.getHeight();
+                                this.maxY = newY + br.getHeight()
                             }
                         }
                     }
@@ -678,7 +410,7 @@ public class RBlockViewport extends BaseRCollection {
             }
         }
         if (prevMaxY != this.maxY) {
-            this.height += (this.maxY - prevMaxY);
+            this.height += (this.maxY - prevMaxY)
         }
     }
 
@@ -706,207 +438,215 @@ public class RBlockViewport extends BaseRCollection {
     // return block.height - prevHeight;
     // }
     //
-    private RLine addLine(final ModelNode startNode, final RLine prevLine, final int newLineY) {
+    private fun addLine(startNode: ModelNode?, prevLine: RLine?, newLineY: Int): RLine {
         // lineDone must be called before we try to
         // get float bounds.
-        this.lineDone(prevLine);
-        this.checkY(newLineY);
-        final int leftOffset = this.fetchLeftOffset(newLineY);
-        int newX = leftOffset;
-        int newMaxWidth = this.desiredWidth - this.fetchRightOffset(newLineY) - leftOffset;
-        RLine rline;
-        boolean initialAllowOverflow;
+        this.lineDone(prevLine)
+        this.checkY(newLineY)
+        val leftOffset = this.fetchLeftOffset(newLineY)
+        var newX = leftOffset
+        var newMaxWidth = this.desiredWidth - this.fetchRightOffset(newLineY) - leftOffset
+        val rline: RLine
+        val initialAllowOverflow: Boolean
         if (prevLine == null) {
             // Note: Assumes that prevLine == null means it's the first line.
-            final RenderState rs = this.modelNode.getRenderState();
-            initialAllowOverflow = rs != null && rs.getWhiteSpace() == RenderState.WS_NOWRAP;
+            val rs = this.modelNode.renderState
+            initialAllowOverflow = rs != null && rs.whiteSpace == RenderState.WS_NOWRAP
             // Text indentation only applies to the first line in the block.
-            final int textIndent = rs == null ? 0 : rs.getTextIndent(this.availContentWidth);
+            val textIndent = if (rs == null) 0 else rs.getTextIndent(this.availContentWidth)
             if (textIndent != 0) {
-                newX += textIndent;
+                newX += textIndent
                 // Line width also changes!
-                newMaxWidth += (leftOffset - newX);
+                newMaxWidth += (leftOffset - newX)
             }
         } else {
-            final int prevLineHeight = prevLine.getHeight();
+            val prevLineHeight = prevLine.getHeight()
             if (prevLineHeight > 0) {
-                this.currentCollapsibleMargin = 0;
+                this.currentCollapsibleMargin = 0
             }
-            initialAllowOverflow = prevLine.isAllowOverflow();
+            initialAllowOverflow = prevLine.isAllowOverflow()
             if ((prevLine.x + prevLine.width) > this.maxX) {
-                this.maxX = prevLine.x + prevLine.width;
+                this.maxX = prevLine.x + prevLine.width
             }
         }
-        rline = new RLine(startNode, this.container, newX, newLineY, newMaxWidth, 0, initialAllowOverflow);
-        rline.setParent(this);
-        ArrayList<@NonNull BoundableRenderable> sr = this.seqRenderables;
+        rline =
+            RLine(startNode, this.container, newX, newLineY, newMaxWidth, 0, initialAllowOverflow)
+        rline.setParent(this)
+        var sr = this.seqRenderables
         if (sr == null) {
-            sr = new ArrayList<>(1);
-            this.seqRenderables = sr;
+            sr = ArrayList<BoundableRenderable>(1)
+            this.seqRenderables = sr
         }
-        sr.add(rline);
-        this.currentLine = rline;
-        return rline;
+        sr.add(rline)
+        this.currentLine = rline
+        return rline
     }
 
-    private void layoutMarkup(final NodeImpl node) {
+    private fun layoutMarkup(node: NodeImpl) {
         // This is the "inline" layout of an element.
         // The difference with layoutChildren is that this
         // method checks for padding and margin insets.
-        final RenderState rs = node.getRenderState();
-        final HtmlInsets mi = rs.getMarginInsets();
-        final Insets marginInsets = mi == null ? null : mi.getSimpleAWTInsets(this.availContentWidth, this.availContentHeight);
-        final HtmlInsets pi = rs.getPaddingInsets();
-        final Insets paddingInsets = pi == null ? null : pi.getSimpleAWTInsets(this.availContentWidth, this.availContentHeight);
+        val rs = node.getRenderState()
+        val mi = rs.marginInsets
+        val marginInsets = if (mi == null) null else mi.getSimpleAWTInsets(
+            this.availContentWidth,
+            this.availContentHeight
+        )
+        val pi = rs.paddingInsets
+        val paddingInsets = if (pi == null) null else pi.getSimpleAWTInsets(
+            this.availContentWidth,
+            this.availContentHeight
+        )
 
-        int leftSpacing = 0;
-        int rightSpacing = 0;
+        var leftSpacing = 0
+        var rightSpacing = 0
         if (marginInsets != null) {
-            leftSpacing += marginInsets.left;
-            rightSpacing += marginInsets.right;
+            leftSpacing += marginInsets.left
+            rightSpacing += marginInsets.right
         }
         if (paddingInsets != null) {
-            leftSpacing += paddingInsets.left;
-            rightSpacing += paddingInsets.right;
+            leftSpacing += paddingInsets.left
+            rightSpacing += paddingInsets.right
         }
         if (leftSpacing > 0) {
-            final RLine line = this.currentLine;
-            line.addSpacing(new RSpacing(node, this.container, leftSpacing, line.height));
+            val line = this.currentLine!!
+            line.addSpacing(RSpacing(node, this.container, leftSpacing, line.height))
         }
-        this.layoutChildren(node);
+        this.layoutChildren(node)
         if (rightSpacing > 0) {
-            final RLine line = this.currentLine;
-            line.addSpacing(new RSpacing(node, this.container, rightSpacing, line.height));
+            val line = this.currentLine!!
+            line.addSpacing(RSpacing(node, this.container, rightSpacing, line.height))
         }
     }
 
-  /*
+    /*
   private void addAsSeqBlockCheckStyle(final @NonNull RElement block, final HTMLElementImpl element, final boolean usesAlignAttribute) {
     if (this.addElsewhereIfPositioned(block, element, usesAlignAttribute, false, true)) {
       return;
     }
     this.addAsSeqBlock(block);
   }*/
+    private fun layoutChildren(node: NodeImpl) {
+        firstElementProcessed = false
+        lastElementBeingProcessed = false
 
-    private void layoutChildren(final NodeImpl node) {
-        firstElementProcessed = false;
-        lastElementBeingProcessed = false;
-
-        final NodeImpl[] childrenArray = getAllNodeChildren(node);
+        val childrenArray = getAllNodeChildren(node)
         if (childrenArray != null) {
-            final int length = childrenArray.length;
-            for (int i = 0; i < length; i++) {
-                final NodeImpl child = childrenArray[i];
-                final short nodeType = child.getNodeType();
+            val length = childrenArray.size
+            for (i in 0..<length) {
+                val child: NodeImpl = childrenArray[i]!!
+                val nodeType = child.getNodeType()
                 if (nodeType == Node.TEXT_NODE) {
-                    this.layoutText(child);
+                    this.layoutText(child)
                 } else if (nodeType == Node.ELEMENT_NODE) {
                     // Note that scanning for node bounds (anchor location)
                     // depends on there being a style changer for inline elements.
-                    this.currentLine.addStyleChanger(new RStyleChanger(child));
-                    final String nodeName = child.getNodeName().toUpperCase();
-                    MarkupLayout ml = elementLayout.get(nodeName);
+                    this.currentLine!!.addStyleChanger(RStyleChanger(child))
+                    val nodeName = child.getNodeName().uppercase(Locale.getDefault())
+                    var ml: MarkupLayout? = elementLayout.get(nodeName)
                     if (ml == null) {
-                        ml = commonLayout;
+                        ml = commonLayout
                     }
                     if (isLastElement(i, childrenArray)) {
-                        lastElementBeingProcessed = true;
+                        lastElementBeingProcessed = true
                     }
-                    ml.layoutMarkup(this, (HTMLElementImpl) child);
-                    this.currentLine.addStyleChanger(new RStyleChanger(node));
-                    firstElementProcessed = true;
+                    ml.layoutMarkup(this, child as HTMLElementImpl)
+                    this.currentLine!!.addStyleChanger(RStyleChanger(node))
+                    firstElementProcessed = true
                 } else if ((nodeType == Node.COMMENT_NODE) || (nodeType == Node.PROCESSING_INSTRUCTION_NODE)) {
                     // ignore
                 } else if (nodeType == Node.DOCUMENT_FRAGMENT_NODE) {
-                    final DocumentFragmentImpl fragment = (DocumentFragmentImpl) child;
-                    for (final NodeImpl fragChild : fragment.getChildrenArray()) {
-                        layoutChildren(fragChild);
+                    val fragment = child as DocumentFragmentImpl
+                    for (fragChild in fragment.childrenArray!!) {
+                        layoutChildren(fragChild!!)
                     }
                 } else {
-
                     /* TODO: This case is encountered in some web-platform-tests,
-                     * for example: /dom/ranges/Range-deleteContents.html
-                     */
+                                        * for example: /dom/ranges/Range-deleteContents.html
+                                        */
                     // throw new IllegalStateException("Unknown node: " + child);
-                    System.err.println("Unknown node: " + child);
 
+                    System.err.println("Unknown node: " + child)
                 }
             }
         }
     }
 
-    private NodeImpl[] getAllNodeChildren(final NodeImpl node) {
-        final NodeImpl[] childrenArray = node.getChildrenArray();
-        NodeImpl beforeNode = null;
-        NodeImpl afterNode = null;
-        if (node instanceof HTMLElementImpl htmlElementImpl) {
-            beforeNode = htmlElementImpl.getBeforeNode();
-            afterNode = htmlElementImpl.getAfterNode();
+    private fun getAllNodeChildren(node: NodeImpl): Array<NodeImpl?>? {
+        val childrenArray = node.childrenArray
+        var beforeNode: NodeImpl? = null
+        var afterNode: NodeImpl? = null
+        if (node is HTMLElementImpl) {
+            beforeNode = node.getBeforeNode()
+            afterNode = node.getAfterNode()
         }
         if (beforeNode == null && afterNode == null) {
-            return childrenArray;
+            return childrenArray
         } else {
-            final int totalNodes = (childrenArray == null ? 0 : childrenArray.length) +
-                    (beforeNode == null ? 0 : 1) +
-                    (afterNode == null ? 0 : 1);
+            val totalNodes = (if (childrenArray == null) 0 else childrenArray.size) +
+                    (if (beforeNode == null) 0 else 1) +
+                    (if (afterNode == null) 0 else 1)
             if (totalNodes == 0) {
-                return null;
+                return null
             } else {
-                NodeImpl[] result = new NodeImpl[totalNodes];
-                int count = 0;
+                val result = arrayOfNulls<NodeImpl>(totalNodes)
+                var count = 0
                 if (beforeNode != null) {
-                    result[count++] = beforeNode;
+                    result[count++] = beforeNode
                 }
                 if (childrenArray != null) {
-                    System.arraycopy(childrenArray, 0, result, count, childrenArray.length);
-                    count += childrenArray.length;
+                    System.arraycopy(childrenArray, 0, result, count, childrenArray.size)
+                    count += childrenArray.size
                 }
                 if (afterNode != null) {
-                    result[count++] = afterNode;
+                    result[count++] = afterNode
                 }
-                return result;
+                return result
             }
         }
     }
 
-    private final void positionRBlock(final HTMLElementImpl markupElement, final RBlock renderable) {
-        {
-            final RenderState rs = renderable.modelNode.getRenderState();
-            final int clear = rs.getClear();
-            if (clear != LineBreak.NONE) {
-                addLineBreak(renderable.modelNode, clear);
+    private fun positionRBlock(markupElement: HTMLElementImpl, renderable: RBlock) {
+        run {
+            val rs: RenderState = renderable.modelNode.renderState!!
+            val clear = rs.clear
+            if (clear != LineBreak.Companion.NONE) {
+                addLineBreak(renderable.modelNode, clear)
             }
         }
         if (!this.addElsewhereIfPositioned(renderable, markupElement, false, true, false)) {
-            final int availContentHeight = this.availContentHeight;
-            final RLine line = this.currentLine;
+            val availContentHeight = this.availContentHeight
+            val line = this.currentLine
             // Inform line done before layout so floats are considered.
-            this.lineDone(line);
-            final Insets paddingInsets = this.paddingInsets;
-            final int newLineY = line == null ? paddingInsets.top : line.y + line.height;
+            this.lineDone(line)
+            val paddingInsets = this.paddingInsets!!
+            val newLineY = if (line == null) paddingInsets.top else line.y + line.height
             // int leftOffset = this.fetchLeftOffset(newLineY);
             // int rightOffset = this.fetchRightOffset(newLineY);
             // Float offsets are ignored with block.
-            final int availContentWidth = this.availContentWidth;
-            final int expectedWidth = availContentWidth;
-            final int blockShiftRight = paddingInsets.right;
-            final int newX = paddingInsets.left;
-            final int newY = newLineY;
-            final FloatingBounds floatBounds = this.floatBounds;
-            final FloatingBoundsSource floatBoundsSource = floatBounds == null ? null : new ParentFloatingBoundsSource(blockShiftRight,
+            val availContentWidth = this.availContentWidth
+            val expectedWidth = availContentWidth
+            val blockShiftRight = paddingInsets.right
+            val newX = paddingInsets.left
+            val newY = newLineY
+            val floatBounds = this.floatBounds
+            val floatBoundsSource: FloatingBoundsSource? =
+                if (floatBounds == null) null else ParentFloatingBoundsSource(
+                    blockShiftRight,
                     expectedWidth,
-                    newX, newY, floatBounds);
+                    newX, newY, floatBounds
+                )
 
-            if (isFirstBlock()) {
-                this.currentCollapsibleMargin = 0;
+            if (this.isFirstBlock) {
+                this.currentCollapsibleMargin = 0
             }
 
-            final boolean isFirstCollapsibleBlock = isFirstCollapsibleBlock(renderable);
-            final boolean isLastCollapsibleBlock = isLastCollapsibleBlock(renderable);
-            renderable.setCollapseTop(isFirstCollapsibleBlock);
-            renderable.setCollapseBottom(isLastCollapsibleBlock);
+            val isFirstCollapsibleBlock = isFirstCollapsibleBlock(renderable)
+            val isLastCollapsibleBlock = isLastCollapsibleBlock(renderable)
+            renderable.setCollapseTop(isFirstCollapsibleBlock)
+            renderable.setCollapseBottom(isLastCollapsibleBlock)
 
-      /*
+            /*
       if (isFirstCollapsibleBlock) {
         System.out.println("First block: " + renderable);
       }
@@ -914,193 +654,251 @@ public class RBlockViewport extends BaseRCollection {
         System.out.println("Last block: " + renderable);
       }
       */
-
-            renderable.layout(availContentWidth, availContentHeight, true, false, floatBoundsSource, this.sizeOnly);
+            renderable.layout(
+                availContentWidth,
+                availContentHeight,
+                true,
+                false,
+                floatBoundsSource,
+                this.sizeOnly
+            )
 
             if (isFirstCollapsibleBlock) {
-                final RBlock pBlock = (RBlock) this.parent;
-                pBlock.absorbMarginTopChild(renderable.getMarginTopOriginal());
+                val pBlock = this.parent as RBlock
+                pBlock.absorbMarginTopChild(renderable.getMarginTopOriginal())
             }
             if (isLastCollapsibleBlock) {
-                final RBlock pBlock = (RBlock) this.parent;
-                pBlock.absorbMarginBottomChild(renderable.getMarginBottomOriginal());
+                val pBlock = this.parent as RBlock
+                pBlock.absorbMarginBottomChild(renderable.getMarginBottomOriginal())
             }
 
 
             // if pos:relative then send it to parent for drawing along with other positioned elements.
-            this.addAsSeqBlock(renderable, false, false, false, false, false);
+            this.addAsSeqBlock(renderable, false, false, false, false, false)
             // Calculate new floating bounds after block has been put in place.
-            final FloatingInfo floatingInfo = renderable.getExportableFloatingInfo();
+            val floatingInfo = renderable.getExportableFloatingInfo()
             if (floatingInfo != null) {
-                this.importFloatingInfo(floatingInfo, renderable);
+                this.importFloatingInfo(floatingInfo, renderable)
             }
             // Now add line, after float is set.
-            this.addLineAfterBlock(renderable, false);
+            this.addLineAfterBlock(renderable, false)
 
-            bubbleUpIfRelative(markupElement, renderable);
+            bubbleUpIfRelative(markupElement, renderable)
         }
     }
 
     /* This is used to bubble up relative elements (on the z-axis) */
-    private boolean bubbleUpIfRelative(final HTMLElementImpl markupElement, final @NonNull RElement renderable) {
-        final int position = getPosition(markupElement);
-        final boolean isRelative = position == RenderState.POSITION_RELATIVE;
+    private fun bubbleUpIfRelative(markupElement: HTMLElementImpl, renderable: RElement): Boolean {
+        val position: Int = getPosition(markupElement)
+        val isRelative = position == RenderState.POSITION_RELATIVE
         if (isRelative) {
-            final RenderableContainer con = getPositionedAncestor(container);
-            final DelayedPair dp = new DelayedPair(container, con, renderable, null, null, null, null, null, null, null, 0, 0, position);
-            container.addDelayedPair(dp);
-            if (renderable instanceof RUIControl) {
-                this.container.addComponent(((RUIControl) renderable).widget.getComponent());
+            val con: RenderableContainer? = getPositionedAncestor(container)
+            val dp = DelayedPair(
+                container,
+                con,
+                renderable,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                0,
+                0,
+                position
+            )
+            container.addDelayedPair(dp)
+            if (renderable is RUIControl) {
+                this.container.addComponent(renderable.widget.getComponent())
             }
-            return true;
+            return true
         }
 
-        return false;
+        return false
     }
 
-    private final void positionRElement(final HTMLElementImpl markupElement, final @NonNull RElement renderable, final boolean usesAlignAttribute,
-                                        final boolean obeysFloats,
-                                        final boolean alignCenterAttribute) {
-        if (!this.addElsewhereIfPositioned(renderable, markupElement, usesAlignAttribute, true, true)) {
-            int availContentWidth = this.availContentWidth;
-            final int availContentHeight = this.availContentHeight;
-            final RLine line = this.currentLine;
+    private fun positionRElement(
+        markupElement: HTMLElementImpl, renderable: RElement, usesAlignAttribute: Boolean,
+        obeysFloats: Boolean,
+        alignCenterAttribute: Boolean
+    ) {
+        if (!this.addElsewhereIfPositioned(
+                renderable,
+                markupElement,
+                usesAlignAttribute,
+                true,
+                true
+            )
+        ) {
+            var availContentWidth = this.availContentWidth
+            val availContentHeight = this.availContentHeight
+            val line = this.currentLine
             // Inform line done before layout so floats are considered.
-            this.lineDone(line);
+            this.lineDone(line)
             if (obeysFloats) {
-                final int newLineY = line == null ? this.paddingInsets.top : line.y + line.height;
-                final int leftOffset = this.fetchLeftOffset(newLineY);
-                final int rightOffset = this.fetchRightOffset(newLineY);
-                availContentWidth = this.desiredWidth - leftOffset - rightOffset;
+                val newLineY = if (line == null) this.paddingInsets!!.top else line.y + line.height
+                val leftOffset = this.fetchLeftOffset(newLineY)
+                val rightOffset = this.fetchRightOffset(newLineY)
+                availContentWidth = this.desiredWidth - leftOffset - rightOffset
             }
-            renderable.layout(availContentWidth, availContentHeight, this.sizeOnly);
-            boolean centerBlock = false;
+            renderable.layout(availContentWidth, availContentHeight, this.sizeOnly)
+            var centerBlock = false
             if (alignCenterAttribute) {
-                final String align = markupElement.getAttribute("align");
-                centerBlock = (align != null) && align.equalsIgnoreCase("center");
+                val align = markupElement.getAttribute("align")
+                centerBlock = (align != null) && align.equals("center", ignoreCase = true)
             }
-            this.addAsSeqBlock(renderable, obeysFloats, false, true, centerBlock, false);
-            bubbleUpIfRelative(markupElement, renderable);
+            this.addAsSeqBlock(renderable, obeysFloats, false, true, centerBlock, false)
+            bubbleUpIfRelative(markupElement, renderable)
         }
     }
 
-    private final void layoutRBlock(final HTMLElementImpl markupElement) {
-        final UINode uiNode = markupElement.getUINode();
-        RBlock renderable = null;
-        if (uiNode instanceof RBlock) {
-            renderable = (RBlock) markupElement.getUINode();
+    private fun layoutRBlock(markupElement: HTMLElementImpl) {
+        val uiNode = markupElement.uINode
+        var renderable: RBlock? = null
+        if (uiNode is RBlock) {
+            renderable = markupElement.uINode as RBlock?
         }
         if (renderable == null) {
-            renderable = new RBlock(markupElement, this.listNesting, this.userAgentContext, this.rendererContext, this.frameContext,
-                    this.container);
-            markupElement.setUINode(renderable);
+            renderable = RBlock(
+                markupElement,
+                this.listNesting,
+                this.userAgentContext,
+                this.rendererContext,
+                this.frameContext,
+                this.container
+            )
+            markupElement.uINode = renderable
         }
-        renderable.setOriginalParent(this);
-        this.positionRBlock(markupElement, renderable);
+        renderable.setOriginalParent(this)
+        this.positionRBlock(markupElement, renderable)
     }
 
-    private final void layoutRTable(final HTMLElementImpl markupElement) {
-        RElement renderable = (RElement) markupElement.getUINode();
+    private fun layoutRTable(markupElement: HTMLElementImpl) {
+        var renderable = markupElement.uINode as RElement?
         if (renderable == null) {
-            renderable = new RTable(markupElement, this.userAgentContext, this.rendererContext, this.frameContext, container);
-            markupElement.setUINode(renderable);
+            renderable = RTable(
+                markupElement,
+                this.userAgentContext,
+                this.rendererContext,
+                this.frameContext,
+                container
+            )
+            markupElement.uINode = renderable
         }
-        renderable.setOriginalParent(this);
-        this.positionRElement(markupElement, renderable, markupElement instanceof HTMLTableElementImpl, true, true);
+        renderable.setOriginalParent(this)
+        this.positionRElement(
+            markupElement,
+            renderable,
+            markupElement is HTMLTableElementImpl,
+            true,
+            true
+        )
     }
 
-    private final void layoutListItem(final HTMLElementImpl markupElement) {
-        RListItem renderable = (RListItem) markupElement.getUINode();
+    private fun layoutListItem(markupElement: HTMLElementImpl) {
+        var renderable = markupElement.uINode as RListItem?
         if (renderable == null) {
-            renderable = new RListItem(markupElement, this.listNesting, this.userAgentContext, this.rendererContext, this.frameContext,
-                    this.container, null);
-            markupElement.setUINode(renderable);
+            renderable = RListItem(
+                markupElement,
+                this.listNesting,
+                this.userAgentContext,
+                this.rendererContext,
+                this.frameContext,
+                this.container,
+                null
+            )
+            markupElement.uINode = renderable
         }
-        renderable.setOriginalParent(this);
-        this.positionRBlock(markupElement, renderable);
+        renderable.setOriginalParent(this)
+        this.positionRBlock(markupElement, renderable)
     }
 
-    private final void layoutList(final HTMLElementImpl markupElement) {
-        RList renderable = (RList) markupElement.getUINode();
+    private fun layoutList(markupElement: HTMLElementImpl) {
+        var renderable = markupElement.uINode as RList?
         if (renderable == null) {
-            renderable = new RList(markupElement, this.listNesting, this.userAgentContext, this.rendererContext, this.frameContext,
-                    this.container, null);
-            markupElement.setUINode(renderable);
+            renderable = RList(
+                markupElement,
+                this.listNesting,
+                this.userAgentContext,
+                this.rendererContext,
+                this.frameContext,
+                this.container,
+                null
+            )
+            markupElement.uINode = renderable
         }
-        renderable.setOriginalParent(this);
-        this.positionRBlock(markupElement, renderable);
+        renderable.setOriginalParent(this)
+        this.positionRBlock(markupElement, renderable)
     }
 
-    private void addLineBreak(final ModelNode startNode, final int breakType) {
-        RLine line = this.currentLine;
+    private fun addLineBreak(startNode: ModelNode, breakType: Int) {
+        var line = this.currentLine
         if (line == null) {
-            final Insets insets = this.paddingInsets;
-            this.addLine(startNode, null, insets.top);
-            line = this.currentLine;
+            val insets = this.paddingInsets!!
+            this.addLine(startNode, null, insets.top)
+            line = this.currentLine
         }
-        if (line.getHeight() == 0) {
-            final RenderState rs = startNode.getRenderState();
-            final int fontHeight = rs.getFontMetrics().getHeight();
-            line.setHeight(fontHeight);
+        if (line!!.getHeight() == 0) {
+            val rs: RenderState = startNode.renderState!!
+            val fontHeight = rs.fontMetrics.getHeight()
+            line.setHeight(fontHeight)
         }
-        line.setLineBreak(new LineBreak(breakType));
-        int newLineY;
-        final FloatingBounds fb = this.floatBounds;
-        if ((breakType == LineBreak.NONE) || (fb == null)) {
-            newLineY = line.y + line.height;
+        line.setLineBreak(LineBreak(breakType))
+        val newLineY: Int
+        val fb = this.floatBounds
+        if ((breakType == LineBreak.Companion.NONE) || (fb == null)) {
+            newLineY = line.y + line.height
         } else {
-            final int prevY = line.y + line.height;
-            switch (breakType) {
-                case LineBreak.LEFT:
-                    newLineY = fb.getLeftClearY(prevY);
-                    break;
-                case LineBreak.RIGHT:
-                    newLineY = fb.getRightClearY(prevY);
-                    break;
-                default:
-                    newLineY = fb.getClearY(prevY);
-                    break;
+            val prevY = line.y + line.height
+            when (breakType) {
+                LineBreak.Companion.LEFT -> newLineY = fb.getLeftClearY(prevY)
+                LineBreak.Companion.RIGHT -> newLineY = fb.getRightClearY(prevY)
+                else -> newLineY = fb.getClearY(prevY)
             }
         }
-        this.currentLine = this.addLine(startNode, line, newLineY);
+        this.currentLine = this.addLine(startNode, line, newLineY)
     }
 
-    private boolean addElsewhereIfFloat(final RElement renderable, final HTMLElementImpl element,
-                                        final boolean usesAlignAttribute,
-                                        final JStyleProperties style, final boolean layout) {
+    private fun addElsewhereIfFloat(
+        renderable: RElement, element: HTMLElementImpl,
+        usesAlignAttribute: Boolean,
+        style: JStyleProperties?, layout: Boolean
+    ): Boolean {
         // "static" handled here
-        String align = null;
+        var align: String? = null
         if (style != null) {
-            align = style.getFloat();
-            if ((align != null) && (align.length() == 0)) {
-                align = null;
+            align = style.getFloat()
+            if ((align != null) && (align.length == 0)) {
+                align = null
             }
         }
         if ((align == null) && usesAlignAttribute) {
-            align = element.getAttribute("align");
+            align = element.getAttribute("align")
         }
         if (align != null) {
-            if ("left".equalsIgnoreCase(align)) {
-                this.layoutFloat(renderable, layout, true);
-                return true;
-            } else if ("right".equalsIgnoreCase(align)) {
-                this.layoutFloat(renderable, layout, false);
-                return true;
+            if ("left".equals(align, ignoreCase = true)) {
+                this.layoutFloat(renderable, layout, true)
+                return true
+            } else if ("right".equals(align, ignoreCase = true)) {
+                this.layoutFloat(renderable, layout, false)
+                return true
             } else {
                 // fall through
             }
         }
-        return false;
+        return false
     }
 
-    final RBlockViewport getParentViewport() {
-        // Use originalParent, which for one, is not going to be null during layout.
-        RCollection parent = this.getOriginalOrCurrentParent();
-        while ((parent != null) && !(parent instanceof RBlockViewport)) {
-            parent = parent.getOriginalOrCurrentParent();
+    val parentViewport: RBlockViewport?
+        get() {
+            // Use originalParent, which for one, is not going to be null during layout.
+            var parent = this.getOriginalOrCurrentParent()
+            while ((parent != null) && parent !is RBlockViewport) {
+                parent = parent.getOriginalOrCurrentParent()
+            }
+            return parent
         }
-        return (RBlockViewport) parent;
-    }
 
     /**
      * Checks for position and float attributes.
@@ -1113,50 +911,85 @@ public class RBlockViewport extends BaseRCollection {
      * @param usesAlignAttribute
      * @return True if it was added elsewhere.
      */
-    private boolean addElsewhereIfPositioned(final @NonNull RElement renderable, final HTMLElementImpl element, final boolean usesAlignAttribute,
-                                             final boolean layoutIfPositioned, final boolean obeysFloats) {
+    private fun addElsewhereIfPositioned(
+        renderable: RElement, element: HTMLElementImpl, usesAlignAttribute: Boolean,
+        layoutIfPositioned: Boolean, obeysFloats: Boolean
+    ): Boolean {
         // At this point block already has bounds.
-        final JStyleProperties style = element.getCurrentStyle();
-        final int position = getPosition(element);
-        final boolean absolute = position == RenderState.POSITION_ABSOLUTE;
-        final boolean fixed = position == RenderState.POSITION_FIXED;
+        val style = element.getCurrentStyle()
+        val position: Int = getPosition(element)
+        val absolute = position == RenderState.POSITION_ABSOLUTE
+        val fixed = position == RenderState.POSITION_FIXED
         if (absolute || fixed) {
             if (layoutIfPositioned) {
                 // Presumes the method will return true.
-                if (renderable instanceof RBlock block) {
-                    block.layout(this.availContentWidth, this.availContentHeight, false, false, null, this.sizeOnly);
+                if (renderable is RBlock) {
+                    renderable.layout(
+                        this.availContentWidth,
+                        this.availContentHeight,
+                        false,
+                        false,
+                        null,
+                        this.sizeOnly
+                    )
                 } else {
-                    renderable.layout(this.availContentWidth, this.availContentHeight, this.sizeOnly);
+                    renderable.layout(
+                        this.availContentWidth,
+                        this.availContentHeight,
+                        this.sizeOnly
+                    )
                 }
             }
 
-            final RenderState rs = element.getRenderState();
-            final String leftText = style.getLeft();
-            final String rightText = style.getRight();
-            final String bottomText = style.getBottom();
-            final String topText = style.getTop();
-            final String widthText = style.getWidth();
-            final String heightText = style.getHeight();
+            val rs = element.getRenderState()
+            val leftText = style.left
+            val rightText = style.right
+            val bottomText = style.bottom
+            val topText = style.top
+            val widthText = style.width
+            val heightText = style.height
 
             // Schedule as delayed pair. Will be positioned after everything else.
-            this.scheduleAbsDelayedPair(renderable, leftText, rightText, topText, bottomText, widthText, heightText, rs, currentLine.getX(), currentLine.getY() + currentLine.getHeight(), absolute);
+            this.scheduleAbsDelayedPair(
+                renderable,
+                leftText,
+                rightText,
+                topText,
+                bottomText,
+                widthText,
+                heightText,
+                rs,
+                currentLine!!.getX(),
+                currentLine!!.getY() + currentLine!!.getHeight(),
+                absolute
+            )
             // Does not affect bounds of this viewport yet.
-            return true;
+            return true
         } else {
-            return this.addElsewhereIfFloat(renderable, element, usesAlignAttribute, style, layoutIfPositioned);
+            return this.addElsewhereIfFloat(
+                renderable,
+                element,
+                usesAlignAttribute,
+                style,
+                layoutIfPositioned
+            )
         }
     }
 
     /**
      * Checks property 'float' and in some cases attribute 'align'.
      */
-    private void addRenderableToLineCheckStyle(final @NonNull RElement renderable, final HTMLElementImpl element, final boolean usesAlignAttribute) {
+    private fun addRenderableToLineCheckStyle(
+        renderable: RElement,
+        element: HTMLElementImpl,
+        usesAlignAttribute: Boolean
+    ) {
         if (this.addElsewhereIfPositioned(renderable, element, usesAlignAttribute, true, true)) {
-            return;
+            return
         }
-        renderable.layout(this.availContentWidth, this.availContentHeight, this.sizeOnly);
-        this.addRenderableToLine(renderable);
-        bubbleUpIfRelative(element, renderable);
+        renderable.layout(this.availContentWidth, this.availContentHeight, this.sizeOnly)
+        this.addRenderableToLine(renderable)
+        bubbleUpIfRelative(element, renderable)
     }
 
     /**
@@ -1164,100 +997,100 @@ public class RBlockViewport extends BaseRCollection {
      * @param seqRenderables
      * @param destination
      */
-  /*
+    /*
   private static void populateZIndexGroupsIterator(final Collection<PositionedRenderable> others,
       final Collection<? extends Renderable> seqRenderables,
       final ArrayList<Renderable> destination) {
     populateZIndexGroups(others, seqRenderables == null ? null : seqRenderables.iterator(), destination);
   }*/
-    private void addRenderableToLine(final Renderable renderable) {
+    private fun addRenderableToLine(renderable: Renderable) {
         // this.skipLineBreakBefore = false;
-        final RLine line = this.currentLine;
-        final int liney = line.y;
-        final boolean emptyLine = line.isEmpty();
-        final FloatingBounds floatBounds = this.floatBounds;
-        int cleary;
+        val line = this.currentLine!!
+        val liney = line.y
+        val emptyLine = line.isEmpty()
+        val floatBounds = this.floatBounds
+        val cleary: Int
         if (floatBounds != null) {
-            cleary = floatBounds.getFirstClearY(liney);
+            cleary = floatBounds.getFirstClearY(liney)
         } else {
-            cleary = liney + line.height;
+            cleary = liney + line.height
         }
         try {
-            line.add(renderable);
+            line.add(renderable)
             // Check if the line goes into the float.
             if ((floatBounds != null) && (cleary > liney)) {
-                final int rightOffset = this.fetchRightOffset(liney);
-                final int topLineX = this.desiredWidth - rightOffset;
+                val rightOffset = this.fetchRightOffset(liney)
+                val topLineX = this.desiredWidth - rightOffset
                 if ((line.getX() + line.getWidth()) > topLineX) {
                     // Shift line down to clear area
-                    line.setY(cleary);
+                    line.setY(cleary)
                 }
             }
-        } catch (final OverflowException oe) {
-            final int nextY = emptyLine ? cleary : liney + line.height;
-            this.addLine(renderable.getModelNode(), line, nextY);
-            final Collection<Renderable> renderables = oe.getRenderables();
-            final Iterator<Renderable> i = renderables.iterator();
+        } catch (oe: OverflowException) {
+            val nextY = if (emptyLine) cleary else liney + line.height
+            this.addLine(renderable.getModelNode(), line, nextY)
+            val renderables = oe.getRenderables()
+            val i: MutableIterator<Renderable> = renderables.iterator()
             while (i.hasNext()) {
-                final Renderable r = i.next();
-                this.addRenderableToLine(r);
+                val r = i.next()
+                this.addRenderableToLine(r)
             }
         }
-        if (renderable instanceof RUIControl) {
-            this.container.addComponent(((RUIControl) renderable).widget.getComponent());
+        if (renderable is RUIControl) {
+            this.container.addComponent(renderable.widget.getComponent())
         }
     }
 
-    private void addWordToLine(final RWord renderable) {
+    private fun addWordToLine(renderable: RWord) {
         // this.skipLineBreakBefore = false;
-        final RLine line = this.currentLine;
-        final int liney = line.y;
-        final boolean emptyLine = line.isEmpty();
-        final FloatingBounds floatBounds = this.floatBounds;
-        int cleary;
+        val line = this.currentLine!!
+        val liney = line.y
+        val emptyLine = line.isEmpty()
+        val floatBounds = this.floatBounds
+        val cleary: Int
         if (floatBounds != null) {
-            cleary = floatBounds.getFirstClearY(liney);
+            cleary = floatBounds.getFirstClearY(liney)
         } else {
-            cleary = liney + line.height;
+            cleary = liney + line.height
         }
         try {
-            line.addWord(renderable);
+            line.addWord(renderable)
             // Check if the line goes into the float.
             if (!line.isAllowOverflow() && (floatBounds != null) && (cleary > liney)) {
-                final int rightOffset = this.fetchRightOffset(liney);
-                final int topLineX = this.desiredWidth - rightOffset;
+                val rightOffset = this.fetchRightOffset(liney)
+                val topLineX = this.desiredWidth - rightOffset
                 if ((line.getX() + line.getWidth()) > topLineX) {
                     // Shift line down to clear area
-                    line.setY(cleary);
+                    line.setY(cleary)
                 }
             }
-        } catch (final OverflowException oe) {
-            final int nextY = emptyLine ? cleary : liney + line.height;
-            this.addLine(renderable.getModelNode(), line, nextY);
-            final Collection<Renderable> renderables = oe.getRenderables();
-            final Iterator<Renderable> i = renderables.iterator();
+        } catch (oe: OverflowException) {
+            val nextY = if (emptyLine) cleary else liney + line.height
+            this.addLine(renderable.getModelNode(), line, nextY)
+            val renderables = oe.getRenderables()
+            val i: MutableIterator<Renderable> = renderables.iterator()
             while (i.hasNext()) {
-                final Renderable r = i.next();
-                this.addRenderableToLine(r);
+                val r = i.next()
+                this.addRenderableToLine(r)
             }
         }
     }
 
-    private void addAsSeqBlock(final RElement block) {
-        this.addAsSeqBlock(block, true, true, true, false, false);
+    private fun addAsSeqBlock(block: RElement) {
+        this.addAsSeqBlock(block, true, true, true, false, false)
     }
 
-    private int getNewBlockY(final BoundableRenderable newBlock, final int expectedY) {
+    private fun getNewBlockY(newBlock: BoundableRenderable?, expectedY: Int): Int {
         // Assumes the previous block is not a line with height > 0.
-        if (!(newBlock instanceof RElement block)) {
-            return expectedY;
+        if (newBlock !is RElement) {
+            return expectedY
         }
-        final int ccm = this.currentCollapsibleMargin;
-        final int topMargin = block.getMarginTop();
-        return expectedY - Math.min(topMargin, ccm);
+        val ccm = this.currentCollapsibleMargin
+        val topMargin = newBlock.getMarginTop()
+        return expectedY - min(topMargin, ccm)
     }
 
-  /*
+    /*
   @Override
   public BoundableRenderable getRenderable(final int x, final int y) {
     // TODO: Optimize. Find only the first renderable instead of all of them
@@ -1265,335 +1098,420 @@ public class RBlockViewport extends BaseRCollection {
     return i == null ? null : (i.hasNext() ? (BoundableRenderable) i.next() : null);
   }
   */
-
-    private int getEffectiveBlockHeight(final BoundableRenderable block) {
+    private fun getEffectiveBlockHeight(block: BoundableRenderable): Int {
         // Assumes block is the last one in the sequence.
-        if (!(block instanceof RElement)) {
-            return block.getHeight();
+        if (block !is RElement) {
+            return block.getHeight()
         }
-        final RCollection parent = this.getParent();
-        if (!(parent instanceof RElement)) {
-            return block.getHeight();
+        val parent = this.getParent()
+        if (parent !is RElement) {
+            return block.getHeight()
         }
-        final int blockMarginBottom = ((RElement) block).getMarginBottom();
-        final int parentMarginBottom = ((RElement) parent).getCollapsibleMarginBottom();
-        return block.getHeight() - Math.min(blockMarginBottom, parentMarginBottom);
+        val blockMarginBottom = block.getMarginBottom()
+        val parentMarginBottom = parent.getCollapsibleMarginBottom()
+        return block.getHeight() - min(blockMarginBottom, parentMarginBottom)
     }
 
-    private void addAsSeqBlock(final BoundableRenderable block, final boolean obeysFloats, final boolean informLineDone,
-                               final boolean addLine, final boolean centerBlock, final boolean isRelative) {
-        final Insets insets = this.paddingInsets;
-        final int insetsl = insets.left;
-        ArrayList<@NonNull BoundableRenderable> sr = this.seqRenderables;
+    private fun addAsSeqBlock(
+        block: BoundableRenderable, obeysFloats: Boolean, informLineDone: Boolean,
+        addLine: Boolean, centerBlock: Boolean, isRelative: Boolean
+    ) {
+        val insets = this.paddingInsets!!
+        val insetsl = insets.left
+        var sr = this.seqRenderables
         if (sr == null) {
-            sr = new ArrayList<>(1);
-            this.seqRenderables = sr;
+            sr = ArrayList<BoundableRenderable>(1)
+            this.seqRenderables = sr
         }
-        final RLine prevLine = this.currentLine;
-        boolean initialAllowOverflow;
+        val prevLine = this.currentLine
+        val initialAllowOverflow: Boolean
         if (prevLine != null) {
-            initialAllowOverflow = prevLine.isAllowOverflow();
+            initialAllowOverflow = prevLine.isAllowOverflow()
             if (informLineDone) {
-                this.lineDone(prevLine);
+                this.lineDone(prevLine)
             }
             if ((prevLine.x + prevLine.width) > this.maxX) {
-                this.maxX = prevLine.x + prevLine.width;
+                this.maxX = prevLine.x + prevLine.width
             }
             // Check height only with floats.
         } else {
-            initialAllowOverflow = false;
+            initialAllowOverflow = false
         }
-        final int prevLineHeight = prevLine == null ? 0 : prevLine.height;
-        int newLineY = prevLine == null ? insets.top : prevLine.y + prevLineHeight;
-        int blockX;
-        int blockY = prevLineHeight == 0 ? this.getNewBlockY(block, newLineY) : newLineY;
-        final int blockWidth = block.getWidth();
+        val prevLineHeight = if (prevLine == null) 0 else prevLine.height
+        var newLineY = if (prevLine == null) insets.top else prevLine.y + prevLineHeight
+        var blockX: Int
+        var blockY = if (prevLineHeight == 0) this.getNewBlockY(block, newLineY) else newLineY
+        val blockWidth = block.getWidth()
         if (obeysFloats) {
             // TODO: execution of fetchLeftOffset done twice with positionRElement.
-            final FloatingBounds floatBounds = this.floatBounds;
-            int actualAvailWidth;
+            val floatBounds = this.floatBounds
+            val actualAvailWidth: Int
             if (floatBounds != null) {
-                final int blockOffset = this.fetchLeftOffset(newLineY);
-                blockX = blockOffset;
-                final int rightOffset = this.fetchRightOffset(newLineY);
-                actualAvailWidth = this.desiredWidth - rightOffset - blockOffset;
+                val blockOffset = this.fetchLeftOffset(newLineY)
+                blockX = blockOffset
+                val rightOffset = this.fetchRightOffset(newLineY)
+                actualAvailWidth = this.desiredWidth - rightOffset - blockOffset
                 if (blockWidth > actualAvailWidth) {
-                    blockY = floatBounds.getClearY(newLineY);
+                    blockY = floatBounds.getClearY(newLineY)
                 }
             } else {
-                actualAvailWidth = this.availContentWidth;
-                blockX = insetsl;
+                actualAvailWidth = this.availContentWidth
+                blockX = insetsl
             }
             if (centerBlock) {
-                final int roomX = actualAvailWidth - blockWidth;
+                val roomX = actualAvailWidth - blockWidth
                 if (roomX > 0) {
-                    blockX += (roomX / 2);
+                    blockX += (roomX / 2)
                 }
             }
         } else {
             // Block does not obey alignment margins
-            blockX = insetsl;
+            blockX = insetsl
         }
-        block.setOrigin(blockX, blockY);
+        block.setOrigin(blockX, blockY)
         if (!isRelative) {
-            sr.add(block);
-            block.setParent(this);
+            sr.add(block)
+            block.setParent(this)
         }
         if ((blockX + blockWidth) > this.maxX) {
-            this.maxX = blockX + blockWidth;
+            this.maxX = blockX + blockWidth
         }
-        this.lastSeqBlock = block;
-        this.currentCollapsibleMargin = block instanceof RElement ? ((RElement) block).getMarginBottom() : 0;
+        this.lastSeqBlock = block
+        this.currentCollapsibleMargin = if (block is RElement) block.getMarginBottom() else 0
         if (addLine) {
-            newLineY = blockY + block.getHeight();
-            this.checkY(newLineY);
-            final int leftOffset = this.fetchLeftOffset(newLineY);
-            final int newX = leftOffset;
-            final int newMaxWidth = this.desiredWidth - this.fetchRightOffset(newLineY) - leftOffset;
-            final ModelNode lineNode = block.getModelNode().getParentModelNode();
-            final RLine newLine = new RLine(lineNode, this.container, newX, newLineY, newMaxWidth, 0, initialAllowOverflow);
-            newLine.setParent(this);
-            sr.add(newLine);
-            this.currentLine = newLine;
+            newLineY = blockY + block.getHeight()
+            this.checkY(newLineY)
+            val leftOffset = this.fetchLeftOffset(newLineY)
+            val newX = leftOffset
+            val newMaxWidth = this.desiredWidth - this.fetchRightOffset(newLineY) - leftOffset
+            val lineNode = block.getModelNode().parentModelNode
+            val newLine = RLine(
+                lineNode,
+                this.container,
+                newX,
+                newLineY,
+                newMaxWidth,
+                0,
+                initialAllowOverflow
+            )
+            newLine.setParent(this)
+            sr.add(newLine)
+            this.currentLine = newLine
         }
         if (!isRelative) {
-            if (block instanceof RUIControl) {
-                this.container.addComponent(((RUIControl) block).widget.getComponent());
+            if (block is RUIControl) {
+                this.container.addComponent(block.widget.getComponent())
             }
         }
     }
 
-    private boolean isFirstCollapsibleBlock(final RBlock child) {
-        return isFirstBlock() && isCollapsibleBlock(child, RBlockViewport::checkTopInset)
-                && isCollapsibleParentBlock((RBlock) this.parent, RBlockViewport::checkTopInset);
+    private fun isFirstCollapsibleBlock(child: RBlock): Boolean {
+        return this.isFirstBlock && isCollapsibleBlock(
+            child,
+            Function { insets: HtmlInsets? -> checkTopInset(insets) })
+                && isCollapsibleParentBlock(
+            (this.parent as RBlock?)!!,
+            Function { insets: HtmlInsets? -> checkTopInset(insets) })
     }
 
-    private boolean isLastCollapsibleBlock(final RBlock child) {
-        return lastElementBeingProcessed && isCollapsibleBlock(child, RBlockViewport::checkBottomInset)
-                && isCollapsibleParentBlock((RBlock) this.parent, RBlockViewport::checkBottomInset);
+    private fun isLastCollapsibleBlock(child: RBlock): Boolean {
+        return lastElementBeingProcessed && isCollapsibleBlock(
+            child,
+            Function { insets: HtmlInsets? -> checkBottomInset(insets) })
+                && isCollapsibleParentBlock(
+            (this.parent as RBlock?)!!,
+            Function { insets: HtmlInsets? -> checkBottomInset(insets) })
     }
 
-    private boolean isFirstBlock() {
-        final ArrayList<@NonNull BoundableRenderable> sr = this.seqRenderables;
-        return (!firstElementProcessed) && (sr == null || ((sr.size() == 1) && (sr.get(0) instanceof RLine) && ((RLine) sr.get(0)).isEmpty()));
-    }
-
-    private void addLineAfterBlock(final RBlock block, final boolean informLineDone) {
-        ArrayList<@NonNull BoundableRenderable> sr = this.seqRenderables;
-        if (sr == null) {
-            sr = new ArrayList<>(1);
-            this.seqRenderables = sr;
+    private val isFirstBlock: Boolean
+        get() {
+            val sr = this.seqRenderables
+            return (!firstElementProcessed) && (sr == null || ((sr.size == 1) && (sr.get(0) is RLine) && (sr.get(
+                0
+            ) as RLine).isEmpty()))
         }
-        final RLine prevLine = this.currentLine;
-        boolean initialAllowOverflow;
+
+    private fun addLineAfterBlock(block: RBlock, informLineDone: Boolean) {
+        var sr = this.seqRenderables
+        if (sr == null) {
+            sr = ArrayList<BoundableRenderable>(1)
+            this.seqRenderables = sr
+        }
+        val prevLine = this.currentLine
+        val initialAllowOverflow: Boolean
         if (prevLine != null) {
-            initialAllowOverflow = prevLine.isAllowOverflow();
+            initialAllowOverflow = prevLine.isAllowOverflow()
             if (informLineDone) {
-                this.lineDone(prevLine);
+                this.lineDone(prevLine)
             }
             if ((prevLine.x + prevLine.width) > this.maxX) {
-                this.maxX = prevLine.x + prevLine.width;
+                this.maxX = prevLine.x + prevLine.width
             }
             // Check height only with floats.
         } else {
-            initialAllowOverflow = false;
+            initialAllowOverflow = false
         }
-        final ModelNode lineNode = block.getModelNode().getParentModelNode();
-        final int newLineY = block.getY() + block.getHeight();
-        this.checkY(newLineY);
-        final int leftOffset = this.fetchLeftOffset(newLineY);
-        final int newX = leftOffset;
-        final int newMaxWidth = this.desiredWidth - this.fetchRightOffset(newLineY) - leftOffset;
-        final RLine newLine = new RLine(lineNode, this.container, newX, newLineY, newMaxWidth, 0, initialAllowOverflow);
-        newLine.setParent(this);
-        sr.add(newLine);
-        this.currentLine = newLine;
+        val lineNode = block.getModelNode().parentModelNode
+        val newLineY = block.getY() + block.getHeight()
+        this.checkY(newLineY)
+        val leftOffset = this.fetchLeftOffset(newLineY)
+        val newX = leftOffset
+        val newMaxWidth = this.desiredWidth - this.fetchRightOffset(newLineY) - leftOffset
+        val newLine =
+            RLine(lineNode, this.container, newX, newLineY, newMaxWidth, 0, initialAllowOverflow)
+        newLine.setParent(this)
+        sr.add(newLine)
+        this.currentLine = newLine
     }
 
-    private void layoutText(final NodeImpl textNode) {
-        final String text = textNode.getNodeValue();
-        final int length = text.length();
-        final RenderState renderState = textNode.getRenderState();
-        final FontMetrics fm = renderState.getFontMetrics();
-        final int descent = fm.getDescent();
-        final int ascentPlusLeading = fm.getAscent() + fm.getLeading();
-        final int wordHeight = fm.getHeight();
-        final int blankWidth = fm.charWidth(' ');
-        final int whiteSpace = this.overrideNoWrap ? RenderState.WS_NOWRAP : renderState.getWhiteSpace();
-        final int textTransform = renderState.getTextTransform();
+    private fun layoutText(textNode: NodeImpl) {
+        val text = textNode.getNodeValue()
+        val length = text!!.length
+        val renderState = textNode.getRenderState()
+        val fm = renderState.fontMetrics
+        val descent = fm.getDescent()
+        val ascentPlusLeading = fm.getAscent() + fm.getLeading()
+        val wordHeight = fm.getHeight()
+        val blankWidth = fm.charWidth(' ')
+        val whiteSpace =
+            if (this.overrideNoWrap) RenderState.WS_NOWRAP else renderState.whiteSpace
+        val textTransform = renderState.textTransform
         if (whiteSpace != RenderState.WS_PRE) {
-            final boolean prevAllowOverflow = this.currentLine.isAllowOverflow();
-            final boolean allowOverflow = whiteSpace == RenderState.WS_NOWRAP;
-            this.currentLine.setAllowOverflow(allowOverflow);
+            val prevAllowOverflow = this.currentLine!!.isAllowOverflow()
+            val allowOverflow = whiteSpace == RenderState.WS_NOWRAP
+            this.currentLine!!.setAllowOverflow(allowOverflow)
             try {
-                final StringBuffer word = new StringBuffer(12);
-                for (int i = 0; i < length; i++) {
-                    char ch = text.charAt(i);
+                val word = StringBuffer(12)
+                var i = 0
+                while (i < length) {
+                    var ch = text.get(i)
                     if (Character.isWhitespace(ch)) {
-                        final int wlen = word.length();
+                        val wlen = word.length
                         if (wlen > 0) {
-                            final RWord rword = new RWord(textNode, word.toString(), container, fm, descent, ascentPlusLeading, wordHeight, textTransform);
-                            this.addWordToLine(rword);
-                            word.delete(0, wlen);
+                            val rword = RWord(
+                                textNode,
+                                word.toString(),
+                                container,
+                                fm,
+                                descent,
+                                ascentPlusLeading,
+                                wordHeight,
+                                textTransform
+                            )
+                            this.addWordToLine(rword)
+                            word.delete(0, wlen)
                         }
-                        final RLine line = this.currentLine;
+                        val line = this.currentLine!!
                         if (line.width > 0) {
-                            final RBlank rblank = new RBlank(textNode, fm, container, ascentPlusLeading, blankWidth, wordHeight);
-                            line.addBlank(rblank);
+                            val rblank = RBlank(
+                                textNode,
+                                fm,
+                                container,
+                                ascentPlusLeading,
+                                blankWidth,
+                                wordHeight
+                            )
+                            line.addBlank(rblank)
                         }
-                        for (i++; i < length; i++) {
-                            ch = text.charAt(i);
+                        i++
+                        while (i < length) {
+                            ch = text.get(i)
                             if (!Character.isWhitespace(ch)) {
-                                word.append(ch);
-                                break;
+                                word.append(ch)
+                                break
                             }
+                            i++
                         }
                     } else {
-                        word.append(ch);
+                        word.append(ch)
                     }
+                    i++
                 }
-                if (word.length() > 0) {
-                    final RWord rword = new RWord(textNode, word.toString(), container, fm, descent, ascentPlusLeading, wordHeight, textTransform);
-                    this.addWordToLine(rword);
+                if (word.length > 0) {
+                    val rword = RWord(
+                        textNode,
+                        word.toString(),
+                        container,
+                        fm,
+                        descent,
+                        ascentPlusLeading,
+                        wordHeight,
+                        textTransform
+                    )
+                    this.addWordToLine(rword)
                 }
             } finally {
-                this.currentLine.setAllowOverflow(prevAllowOverflow);
+                this.currentLine!!.setAllowOverflow(prevAllowOverflow)
             }
         } else {
-            boolean lastCharSlashR = false;
-            final StringBuffer line = new StringBuffer();
-            for (int i = 0; i < length; i++) {
-                final char ch = text.charAt(i);
-                switch (ch) {
-                    case '\r':
-                        lastCharSlashR = true;
-                        break;
-                    case '\n':
-                        final RWord rword = new RWord(textNode, line.toString(), container, fm, descent, ascentPlusLeading, wordHeight, textTransform);
-                        this.addWordToLine(rword);
-                        line.delete(0, line.length());
-                        final RLine prevLine = this.currentLine;
-                        prevLine.setLineBreak(new LineBreak(LineBreak.NONE));
-                        this.addLine(textNode, prevLine, prevLine.y + prevLine.height);
-                        break;
-                    default:
+            var lastCharSlashR = false
+            val line = StringBuffer()
+            for (i in 0..<length) {
+                val ch = text.get(i)
+                when (ch) {
+                    '\r' -> lastCharSlashR = true
+                    '\n' -> {
+                        val rword = RWord(
+                            textNode,
+                            line.toString(),
+                            container,
+                            fm,
+                            descent,
+                            ascentPlusLeading,
+                            wordHeight,
+                            textTransform
+                        )
+                        this.addWordToLine(rword)
+                        line.delete(0, line.length)
+                        val prevLine = this.currentLine!!
+                        prevLine.setLineBreak(LineBreak(LineBreak.Companion.NONE))
+                        this.addLine(textNode, prevLine, prevLine.y + prevLine.height)
+                    }
+
+                    else -> {
                         if (lastCharSlashR) {
-                            line.append('\r');
-                            lastCharSlashR = false;
+                            line.append('\r')
+                            lastCharSlashR = false
                         }
                         if (ch == '\t') {
-            /* Tabs are not recognized as advancing width in FontMetrics. There are two approaches possible:
+                            /* Tabs are not recognized as advancing width in FontMetrics. There are two approaches possible:
                1. Convert to spaces. Simple, but when copying selection spaces are copied.
                2. Define a new class call RTab, that manages tabs.
                3. Modify the width calculation logic of RWord to account for tab character.
             */
 
                             // TODO: The number of spaces is hard-coded right now. But when CSS `tab-size` property is supported, it could be made variable.
-                            final int NUM_SPACES = 8;
+
+                            val NUM_SPACES = 8
 
                             // Solution 1.
                             // line.append("        ");
 
                             // Solution 2.
-                            addWordToLine(new RTab(textNode, container, fm, descent, ascentPlusLeading, wordHeight, NUM_SPACES));
+                            addWordToLine(
+                                RTab(
+                                    textNode,
+                                    container,
+                                    fm,
+                                    descent,
+                                    ascentPlusLeading,
+                                    wordHeight,
+                                    NUM_SPACES
+                                )
+                            )
                         } else {
-                            line.append(ch);
+                            line.append(ch)
                         }
-                        break;
+                    }
                 }
             }
-            if (line.length() > 0) {
-                final RWord rword = new RWord(textNode, line.toString(), container, fm, descent, ascentPlusLeading, wordHeight, textTransform);
-                this.addWordToLine(rword);
+            if (line.length > 0) {
+                val rword = RWord(
+                    textNode,
+                    line.toString(),
+                    container,
+                    fm,
+                    descent,
+                    ascentPlusLeading,
+                    wordHeight,
+                    textTransform
+                )
+                this.addWordToLine(rword)
             }
         }
     }
 
-    public Iterator<@NonNull ? extends Renderable> getRenderables(final boolean topFirst) {
-        final SortedSet<PositionedRenderable> others = this.positionedRenderables;
-        final ArrayList<@NonNull ? extends Renderable> sr = this.seqRenderables;
-        if ((others == null) || (others.size() == 0)) {
-            return sr == null ? null : sr.iterator();
+    override fun getRenderables(topFirst: Boolean): MutableIterator<out Renderable>? {
+        val others = this.positionedRenderables
+        val sr: ArrayList<out Renderable>? = this.seqRenderables
+        if ((others == null) || (others.size == 0)) {
+            return if (sr == null) null else sr.iterator()
         } else {
-            final ArrayList<@NonNull Renderable> allRenderables = new ArrayList<>();
-            Iterator<? extends Renderable> srIterator = sr == null ? null : sr.iterator();
+            val allRenderables = ArrayList<Renderable>()
+            val srIterator = if (sr == null) null else sr.iterator()
             if (topFirst) {
-                populateZIndexGroupsTopFirst(new ArrayList<>(others), srIterator, allRenderables);
+                populateZIndexGroupsTopFirst(
+                    ArrayList<PositionedRenderable?>(others),
+                    srIterator,
+                    allRenderables
+                )
             } else {
-                populateZIndexGroups(others, srIterator, allRenderables);
+                populateZIndexGroups(others, srIterator, allRenderables)
             }
-            return allRenderables.iterator();
+            return allRenderables.iterator()
         }
     }
 
-    private Iterator<Renderable> getRenderables(final Rectangle clipBounds) {
-        final ArrayList<BoundableRenderable> sr = this.seqRenderables;
-        Iterator<Renderable> baseIterator = null;
+    private fun getRenderables(clipBounds: Rectangle): MutableIterator<Renderable>? {
+        val sr = this.seqRenderables
+        var baseIterator: MutableIterator<Renderable>? = null
         if (sr != null) {
-            final Renderable[] array = sr.toArray(Renderable.EMPTY_ARRAY);
-            final Range range = MarkupUtilities.findRenderables(array, clipBounds, true);
-            baseIterator = ArrayUtilities.iterator(array, range.offset, range.length);
+            val array = sr.toArray<Renderable?>(Renderable.Companion.EMPTY_ARRAY)
+            val range = MarkupUtilities.findRenderables(array, clipBounds, true)
+            baseIterator = ArrayUtilities.iterator<Renderable?>(array, range.offset, range.length)
         }
 
-        final SortedSet<PositionedRenderable> others = this.positionedRenderables;
-        if ((others == null) || (others.size() == 0)) {
-            return baseIterator;
+        val others = this.positionedRenderables
+        if ((others == null) || (others.size == 0)) {
+            return baseIterator
         } else {
-            final ArrayList<PositionedRenderable> matches = new ArrayList<>();
+            val matches = ArrayList<PositionedRenderable?>()
             // ArrayList "matches" keeps the order from "others".
-            final Iterator<PositionedRenderable> i = others.iterator();
+            val i: MutableIterator<PositionedRenderable> = others.iterator()
             while (i.hasNext()) {
-                final PositionedRenderable pr = i.next();
+                val pr = i.next()
                 // if (pr.isFixed() || clipBounds.intersects(pr.renderable.getVisualBounds())) {
                 if (pr.isFixed() || clipBounds.intersects(pr.getVisualBounds())) {
-                    matches.add(pr);
+                    matches.add(pr)
                 }
                 // matches.add(pr);
             }
-            if (matches.size() == 0) {
-                return baseIterator;
+            if (matches.size == 0) {
+                return baseIterator
             } else {
-                final ArrayList<Renderable> destination = new ArrayList<>();
-                populateZIndexGroups(matches, baseIterator, destination);
-                return destination.iterator();
+                val destination = ArrayList<Renderable>()
+                populateZIndexGroups(matches, baseIterator, destination)
+                return destination.iterator()
             }
         }
     }
 
-    public BoundableRenderable getRenderable(final Point point) {
-        return this.getRenderable(point.x, point.y);
+    fun getRenderable(point: Point): BoundableRenderable? {
+        return this.getRenderable(point.x, point.y)
     }
 
-    public Iterator<? extends Renderable> getRenderables(final Point point) {
-        return this.getRenderables(point.x, point.y);
+    fun getRenderables(point: Point): MutableIterator<out Renderable?>? {
+        return this.getRenderables(point.x, point.y)
     }
 
-    public Iterator<? extends Renderable> getRenderables(final int pointx, final int pointy) {
-        Collection<BoundableRenderable> result = null;
-        final SortedSet<PositionedRenderable> others = this.positionedRenderables;
-        final int size = others == null ? 0 : others.size();
-        final PositionedRenderable[] otherArray = size == 0 ? null : others.toArray(PositionedRenderable.EMPTY_ARRAY);
+    fun getRenderables(pointx: Int, pointy: Int): MutableIterator<out Renderable?>? {
+        var result: MutableCollection<BoundableRenderable?>? = null
+        val others = this.positionedRenderables
+        val size = if (others == null) 0 else others.size
+        val otherArray: Array<PositionedRenderable>? =
+            if (size == 0) null else others.toArray<PositionedRenderable?>(PositionedRenderable.Companion.EMPTY_ARRAY)
         // Try to find in other renderables with z-index >= 0 first.
-        int index = 0;
+        var index = 0
         if (otherArray != null) {
             // Must go in reverse order
-            for (index = size; --index >= 0; ) {
-                final PositionedRenderable pr = otherArray[index];
-                final BoundableRenderable br = pr.renderable;
+            index = size
+            while (--index >= 0) {
+                val pr = otherArray[index]
+                val br = pr.renderable
                 if (br.getZIndex() < 0) {
-                    break;
+                    break
                 }
                 if (br.contains(pointx, pointy)) {
                     if (result == null) {
-                        result = new LinkedList<>();
+                        result = LinkedList<BoundableRenderable?>()
                     }
-                    result.add(br);
+                    result.add(br)
                 }
             }
         }
 
         // Now do a "binary" search on sequential renderables.
-    /*
+        /*
     final ArrayList<BoundableRenderable> sr = this.seqRenderables;
     if (sr != null) {
       final Renderable[] array = sr.toArray(Renderable.EMPTY_ARRAY);
@@ -1607,152 +1525,169 @@ public class RBlockViewport extends BaseRCollection {
     }*/
 
         /* Get all sequential renderables that contain the point */
-        final ArrayList<BoundableRenderable> sr = this.seqRenderables;
+        val sr = this.seqRenderables
         if (sr != null) {
-            final Renderable[] array = sr.toArray(Renderable.EMPTY_ARRAY);
-            final List<BoundableRenderable> found = MarkupUtilities.findRenderables(array, pointx, pointy, true);
+            val array = sr.toArray<Renderable?>(Renderable.Companion.EMPTY_ARRAY)
+            val found = MarkupUtilities.findRenderables(array, pointx, pointy, true)
             if (found != null) {
                 if (result == null) {
-                    result = new LinkedList<>();
+                    result = LinkedList<BoundableRenderable?>()
                 }
-                result.addAll(found);
+                result.addAll(found)
             }
         }
 
         // Finally, try to find it in renderables with z-index < 0.
         if (otherArray != null) {
             // Must go in reverse order
-            for (; index >= 0; index--) {
-                final PositionedRenderable pr = otherArray[index];
-                final BoundableRenderable br = pr.renderable;
+            while (index >= 0) {
+                val pr = otherArray[index]
+                val br = pr.renderable
                 if (br.contains(pointx, pointy)) {
                     if (result == null) {
-                        result = new LinkedList<>();
+                        result = LinkedList<BoundableRenderable?>()
                     }
-                    result.add(br);
+                    result.add(br)
                 }
+                index--
             }
         }
-        return result == null ? null : result.iterator();
+        return if (result == null) null else result.iterator()
     }
 
-    private RElement setupNewUIControl(final RenderableContainer container, final HTMLElementImpl element, final UIControl control) {
-        final RElement renderable = new RUIControl(element, control, container, this.frameContext, this.userAgentContext);
-        element.setUINode(renderable);
-        return renderable;
+    private fun setupNewUIControl(
+        container: RenderableContainer?,
+        element: HTMLElementImpl,
+        control: UIControl
+    ): RElement {
+        val renderable: RElement =
+            RUIControl(element, control, container, this.frameContext, this.userAgentContext)
+        element.uINode = renderable
+        return renderable
     }
 
-    private final void addAlignableAsBlock(final HTMLElementImpl markupElement, final RElement renderable) {
+    private fun addAlignableAsBlock(markupElement: HTMLElementImpl, renderable: RElement) {
         // TODO: Get rid of this method?
         // At this point block already has bounds.
-        boolean regularAdd = false;
-        final String align = markupElement.getAttribute("align");
+        var regularAdd = false
+        val align = markupElement.getAttribute("align")
         if (align != null) {
-            if ("left".equalsIgnoreCase(align)) {
-                this.layoutFloat(renderable, false, true);
-            } else if ("right".equalsIgnoreCase(align)) {
-                this.layoutFloat(renderable, false, false);
+            if ("left".equals(align, ignoreCase = true)) {
+                this.layoutFloat(renderable, false, true)
+            } else if ("right".equals(align, ignoreCase = true)) {
+                this.layoutFloat(renderable, false, false)
             } else {
-                regularAdd = true;
+                regularAdd = true
             }
         } else {
-            regularAdd = true;
+            regularAdd = true
         }
         if (regularAdd) {
-            this.addAsSeqBlock(renderable);
+            this.addAsSeqBlock(renderable)
         }
     }
 
-    private final void layoutHr(final HTMLElementImpl markupElement) {
-        RElement renderable = (RElement) markupElement.getUINode();
+    private fun layoutHr(markupElement: HTMLElementImpl) {
+        var renderable = markupElement.uINode as RElement?
         if (renderable == null) {
-            renderable = this.setupNewUIControl(container, markupElement, new HrControl(markupElement));
+            renderable = this.setupNewUIControl(container, markupElement, HrControl(markupElement))
         }
-        renderable.layout(this.availContentWidth, this.availContentHeight, this.sizeOnly);
-        this.addAlignableAsBlock(markupElement, renderable);
+        renderable.layout(this.availContentWidth, this.availContentHeight, this.sizeOnly)
+        this.addAlignableAsBlock(markupElement, renderable)
     }
 
     /**
      * Gets offset from the left due to floats. It includes padding.
      */
-    private final int fetchLeftOffset(final int newLineY) {
-        final Insets paddingInsets = this.paddingInsets;
-        final FloatingBounds floatBounds = this.floatBounds;
+    private fun fetchLeftOffset(newLineY: Int): Int {
+        val paddingInsets = this.paddingInsets!!
+        val floatBounds = this.floatBounds
         if (floatBounds == null) {
-            return paddingInsets.left;
+            return paddingInsets.left
         }
-        final int left = floatBounds.getLeft(newLineY);
-        return Math.max(left, paddingInsets.left);
+        val left = floatBounds.getLeft(newLineY)
+        return max(left, paddingInsets.left)
     }
 
     /**
      * Gets offset from the right due to floats. It includes padding.
      */
-    private final int fetchRightOffset(final int newLineY) {
-        final Insets paddingInsets = this.paddingInsets;
-        final FloatingBounds floatBounds = this.floatBounds;
+    private fun fetchRightOffset(newLineY: Int): Int {
+        val paddingInsets = this.paddingInsets!!
+        val floatBounds = this.floatBounds
         if (floatBounds == null) {
-            return paddingInsets.right;
+            return paddingInsets.right
         }
-        final int right = floatBounds.getRight(newLineY);
-        return Math.max(right, paddingInsets.right);
+        val right = floatBounds.getRight(newLineY)
+        return max(right, paddingInsets.right)
     }
 
-    private final void checkY(final int y) {
+    private fun checkY(y: Int) {
         if ((this.yLimit != -1) && (y > this.yLimit)) {
-            throw SEE;
+            throw SEE
         }
     }
 
-    private final void layoutFloat(final RElement renderable, final boolean layout, final boolean leftFloat) {
-        renderable.setOriginalParent(this);
+    private fun layoutFloat(renderable: RElement, layout: Boolean, leftFloat: Boolean) {
+        renderable.setOriginalParent(this)
         if (layout) {
-            final int availWidth = this.availContentWidth;
-            final int availHeight = this.availContentHeight;
-            if (renderable instanceof RBlock block) {
+            val availWidth = this.availContentWidth
+            val availHeight = this.availContentHeight
+            if (renderable is RBlock) {
                 // Float boxes don't inherit float bounds?
-                block.layout(availWidth, availHeight, false, false, null, this.sizeOnly);
+                renderable.layout(availWidth, availHeight, false, false, null, this.sizeOnly)
             } else {
-                renderable.layout(availWidth, availHeight, this.sizeOnly);
+                renderable.layout(availWidth, availHeight, this.sizeOnly)
             }
         }
-        final RFloatInfo floatInfo = new RFloatInfo(renderable.getModelNode(), renderable, leftFloat);
+        val floatInfo = RFloatInfo(renderable.getModelNode(), renderable, leftFloat)
 
         // TODO: WHy is this required? Could RFloatInfo be removed completely?
-        this.currentLine.simplyAdd(floatInfo);
+        this.currentLine!!.simplyAdd(floatInfo)
 
-        this.scheduleFloat(floatInfo);
+        this.scheduleFloat(floatInfo)
     }
 
     /**
      * @param absolute if true, then position is absolute, else fixed
      */
-    private void scheduleAbsDelayedPair(final @NonNull BoundableRenderable renderable,
-                                        final String leftText, final String rightText, final String topText, final String bottomText,
-                                        final String widthText, final String heightText,
-                                        final RenderState rs, final int currX, final int currY, final boolean absolute) {
+    private fun scheduleAbsDelayedPair(
+        renderable: BoundableRenderable,
+        leftText: String?, rightText: String?, topText: String?, bottomText: String?,
+        widthText: String?, heightText: String?,
+        rs: RenderState?, currX: Int, currY: Int, absolute: Boolean
+    ) {
         // It gets reimported in the local
         // viewport if it turns out it can't be exported up.
-        final RenderableContainer containingBlock = absolute ? getPositionedAncestor(this.container) : getRootContainer(container);
-        final int pos = absolute ? RenderState.POSITION_ABSOLUTE : RenderState.POSITION_FIXED;
-        final DelayedPair pair = new DelayedPair(this.container, containingBlock, renderable, leftText, rightText, topText, bottomText, widthText, heightText, rs, currX, currY, pos);
-        this.container.addDelayedPair(pair);
+        val containingBlock: RenderableContainer? =
+            if (absolute) getPositionedAncestor(this.container) else getRootContainer(container)
+        val pos = if (absolute) RenderState.POSITION_ABSOLUTE else RenderState.POSITION_FIXED
+        val pair = DelayedPair(
+            this.container,
+            containingBlock,
+            renderable,
+            leftText,
+            rightText,
+            topText,
+            bottomText,
+            widthText,
+            heightText,
+            rs,
+            currX,
+            currY,
+            pos
+        )
+        this.container.addDelayedPair(pair)
     }
 
-    void importDelayedPair(final DelayedPair pair) {
+    fun importDelayedPair(pair: DelayedPair) {
         // if (!pair.isAdded()) {
         // pair.markAdded();
-        final BoundableRenderable r = pair.positionPairChild();
+        val r = pair.positionPairChild()
         // final BoundableRenderable r = pair.child;
-        this.addPositionedRenderable(r, false, false, pair.isFixed);
+        this.addPositionedRenderable(r, false, false, pair.isFixed)
         // Size of block does not change - it's  set in stone?
         // }
-    }
-
-    // ----------------------------------------------------------------
-
-    private final void addPositionedRenderable(final @NonNull BoundableRenderable renderable, final boolean verticalAlignable, final boolean isFloat, final boolean isFixed) {
-        addPositionedRenderable(renderable, verticalAlignable, isFloat, isFixed, false);
     }
 
     /*
@@ -1762,7 +1697,7 @@ public class RBlockViewport extends BaseRCollection {
      * org.xamjwg.html.renderer.BoundableRenderable#onMouseClick(java.awt.event
      * .MouseEvent, int, int)
      */
-  /*
+    /*
   public boolean onMouseClick(final MouseEvent event, final int x, final int y) {
     final Iterator<? extends Renderable> i = this.getRenderables(new Point(x, y));
     if (i != null) {
@@ -1780,128 +1715,122 @@ public class RBlockViewport extends BaseRCollection {
     }
     return true;
   }*/
-
-    private final void addPositionedRenderable(final @NonNull BoundableRenderable renderable, final boolean verticalAlignable, final boolean isFloat, final boolean isFixed, final boolean isDelegated) {
+    // ----------------------------------------------------------------
+    private fun addPositionedRenderable(
+        renderable: BoundableRenderable,
+        verticalAlignable: Boolean,
+        isFloat: Boolean,
+        isFixed: Boolean,
+        isDelegated: Boolean = false
+    ) {
         // Expected to be called only in GUI thread.
-        final PositionedRenderable pr = new PositionedRenderable(renderable, verticalAlignable, this.positionedOrdinal++, isFloat, isFixed, isDelegated);
-        addPosRenderable(pr);
-        renderable.setParent(this);
-        if (renderable instanceof RUIControl) {
-            this.container.addComponent(((RUIControl) renderable).widget.getComponent());
+        val pr = PositionedRenderable(
+            renderable,
+            verticalAlignable,
+            this.positionedOrdinal++,
+            isFloat,
+            isFixed,
+            isDelegated
+        )
+        addPosRenderable(pr)
+        renderable.setParent(this)
+        if (renderable is RUIControl) {
+            this.container.addComponent(renderable.widget.getComponent())
         }
     }
 
-    private void addPosRenderable(final PositionedRenderable pr) {
+    private fun addPosRenderable(pr: PositionedRenderable?) {
         // System.out.println("Adding : " + pr);
         // System.out.println("  to: " + this);
-        SortedSet<PositionedRenderable> others = this.positionedRenderables;
+        var others = this.positionedRenderables
         if (others == null) {
-            others = new TreeSet<>(new ZIndexComparator());
-            this.positionedRenderables = others;
+            others = TreeSet<PositionedRenderable?>(ZIndexComparator())
+            this.positionedRenderables = others
         }
-        others.add(pr);
+        others.add(pr)
         // System.out.println("  total: " + others.size());
     }
 
-    public int getFirstLineHeight() {
-        final ArrayList<BoundableRenderable> renderables = this.seqRenderables;
-        if (renderables != null) {
-            final int size = renderables.size();
-            if (size == 0) {
-                return 0;
-            }
-            for (int i = 0; i < size; i++) {
-                final BoundableRenderable br = renderables.get(0);
-                final int height = br.getHeight();
-                if (height != 0) {
-                    return height;
+    val firstLineHeight: Int
+        get() {
+            val renderables = this.seqRenderables
+            if (renderables != null) {
+                val size = renderables.size
+                if (size == 0) {
+                    return 0
                 }
-            }
-        }
-        // Not found!!
-        return 1;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.xamjwg.html.renderer.BoundableRenderable#onMousePressed(java.awt.event
-     * .MouseEvent, int, int)
-     */
-  /*
-  public boolean onMousePressed(final MouseEvent event, final int x, final int y) {
-    final Iterator<? extends Renderable> i = this.getRenderables(new Point(x, y));
-    if (i != null) {
-      while (i.hasNext()) {
-        final BoundableRenderable br = (BoundableRenderable) i.next();
-        if (br != null) {
-          // final Rectangle bounds = br.getVisualBounds();
-          // if (!br.onMousePressed(event, x - bounds.x, y - bounds.y)) {
-          final Point or = br.getOriginRelativeTo(this);
-          if (!br.onMousePressed(event, x - or.x, y - or.y)) {
-            this.armedRenderable = br;
-            return false;
-          }
-        }
-      }
-    }
-    return true;
-  }
-  */
-
-    public int getFirstBaselineOffset() {
-        final ArrayList<BoundableRenderable> renderables = this.seqRenderables;
-        if (renderables != null) {
-            final Iterator<BoundableRenderable> i = renderables.iterator();
-            while (i.hasNext()) {
-                final Object r = i.next();
-                if (r instanceof RLine) {
-                    final int blo = ((RLine) r).getBaselineOffset();
-                    if (blo != 0) {
-                        return blo;
-                    }
-                } else if (r instanceof RBlock block) {
-                    if (block.getHeight() > 0) {
-                        final Insets insets = block.getInsetsMarginBorder(false, false);
-                        final Insets paddingInsets = this.paddingInsets;
-                        return block.getFirstBaselineOffset() + insets.top + (paddingInsets == null ? 0 : paddingInsets.top);
+                for (i in 0..<size) {
+                    val br = renderables.get(0)
+                    val height = br.getHeight()
+                    if (height != 0) {
+                        return height
                     }
                 }
             }
+            // Not found!!
+            return 1
         }
-        return 0;
-    }
 
-    public RenderableSpot getLowestRenderableSpot(final int x, final int y) {
-        final BoundableRenderable br = this.getRenderable(new Point(x, y));
+    val firstBaselineOffset: Int
+        /*
+              * (non-Javadoc)
+              *
+              * @see
+              * org.xamjwg.html.renderer.BoundableRenderable#onMousePressed(java.awt.event
+              * .MouseEvent, int, int)
+              */
+        get() {
+            val renderables = this.seqRenderables
+            if (renderables != null) {
+                val i: MutableIterator<BoundableRenderable?> =
+                    renderables.iterator()
+                while (i.hasNext()) {
+                    val r: Any? = i.next()
+                    if (r is RLine) {
+                        val blo = r.getBaselineOffset()
+                        if (blo != 0) {
+                            return blo
+                        }
+                    } else if (r is RBlock) {
+                        if (r.getHeight() > 0) {
+                            val insets = r.getInsetsMarginBorder(false, false)
+                            val paddingInsets = this.paddingInsets
+                            return r.getFirstBaselineOffset() + insets.top + (if (paddingInsets == null) 0 else paddingInsets.top)
+                        }
+                    }
+                }
+            }
+            return 0
+        }
+
+    override fun getLowestRenderableSpot(x: Int, y: Int): RenderableSpot? {
+        val br = this.getRenderable(Point(x, y))
         if (br != null) {
-            return br.getLowestRenderableSpot(x - br.getX(), y - br.getY());
+            return br.getLowestRenderableSpot(x - br.getX(), y - br.getY())
         } else {
-            return new RenderableSpot(this, x, y);
+            return RenderableSpot(this, x, y)
         }
     }
 
-    public boolean onDoubleClick(final MouseEvent event, final int x, final int y) {
-        final Iterator<? extends Renderable> i = this.getRenderables(new Point(x, y));
+    override fun onDoubleClick(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val i = this.getRenderables(Point(x, y))
         if (i != null) {
             while (i.hasNext()) {
-                final BoundableRenderable br = (BoundableRenderable) i.next();
+                val br = i.next() as BoundableRenderable?
                 if (br != null) {
                     // final Rectangle bounds = br.getVisualBounds();
                     // if (!br.onDoubleClick(event, x - bounds.x, y - bounds.y)) {
-                    final Point or = br.getOriginRelativeTo(this);
+                    val or = br.getOriginRelativeTo(this)
                     if (!br.onMouseClick(event, x - or.x, y - or.y)) {
-                        return false;
+                        return false
                     }
                 }
             }
         }
-        return true;
+        return true
     }
 
     // ----------------------------------------------------------------
-
     /*
      * (non-Javadoc)
      *
@@ -1909,16 +1838,16 @@ public class RBlockViewport extends BaseRCollection {
      * org.xamjwg.html.renderer.BoundableRenderable#onMouseDisarmed(java.awt.event
      * .MouseEvent)
      */
-    public boolean onMouseDisarmed(final MouseEvent event) {
-        final BoundableRenderable br = this.armedRenderable;
+    override fun onMouseDisarmed(event: MouseEvent?): Boolean {
+        val br = this.armedRenderable
         if (br != null) {
             try {
-                return br.onMouseDisarmed(event);
+                return br.onMouseDisarmed(event)
             } finally {
-                this.armedRenderable = null;
+                this.armedRenderable = null
             }
         } else {
-            return true;
+            return true
         }
     }
 
@@ -1929,334 +1858,355 @@ public class RBlockViewport extends BaseRCollection {
      * org.xamjwg.html.renderer.BoundableRenderable#onMouseReleased(java.awt.event
      * .MouseEvent, int, int)
      */
-    public boolean onMouseReleased(final MouseEvent event, final int x, final int y) {
-        final Iterator<? extends Renderable> i = this.getRenderables(new Point(x, y));
+    override fun onMouseReleased(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val i = this.getRenderables(Point(x, y))
         if (i != null) {
             while (i.hasNext()) {
-                final BoundableRenderable br = (BoundableRenderable) i.next();
+                val br = i.next() as BoundableRenderable?
                 if (br != null) {
                     // final Rectangle bounds = br.getVisualBounds();
                     // if (!br.onMouseReleased(event, x - bounds.x, y - bounds.y)) {
-                    final Point or = br.getOriginRelativeTo(this);
+                    val or = br.getOriginRelativeTo(this)
                     if (!br.onMouseReleased(event, x - or.x, y - or.y)) {
-                        final BoundableRenderable oldArmedRenderable = this.armedRenderable;
-                        if ((oldArmedRenderable != null) && (br != oldArmedRenderable)) {
-                            oldArmedRenderable.onMouseDisarmed(event);
-                            this.armedRenderable = null;
+                        val oldArmedRenderable = this.armedRenderable
+                        if ((oldArmedRenderable != null) && (br !== oldArmedRenderable)) {
+                            oldArmedRenderable.onMouseDisarmed(event)
+                            this.armedRenderable = null
                         }
-                        return false;
+                        return false
                     }
                 }
             }
         }
-        final BoundableRenderable oldArmedRenderable = this.armedRenderable;
+        val oldArmedRenderable = this.armedRenderable
         if (oldArmedRenderable != null) {
-            oldArmedRenderable.onMouseDisarmed(event);
-            this.armedRenderable = null;
+            oldArmedRenderable.onMouseDisarmed(event)
+            this.armedRenderable = null
         }
-        return true;
+        return true
     }
 
-    public void paint(final Graphics gIn) {
-        paint(gIn, gIn);
+    override fun paint(gIn: Graphics) {
+        paint(gIn, gIn)
     }
 
-    public void paint(final Graphics gIn, Graphics gInUnClipped) {
-        final boolean translationRequired = (x | y) != 0;
-        final Graphics g = translationRequired ? gIn.create() : gIn;
+    fun paint(gIn: Graphics, gInUnClipped: Graphics) {
+        val translationRequired = (x or y) != 0
+        val g = if (translationRequired) gIn.create() else gIn
         if (translationRequired) {
-            g.translate(x, y);
+            g.translate(x, y)
         }
-        final Graphics gUnClipped = translationRequired ? gInUnClipped.create() : gInUnClipped;
+        val gUnClipped = if (translationRequired) gInUnClipped.create() else gInUnClipped
         if (translationRequired) {
-            gUnClipped.translate(x, y);
+            gUnClipped.translate(x, y)
         }
         try {
-            final Rectangle clipBounds = gUnClipped.getClipBounds();
-            final Iterator<Renderable> i = this.getRenderables(clipBounds);
+            val clipBounds = gUnClipped.clipBounds
+            val i = this.getRenderables(clipBounds)
             if (i != null) {
                 while (i.hasNext()) {
-                    final Renderable robj = i.next();
+                    val robj = i.next()
                     // The expected behavior in HTML is for boxes
                     // not to be clipped unless overflow=hidden.
-                    if (robj instanceof BoundableRenderable renderable) {
+                    if (robj is BoundableRenderable) {
                         // if (!((renderable instanceof RBlock) && renderable.getModelNode().getRenderState().getPosition() == RenderState.POSITION_RELATIVE)) {
-                        if (!renderable.isDelegated()) {
-                            renderable.paintTranslated(g);
+                        if (!robj.isDelegated()) {
+                            robj.paintTranslated(g)
                         }
                     } else {
                         // PositionedRenderable, etc because they don't inherit from BoundableRenderable
-                        final boolean isReplacedElement = robj.isReplacedElement();
-                        final Graphics selectedG = isReplacedElement ? (robj.isFixed() ? gIn : g) : (robj.isFixed() ? gInUnClipped : gUnClipped);
+                        val isReplacedElement = robj.isReplacedElement()
+                        val selectedG =
+                            if (isReplacedElement) (if (robj.isFixed()) gIn else g) else (if (robj.isFixed()) gInUnClipped else gUnClipped)
 
-                        if (getModelNode() instanceof HTMLDocument) {
-                            Renderable htmlRenderable = RenderUtils.findHtmlRenderable(this);
-                            if (htmlRenderable instanceof PositionedRenderable htmlPR) {
-                                htmlRenderable = htmlPR.renderable;
+                        if (getModelNode() is HTMLDocument) {
+                            var htmlRenderable = RenderUtils.findHtmlRenderable(this)
+                            if (htmlRenderable is PositionedRenderable) {
+                                htmlRenderable = htmlRenderable.renderable
                             }
                             // TODO: Handle other renderable types such as RTable
-                            if (htmlRenderable instanceof RBlock) {
-                                final Rectangle htmlBounds = ((RBlock) htmlRenderable).getClipBoundsWithoutInsets();
+                            if (htmlRenderable is RBlock) {
+                                val htmlBounds = htmlRenderable.getClipBoundsWithoutInsets()
                                 if (htmlBounds != null) {
-                                    final Graphics clippedG = selectedG.create(0, 0, htmlBounds.width, htmlBounds.height);
+                                    val clippedG =
+                                        selectedG.create(0, 0, htmlBounds.width, htmlBounds.height)
                                     try {
-                                        robj.paint(clippedG);
+                                        robj.paint(clippedG)
                                     } finally {
-                                        clippedG.dispose();
+                                        clippedG.dispose()
                                     }
                                 } else {
-                                    robj.paint(selectedG);
+                                    robj.paint(selectedG)
                                 }
                             } else {
-                                robj.paint(selectedG);
+                                robj.paint(selectedG)
                             }
                         } else {
-                            robj.paint(selectedG);
+                            robj.paint(selectedG)
                         }
                     }
                 }
             }
         } finally {
             if (translationRequired) {
-                g.dispose();
-                gUnClipped.dispose();
+                g.dispose()
+                gUnClipped.dispose()
             }
         }
     }
 
-    public boolean isContainedByNode() {
-        return false;
+    override fun isContainedByNode(): Boolean {
+        return false
     }
 
-    private void layoutRInlineBlock(final HTMLElementImpl markupElement) {
-        final UINode uINode = markupElement.getUINode();
-        RInlineBlock inlineBlock = null;
-        if (uINode instanceof RInlineBlock) {
-            inlineBlock = (RInlineBlock) uINode;
+    private fun layoutRInlineBlock(markupElement: HTMLElementImpl) {
+        val uINode = markupElement.uINode
+        var inlineBlock: RInlineBlock? = null
+        if (uINode is RInlineBlock) {
+            inlineBlock = uINode
         } else {
-            final RInlineBlock newInlineBlock = new RInlineBlock(container, markupElement, userAgentContext, rendererContext, frameContext);
-            markupElement.setUINode(newInlineBlock);
-            inlineBlock = newInlineBlock;
+            val newInlineBlock = RInlineBlock(
+                container,
+                markupElement,
+                userAgentContext,
+                rendererContext,
+                frameContext
+            )
+            markupElement.uINode = newInlineBlock
+            inlineBlock = newInlineBlock
         }
-        inlineBlock.doLayout(availContentWidth, availContentHeight, sizeOnly);
-        addRenderableToLine(inlineBlock);
-        inlineBlock.setOriginalParent(inlineBlock.getParent());
-        bubbleUpIfRelative(markupElement, inlineBlock);
+        inlineBlock.doLayout(availContentWidth, availContentHeight, sizeOnly)
+        addRenderableToLine(inlineBlock)
+        inlineBlock.setOriginalParent(inlineBlock.getParent())
+        bubbleUpIfRelative(markupElement, inlineBlock)
     }
 
-    @Override
-    public String toString() {
-        return "RBlockViewport[node=" + this.modelNode + "]";
+    override fun toString(): String {
+        return "RBlockViewport[node=" + this.modelNode + "]"
     }
 
-    private void scheduleFloat(final RFloatInfo floatInfo) {
-        final RLine line = this.currentLine;
+    private fun scheduleFloat(floatInfo: RFloatInfo) {
+        val line = this.currentLine
         if (line == null) {
-            final int y = this.paddingInsets.top;
-            this.placeFloat(floatInfo.getRenderable(), y, floatInfo.isLeftFloat());
+            val y = this.paddingInsets!!.top
+            this.placeFloat(floatInfo.getRenderable(), y, floatInfo.isLeftFloat())
         } else if (line.getWidth() == 0) {
-            final int y = line.getY();
-            this.placeFloat(floatInfo.getRenderable(), y, floatInfo.isLeftFloat());
-            final int leftOffset = this.fetchLeftOffset(y);
-            final int rightOffset = this.fetchRightOffset(y);
-            line.changeLimits(leftOffset, this.desiredWidth - leftOffset - rightOffset);
+            val y = line.getY()
+            this.placeFloat(floatInfo.getRenderable(), y, floatInfo.isLeftFloat())
+            val leftOffset = this.fetchLeftOffset(y)
+            val rightOffset = this.fetchRightOffset(y)
+            line.changeLimits(leftOffset, this.desiredWidth - leftOffset - rightOffset)
         } else {
             // These pending floats are positioned when
             // lineDone() is called.
-            Collection<RFloatInfo> c = this.pendingFloats;
+            var c = this.pendingFloats
             if (c == null) {
-                c = new LinkedList<>();
-                this.pendingFloats = c;
+                c = LinkedList<RFloatInfo?>()
+                this.pendingFloats = c
             }
-            c.add(floatInfo);
+            c.add(floatInfo)
         }
     }
 
-    private void lineDone(final RLine line) {
-        final Collection<RFloatInfo> pfs = this.pendingFloats;
+    private fun lineDone(line: RLine?) {
+        val pfs = this.pendingFloats
         if (pfs != null) {
-            this.pendingFloats = null;
-            final Iterator<RFloatInfo> i = pfs.iterator();
-            int yAfterLine = 0;
-            boolean yComputed = false;
+            this.pendingFloats = null
+            val i: MutableIterator<RFloatInfo> = pfs.iterator()
+            var yAfterLine = 0
+            var yComputed = false
             while (i.hasNext()) {
-                final RFloatInfo pf = i.next();
+                val pf = i.next()
                 if (!yComputed) {
-                    yAfterLine = line == null ? this.paddingInsets.top : (line.checkFit(pf.getRenderable()) ? line.y : line.y + line.height);
-                    yComputed = true;
+                    yAfterLine =
+                        if (line == null) this.paddingInsets!!.top else (if (line.checkFit(pf.getRenderable())) line.y else line.y + line.height)
+                    yComputed = true
                 }
-                this.placeFloat(pf.getRenderable(), yAfterLine, pf.isLeftFloat());
+                this.placeFloat(pf.getRenderable(), yAfterLine, pf.isLeftFloat())
             }
         }
     }
 
-    private void addExportableFloat(final RElement element, final boolean leftFloat, final int origX, final int origY, final boolean pendingPlacement) {
-        ArrayList<ExportableFloat> ep = this.exportableFloats;
+    private fun addExportableFloat(
+        element: RElement?,
+        leftFloat: Boolean,
+        origX: Int,
+        origY: Int,
+        pendingPlacement: Boolean
+    ) {
+        var ep = this.exportableFloats
         if (ep == null) {
-            ep = new ArrayList<>(1);
-            this.exportableFloats = ep;
+            ep = ArrayList<ExportableFloat?>(1)
+            this.exportableFloats = ep
         }
-        ExportableFloat ef = new ExportableFloat(element, leftFloat, origX, origY);
-        ef.pendingPlacement = pendingPlacement;
-        ep.add(ef);
+        val ef = ExportableFloat(element, leftFloat, origX, origY)
+        ef.pendingPlacement = pendingPlacement
+        ep.add(ef)
     }
 
-    private void addFloat(final RElement renderable, final int newX, final int newY) {
-        renderable.setOrigin(newX, newY);
+    private fun addFloat(renderable: RElement, newX: Int, newY: Int) {
+        renderable.setOrigin(newX, newY)
         // TODO: Enabling this causes problems in some cases. See GH #153
         // if (!bubbleUpIfRelative((HTMLElementImpl) renderable.getModelNode(), renderable)) {
-        this.addPositionedRenderable(renderable, true, true, false);
+        this.addPositionedRenderable(renderable, true, true, false)
         // } else {
         // this.addPositionedRenderable(renderable, true, true, false, true);
         // }
     }
 
     // ------------------------------------------------------------------------
-
     /**
      * @param element
      * @param y         The desired top position of the float element.
      * @param floatType -1 (left) or +1 (right)
      */
-    private void placeFloat(final RElement element, final int y, final boolean leftFloat) {
-        final Insets insets = this.paddingInsets;
-        int boxY = y;
-        int boxWidth = element.getWidth();
-        int boxHeight = element.getHeight();
-        final int desiredWidth = this.desiredWidth;
-        int boxX;
-        for (; ; ) {
-            final int leftOffset = this.fetchLeftOffset(boxY);
-            final int rightOffset = this.fetchRightOffset(boxY);
-            boxX = leftFloat ? leftOffset : desiredWidth - rightOffset - boxWidth;
+    private fun placeFloat(element: RElement, y: Int, leftFloat: Boolean) {
+        val insets = this.paddingInsets!!
+        var boxY = y
+        var boxWidth = element.getWidth()
+        var boxHeight = element.getHeight()
+        val desiredWidth = this.desiredWidth
+        var boxX: Int
+        while (true) {
+            val leftOffset = this.fetchLeftOffset(boxY)
+            val rightOffset = this.fetchRightOffset(boxY)
+            boxX = if (leftFloat) leftOffset else desiredWidth - rightOffset - boxWidth
             if ((leftOffset == insets.left) && (rightOffset == insets.right)) {
                 // Probably typical scenario. If it's overflowing to the left,
                 // we need to correct.
                 if (!leftFloat && (boxX < leftOffset)) {
-                    boxX = leftOffset;
+                    boxX = leftOffset
                 }
-                break;
+                break
             }
             if ((desiredWidth <= 0) || (boxWidth <= (desiredWidth - rightOffset - leftOffset))) {
                 // Size is fine.
-                break;
+                break
             }
             // At this point the float doesn't fit at the current Y position.
-            if (element instanceof RBlock relement) {
+            if (element is RBlock) {
                 // Try shrinking it.
-                if (!relement.hasDeclaredWidth()) {
-                    final int availableBoxWidth = desiredWidth - rightOffset - leftOffset;
-                    relement.layout(availableBoxWidth, this.availContentHeight, this.sizeOnly);
-                    if (relement.getWidth() < boxWidth) {
-                        if (relement.getWidth() > (desiredWidth - rightOffset - leftOffset)) {
+                if (!element.hasDeclaredWidth()) {
+                    val availableBoxWidth = desiredWidth - rightOffset - leftOffset
+                    element.layout(availableBoxWidth, this.availContentHeight, this.sizeOnly)
+                    if (element.getWidth() < boxWidth) {
+                        if (element.getWidth() > (desiredWidth - rightOffset - leftOffset)) {
                             // Didn't work out. Put it back the way it was.
-                            relement.layout(this.availContentWidth, this.availContentHeight, this.sizeOnly);
+                            element.layout(
+                                this.availContentWidth,
+                                this.availContentHeight,
+                                this.sizeOnly
+                            )
                         } else {
                             // Retry
-                            boxWidth = relement.getWidth();
-                            boxHeight = relement.getHeight();
-                            continue;
+                            boxWidth = element.getWidth()
+                            boxHeight = element.getHeight()
+                            continue
                         }
                     }
                 }
             }
-            final FloatingBounds fb = this.floatBounds;
-            final int newY = fb == null ? boxY + boxHeight : fb.getFirstClearY(boxY);
+            val fb = this.floatBounds
+            val newY = if (fb == null) boxY + boxHeight else fb.getFirstClearY(boxY)
             if (newY == boxY) {
                 // Possible if prior box has height zero?
-                break;
+                break
             }
-            boxY = newY;
+            boxY = newY
         }
         // Position element
         // element.setOrigin(boxX, boxY);
         // Update float bounds accordingly
-        final int offsetFromBorder = leftFloat ? boxX + boxWidth : desiredWidth - boxX;
-        this.floatBounds = new FloatingViewportBounds(this.floatBounds, leftFloat, boxY, offsetFromBorder, boxHeight);
+        val offsetFromBorder = if (leftFloat) boxX + boxWidth else desiredWidth - boxX
+        this.floatBounds =
+            FloatingViewportBounds(this.floatBounds, leftFloat, boxY, offsetFromBorder, boxHeight)
         // Add element to collection
-        final boolean isFloatLimit = this.isFloatLimit();
+        val isFloatLimit = this.isFloatLimit()
 
-        boolean placementPending = true;
-        if (getPosition((HTMLElementImpl) modelNode) != RenderState.POSITION_STATIC) {
-            addFloat(element, boxX, boxY);
-            placementPending = false;
+        var placementPending = true
+        if (getPosition((modelNode as HTMLElementImpl?)!!) != RenderState.POSITION_STATIC) {
+            addFloat(element, boxX, boxY)
+            placementPending = false
         }
 
         if (isFloatLimit) {
             // System.out.println("Created float as renderable in " + this);
             // System.out.println("  r: " + element);
             if (placementPending) {
-                addFloat(element, boxX, boxY);
+                addFloat(element, boxX, boxY)
             }
         } else {
-            this.addExportableFloat(element, leftFloat, boxX, boxY, placementPending);
+            this.addExportableFloat(element, leftFloat, boxX, boxY, placementPending)
         }
         // Adjust maxX based on float.
         if ((boxX + boxWidth) > this.maxX) {
-            this.maxX = boxX + boxWidth;
+            this.maxX = boxX + boxWidth
         }
         // Adjust maxY based on float, but only if this viewport is the float limit.
         if (isFloatLimit) {
             if ((boxY + boxHeight) > this.maxY) {
-                this.maxY = boxY + boxHeight;
+                this.maxY = boxY + boxHeight
             }
         }
     }
 
-    private boolean isFloatLimit() {
-        Boolean fl = this.isFloatLimit;
+    private fun isFloatLimit(): Boolean {
+        var fl = this.isFloatLimit
         if (fl == null) {
-            fl = this.isFloatLimitImpl();
-            this.isFloatLimit = fl;
+            fl = this.isFloatLimitImpl
+            this.isFloatLimit = fl
         }
-        return fl.booleanValue();
+        return fl
     }
 
-    private Boolean isFloatLimitImpl() {
-        final Object parent = this.getOriginalOrCurrentParent();
-        if (!(parent instanceof RBlock blockParent)) {
-            return Boolean.TRUE;
+    private val isFloatLimitImpl: Boolean
+        get() {
+            val parent: Any? = this.getOriginalOrCurrentParent()
+            if (parent !is RBlock) {
+                return java.lang.Boolean.TRUE
+            }
+            val grandParent: Any? = parent.getOriginalOrCurrentParent()
+            if (grandParent !is RBlockViewport) {
+                // Could be contained in a table, or it could
+                // be a list item, for example.
+                return java.lang.Boolean.TRUE
+            }
+            val node = this.modelNode
+            if (node !is HTMLElementImpl) {
+                // Can only be a document here.
+                return java.lang.Boolean.TRUE
+            }
+            val position: Int = getPosition(node)
+            if ((position == RenderState.POSITION_ABSOLUTE) || (position == RenderState.POSITION_FIXED)) {
+                return java.lang.Boolean.TRUE
+            }
+            val rs = node.getRenderState()
+            val floatValue = rs.float
+            if (floatValue != RenderState.FLOAT_NONE) {
+                return java.lang.Boolean.TRUE
+            }
+            return !isOverflowVisibleOrNone(rs)
         }
-        final Object grandParent = blockParent.getOriginalOrCurrentParent();
-        if (!(grandParent instanceof RBlockViewport)) {
-            // Could be contained in a table, or it could
-            // be a list item, for example.
-            return Boolean.TRUE;
-        }
-        final ModelNode node = this.modelNode;
-        if (!(node instanceof HTMLElementImpl element)) {
-            // Can only be a document here.
-            return Boolean.TRUE;
-        }
-        final int position = getPosition(element);
-        if ((position == RenderState.POSITION_ABSOLUTE) || (position == RenderState.POSITION_FIXED)) {
-            return Boolean.TRUE;
-        }
-        final RenderState rs = element.getRenderState();
-        final int floatValue = rs.getFloat();
-        if (floatValue != RenderState.FLOAT_NONE) {
-            return Boolean.TRUE;
-        }
-        return !isOverflowVisibleOrNone(rs);
-    }
 
-    public FloatingInfo getExportableFloatingInfo() {
-        final ArrayList<ExportableFloat> ef = this.exportableFloats;
-        if (ef == null) {
-            return null;
+    val exportableFloatingInfo: FloatingInfo?
+        get() {
+            val ef = this.exportableFloats
+            if (ef == null) {
+                return null
+            }
+            val floats =
+                ef.toArray<ExportableFloat?>(ExportableFloat.Companion.EMPTY_ARRAY)
+            return FloatingInfo(0, 0, floats)
         }
-        final ExportableFloat[] floats = ef.toArray(ExportableFloat.EMPTY_ARRAY);
-        return new FloatingInfo(0, 0, floats);
-    }
 
-    private void importFloatingInfo(final FloatingInfo floatingInfo, final BoundableRenderable block) {
-        final int shiftX = floatingInfo.shiftX + block.getX();
-        final int shiftY = floatingInfo.shiftY + block.getY();
-        final ExportableFloat[] floats = floatingInfo.floats;
-        final int length = floats.length;
-        for (int i = 0; i < length; i++) {
-            final ExportableFloat ef = floats[i];
-            this.importFloat(ef, shiftX, shiftY);
+    private fun importFloatingInfo(floatingInfo: FloatingInfo, block: BoundableRenderable) {
+        val shiftX = floatingInfo.shiftX + block.getX()
+        val shiftY = floatingInfo.shiftY + block.getY()
+        val floats = floatingInfo.floats
+        val length = floats.size
+        for (i in 0..<length) {
+            val ef = floats[i]
+            this.importFloat(ef, shiftX, shiftY)
         }
     }
 
@@ -2346,7 +2296,6 @@ public class RBlockViewport extends BaseRCollection {
     // this.width = paddingInsets.right + this.maxX;
     // this.height = paddingInsets.bottom + maxY;
     // }
-
     // private void reprocessSeqRenderable(Renderable r) {
     // if(r instanceof RLine) {
     // this.reprocessLine((RLine) r);
@@ -2474,7 +2423,6 @@ public class RBlockViewport extends BaseRCollection {
     // }
     // this.addAsSeqBlock(element, obeysFloats, false);
     // }
-
     // private void reprocessRelative(RRelative relative) {
     // RLine line = this.currentLine;
     // this.lineDone(line);
@@ -2524,153 +2472,156 @@ public class RBlockViewport extends BaseRCollection {
     // }
     // this.addAsSeqBlock(relative, obeysFloats, false);
     // }
-
-    private void importFloat(final ExportableFloat ef, final int shiftX, final int shiftY) {
-        final RElement renderable = ef.element;
-        final int newX = ef.origX + shiftX;
-        final int newY = ef.origY + shiftY;
+    private fun importFloat(ef: ExportableFloat, shiftX: Int, shiftY: Int) {
+        val renderable = ef.element
+        val newX = ef.origX + shiftX
+        val newY = ef.origY + shiftY
         // final int newX = ef.origX;
         // final int newY = ef.origY;
         // renderable.setOrigin(ef.origX + ef.visualX, ef.origY + ef.visualY);
-        final FloatingBounds prevBounds = this.floatBounds;
-        int offsetFromBorder;
-        final boolean leftFloat = ef.leftFloat;
+        val prevBounds = this.floatBounds
+        val offsetFromBorder: Int
+        val leftFloat = ef.leftFloat
         if (leftFloat) {
-            offsetFromBorder = newX + renderable.getWidth();
+            offsetFromBorder = newX + renderable.getWidth()
         } else {
-            offsetFromBorder = this.desiredWidth - newX;
+            offsetFromBorder = this.desiredWidth - newX
         }
-        this.floatBounds = new FloatingViewportBounds(prevBounds, leftFloat, newY, offsetFromBorder, renderable.getHeight());
+        this.floatBounds = FloatingViewportBounds(
+            prevBounds,
+            leftFloat,
+            newY,
+            offsetFromBorder,
+            renderable.getHeight()
+        )
 
-        if (ef.pendingPlacement && getPosition((HTMLElementImpl) modelNode) != RenderState.POSITION_STATIC) {
+        if (ef.pendingPlacement && getPosition((modelNode as HTMLElementImpl?)!!) != RenderState.POSITION_STATIC) {
             // System.out.println("Adding float as renderable to " + this);
-            addFloat(renderable, newX, newY);
-            ef.pendingPlacement = false;
+            addFloat(renderable, newX, newY)
+            ef.pendingPlacement = false
         }
 
         if (this.isFloatLimit()) {
             // this.addPositionedRenderable(renderable, true, true, false);
             if (ef.pendingPlacement) {
                 // System.out.println("  r: " + renderable);
-                addFloat(renderable, newX, newY);
-                ef.pendingPlacement = false;
+                addFloat(renderable, newX, newY)
+                ef.pendingPlacement = false
             }
         } else {
-            this.addExportableFloat(renderable, leftFloat, newX, newY, ef.pendingPlacement);
+            this.addExportableFloat(renderable, leftFloat, newX, newY, ef.pendingPlacement)
         }
     }
 
-    public void positionDelayed() {
-        final Collection<DelayedPair> delayedPairs = container.getDelayedPairs();
-        if ((delayedPairs != null) && (delayedPairs.size() > 0)) {
+    fun positionDelayed() {
+        val delayedPairs = container.getDelayedPairs()
+        if ((delayedPairs != null) && (delayedPairs.size > 0)) {
             // Add positioned renderables that belong here
-            final Iterator<DelayedPair> i = delayedPairs.iterator();
+            val i: MutableIterator<DelayedPair> = delayedPairs.iterator()
             while (i.hasNext()) {
-                final DelayedPair pair = i.next();
-                if (pair.containingBlock == container) {
-                    this.importDelayedPair(pair);
+                val pair = i.next()
+                if (pair.containingBlock === container) {
+                    this.importDelayedPair(pair)
                 }
             }
         }
     }
 
-    @Override
-    public int getVisualHeight() {
+    override fun getVisualHeight(): Int {
         if (cachedVisualHeight != null) {
-            return cachedVisualHeight;
+            return cachedVisualHeight!!
         }
-        double maxY = getHeight();
-        final Iterator<? extends Renderable> renderables = getRenderables();
+        var maxY = getHeight().toDouble()
+        val renderables = getRenderables()
         if (renderables != null) {
             while (renderables.hasNext()) {
-                final Renderable r = renderables.next();
-                if (r instanceof RenderableContainer rc) {
+                val r = renderables.next()
+                if (r is RenderableContainer) {
                     // double rcMaxY = rc.getVisualBounds().getMaxY();
                     // final Insets rcInsets = rc.getInsetsMarginBorder(false, false);
                     // double rcMaxY = rc.getY() + rc.getVisualHeight() + rcInsets.top + rcInsets.bottom;
                     // double rcMaxY = rc.getVisualBounds().getMaxY() + rcInsets.top + rcInsets.bottom;
-                    double rcMaxY = rc.getVisualBounds().getMaxY(); //  + rcInsets.bottom;
+                    val rcMaxY = r.getVisualBounds().getMaxY() //  + rcInsets.bottom;
                     if (rcMaxY > maxY) {
-                        maxY = rcMaxY;
+                        maxY = rcMaxY
                     }
-                } else if (r instanceof BoundableRenderable br) {
-                    double brMaxY = br.getVisualBounds().getMaxY();
+                } else if (r is BoundableRenderable) {
+                    val brMaxY = r.getVisualBounds().getMaxY()
                     if (brMaxY > maxY) {
-                        maxY = brMaxY;
+                        maxY = brMaxY
                     }
-                } else if (r instanceof PositionedRenderable rc) {
-                    double rcMaxY = rc.renderable.getVisualBounds().getMaxY();
+                } else if (r is PositionedRenderable) {
+                    val rcMaxY = r.renderable.getVisualBounds().getMaxY()
                     if (rcMaxY > maxY) {
-                        maxY = rcMaxY;
+                        maxY = rcMaxY
                     }
                 } else {
-                    System.err.println("Unhandled renderable: " + r);
+                    System.err.println("Unhandled renderable: " + r)
                 }
             }
         }
-        cachedVisualHeight = (int) maxY;
-        return cachedVisualHeight;
+        cachedVisualHeight = maxY.toInt()
+        return cachedVisualHeight!!
     }
 
-    @Override
-    public int getVisualWidth() {
+    override fun getVisualWidth(): Int {
         if (cachedVisualWidth != null) {
-            return cachedVisualWidth;
+            return cachedVisualWidth!!
         }
-        double maxX = getWidth();
-        final Iterator<? extends Renderable> renderables = getRenderables();
+        var maxX = getWidth().toDouble()
+        val renderables = getRenderables()
         if (renderables != null) {
             while (renderables.hasNext()) {
-                final Renderable r = renderables.next();
-                if (r instanceof RenderableContainer rc) {
-                    final Insets rcInsets = rc.getInsetsMarginBorder(false, false);
-                    double rcMaxX = rc.getX() + rc.getVisualWidth() + rcInsets.left + rcInsets.right;
+                val r = renderables.next()
+                if (r is RenderableContainer) {
+                    val rcInsets = r.getInsetsMarginBorder(false, false)
+                    val rcMaxX =
+                        (r.getX() + r.getVisualWidth() + rcInsets.left + rcInsets.right).toDouble()
                     if (rcMaxX > maxX) {
-                        maxX = rcMaxX;
+                        maxX = rcMaxX
                     }
-                } else if (r instanceof BoundableRenderable br) {
-                    double brMaxX = br.getVisualBounds().getMaxX();
+                } else if (r is BoundableRenderable) {
+                    val brMaxX = r.getVisualBounds().getMaxX()
                     if (brMaxX > maxX) {
-                        maxX = brMaxX;
+                        maxX = brMaxX
                     }
-                } else if (r instanceof PositionedRenderable rc) {
-                    double rcMaxX = rc.renderable.getVisualBounds().getMaxX();
+                } else if (r is PositionedRenderable) {
+                    val rcMaxX = r.renderable.getVisualBounds().getMaxX()
                     if (rcMaxX > maxX) {
-                        maxX = rcMaxX;
+                        maxX = rcMaxX
                     }
                 } else {
-                    System.err.println("Unhandled renderable: " + r);
-                    Thread.dumpStack();
+                    System.err.println("Unhandled renderable: " + r)
+                    Thread.dumpStack()
                 }
             }
         }
-        cachedVisualWidth = (int) maxX;
-        return cachedVisualWidth;
+        cachedVisualWidth = maxX.toInt()
+        return cachedVisualWidth!!
     }
 
-    @Override
-    public Rectangle getClipBounds() {
-        return ((RBlock) container).getClipBounds();
+    override fun getClipBounds(): Rectangle? {
+        return (container as RBlock).getClipBounds()
         // return new Rectangle(0, 0, width, height);
     }
 
-    private static class NopLayout implements MarkupLayout {
-        public void layoutMarkup(final RBlockViewport bodyLayout, final HTMLElementImpl markupElement) {
+    private class NopLayout : MarkupLayout {
+        override fun layoutMarkup(bodyLayout: RBlockViewport?, markupElement: HTMLElementImpl?) {
         }
     }
 
-    private static class NoScriptLayout implements MarkupLayout {
-        public void layoutMarkup(final RBlockViewport bodyLayout, final HTMLElementImpl markupElement) {
-            final UserAgentContext ucontext = bodyLayout.userAgentContext;
+    private class NoScriptLayout : MarkupLayout {
+        override fun layoutMarkup(bodyLayout: RBlockViewport, markupElement: HTMLElementImpl) {
+            val ucontext = bodyLayout.userAgentContext
             if (!ucontext.isScriptingEnabled()) {
-                bodyLayout.layoutMarkup(markupElement);
+                bodyLayout.layoutMarkup(markupElement)
             } else {
                 // NOP
             }
         }
     }
 
-    private static class BrLayout implements MarkupLayout {
+    private class BrLayout : MarkupLayout {
         /*
          * (non-Javadoc)
          *
@@ -2678,13 +2629,13 @@ public class RBlockViewport extends BaseRCollection {
          * org.xamjwg.html.renderer.MarkupLayout#layoutMarkup(java.awt.Container,
          * java.awt.Insets, org.xamjwg.html.domimpl.HTMLElementImpl)
          */
-        public void layoutMarkup(final RBlockViewport bodyLayout, final HTMLElementImpl markupElement) {
-            final String clear = markupElement.getAttribute("clear");
-            bodyLayout.addLineBreak(markupElement, LineBreak.getBreakType(clear));
+        override fun layoutMarkup(bodyLayout: RBlockViewport, markupElement: HTMLElementImpl) {
+            val clear = markupElement.getAttribute("clear")
+            bodyLayout.addLineBreak(markupElement, LineBreak.Companion.getBreakType(clear))
         }
     }
 
-    private static class HrLayout implements MarkupLayout {
+    private class HrLayout : MarkupLayout {
         /*
          * (non-Javadoc)
          *
@@ -2692,8 +2643,8 @@ public class RBlockViewport extends BaseRCollection {
          * org.xamjwg.html.renderer.MarkupLayout#layoutMarkup(java.awt.Container,
          * java.awt.Insets, org.xamjwg.html.domimpl.HTMLElementImpl)
          */
-        public void layoutMarkup(final RBlockViewport bodyLayout, final HTMLElementImpl markupElement) {
-            bodyLayout.layoutHr(markupElement);
+        override fun layoutMarkup(bodyLayout: RBlockViewport, markupElement: HTMLElementImpl) {
+            bodyLayout.layoutHr(markupElement)
         }
     }
 
@@ -2715,148 +2666,182 @@ public class RBlockViewport extends BaseRCollection {
     // }
     // return null;
     // }
+    private class ObjectLayout(tryToRenderContent: Boolean, usesAlignAttribute: Boolean) :
+        CommonWidgetLayout(
+            ADD_INLINE, usesAlignAttribute
+        ) {
+        private val tryToRenderContent: Boolean
 
-    private static class ObjectLayout extends CommonWidgetLayout {
-        private final boolean tryToRenderContent;
         /**
          * Must use this ThreadLocal because an ObjectLayout instance is shared
          * across renderers.
          */
-        private final ThreadLocal<HtmlObject> htmlObject = new ThreadLocal<>();
+        private val htmlObject = ThreadLocal<HtmlObject?>()
 
         /**
          * @param tryToRenderContent If the object is unknown, content is rendered as HTML.
          * @param usesAlignAttribute
          */
-        public ObjectLayout(final boolean tryToRenderContent, final boolean usesAlignAttribute) {
-            super(ADD_INLINE, usesAlignAttribute);
-            this.tryToRenderContent = tryToRenderContent;
+        init {
+            this.tryToRenderContent = tryToRenderContent
         }
 
-        @Override
-        public void layoutMarkup(final RBlockViewport bodyLayout, final HTMLElementImpl markupElement) {
-            final HtmlObject ho = bodyLayout.rendererContext.getHtmlObject(markupElement);
+        override fun layoutMarkup(bodyLayout: RBlockViewport, markupElement: HTMLElementImpl) {
+            val ho = bodyLayout.rendererContext.getHtmlObject(markupElement)
             if ((ho == null) && this.tryToRenderContent) {
                 // Don't know what to do with it - render contents.
-                bodyLayout.layoutMarkup(markupElement);
+                bodyLayout.layoutMarkup(markupElement)
             } else if (ho != null) {
-                this.htmlObject.set(ho);
-                super.layoutMarkup(bodyLayout, markupElement);
+                this.htmlObject.set(ho)
+                super.layoutMarkup(bodyLayout, markupElement)
             }
         }
 
-        @Override
-        protected RElement createRenderable(final RBlockViewport bodyLayout, final HTMLElementImpl markupElement) {
-            final HtmlObject ho = this.htmlObject.get();
-            final UIControl uiControl = new UIControlWrapper(ho);
-            final RUIControl ruiControl = new RUIControl(markupElement, uiControl, bodyLayout.container, bodyLayout.frameContext,
-                    bodyLayout.userAgentContext);
-            return ruiControl;
+        override fun createRenderable(
+            bodyLayout: RBlockViewport,
+            markupElement: HTMLElementImpl?
+        ): RElement {
+            val ho = this.htmlObject.get()
+            val uiControl: UIControl = UIControlWrapper(ho)
+            val ruiControl = RUIControl(
+                markupElement, uiControl, bodyLayout.container, bodyLayout.frameContext,
+                bodyLayout.userAgentContext
+            )
+            return ruiControl
         }
     }
 
-    private static class ImgLayout extends CommonWidgetLayout {
-        public ImgLayout() {
-            super(ADD_INLINE, true);
-        }
-
-        @Override
-        protected RElement createRenderable(final RBlockViewport bodyLayout, final HTMLElementImpl markupElement) {
-            final ImgControl control = new ImgControl((HTMLImageElementImpl) markupElement);
-            return new RImgControl(markupElement, control, bodyLayout.container, bodyLayout.frameContext, bodyLayout.userAgentContext);
-        }
-    }
-
-    private static class CanvasLayout extends CommonWidgetLayout {
-        public CanvasLayout() {
-            super(ADD_INLINE, false);
-        }
-
-        @Override
-        protected RElement createRenderable(final RBlockViewport bodyLayout, final HTMLElementImpl markupElement) {
-            final HTMLCanvasElementImpl canvasImpl = (HTMLCanvasElementImpl) markupElement;
-            return new RUIControl(markupElement, new CanvasControl(canvasImpl), bodyLayout.container, bodyLayout.frameContext, bodyLayout.userAgentContext);
-        }
-
-        static class CanvasControl extends BaseControl {
-            private static final long serialVersionUID = -3487994653091311061L;
-            private final HTMLCanvasElementImpl canvasNode;
-
-            public CanvasControl(HTMLCanvasElementImpl canvasNode) {
-                super(canvasNode);
-                this.canvasNode = canvasNode;
-            }
-
-            public void paintComponent(final Graphics g) {
-                canvasNode.paintComponent(g);
-            }
-
-            @Override
-            public void setBounds(int x, int y, int width, int height) {
-                super.setBounds(x, y, width, height);
-                final Insets insets = ruicontrol.getInsetsMarginPadding();
-                canvasNode.setBounds(insets.left, insets.top, width - (insets.left + insets.right), height - (insets.top + insets.bottom));
-            }
-
+    private class ImgLayout : CommonWidgetLayout(ADD_INLINE, true) {
+        override fun createRenderable(
+            bodyLayout: RBlockViewport,
+            markupElement: HTMLElementImpl?
+        ): RElement {
+            val control = ImgControl(markupElement as HTMLImageElementImpl?)
+            return RImgControl(
+                markupElement,
+                control,
+                bodyLayout.container,
+                bodyLayout.frameContext,
+                bodyLayout.userAgentContext
+            )
         }
     }
 
-    private static class InputLayout2 extends CommonWidgetLayout {
-        public InputLayout2() {
-            super(ADD_INLINE, true);
+    private class CanvasLayout : CommonWidgetLayout(ADD_INLINE, false) {
+        override fun createRenderable(
+            bodyLayout: RBlockViewport,
+            markupElement: HTMLElementImpl?
+        ): RElement {
+            val canvasImpl = markupElement as HTMLCanvasElementImpl
+            return RUIControl(
+                markupElement,
+                CanvasControl(canvasImpl),
+                bodyLayout.container,
+                bodyLayout.frameContext,
+                bodyLayout.userAgentContext
+            )
         }
 
-        @Override
-        protected RElement createRenderable(final RBlockViewport bodyLayout, final HTMLElementImpl markupElement) {
-            final HTMLBaseInputElement bie = (HTMLBaseInputElement) markupElement;
-            final BaseInputControl uiControl = createInputControl(bie);
+        class CanvasControl(canvasNode: HTMLCanvasElementImpl) : BaseControl(canvasNode) {
+            private val canvasNode: HTMLCanvasElementImpl
+
+            init {
+                this.canvasNode = canvasNode
+            }
+
+            override fun paintComponent(g: Graphics) {
+                canvasNode.paintComponent(g)
+            }
+
+            override fun setBounds(x: Int, y: Int, width: Int, height: Int) {
+                super.setBounds(x, y, width, height)
+                val insets = ruicontrol.getInsetsMarginPadding()
+                canvasNode.setBounds(
+                    insets.left,
+                    insets.top,
+                    width - (insets.left + insets.right),
+                    height - (insets.top + insets.bottom)
+                )
+            }
+
+            companion object {
+                private val serialVersionUID = -3487994653091311061L
+            }
+        }
+    }
+
+    private class InputLayout2 : CommonWidgetLayout(ADD_INLINE, true) {
+        override fun createRenderable(
+            bodyLayout: RBlockViewport,
+            markupElement: HTMLElementImpl?
+        ): RElement? {
+            val bie = markupElement as HTMLBaseInputElement
+            val uiControl: BaseInputControl? = createInputControl(bie)
             if (uiControl == null) {
-                return null;
+                return null
             }
-            bie.setInputContext(uiControl);
-            return new RUIControl(markupElement, uiControl, bodyLayout.container, bodyLayout.frameContext, bodyLayout.userAgentContext);
+            bie.setInputContext(uiControl)
+            return RUIControl(
+                markupElement,
+                uiControl,
+                bodyLayout.container,
+                bodyLayout.frameContext,
+                bodyLayout.userAgentContext
+            )
         }
     }
 
-    private static class SelectLayout extends CommonWidgetLayout {
-        public SelectLayout() {
-            super(ADD_INLINE, true);
-        }
-
-        @Override
-        protected RElement createRenderable(final RBlockViewport bodyLayout, final HTMLElementImpl markupElement) {
-            final HTMLBaseInputElement bie = (HTMLBaseInputElement) markupElement;
-            final BaseInputControl uiControl = new InputSelectControl(bie);
-            bie.setInputContext(uiControl);
-            return new RUIControl(markupElement, uiControl, bodyLayout.container, bodyLayout.frameContext, bodyLayout.userAgentContext);
-        }
-    }
-
-    private static class TextAreaLayout2 extends CommonWidgetLayout {
-        public TextAreaLayout2() {
-            super(ADD_INLINE, true);
-        }
-
-        @Override
-        protected RElement createRenderable(final RBlockViewport bodyLayout, final HTMLElementImpl markupElement) {
-            final HTMLBaseInputElement bie = (HTMLBaseInputElement) markupElement;
-            final BaseInputControl control = new InputTextAreaControl(bie);
-            bie.setInputContext(control);
-            return new RUIControl(markupElement, control, bodyLayout.container, bodyLayout.frameContext, bodyLayout.userAgentContext);
+    private class SelectLayout : CommonWidgetLayout(ADD_INLINE, true) {
+        override fun createRenderable(
+            bodyLayout: RBlockViewport,
+            markupElement: HTMLElementImpl?
+        ): RElement {
+            val bie = markupElement as HTMLBaseInputElement
+            val uiControl: BaseInputControl = InputSelectControl(bie)
+            bie.setInputContext(uiControl)
+            return RUIControl(
+                markupElement,
+                uiControl,
+                bodyLayout.container,
+                bodyLayout.frameContext,
+                bodyLayout.userAgentContext
+            )
         }
     }
 
-    private static class IFrameLayout extends CommonWidgetLayout {
-        public IFrameLayout() {
-            super(ADD_INLINE, true);
+    private class TextAreaLayout2 : CommonWidgetLayout(ADD_INLINE, true) {
+        override fun createRenderable(
+            bodyLayout: RBlockViewport,
+            markupElement: HTMLElementImpl?
+        ): RElement {
+            val bie = markupElement as HTMLBaseInputElement
+            val control: BaseInputControl = InputTextAreaControl(bie)
+            bie.setInputContext(control)
+            return RUIControl(
+                markupElement,
+                control,
+                bodyLayout.container,
+                bodyLayout.frameContext,
+                bodyLayout.userAgentContext
+            )
         }
+    }
 
-        @Override
-        protected RElement createRenderable(final RBlockViewport bodyLayout, final HTMLElementImpl markupElement) {
-            final BrowserFrame frame = bodyLayout.rendererContext.createBrowserFrame();
-            ((HTMLIFrameElementImpl) markupElement).setBrowserFrame(frame);
-            final UIControl control = new BrowserFrameUIControl(markupElement, frame);
-            return new RUIControl(markupElement, control, bodyLayout.container, bodyLayout.frameContext, bodyLayout.userAgentContext);
+    private class IFrameLayout : CommonWidgetLayout(ADD_INLINE, true) {
+        override fun createRenderable(
+            bodyLayout: RBlockViewport,
+            markupElement: HTMLElementImpl
+        ): RElement {
+            val frame = bodyLayout.rendererContext.createBrowserFrame()
+            (markupElement as HTMLIFrameElementImpl).setBrowserFrame(frame)
+            val control: UIControl = BrowserFrameUIControl(markupElement, frame)
+            return RUIControl(
+                markupElement,
+                control,
+                bodyLayout.container,
+                bodyLayout.frameContext,
+                bodyLayout.userAgentContext
+            )
         }
     }
 
@@ -2864,126 +2849,411 @@ public class RBlockViewport extends BaseRCollection {
      * This is layout common to elements that render themselves, except RBlock,
      * RTable and RList.
      */
-    private static abstract class CommonWidgetLayout implements MarkupLayout {
-        protected static final int ADD_INLINE = 0;
-        protected static final int ADD_AS_BLOCK = 1;
-        protected static final int ADD_INLINE_BLOCK = 2;
-        private final int method;
-        private final boolean useAlignAttribute;
+    private abstract class CommonWidgetLayout(method: Int, usesAlignAttribute: Boolean) :
+        MarkupLayout {
+        private val method: Int
+        private val useAlignAttribute: Boolean
 
-        public CommonWidgetLayout(final int method, final boolean usesAlignAttribute) {
-            this.method = method;
-            this.useAlignAttribute = usesAlignAttribute;
+        init {
+            this.method = method
+            this.useAlignAttribute = usesAlignAttribute
         }
 
-        public void layoutMarkup(final RBlockViewport bodyLayout, final HTMLElementImpl markupElement) {
-            final JStyleProperties style = markupElement.getCurrentStyle();
-            int currMethod = this.method;
-            {
-                final String display = style.getDisplay();
+        override fun layoutMarkup(bodyLayout: RBlockViewport, markupElement: HTMLElementImpl) {
+            val style = markupElement.getCurrentStyle()
+            var currMethod = this.method
+            run {
+                val display = style.display
                 if (display != null) {
-                    if ("none".equalsIgnoreCase(display)) {
+                    if ("none".equals(display, ignoreCase = true)) {
                         // For hidden iframes: GH-140
                         // return;
-                        if (!"iframe".equalsIgnoreCase(markupElement.getNodeName())) {
-                            return;
+                        if (!"iframe".equals(markupElement.nodeName, ignoreCase = true)) {
+                            return
                         }
-                    } else if ("block".equalsIgnoreCase(display)) {
-                        currMethod = ADD_AS_BLOCK;
-                    } else if ("inline".equalsIgnoreCase(display)) {
-                        currMethod = ADD_INLINE;
-                    } else if ("display-inline".equalsIgnoreCase(display)) {
-                        currMethod = ADD_INLINE_BLOCK;
+                    } else if ("block".equals(display, ignoreCase = true)) {
+                        currMethod = ADD_AS_BLOCK
+                    } else if ("inline".equals(display, ignoreCase = true)) {
+                        currMethod = ADD_INLINE
+                    } else if ("display-inline".equals(display, ignoreCase = true)) {
+                        currMethod = ADD_INLINE_BLOCK
                     }
                 }
             }
-            final UINode node = markupElement.getUINode();
-            RElement renderable = null;
+            val node = markupElement.uINode
+            var renderable: RElement? = null
             if (node == null) {
-                renderable = this.createRenderable(bodyLayout, markupElement);
+                renderable = this.createRenderable(bodyLayout, markupElement)
                 if (renderable == null) {
                     if (logger.isLoggable(Level.INFO)) {
-                        logger.info("layoutMarkup(): Don't know how to render " + markupElement + ".");
+                        logger.info("layoutMarkup(): Don't know how to render " + markupElement + ".")
                     }
-                    return;
+                    return
                 }
-                markupElement.setUINode(renderable);
+                markupElement.uINode = renderable
             } else {
-                renderable = (RElement) node;
+                renderable = node as RElement
             }
-            renderable.setOriginalParent(bodyLayout);
-            switch (currMethod) {
-                case ADD_INLINE:
-                case ADD_INLINE_BLOCK:
-                    bodyLayout.addRenderableToLineCheckStyle(renderable, markupElement, this.useAlignAttribute);
-                    break;
-                case ADD_AS_BLOCK:
-                    bodyLayout.positionRElement(markupElement, renderable, this.useAlignAttribute, true, false);
-                    break;
+            renderable.setOriginalParent(bodyLayout)
+            when (currMethod) {
+                ADD_INLINE, ADD_INLINE_BLOCK -> bodyLayout.addRenderableToLineCheckStyle(
+                    renderable,
+                    markupElement,
+                    this.useAlignAttribute
+                )
+
+                ADD_AS_BLOCK -> bodyLayout.positionRElement(
+                    markupElement,
+                    renderable,
+                    this.useAlignAttribute,
+                    true,
+                    false
+                )
             }
         }
 
-        protected abstract RElement createRenderable(RBlockViewport bodyLayout, HTMLElementImpl markupElement);
+        protected abstract fun createRenderable(
+            bodyLayout: RBlockViewport?,
+            markupElement: HTMLElementImpl?
+        ): RElement?
+
+        companion object {
+            protected const val ADD_INLINE: Int = 0
+            protected const val ADD_AS_BLOCK: Int = 1
+            protected const val ADD_INLINE_BLOCK: Int = 2
+        }
     }
 
-    private static final class CommonLayout implements MarkupLayout {
-        public CommonLayout() {
-        }
-
-        public void layoutMarkup(final RBlockViewport bodyLayout, final HTMLElementImpl markupElement) {
-            final RenderState rs = markupElement.getRenderState();
-            int display = rs.getDisplay();
+    private class CommonLayout : MarkupLayout {
+        override fun layoutMarkup(bodyLayout: RBlockViewport, markupElement: HTMLElementImpl) {
+            val rs = markupElement.getRenderState()
+            var display = rs.display
             if (display == RenderState.DISPLAY_INLINE || display == RenderState.DISPLAY_INLINE_BLOCK || display == RenderState.DISPLAY_INLINE_TABLE) {
                 // Inline elements with absolute or fixed positions need to be treated as blocks.
                 // TODO: ^^Verify; is that an internal hack or a spec requirement?
-                final int position = rs.getPosition();
+                val position = rs.position
                 if ((position == RenderState.POSITION_ABSOLUTE) || (position == RenderState.POSITION_FIXED)) {
-                    display = RenderState.DISPLAY_BLOCK;
+                    display = RenderState.DISPLAY_BLOCK
                 } else {
-                    final int boxFloat = rs.getFloat();
+                    val boxFloat = rs.float
                     if (boxFloat != RenderState.FLOAT_NONE) {
-                        display = RenderState.DISPLAY_BLOCK;
+                        display = RenderState.DISPLAY_BLOCK
                     }
                 }
             }
-            switch (display) {
-                case RenderState.DISPLAY_TABLE_COLUMN:
-                case RenderState.DISPLAY_TABLE_COLUMN_GROUP:
-                case RenderState.DISPLAY_NONE:
+            when (display) {
+                RenderState.DISPLAY_TABLE_COLUMN, RenderState.DISPLAY_TABLE_COLUMN_GROUP, RenderState.DISPLAY_NONE -> {
                     // skip it completely.
-                    final UINode node = markupElement.getUINode();
-                    if (node instanceof BaseBoundableRenderable) {
+                    val node = markupElement.uINode
+                    if (node is BaseBoundableRenderable) {
                         // This is necessary so that if the element is made
                         // visible again, it can be invalidated.
-                        ((BaseBoundableRenderable) node).markLayoutValid();
+                        (node as BaseBoundableRenderable).markLayoutValid()
                     }
-                    break;
-                case RenderState.DISPLAY_BLOCK:
+                }
+
+                RenderState.DISPLAY_BLOCK -> {
                     //TODO refer issue #87
-                    final String tagName = markupElement.getTagName();
-                    if ("UL".equalsIgnoreCase(tagName) || "OL".equalsIgnoreCase(tagName)) {
-                        bodyLayout.layoutList(markupElement);
+                    val tagName = markupElement.tagName
+                    if ("UL".equals(tagName, ignoreCase = true) || "OL".equals(
+                            tagName,
+                            ignoreCase = true
+                        )
+                    ) {
+                        bodyLayout.layoutList(markupElement)
                     } else {
-                        bodyLayout.layoutRBlock(markupElement);
+                        bodyLayout.layoutRBlock(markupElement)
                     }
-                    break;
-                case RenderState.DISPLAY_LIST_ITEM:
-                    bodyLayout.layoutListItem(markupElement);
-                    break;
-                case RenderState.DISPLAY_TABLE:
-                    bodyLayout.layoutRTable(markupElement);
-                    break;
-                case RenderState.DISPLAY_INLINE_TABLE:
-                    bodyLayout.layoutRInlineBlock(markupElement);
-                    break;
-                case RenderState.DISPLAY_INLINE_BLOCK:
-                    bodyLayout.layoutRInlineBlock(markupElement);
-                    break;
-                default:
-                    // Assume INLINE
-                    bodyLayout.layoutMarkup(markupElement);
-                    break;
+                }
+
+                RenderState.DISPLAY_LIST_ITEM -> bodyLayout.layoutListItem(markupElement)
+                RenderState.DISPLAY_TABLE -> bodyLayout.layoutRTable(markupElement)
+                RenderState.DISPLAY_INLINE_TABLE -> bodyLayout.layoutRInlineBlock(markupElement)
+                RenderState.DISPLAY_INLINE_BLOCK -> bodyLayout.layoutRInlineBlock(markupElement)
+                else ->                     // Assume INLINE
+                    bodyLayout.layoutMarkup(markupElement)
             }
+        }
+    }
+
+    companion object {
+        // GENERAL NOTES
+        // An RBlockViewport basically consists of two collections:
+        // seqRenderables and positionedRenderables. The seqRenderables
+        // collection is a sequential list of RLine's and RBlock's
+        // that is amenable to a binary search by Y position. The
+        // positionedRenderables collection is a z-index ordered
+        // collection meant for blocks with position=absolute and such.
+        //
+        // HOW FLOATS WORK
+        // Float boxes are scheduled to be added on the next available line.
+        // Line layout is bounded by the current floatBounds.
+        // When a float is placed with placeFloat(), an absolutely positioned
+        // box is added. Whether the float height expands the RBlockViewport
+        // height is determined by isFloatLimit().
+        //
+        // FloatingBounds are inherited by sub-boxes, but the bounds are
+        // shifted.
+        //
+        // The RBlockViewport also publishes a collection of "exporatable
+        // floating bounds." These are float boxes that go beyond the bounds
+        // of the RBlockViewport, so ancestor blocks can obtain them to adjust
+        // their own bounds.
+        val ZERO_INSETS: Insets = Insets(0, 0, 0, 0)
+        private val elementLayout: MutableMap<String?, MarkupLayout?> =
+            HashMap<String?, MarkupLayout?>(70)
+        private val commonLayout: MarkupLayout = CommonLayout()
+        private val SEE = SizeExceededException()
+
+        init {
+            val el: MutableMap<String?, MarkupLayout?> = elementLayout
+            el.put("BR", BrLayout())
+            el.put("NOSCRIPT", NoScriptLayout())
+            val nop = NopLayout()
+            el.put("SCRIPT", nop)
+            el.put("HEAD", nop)
+            el.put("TITLE", nop)
+            el.put("META", nop)
+            el.put("STYLE", nop)
+            el.put("LINK", nop)
+            el.put("IMG", ImgLayout())
+            el.put("INPUT", InputLayout2())
+            el.put("TEXTAREA", TextAreaLayout2())
+            el.put("SELECT", SelectLayout())
+            el.put("HR", HrLayout())
+            val ol = ObjectLayout(false, true)
+            el.put("OBJECT", ObjectLayout(true, true))
+            el.put("APPLET", ol)
+            el.put("EMBED", ol)
+            el.put("IFRAME", IFrameLayout())
+
+            el.put("CANVAS", CanvasLayout())
+        }
+
+        private fun isLastElement(indx: Int, childrenArray: Array<NodeImpl?>): Boolean {
+            for (i in indx + 1..<childrenArray.size) {
+                if (childrenArray[i]!!.getNodeType() == Node.ELEMENT_NODE) {
+                    return false
+                }
+            }
+            return true
+        }
+
+        // final RBlockViewport getParentViewportForAlign() {
+        // // Use originalParent, which for one, is not going to be null during
+        // layout.
+        // Object parent = this.getOriginalOrCurrentParent();
+        // if(parent instanceof RBlock) {
+        // RBlock block = (RBlock) parent;
+        // if(!block.couldBeScrollable()) {
+        // parent = ((BaseElementRenderable) parent).getOriginalOrCurrentParent();
+        // if(parent instanceof RBlockViewport) {
+        // return (RBlockViewport) parent;
+        // }
+        // }
+        // }
+        // return null;
+        // }
+        //
+        private fun getPosition(element: HTMLElementImpl): Int {
+            val rs = element.getRenderState()
+            return rs.position
+        }
+
+        private fun isCollapsibleBlock(
+            block: RBlock,
+            insetChecker: Function<HtmlInsets?, Boolean?>
+        ): Boolean {
+            val mn = block.getModelNode()
+            val rs: RenderState = mn.renderState!!
+            val isDisplayBlock = rs.display == RenderState.DISPLAY_BLOCK
+            val isPosStaticOrRelative =
+                rs.position == RenderState.POSITION_STATIC || rs.position == RenderState.POSITION_RELATIVE
+            val borderInsets = rs.borderInfo.insets
+            val paddingInsets = rs.paddingInsets
+            val isZeroBorderAndPadding =
+                insetChecker.apply(borderInsets) && insetChecker.apply(paddingInsets)
+            return (mn !is HTMLHtmlElement) && isDisplayBlock && isPosStaticOrRelative && isZeroBorderAndPadding
+        }
+
+        private fun checkTopInset(insets: HtmlInsets?): Boolean {
+            return insets == null || insets.top == 0
+        }
+
+        private fun checkBottomInset(insets: HtmlInsets?): Boolean {
+            return insets == null || insets.bottom == 0
+        }
+
+        private fun isCollapsibleParentBlock(
+            block: RBlock,
+            insetChecker: Function<HtmlInsets?, Boolean?>
+        ): Boolean {
+            val mn = block.getModelNode()
+            val rs: RenderState = mn.renderState!!
+            return isCollapsibleBlock(block, insetChecker) && isOverflowVisibleOrNone(rs)
+        }
+
+        private fun isOverflowVisibleOrNone(rs: RenderState): Boolean {
+            val overflowX = rs.overflowX
+            val overflowY = rs.overflowY
+            val xOverflowFine =
+                (overflowX == RenderState.OVERFLOW_VISIBLE) || (overflowX == RenderState.OVERFLOW_NONE)
+            val yOverflowFine =
+                (overflowY == RenderState.OVERFLOW_VISIBLE) || (overflowY == RenderState.OVERFLOW_NONE)
+            val overflowFine = xOverflowFine && yOverflowFine
+            return overflowFine
+        }
+
+        /**
+         * @param others                 An ordered collection.
+         * @param seqRenderablesIterator
+         * @param destination
+         */
+        private fun populateZIndexGroups(
+            others: MutableCollection<PositionedRenderable?>,
+            seqRenderablesIterator: MutableIterator<out Renderable>?,
+            destination: ArrayList<Renderable>
+        ) {
+            // First, others with z-index < 0
+            val i1: MutableIterator<PositionedRenderable> = others.iterator()
+            var pending: Renderable? = null
+            while (i1.hasNext()) {
+                val pr = i1.next()
+                val r = pr.renderable
+                if (r.getZIndex() >= 0) {
+                    pending = pr
+                    break
+                }
+                destination.add(pr)
+            }
+
+            // Second, sequential renderables
+            val i2 = seqRenderablesIterator
+            if (i2 != null) {
+                while (i2.hasNext()) {
+                    destination.add(i2.next())
+                }
+            }
+
+            // Third, other renderables with z-index >= 0.
+            if (pending != null) {
+                destination.add(pending)
+                while (i1.hasNext()) {
+                    val pr: PositionedRenderable? = i1.next()
+                    destination.add(pr!!)
+                }
+            }
+        }
+
+        private fun populateZIndexGroupsTopFirst(
+            others: MutableList<PositionedRenderable?>?,
+            seqRenderablesIterator: MutableIterator<out Renderable>?,
+            destination: ArrayList<Renderable>
+        ) {
+            // First, others with z-index >= 0
+            val i1 = CollectionUtilities.reverseIterator<PositionedRenderable?>(others)
+            var pending: Renderable? = null
+            while (i1.hasNext()) {
+                val pr = i1.next()
+                val r = pr.renderable
+                if (r.getZIndex() < 0) {
+                    pending = pr
+                    break
+                }
+                destination.add(pr)
+            }
+
+            // Second, sequential renderables
+            val i2 = seqRenderablesIterator
+            if (i2 != null) {
+                while (i2.hasNext()) {
+                    destination.add(i2.next())
+                }
+            }
+
+            // Third, other renderables with z-index >= 0.
+            if (pending != null) {
+                destination.add(pending)
+                while (i1.hasNext()) {
+                    val pr: PositionedRenderable? = i1.next()
+                    destination.add(pr!!)
+                }
+            }
+        }
+
+        private fun createInputControl(markupElement: HTMLBaseInputElement): BaseInputControl? {
+            var type = markupElement.getAttribute("type")
+            if (type == null) {
+                return InputTextControl(markupElement)
+            }
+            type = type.lowercase(Locale.getDefault())
+            if ("text" == type || "url" == type || "number" == type || "search" == type || (type.length == 0)) {
+                return InputTextControl(markupElement)
+            } else if ("hidden" == type) {
+                return null
+            } else if ("submit" == type) {
+                return InputButtonControl(markupElement)
+            } else if ("password" == type) {
+                return InputPasswordControl(markupElement)
+            } else if ("radio" == type) {
+                return InputRadioControl(markupElement)
+            } else if ("checkbox" == type) {
+                return InputCheckboxControl(markupElement)
+            } else if ("image" == type) {
+                return InputImageControl(markupElement)
+            } else if ("reset" == type) {
+                return InputButtonControl(markupElement)
+            } else if ("button" == type) {
+                return InputButtonControl(markupElement)
+            } else if ("file" == type) {
+                return InputFileControl(markupElement)
+            } else {
+                return null
+            }
+        }
+
+        private fun getRootContainer(container: RenderableContainer): RenderableContainer {
+            var c = container.getParentContainer()
+            var prevC: RenderableContainer? = container
+            while (true) {
+                val newContainer = c!!.getParentContainer()
+                if (newContainer == null) {
+                    break
+                }
+                prevC = c
+                c = newContainer
+            }
+            return prevC!!
+        }
+
+        /**
+         * Gets an ancestor which is "positioned" (that is whose position is not static).
+         * Stops searching when HTML element is encountered.
+         */
+        private fun getPositionedAncestor(containingBlock: RenderableContainer?): RenderableContainer? {
+            var containingBlock = containingBlock
+            while (true) {
+                if (containingBlock is Renderable) {
+                    val node = (containingBlock as Renderable).getModelNode()
+                    if (node is HTMLElementImpl) {
+                        val position: Int = getPosition(node)
+                        // if (position != RenderState.POSITION_STATIC || (element instanceof HTMLHtmlElement)) {
+                        if (position != RenderState.POSITION_STATIC) {
+                            break
+                        }
+                        val newContainer = containingBlock.getParentContainer()
+                        if (newContainer == null) {
+                            break
+                        }
+                        containingBlock = newContainer
+                    } else {
+                        break
+                    }
+                } else {
+                    break
+                }
+            }
+            return containingBlock
         }
     }
 }

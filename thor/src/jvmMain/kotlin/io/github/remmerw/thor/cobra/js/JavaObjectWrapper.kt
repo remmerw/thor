@@ -18,145 +18,140 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.js;
+package io.github.remmerw.thor.cobra.js
 
-import org.mozilla.javascript.EvaluatorException;
-import org.mozilla.javascript.ExternalArrayData;
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.WrappedException;
+import io.github.remmerw.thor.cobra.html.js.Window
+import org.mozilla.javascript.EvaluatorException
+import org.mozilla.javascript.ExternalArrayData
+import org.mozilla.javascript.Function
+import org.mozilla.javascript.Scriptable
+import org.mozilla.javascript.ScriptableObject
+import org.mozilla.javascript.Undefined
+import org.mozilla.javascript.WrappedException
+import java.lang.reflect.Field
+import java.lang.reflect.InvocationTargetException
+import java.util.logging.Level
+import java.util.logging.Logger
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+class JavaObjectWrapper : ScriptableObject {// Cannot retain delegate with a strong reference.
+    /**
+     * Returns the Java object.
+     *
+     * @return An object or `null` if garbage collected.
+     */
+    val javaObject: Any
+    private val classWrapper: JavaClassWrapper
 
-import io.github.remmerw.thor.cobra.html.js.Window;
-
-public class JavaObjectWrapper extends ScriptableObject {
-    private static final long serialVersionUID = -2669458528000105312L;
-    private static final Logger logger = Logger.getLogger(JavaObjectWrapper.class.getName());
-    private static final boolean loggableInfo = logger.isLoggable(Level.INFO);
-    private final Object delegate;
-    private final JavaClassWrapper classWrapper;
-
-    public JavaObjectWrapper(final JavaClassWrapper classWrapper) throws InstantiationException, IllegalAccessException {
-        this.classWrapper = classWrapper;
+    constructor(classWrapper: JavaClassWrapper) {
+        this.classWrapper = classWrapper
         // Retaining a strong reference, but note
         // that the object wrapper map uses weak keys
         // and weak values.
-        final Object delegate = this.classWrapper.newInstance();
-        this.delegate = delegate;
-        setupProperties();
+        val delegate = this.classWrapper.newInstance()
+        this.javaObject = delegate
+        setupProperties()
     }
 
-    public JavaObjectWrapper(final JavaClassWrapper classWrapper, final Object delegate) {
-        if (delegate == null) {
-            throw new IllegalArgumentException("Argument delegate cannot be null.");
-        }
-        this.classWrapper = classWrapper;
+    constructor(classWrapper: JavaClassWrapper, delegate: Any) {
+        requireNotNull(delegate) { "Argument delegate cannot be null." }
+        this.classWrapper = classWrapper
         // Retaining a strong reference, but note
         // that the object wrapper map uses weak keys
         // and weak values.
-        this.delegate = delegate;
-        setupProperties();
+        this.javaObject = delegate
+        setupProperties()
     }
 
-    public static Function getConstructor(final String className, final JavaClassWrapper classWrapper, final Scriptable scope) {
-        return new JavaConstructorObject(className, classWrapper);
-    }
-
-    public static Function getConstructor(final String className, final JavaClassWrapper classWrapper, final Scriptable scope,
-                                          final JavaInstantiator instantiator) {
-        return new JavaConstructorObject(className, classWrapper, instantiator);
-    }
-
-    @Override
-    public void setParentScope(final Scriptable m) {
+    override fun setParentScope(m: Scriptable?) {
         // Don't allow Window's parent scope to be changed. Fixes GH #29
-        if (classWrapper.getCanonicalClassName().equals(Window.class.getCanonicalName())) {
-            return;
+        if (classWrapper.getCanonicalClassName() == Window::class.java.canonicalName) {
+            return
         }
 
-        if (m == this) {
+        if (m === this) {
             // TODO: This happens when running jQuery 2
-            super.setParentScope(null);
+            super.setParentScope(null)
         } else {
-            super.setParentScope(m);
+            super.setParentScope(m)
         }
     }
 
-    private void setupProperties() {
-        final PropertyInfo integerIndexer = classWrapper.getIntegerIndexer();
+    private fun setupProperties() {
+        val integerIndexer = classWrapper.getIntegerIndexer()
         if (integerIndexer != null) {
-            setExternalArrayData(new ExternalArrayData() {
-
-                @Override
-                public int getArrayLength() {
+            setExternalArrayData(object : ExternalArrayData {
+                override fun getArrayLength(): Int {
                     try {
                         // TODO: Some length() methods are returning integer while others return length. A good test case is http://web-platform.test:8000/dom/nodes/Element-classlist.html
                         //       Check if length() methods can be converted to return a single type.
-                        final Object lengthObj = classWrapper.getProperty("length").getGetter().invoke(delegate, (Object[]) null);
-                        if (lengthObj instanceof Long) {
-
-                            final long lengthLong = (long) lengthObj;
-                            final int lengthInt = (int) lengthLong;
+                        val lengthObj = classWrapper.getProperty("length").getGetter().invoke(
+                            this.javaObject, *null as Array<Any?>?
+                        )
+                        if (lengthObj is Long) {
+                            val lengthLong = lengthObj
+                            val lengthInt = lengthLong.toInt()
                             // TODO: Check for overflow when casting to int and throw an exception
-                            return lengthInt;
-                        } else if (lengthObj instanceof Integer) {
-                            return (int) lengthObj;
+                            return lengthInt
+                        } else if (lengthObj is Int) {
+                            return lengthObj
                         } else {
                             // TODO: Throw exception
-                            throw new RuntimeException("Can't represent length as an integer type");
+                            throw RuntimeException("Can't represent length as an integer type")
                         }
-                    } catch (IllegalAccessException | IllegalArgumentException |
-                             InvocationTargetException e) {
+                    } catch (e: IllegalAccessException) {
                         // TODO Auto-generated catch block
-                        e.printStackTrace();
-                        return 0;
+                        e.printStackTrace()
+                        return 0
+                    } catch (e: IllegalArgumentException) {
+                        e.printStackTrace()
+                        return 0
+                    } catch (e: InvocationTargetException) {
+                        e.printStackTrace()
+                        return 0
                     }
                 }
 
-                @Override
-                public Object getArrayElement(final int index) {
+                override fun getArrayElement(index: Int): Any? {
                     if (index < 0) {
                         // TODO: The interface's javadoc says that this method is only called for indices are within range.
                         //       Need to check if negative values are considered in range. Negative indices are being used in
                         //       one of the web-platform-tests
-                        return org.mozilla.javascript.Undefined.instance;
+                        return Undefined.instance
                     }
                     try {
-                        final Object result = JavaScript.getInstance().getJavascriptObject(
-                                integerIndexer.getGetter().invoke(delegate, index), null);
-                        return result;
-                    } catch (IllegalAccessException | IllegalArgumentException |
-                             InvocationTargetException e) {
-                        throw new RuntimeException("Error accessing a indexed element");
+                        val result: Any? = JavaScript.Companion.getInstance().getJavascriptObject(
+                            integerIndexer.getGetter().invoke(this.javaObject, index), null
+                        )
+                        return result
+                    } catch (e: IllegalAccessException) {
+                        throw RuntimeException("Error accessing a indexed element")
+                    } catch (e: IllegalArgumentException) {
+                        throw RuntimeException("Error accessing a indexed element")
+                    } catch (e: InvocationTargetException) {
+                        throw RuntimeException("Error accessing a indexed element")
                     }
                 }
 
-                @Override
-                public void setArrayElement(final int index, final Object value) {
+                override fun setArrayElement(index: Int, value: Any?) {
                     // TODO: Can this be supported? Needs a setter.
-                    throw new UnsupportedOperationException("Writing to an indexed object");
+                    throw UnsupportedOperationException("Writing to an indexed object")
                 }
-            });
+            })
         }
-        classWrapper.getProperties().forEach((name, property) -> {
+        classWrapper.getProperties().forEach { (name: String?, property: PropertyInfo?) ->
             // TODO: Don't setup properties if getter is null? Are write-only properties supported in JS?
-            defineProperty(name, null, property.getGetter(), property.getSetter(), 0);
-        });
-        classWrapper.getStaticFinalProperties().forEach((name, field) -> {
+            defineProperty(name, null, property!!.getGetter(), property.getSetter(), 0)
+        }
+        classWrapper.getStaticFinalProperties().forEach { (name: String?, field: Field?) ->
             try {
-                defineProperty(name, field.get(null), READONLY);
-            } catch (final Exception e) {
-                throw new RuntimeException(e);
+                defineProperty(name, field!!.get(null), READONLY)
+            } catch (e: Exception) {
+                throw RuntimeException(e)
             }
-        });
+        }
     }
 
-  /*
+    /*
   @Override
   public Object get(final int index, final Scriptable start) {
     final PropertyInfo pinfo = this.classWrapper.getIntegerIndexer();
@@ -185,194 +180,200 @@ public class JavaObjectWrapper extends ScriptableObject {
     }
   }*/
 
-    /**
-     * Returns the Java object.
-     *
-     * @return An object or <code>null</code> if garbage collected.
-     */
-    public Object getJavaObject() {
-        // Cannot retain delegate with a strong reference.
-        return this.delegate;
+    override fun getClassName(): String? {
+        return this.classWrapper.getClassName()
     }
 
-    @Override
-    public String getClassName() {
-        return this.classWrapper.getClassName();
-    }
-
-    @Override
-    public Object get(final String name, final Scriptable start) {
-        final PropertyInfo pinfo = this.classWrapper.getProperty(name);
+    override fun get(name: String?, start: Scriptable): Any? {
+        val pinfo = this.classWrapper.getProperty(name)
         if (pinfo != null) {
-            final Method getter = pinfo.getGetter();
+            val getter = pinfo.getGetter()
             if (getter == null) {
-                throw new EvaluatorException("Property '" + name + "' is not readable");
+                throw EvaluatorException("Property '" + name + "' is not readable")
             }
             // Cannot retain delegate with a strong reference.
-            final Object javaObject = this.getJavaObject();
-            if (javaObject == null) {
-                throw new IllegalStateException("Java object (class=" + this.classWrapper + ") is null.");
-            }
-            final Object val;
+            val javaObject = this.javaObject
+            checkNotNull(javaObject) { "Java object (class=" + this.classWrapper + ") is null." }
+            val `val`: Any?
             try {
-                val = getter.invoke(javaObject, (Object[]) null);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException(e);
+                `val` = getter.invoke(javaObject, *null as Array<Any?>?)
+            } catch (e: IllegalAccessException) {
+                throw RuntimeException(e)
+            } catch (e: InvocationTargetException) {
+                throw RuntimeException(e)
             }
 
-            return JavaScript.getInstance().getJavascriptObject(val, start.getParentScope());
+            return JavaScript.Companion.getInstance()
+                .getJavascriptObject(`val`, start.parentScope)
         } else {
-            final Function f = this.classWrapper.getFunction(name);
+            val f = this.classWrapper.getFunction(name)
             if (f != null) {
-                return f;
+                return f
             } else {
                 // Should check properties set in context
                 // first. Consider element IDs should not
                 // override Window variables set by user.
-                final Object result = super.get(name, start);
-                if (result != Scriptable.NOT_FOUND) {
-                    return result;
+                val result = super.get(name, start)
+                if (result !== NOT_FOUND) {
+                    return result
                 }
-                final PropertyInfo ni = this.classWrapper.getNameIndexer();
+                val ni = this.classWrapper.getNameIndexer()
                 if (ni != null) {
-                    final Method getter = ni.getGetter();
+                    val getter = ni.getGetter()
                     if (getter != null) {
                         // Cannot retain delegate with a strong reference.
-                        final Object javaObject = this.getJavaObject();
-                        if (javaObject == null) {
-                            throw new IllegalStateException("Java object (class=" + this.classWrapper + ") is null.");
-                        }
+                        val javaObject = this.javaObject
+                        checkNotNull(javaObject) { "Java object (class=" + this.classWrapper + ") is null." }
                         try {
-                            final Object val = getter.invoke(javaObject, name);
-                            if (val == null) {
+                            val `val` = getter.invoke(javaObject, name)
+                            if (`val` == null) {
                                 // There might not be an indexer setter.
-                                return super.get(name, start);
+                                return super.get(name, start)
                             } else {
-                                return JavaScript.getInstance().getJavascriptObject(val, start.getParentScope());
+                                return JavaScript.Companion.getInstance()
+                                    .getJavascriptObject(`val`, start.parentScope)
                             }
-                        } catch (final Exception err) {
-                            throw new WrappedException(err);
+                        } catch (err: Exception) {
+                            throw WrappedException(err)
                         }
                     }
                 }
-                return Scriptable.NOT_FOUND;
+                return NOT_FOUND
             }
         }
     }
 
-    @Override
-    public void put(final int index, final Scriptable start, final Object value) {
-        final PropertyInfo pinfo = this.classWrapper.getIntegerIndexer();
+    override fun put(index: Int, start: Scriptable?, value: Any?) {
+        val pinfo = this.classWrapper.getIntegerIndexer()
         if (pinfo == null) {
-            super.put(index, start, value);
+            super.put(index, start, value)
         } else {
             try {
-                final Method setter = pinfo.getSetter();
+                val setter = pinfo.getSetter()
                 if (setter == null) {
-                    throw new EvaluatorException("Indexer is read-only");
+                    throw EvaluatorException("Indexer is read-only")
                 }
-                Object actualValue;
-                actualValue = JavaScript.getInstance().getJavaObject(value, pinfo.getPropertyType());
-                setter.invoke(this.getJavaObject(), (index), actualValue);
-            } catch (final Exception err) {
-                throw new WrappedException(err);
+                val actualValue: Any?
+                actualValue =
+                    JavaScript.Companion.getInstance().getJavaObject(value, pinfo.getPropertyType())
+                setter.invoke(this.javaObject, (index), actualValue)
+            } catch (err: Exception) {
+                throw WrappedException(err)
             }
         }
     }
 
-    @Override
-    public void put(final String name, final Scriptable start, final Object value) {
-        if (value instanceof org.mozilla.javascript.Undefined) {
-            super.put(name, start, value);
+    override fun put(name: String?, start: Scriptable?, value: Any?) {
+        if (value is Undefined) {
+            super.put(name, start, value)
         } else {
-            final PropertyInfo pinfo = this.classWrapper.getProperty(name);
+            val pinfo = this.classWrapper.getProperty(name)
             if (pinfo != null) {
-                final Method setter = pinfo.getSetter();
+                val setter = pinfo.getSetter()
                 if (setter == null) {
-                    throw new EvaluatorException("Property '" + name + "' is not settable in " + this.classWrapper.getClassName() + ".");
+                    throw EvaluatorException("Property '" + name + "' is not settable in " + this.classWrapper.getClassName() + ".")
                 }
                 try {
-                    final Object actualValue = JavaScript.getInstance().getJavaObject(value, pinfo.getPropertyType());
-                    setter.invoke(this.getJavaObject(), actualValue);
-                } catch (final IllegalArgumentException iae) {
-                    final Exception newException = new IllegalArgumentException("Property named '" + name + "' could not be set with value " + value
-                            + ".",
-                            iae);
-                    throw new WrappedException(newException);
-                } catch (final Exception err) {
-                    throw new WrappedException(err);
+                    val actualValue: Any? = JavaScript.Companion.getInstance()
+                        .getJavaObject(value, pinfo.getPropertyType())
+                    setter.invoke(this.javaObject, actualValue)
+                } catch (iae: IllegalArgumentException) {
+                    val newException: Exception = IllegalArgumentException(
+                        ("Property named '" + name + "' could not be set with value " + value
+                                + "."),
+                        iae
+                    )
+                    throw WrappedException(newException)
+                } catch (err: Exception) {
+                    throw WrappedException(err)
                 }
             } else {
-                final PropertyInfo ni = this.classWrapper.getNameIndexer();
+                val ni = this.classWrapper.getNameIndexer()
                 if (ni != null) {
-                    final Method setter = ni.getSetter();
+                    val setter = ni.getSetter()
                     if (setter != null) {
                         try {
-                            Object actualValue;
-                            actualValue = JavaScript.getInstance().getJavaObject(value, ni.getPropertyType());
-                            setter.invoke(this.getJavaObject(), name, actualValue);
-                        } catch (final Exception err) {
-                            throw new WrappedException(err);
+                            val actualValue: Any?
+                            actualValue = JavaScript.Companion.getInstance()
+                                .getJavaObject(value, ni.getPropertyType())
+                            setter.invoke(this.javaObject, name, actualValue)
+                        } catch (err: Exception) {
+                            throw WrappedException(err)
                         }
                     } else {
-                        super.put(name, start, value);
+                        super.put(name, start, value)
                     }
                 } else {
-                    super.put(name, start, value);
+                    super.put(name, start, value)
                 }
             }
         }
     }
 
-    @Override
-    public Object getDefaultValue(final Class<?> hint) {
+    override fun getDefaultValue(hint: Class<*>?): Any? {
         if (loggableInfo) {
-            logger.info("getDefaultValue(): hint=" + hint + ",this=" + this.getJavaObject());
+            logger.info("getDefaultValue(): hint=" + hint + ",this=" + this.javaObject)
         }
-        if ((hint == null) || String.class.equals(hint)) {
-            final Object javaObject = this.getJavaObject();
-            if (javaObject == null) {
-                throw new IllegalStateException("Java object (class=" + this.classWrapper + ") is null.");
-            }
-            return javaObject.toString();
-        } else if (Number.class.isAssignableFrom(hint)) {
-            final Object javaObject = this.getJavaObject();
-            if (javaObject instanceof Number) {
-                return javaObject;
-            } else if (javaObject instanceof String) {
-                return Double.valueOf((String) javaObject);
+        if ((hint == null) || String::class.java == hint) {
+            val javaObject = this.javaObject
+            checkNotNull(javaObject) { "Java object (class=" + this.classWrapper + ") is null." }
+            return javaObject.toString()
+        } else if (Number::class.java.isAssignableFrom(hint)) {
+            val javaObject = this.javaObject
+            if (javaObject is Number) {
+                return javaObject
+            } else if (javaObject is String) {
+                return javaObject.toDouble()
             } else {
-                return super.getDefaultValue(hint);
+                return super.getDefaultValue(hint)
             }
         } else {
-            return super.getDefaultValue(hint);
+            return super.getDefaultValue(hint)
         }
     }
 
-    @Override
-    public String toString() {
-        final Object javaObject = this.getJavaObject();
-        final String type = javaObject == null ? "<null>" : javaObject.getClass().getName();
-        return "JavaObjectWrapper[object=" + this.getJavaObject() + ",type=" + type + "]";
+    override fun toString(): String {
+        val javaObject = this.javaObject
+        val type = if (javaObject == null) "<null>" else javaObject.javaClass.name
+        return "JavaObjectWrapper[object=" + this.javaObject + ",type=" + type + "]"
     }
 
-    @Override
-    public boolean hasInstance(final Scriptable instance) {
-        if ((instance instanceof JavaObjectWrapper instanceObj) && (this.getJavaObject() instanceof Class<?> myClass)) {
-            return myClass.isInstance(instanceObj.getJavaObject());
+    override fun hasInstance(instance: Scriptable?): Boolean {
+        if ((instance is JavaObjectWrapper) && (this.javaObject is Class<*>)) {
+            return myClass.isInstance(instance.javaObject)
         } else {
-            return super.hasInstance(instance);
+            return super.hasInstance(instance)
         }
     }
 
     // TODO: Override has(int index) also
-
-    @Override
-    public boolean has(String name, Scriptable start) {
+    override fun has(name: String?, start: Scriptable?): Boolean {
         // TODO: should the start parameter be considered here?
-        if (classWrapper.getProperties().containsKey(name) || classWrapper.getStaticFinalProperties().containsKey(name)) {
-            return true;
+        if (classWrapper.getProperties()
+                .containsKey(name) || classWrapper.getStaticFinalProperties().containsKey(name)
+        ) {
+            return true
         }
-        return super.has(name, start);
+        return super.has(name, start)
+    }
+
+    companion object {
+        private val serialVersionUID = -2669458528000105312L
+        private val logger: Logger = Logger.getLogger(JavaObjectWrapper::class.java.name)
+        private val loggableInfo: Boolean = logger.isLoggable(Level.INFO)
+        fun getConstructor(
+            className: String?,
+            classWrapper: JavaClassWrapper?,
+            scope: Scriptable?
+        ): Function {
+            return JavaConstructorObject(className, classWrapper)
+        }
+
+        fun getConstructor(
+            className: String?, classWrapper: JavaClassWrapper?, scope: Scriptable?,
+            instantiator: JavaInstantiator?
+        ): Function {
+            return JavaConstructorObject(className, classWrapper, instantiator)
+        }
     }
 }

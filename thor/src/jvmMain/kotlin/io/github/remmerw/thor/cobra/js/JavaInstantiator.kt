@@ -1,5 +1,6 @@
-package io.github.remmerw.thor.cobra.js;
+package io.github.remmerw.thor.cobra.js
 
-public interface JavaInstantiator {
-    Object newInstance(Object[] args) throws InstantiationException, IllegalAccessException;
+interface JavaInstantiator {
+    @Throws(InstantiationException::class, IllegalAccessException::class)
+    fun newInstance(args: Array<Any?>?): Any?
 }

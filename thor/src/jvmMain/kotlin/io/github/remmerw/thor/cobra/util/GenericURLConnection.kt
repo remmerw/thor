@@ -21,33 +21,27 @@
 /*
  * Created on Jun 22, 2005
  */
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLConnection;
+import java.io.IOException
+import java.io.InputStream
+import java.net.URL
+import java.net.URLConnection
 
 /**
  * @author J. H. S.
  */
-public class GenericURLConnection extends URLConnection {
-    private final InputStream inputStream;
-
-    /**
-     *
-     */
-    public GenericURLConnection(final java.net.URL url, final InputStream in) {
-        super(url);
-        this.inputStream = in;
-    }
-
+class GenericURLConnection
+/**
+ *
+ */(url: URL?, private val inputStream: InputStream?) : URLConnection(url) {
     /*
-     * (non-Javadoc)
-     *
-     * @see java.net.URLConnection#connect()
-     */
-    @Override
-    public void connect() throws IOException {
+         * (non-Javadoc)
+         *
+         * @see java.net.URLConnection#connect()
+         */
+    @Throws(IOException::class)
+    override fun connect() {
     }
 
     /*
@@ -55,9 +49,9 @@ public class GenericURLConnection extends URLConnection {
      *
      * @see java.net.URLConnection#getInputStream()
      */
-    @Override
-    public InputStream getInputStream() throws IOException {
-        return this.inputStream;
+    @Throws(IOException::class)
+    override fun getInputStream(): InputStream? {
+        return this.inputStream
     }
 
     /*
@@ -65,9 +59,8 @@ public class GenericURLConnection extends URLConnection {
      *
      * @see java.net.URLConnection#getHeaderField(int)
      */
-    @Override
-    public String getHeaderField(final int n) {
-        return null;
+    override fun getHeaderField(n: Int): String? {
+        return null
     }
 
     /*
@@ -75,9 +68,8 @@ public class GenericURLConnection extends URLConnection {
      *
      * @see java.net.URLConnection#getHeaderField(java.lang.String)
      */
-    @Override
-    public String getHeaderField(final String name) {
-        return null;
+    override fun getHeaderField(name: String?): String? {
+        return null
     }
 
     /*
@@ -85,9 +77,7 @@ public class GenericURLConnection extends URLConnection {
      *
      * @see java.net.URLConnection#getHeaderFieldKey(int)
      */
-    @Override
-    public String getHeaderFieldKey(final int n) {
-        return null;
+    override fun getHeaderFieldKey(n: Int): String? {
+        return null
     }
-
 }

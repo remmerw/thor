@@ -21,244 +21,274 @@
 /*
  * Created on Nov 19, 2005
  */
-package io.github.remmerw.thor.cobra.html.gui;
+package io.github.remmerw.thor.cobra.html.gui
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Text;
-import org.w3c.dom.html.HTMLFrameSetElement;
-
-import java.awt.Cursor;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.io.Reader;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.EventListener;
-import java.util.EventObject;
-import java.util.concurrent.Future;
-
-import javax.swing.JComponent;
-import javax.swing.SwingUtilities;
-
-import io.github.remmerw.thor.cobra.html.HtmlRendererContext;
-import io.github.remmerw.thor.cobra.html.domimpl.DocumentNotificationListener;
-import io.github.remmerw.thor.cobra.html.domimpl.ElementImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLDocumentImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl;
-import io.github.remmerw.thor.cobra.html.parser.DocumentBuilderImpl;
-import io.github.remmerw.thor.cobra.html.parser.InputSourceImpl;
-import io.github.remmerw.thor.cobra.html.renderer.BoundableRenderable;
-import io.github.remmerw.thor.cobra.html.renderer.FrameContext;
-import io.github.remmerw.thor.cobra.html.renderer.NodeRenderer;
-import io.github.remmerw.thor.cobra.html.renderer.RenderableSpot;
-import io.github.remmerw.thor.cobra.html.style.RenderState;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext;
-import io.github.remmerw.thor.cobra.util.EventDispatch2;
-import io.github.remmerw.thor.cobra.util.gui.DefferedLayoutSupport;
-import io.github.remmerw.thor.cobra.util.gui.WrapperLayout;
+import io.github.remmerw.thor.cobra.html.HtmlRendererContext
+import io.github.remmerw.thor.cobra.html.domimpl.DocumentNotificationListener
+import io.github.remmerw.thor.cobra.html.domimpl.ElementImpl
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLDocumentImpl
+import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
+import io.github.remmerw.thor.cobra.html.parser.DocumentBuilderImpl
+import io.github.remmerw.thor.cobra.html.parser.InputSourceImpl
+import io.github.remmerw.thor.cobra.html.renderer.BoundableRenderable
+import io.github.remmerw.thor.cobra.html.renderer.FrameContext
+import io.github.remmerw.thor.cobra.html.renderer.NodeRenderer
+import io.github.remmerw.thor.cobra.html.renderer.RenderableSpot
+import io.github.remmerw.thor.cobra.html.style.RenderState
+import io.github.remmerw.thor.cobra.ua.UserAgentContext
+import io.github.remmerw.thor.cobra.util.EventDispatch2
+import io.github.remmerw.thor.cobra.util.gui.DefferedLayoutSupport
+import io.github.remmerw.thor.cobra.util.gui.WrapperLayout
+import org.w3c.dom.Document
+import org.w3c.dom.Node
+import org.w3c.dom.Text
+import org.w3c.dom.html.HTMLFrameSetElement
+import org.xml.sax.SAXException
+import java.awt.Color
+import java.awt.Cursor
+import java.awt.Rectangle
+import java.awt.event.ActionEvent
+import java.awt.event.ActionListener
+import java.io.IOException
+import java.io.StringReader
+import java.util.EventListener
+import java.util.EventObject
+import java.util.concurrent.Future
+import javax.swing.JComponent
+import javax.swing.SwingUtilities
+import javax.swing.Timer
+import kotlin.concurrent.Volatile
 
 /**
- * The <code>HtmlPanel</code> class is a Swing component that can render a HTML
- * DOM. It uses either {@link HtmlBlockPanel} or {@link FrameSetPanel}
+ * The `HtmlPanel` class is a Swing component that can render a HTML
+ * DOM. It uses either [HtmlBlockPanel] or [FrameSetPanel]
  * internally, depending on whether the document is determined to be a FRAMESET
  * or not.
- * <p>
- * Invoke method {@link #setDocument(Document, HtmlRendererContext)} in order to
+ *
+ *
+ * Invoke method [.setDocument] in order to
  * schedule a document for rendering.
  */
-public class HtmlPanel extends JComponent implements FrameContext, DefferedLayoutSupport {
-    private static final long serialVersionUID = -8342517547909796721L;
-    private static final int NOTIF_TIMER_DELAY = 150;
-    private final EventDispatch2 selectionDispatch = new SelectionDispatch();
-    private final javax.swing.Timer notificationTimer;
-    private final DocumentNotificationListener notificationListener;
-    private final Runnable notificationImmediateAction;
-    private final ArrayList<DocumentNotification> notifications = new ArrayList<>(1);
-    protected volatile HtmlBlockPanel htmlBlockPanel;
-    protected volatile FrameSetPanel frameSetPanel;
-    private volatile boolean isFrameSet = false;
-    private volatile NodeRenderer nodeRenderer = null;
-    private volatile NodeImpl rootNode;
-    private volatile int preferredWidth = -1;
-    private volatile int defaultOverflowX = RenderState.OVERFLOW_AUTO;
-    private volatile int defaultOverflowY = RenderState.OVERFLOW_AUTO;
+class HtmlPanel : JComponent(), FrameContext, DefferedLayoutSupport {
+    private val selectionDispatch: EventDispatch2 = SelectionDispatch()
+    private val notificationTimer: Timer
+    private val notificationListener: DocumentNotificationListener
+    private val notificationImmediateAction: Runnable
+    private val notifications = ArrayList<DocumentNotification?>(1)
+
+    @Volatile
+    protected var htmlBlockPanel: HtmlBlockPanel? = null
+
+    @Volatile
+    protected var frameSetPanel: FrameSetPanel? = null
+
+    @Volatile
+    private var isFrameSet = false
+
+    @Volatile
+    private var nodeRenderer: NodeRenderer? = null
 
     /**
-     * Constructs an <code>HtmlPanel</code>.
+     * Gets the HTML DOM node currently rendered if any.
      */
-    public HtmlPanel() {
-        super();
-        this.setLayout(WrapperLayout.getInstance());
-        this.setOpaque(false);
-        this.notificationTimer = new javax.swing.Timer(NOTIF_TIMER_DELAY, new NotificationTimerAction());
-        this.notificationTimer.setRepeats(false);
-        this.notificationListener = new LocalDocumentNotificationListener();
-        this.notificationImmediateAction = new Runnable() {
-            public void run() {
-                processNotifications();
+    @Volatile
+    var rootNode: NodeImpl? = null
+        private set
+
+    @Volatile
+    private var preferredWidth = -1
+
+    @Volatile
+    private var defaultOverflowX = RenderState.OVERFLOW_AUTO
+
+    @Volatile
+    private var defaultOverflowY = RenderState.OVERFLOW_AUTO
+
+    /**
+     * Constructs an `HtmlPanel`.
+     */
+    init {
+        this.layout = WrapperLayout.instance
+        this.isOpaque = false
+        this.notificationTimer = Timer(NOTIF_TIMER_DELAY, NotificationTimerAction())
+        this.notificationTimer.isRepeats = false
+        this.notificationListener = LocalDocumentNotificationListener()
+        this.notificationImmediateAction = object : Runnable {
+            override fun run() {
+                processNotifications()
             }
-        };
+        }
     }
 
     /**
      * Sets a preferred width that serves as a hint in calculating the preferred
-     * size of the <code>HtmlPanel</code>. Note that the preferred size can only
+     * size of the `HtmlPanel`. Note that the preferred size can only
      * be calculated when a document is available, and it will vary during
      * incremental rendering.
-     * <p>
+     *
+     *
      * This method currently does not have any effect when the document is a
      * FRAMESET.
-     * <p>
-     * Note also that setting the preferred width (to a value other than
-     * <code>-1</code>) will negatively impact performance.
      *
-     * @param width The preferred width, or <code>-1</code> to unset.
+     *
+     * Note also that setting the preferred width (to a value other than
+     * `-1`) will negatively impact performance.
+     *
+     * @param width The preferred width, or `-1` to unset.
      */
-    public void setPreferredWidth(final int width) {
-        this.preferredWidth = width;
-        final HtmlBlockPanel htmlBlock = this.htmlBlockPanel;
+    fun setPreferredWidth(width: Int) {
+        this.preferredWidth = width
+        val htmlBlock = this.htmlBlockPanel
         if (htmlBlock != null) {
-            htmlBlock.setPreferredWidth(width);
+            htmlBlock.setPreferredWidth(width)
         }
     }
 
     /**
      * If the current document is not a FRAMESET, this method scrolls the body
      * area to the given location.
-     * <p>
+     *
+     *
      * This method should be called from the GUI thread.
      *
      * @param bounds    The bounds in the scrollable block area that should become
-     *                  visible.
+     * visible.
      * @param xIfNeeded If this parameter is true, scrolling will only occur if the
-     *                  requested bounds are not currently visible horizontally.
+     * requested bounds are not currently visible horizontally.
      * @param yIfNeeded If this parameter is true, scrolling will only occur if the
-     *                  requested bounds are not currently visible vertically.
+     * requested bounds are not currently visible vertically.
      */
-    public void scrollTo(final Rectangle bounds, final boolean xIfNeeded, final boolean yIfNeeded) {
-        final HtmlBlockPanel htmlBlock = this.htmlBlockPanel;
+    fun scrollTo(bounds: Rectangle?, xIfNeeded: Boolean, yIfNeeded: Boolean) {
+        val htmlBlock = this.htmlBlockPanel
         if (htmlBlock != null) {
-            htmlBlock.scrollTo(bounds, xIfNeeded, yIfNeeded);
+            htmlBlock.scrollTo(bounds, xIfNeeded, yIfNeeded)
         }
     }
 
     /**
      * Scrolls the body area to the node given, if it is part of the current
      * document.
-     * <p>
+     *
+     *
      * This method should be called from the GUI thread.
      *
      * @param node A DOM node.
      */
-    public void scrollTo(final org.w3c.dom.Node node) {
-        final HtmlBlockPanel htmlBlock = this.htmlBlockPanel;
+    fun scrollTo(node: Node?) {
+        val htmlBlock = this.htmlBlockPanel
         if (htmlBlock != null) {
-            htmlBlock.scrollTo(node);
+            htmlBlock.scrollTo(node)
         }
     }
 
-    /**
-     * Gets the root <code>Renderable</code> of the HTML block. It returns
-     * <code>null</code> for FRAMESETs.
-     */
-    public BoundableRenderable getBlockRenderable() {
-        final HtmlBlockPanel htmlBlock = this.htmlBlockPanel;
-        return htmlBlock == null ? null : htmlBlock.getRootRenderable();
-    }
+    val blockRenderable: BoundableRenderable?
+        /**
+         * Gets the root `Renderable` of the HTML block. It returns
+         * `null` for FRAMESETs.
+         */
+        get() {
+            val htmlBlock = this.htmlBlockPanel
+            return if (htmlBlock == null) null else htmlBlock.getRootRenderable()
+        }
 
     /**
-     * Gets an instance of {@link FrameSetPanel} in case the currently rendered
+     * Gets an instance of [FrameSetPanel] in case the currently rendered
      * page is a FRAMESET.
-     * <p>
+     *
+     *
      * Note: This method should be invoked in the GUI thread.
      *
-     * @return A <code>FrameSetPanel</code> instance or <code>null</code> if the
+     * @return A `FrameSetPanel` instance or `null` if the
      * document currently rendered is not a FRAMESET.
      */
-    public FrameSetPanel getFrameSetPanel() {
-        final int componentCount = this.getComponentCount();
+    fun getFrameSetPanel(): FrameSetPanel? {
+        val componentCount = this.componentCount
         if (componentCount == 0) {
-            return null;
+            return null
         }
-        final Object c = this.getComponent(0);
-        if (c instanceof FrameSetPanel) {
-            return (FrameSetPanel) c;
+        val c: Any? = this.getComponent(0)
+        if (c is FrameSetPanel) {
+            return c
         }
-        return null;
+        return null
     }
 
-    private void setUpAsBlock(final UserAgentContext ucontext, final HtmlRendererContext rcontext) {
-        final HtmlBlockPanel shp = this.createHtmlBlockPanel(ucontext, rcontext);
-        shp.setPreferredWidth(this.preferredWidth);
-        shp.setDefaultOverflowX(this.defaultOverflowX);
-        shp.setDefaultOverflowY(this.defaultOverflowY);
-        this.htmlBlockPanel = shp;
-        this.frameSetPanel = null;
-        this.removeAll();
-        this.add(shp);
-        this.nodeRenderer = shp;
+    private fun setUpAsBlock(ucontext: UserAgentContext?, rcontext: HtmlRendererContext?) {
+        val shp = this.createHtmlBlockPanel(ucontext, rcontext)
+        shp.setPreferredWidth(this.preferredWidth)
+        shp.setDefaultOverflowX(this.defaultOverflowX)
+        shp.setDefaultOverflowY(this.defaultOverflowY)
+        this.htmlBlockPanel = shp
+        this.frameSetPanel = null
+        this.removeAll()
+        this.add(shp)
+        this.nodeRenderer = shp
     }
 
-    private void setUpFrameSet(final NodeImpl fsrn) {
-        this.isFrameSet = true;
-        this.htmlBlockPanel = null;
-        final FrameSetPanel fsp = this.createFrameSetPanel();
-        this.frameSetPanel = fsp;
-        this.nodeRenderer = fsp;
-        this.removeAll();
-        this.add(fsp);
-        fsp.setRootNode(fsrn);
+    private fun setUpFrameSet(fsrn: NodeImpl?) {
+        this.isFrameSet = true
+        this.htmlBlockPanel = null
+        val fsp = this.createFrameSetPanel()
+        this.frameSetPanel = fsp
+        this.nodeRenderer = fsp
+        this.removeAll()
+        this.add(fsp)
+        fsp.setRootNode(fsrn)
     }
 
     /**
-     * Method invoked internally to create a {@link HtmlBlockPanel}. It is made
+     * Method invoked internally to create a [HtmlBlockPanel]. It is made
      * available so it can be overridden.
      */
-    protected HtmlBlockPanel createHtmlBlockPanel(final UserAgentContext ucontext, final HtmlRendererContext rcontext) {
-        return new HtmlBlockPanel(java.awt.Color.WHITE, true, ucontext, rcontext, this);
+    protected fun createHtmlBlockPanel(
+        ucontext: UserAgentContext?,
+        rcontext: HtmlRendererContext?
+    ): HtmlBlockPanel {
+        return HtmlBlockPanel(Color.WHITE, true, ucontext, rcontext, this)
     }
 
     /**
-     * Method invoked internally to create a {@link FrameSetPanel}. It is made
+     * Method invoked internally to create a [FrameSetPanel]. It is made
      * available so it can be overridden.
      */
-    protected FrameSetPanel createFrameSetPanel() {
-        return new FrameSetPanel();
+    protected fun createFrameSetPanel(): FrameSetPanel {
+        return FrameSetPanel()
     }
 
     /**
      * Scrolls the document such that x and y coordinates are placed in the
      * upper-left corner of the panel.
-     * <p>
+     *
+     *
      * This method may be called outside of the GUI Thread.
      *
      * @param x The x coordinate.
      * @param y The y coordinate.
      */
-    public void scroll(final int x, final int y) {
+    fun scroll(x: Int, y: Int) {
         if (SwingUtilities.isEventDispatchThread()) {
-            this.scrollImpl(x, y);
+            this.scrollImpl(x, y)
         } else {
-            SwingUtilities.invokeLater(() -> scrollImpl(x, y));
+            SwingUtilities.invokeLater(Runnable { scrollImpl(x, y) })
         }
     }
 
-    public void scrollBy(final int x, final int y) {
+    fun scrollBy(x: Int, y: Int) {
         if (SwingUtilities.isEventDispatchThread()) {
-            this.scrollByImpl(x, y);
+            this.scrollByImpl(x, y)
         } else {
-            SwingUtilities.invokeLater(() -> scrollByImpl(x, y));
+            SwingUtilities.invokeLater(Runnable { scrollByImpl(x, y) })
         }
     }
 
-    private void scrollImpl(final int x, final int y) {
-        this.scrollTo(new Rectangle(x, y, 16, 16), false, false);
+    private fun scrollImpl(x: Int, y: Int) {
+        this.scrollTo(Rectangle(x, y, 16, 16), false, false)
     }
 
-    private void scrollByImpl(final int xOffset, final int yOffset) {
-        final HtmlBlockPanel bp = this.htmlBlockPanel;
+    private fun scrollByImpl(xOffset: Int, yOffset: Int) {
+        val bp = this.htmlBlockPanel
         if (bp != null) {
-            bp.scrollBy(xOffset, yOffset);
+            bp.scrollBy(xOffset, yOffset)
         }
     }
 
@@ -266,131 +296,133 @@ public class HtmlPanel extends JComponent implements FrameContext, DefferedLayou
      * Clears the current document if any. If called outside the GUI thread, the
      * operation will be scheduled to be performed in the GUI thread.
      */
-    public void clearDocument() {
+    fun clearDocument() {
         if (SwingUtilities.isEventDispatchThread()) {
-            this.clearDocumentImpl();
+            this.clearDocumentImpl()
         } else {
-            SwingUtilities.invokeLater(() -> HtmlPanel.this.clearDocumentImpl());
+            SwingUtilities.invokeLater(Runnable { this@HtmlPanel.clearDocumentImpl() })
         }
     }
 
-    private void clearDocumentImpl() {
-        final HTMLDocumentImpl prevDocument = (HTMLDocumentImpl) this.rootNode;
+    private fun clearDocumentImpl() {
+        val prevDocument = this.rootNode as HTMLDocumentImpl?
         if (prevDocument != null) {
-            prevDocument.removeDocumentNotificationListener(this.notificationListener);
+            prevDocument.removeDocumentNotificationListener(this.notificationListener)
         }
-        final NodeRenderer nr = this.nodeRenderer;
+        val nr = this.nodeRenderer
         if (nr != null) {
-            nr.setRootNode(null);
+            nr.setRootNode(null)
         }
-        this.rootNode = null;
-        this.htmlBlockPanel = null;
-        this.nodeRenderer = null;
-        this.isFrameSet = false;
-        this.removeAll();
-        this.revalidate();
-        this.repaint();
+        this.rootNode = null
+        this.htmlBlockPanel = null
+        this.nodeRenderer = null
+        this.isFrameSet = false
+        this.removeAll()
+        this.revalidate()
+        this.repaint()
     }
 
     /**
      * Sets an HTML DOM node and invalidates the component so it is rendered as
      * soon as possible in the GUI thread.
-     * <p>
+     *
+     *
      * If this method is called from a thread that is not the GUI dispatch thread,
      * the document is scheduled to be set later. Note that
-     * {@link #setPreferredWidth(int) preferred size} calculations should be done
+     * [preferred size][.setPreferredWidth] calculations should be done
      * in the GUI dispatch thread for this reason.
      *
      * @param node     This should normally be a Document instance obtained with
-     *                 {@link DocumentBuilderImpl}.
-     *                 <p>
+     * [DocumentBuilderImpl].
+     *
+     *
      * @param rcontext A renderer context.
-     * @see DocumentBuilderImpl#parse(org.xml.sax.InputSource)
+     * @see DocumentBuilderImpl.parse
      * @see org.cobraparser.html.test.SimpleHtmlRendererContext
      */
-    public void setDocument(final Document node, final HtmlRendererContext rcontext) {
-        setCursor(Cursor.getDefaultCursor());
+    fun setDocument(node: Document?, rcontext: HtmlRendererContext) {
+        setCursor(Cursor.getDefaultCursor())
 
         if (SwingUtilities.isEventDispatchThread()) {
-            this.setDocumentImpl(node, rcontext);
+            this.setDocumentImpl(node, rcontext)
         } else {
-            SwingUtilities.invokeLater(() -> HtmlPanel.this.setDocumentImpl(node, rcontext));
+            SwingUtilities.invokeLater(Runnable { this@HtmlPanel.setDocumentImpl(node, rcontext) })
         }
     }
 
-    @Override
-    public void setCursor(final Cursor cursor) {
-        if (cursor != getCursor()) {
-            super.setCursor(cursor);
+    override fun setCursor(cursor: Cursor?) {
+        if (cursor !== getCursor()) {
+            super.setCursor(cursor)
         }
     }
 
     /**
      * Scrolls to the element identified by the given ID in the current document.
-     * <p>
+     *
+     *
      * If this method is invoked outside the GUI thread, the operation is
      * scheduled to be performed as soon as possible in the GUI thread.
      *
      * @param nameOrId The name or ID of the element in the document.
      */
-    public void scrollToElement(final String nameOrId) {
+    fun scrollToElement(nameOrId: String?) {
         if (SwingUtilities.isEventDispatchThread()) {
-            this.scrollToElementImpl(nameOrId);
+            this.scrollToElementImpl(nameOrId)
         } else {
-            SwingUtilities.invokeLater(() -> scrollToElementImpl(nameOrId));
+            SwingUtilities.invokeLater(Runnable { scrollToElementImpl(nameOrId) })
         }
     }
 
-    private void scrollToElementImpl(final String nameOrId) {
-        final NodeImpl node = this.rootNode;
-        if (node instanceof HTMLDocumentImpl doc) {
-            final org.w3c.dom.Element element = doc.getElementById(nameOrId);
+    private fun scrollToElementImpl(nameOrId: String?) {
+        val node = this.rootNode
+        if (node is HTMLDocumentImpl) {
+            val element = node.getElementById(nameOrId)
             if (element != null) {
-                this.scrollTo(element);
+                this.scrollTo(element)
             }
         }
     }
 
-    private void setDocumentImpl(final Document node, final HtmlRendererContext rcontext) {
+    private fun setDocumentImpl(node: Document?, rcontext: HtmlRendererContext) {
         // Expected to be called in the GUI thread.
-    /*
+        /*
     if (!(node instanceof HTMLDocumentImpl)) {
       throw new IllegalArgumentException("Only nodes of type HTMLDocumentImpl are currently supported. Use DocumentBuilderImpl.");
     }
     */
 
-        if (this.rootNode instanceof HTMLDocumentImpl prevDocument) {
-            prevDocument.removeDocumentNotificationListener(this.notificationListener);
+        if (this.rootNode is HTMLDocumentImpl) {
+            rootNode.removeDocumentNotificationListener(this.notificationListener)
         }
-        if (node instanceof HTMLDocumentImpl nodeImpl) {
-            nodeImpl.addDocumentNotificationListener(this.notificationListener);
+        if (node is HTMLDocumentImpl) {
+            node.addDocumentNotificationListener(this.notificationListener)
         }
 
-        if (node instanceof NodeImpl nodeImpl) {
-            this.rootNode = nodeImpl;
-            final NodeImpl fsrn = this.getFrameSetRootNode(nodeImpl);
-            final boolean newIfs = fsrn != null;
-            if ((newIfs != this.isFrameSet) || (this.getComponentCount() == 0)) {
-                this.isFrameSet = newIfs;
+        if (node is NodeImpl) {
+            this.rootNode = node
+            val fsrn = this.getFrameSetRootNode(node)
+            val newIfs = fsrn != null
+            if ((newIfs != this.isFrameSet) || (this.componentCount == 0)) {
+                this.isFrameSet = newIfs
                 if (newIfs) {
-                    this.setUpFrameSet(fsrn);
+                    this.setUpFrameSet(fsrn)
                 } else {
-                    this.setUpAsBlock(rcontext.getUserAgentContext(), rcontext);
+                    this.setUpAsBlock(rcontext.userAgentContext, rcontext)
                 }
             }
-            final NodeRenderer nr = this.nodeRenderer;
+            val nr = this.nodeRenderer
             if (nr != null) {
                 // These subcomponents should take care
                 // of revalidation.
                 if (newIfs) {
-                    nr.setRootNode(fsrn);
+                    nr.setRootNode(fsrn)
                 } else {
-                    nr.setRootNode(nodeImpl);
+                    nr.setRootNode(node)
                 }
             } else {
-                this.invalidate();
-                this.validate();
-                this.repaint();
+                this.invalidate()
+                this.validate()
+                this.repaint()
             }
         }
     }
@@ -400,130 +432,140 @@ public class HtmlPanel extends JComponent implements FrameContext, DefferedLayou
      *
      * @param htmlSource The HTML source code.
      * @param uri        A base URI used to resolve item URIs.
-     * @param rcontext   The {@link HtmlRendererContext} instance.
+     * @param rcontext   The [HtmlRendererContext] instance.
      * @see org.cobraparser.html.test.SimpleHtmlRendererContext
-     * @see #setDocument(Document, HtmlRendererContext)
+     *
+     * @see .setDocument
      */
-    public void setHtml(final String htmlSource, final String uri, final HtmlRendererContext rcontext) {
+    fun setHtml(htmlSource: String, uri: String?, rcontext: HtmlRendererContext) {
         try {
-            final DocumentBuilderImpl builder = new DocumentBuilderImpl(rcontext.getUserAgentContext(), rcontext);
-            try (
-                    final Reader reader = new StringReader(htmlSource)) {
-                final InputSourceImpl is = new InputSourceImpl(reader, uri);
-                final Document document = builder.parse(is);
-                this.setDocument(document, rcontext);
+            val builder = DocumentBuilderImpl(rcontext.userAgentContext, rcontext)
+            StringReader(htmlSource).use { reader ->
+                val `is` = InputSourceImpl(reader, uri)
+                val document = builder.parse(`is`)
+                this.setDocument(document, rcontext)
             }
-        } catch (final java.io.IOException ioe) {
-            throw new IllegalStateException("Unexpected condition.", ioe);
-        } catch (final org.xml.sax.SAXException se) {
-            throw new IllegalStateException("Unexpected condition.", se);
+        } catch (ioe: IOException) {
+            throw IllegalStateException("Unexpected condition.", ioe)
+        } catch (se: SAXException) {
+            throw IllegalStateException("Unexpected condition.", se)
         }
     }
 
-    /**
-     * Gets the HTML DOM node currently rendered if any.
-     */
-    public NodeImpl getRootNode() {
-        return this.rootNode;
-    }
-
-    private boolean resetIfFrameSet() {
-        final NodeImpl nodeImpl = this.rootNode;
-        final NodeImpl fsrn = this.getFrameSetRootNode(nodeImpl);
-        final boolean newIfs = fsrn != null;
-        if ((newIfs != this.isFrameSet) || (this.getComponentCount() == 0)) {
-            this.isFrameSet = newIfs;
+    private fun resetIfFrameSet(): Boolean {
+        val nodeImpl = this.rootNode
+        val fsrn = this.getFrameSetRootNode(nodeImpl)
+        val newIfs = fsrn != null
+        if ((newIfs != this.isFrameSet) || (this.componentCount == 0)) {
+            this.isFrameSet = newIfs
             if (newIfs) {
-                this.setUpFrameSet(fsrn);
-                final NodeRenderer nr = this.nodeRenderer;
-                nr.setRootNode(fsrn);
+                this.setUpFrameSet(fsrn)
+                val nr = this.nodeRenderer
+                nr!!.setRootNode(fsrn)
                 // Set proper bounds and repaint.
-                this.validate();
-                this.repaint();
-                return true;
+                this.validate()
+                this.repaint()
+                return true
             }
         }
-        return false;
+        return false
     }
 
-    private NodeImpl getFrameSetRootNode(final NodeImpl node) {
-        if (node instanceof Document) {
-            final ElementImpl element = (ElementImpl) ((Document) node).getDocumentElement();
-            if ((element != null) && "HTML".equalsIgnoreCase(element.getTagName())) {
-                return this.getFrameSet(element);
+    private fun getFrameSetRootNode(node: NodeImpl?): NodeImpl? {
+        if (node is Document) {
+            val element = (node as Document).documentElement as ElementImpl?
+            if ((element != null) && "HTML".equals(element.tagName, ignoreCase = true)) {
+                return this.getFrameSet(element)
             } else {
-                return this.getFrameSet(node);
+                return this.getFrameSet(node)
             }
         } else {
-            return null;
+            return null
         }
     }
 
-    private NodeImpl getFrameSet(final NodeImpl node) {
-        final NodeImpl[] children = node.getChildrenArray();
+    private fun getFrameSet(node: NodeImpl): NodeImpl? {
+        val children = node.childrenArray
         if (children == null) {
-            return null;
+            return null
         }
-        final int length = children.length;
-        NodeImpl frameSet = null;
-        for (int i = 0; i < length; i++) {
-            final NodeImpl child = children[i];
-            if (child instanceof Text) {
+        val length = children.size
+        var frameSet: NodeImpl? = null
+        for (i in 0..<length) {
+            val child = children[i]
+            if (child is Text) {
                 // Ignore
-            } else if (child instanceof ElementImpl) {
-                final String tagName = child.getNodeName();
-                if ("HEAD".equalsIgnoreCase(tagName) || "NOFRAMES".equalsIgnoreCase(tagName) || "TITLE".equalsIgnoreCase(tagName)
-                        || "META".equalsIgnoreCase(tagName) || "SCRIPT".equalsIgnoreCase(tagName) || "NOSCRIPT".equalsIgnoreCase(tagName)) {
+            } else if (child is ElementImpl) {
+                val tagName = child.nodeName
+                if ("HEAD".equals(tagName, ignoreCase = true) || "NOFRAMES".equals(
+                        tagName,
+                        ignoreCase = true
+                    ) || "TITLE".equals(tagName, ignoreCase = true)
+                    || "META".equals(tagName, ignoreCase = true) || "SCRIPT".equals(
+                        tagName,
+                        ignoreCase = true
+                    ) || "NOSCRIPT".equals(tagName, ignoreCase = true)
+                ) {
                     // ignore it
-                } else if ("FRAMESET".equalsIgnoreCase(tagName)) {
-                    frameSet = child;
-                    break;
+                } else if ("FRAMESET".equals(tagName, ignoreCase = true)) {
+                    frameSet = child
+                    break
                 } else {
-                    if (this.hasSomeHtml((ElementImpl) child)) {
-                        return null;
+                    if (this.hasSomeHtml(child)) {
+                        return null
                     }
                 }
             }
         }
-        return frameSet;
+        return frameSet
     }
 
-    private boolean hasSomeHtml(final ElementImpl element) {
-        final String tagName = element.getTagName();
-        if ("HEAD".equalsIgnoreCase(tagName) || "TITLE".equalsIgnoreCase(tagName) || "META".equalsIgnoreCase(tagName)) {
-            return false;
+    private fun hasSomeHtml(element: ElementImpl): Boolean {
+        val tagName = element.tagName
+        if ("HEAD".equals(tagName, ignoreCase = true) || "TITLE".equals(
+                tagName,
+                ignoreCase = true
+            ) || "META".equals(tagName, ignoreCase = true)
+        ) {
+            return false
         }
-        final NodeImpl[] children = element.getChildrenArray();
+        val children = element.childrenArray
         if (children != null) {
-            final int length = children.length;
-            for (int i = 0; i < length; i++) {
-                final NodeImpl child = children[i];
-                if (child instanceof Text) {
-                    final String textContent = child.getTextContent();
-                    if ((textContent != null) && !"".equals(textContent.trim())) {
-                        return false;
+            val length = children.size
+            for (i in 0..<length) {
+                val child = children[i]
+                if (child is Text) {
+                    val textContent = child.getTextContent()
+                    if ((textContent != null) && "" != textContent.trim { it <= ' ' }) {
+                        return false
                     }
-                } else if (child instanceof ElementImpl) {
-                    if (this.hasSomeHtml((ElementImpl) child)) {
-                        return false;
+                } else if (child is ElementImpl) {
+                    if (this.hasSomeHtml(child)) {
+                        return false
                     }
                 }
             }
         }
-        return true;
+        return true
     }
 
     /**
      * Internal method used to expand the selection to the given point.
-     * <p>
+     *
+     *
      * Note: This method should be invoked in the GUI thread.
      */
-    public void expandSelection(final RenderableSpot rpoint) {
-        final HtmlBlockPanel block = this.htmlBlockPanel;
+    override fun expandSelection(rpoint: RenderableSpot?) {
+        val block = this.htmlBlockPanel
         if (block != null) {
-            block.setSelectionEnd(rpoint);
-            block.repaint();
-            this.selectionDispatch.fireEvent(new SelectionChangeEvent(this, block.isSelectionAvailable()));
+            block.setSelectionEnd(rpoint)
+            block.repaint()
+            this.selectionDispatch.fireEvent(
+                SelectionChangeEvent(
+                    this,
+                    block.isSelectionAvailable()
+                )
+            )
         }
     }
 
@@ -531,63 +573,68 @@ public class HtmlPanel extends JComponent implements FrameContext, DefferedLayou
      * Internal method used to reset the selection so that it is empty at the
      * given point. This is what is called when the user clicks on a point in the
      * document.
-     * <p>
-     * Note: This method should be invoked in the GUI thread.
-     */
-    public void resetSelection(final RenderableSpot rpoint) {
-        final HtmlBlockPanel block = this.htmlBlockPanel;
-        if (block != null) {
-            block.setSelectionStart(rpoint);
-            block.setSelectionEnd(rpoint);
-            block.repaint();
-        }
-        this.selectionDispatch.fireEvent(new SelectionChangeEvent(this, false));
-    }
-
-    /**
-     * Gets the selection text.
-     * <p>
-     * Note: This method should be invoked in the GUI thread.
-     */
-    public String getSelectionText() {
-        final HtmlBlockPanel block = this.htmlBlockPanel;
-        if (block == null) {
-            return null;
-        } else {
-            return block.getSelectionText();
-        }
-    }
-
-    /**
-     * Gets a DOM node enclosing the selection. The node returned should be the
-     * inner-most node that encloses both selection start and end points. Note
-     * that the selection end point may be just outside of the selection.
-     * <p>
-     * Note: This method should be invoked in the GUI thread.
      *
-     * @return A node enclosing the current selection, or <code>null</code> if
-     * there is no such node. It also returns <code>null</code> for
-     * FRAMESETs.
+     *
+     * Note: This method should be invoked in the GUI thread.
      */
-    public org.w3c.dom.Node getSelectionNode() {
-        final HtmlBlockPanel block = this.htmlBlockPanel;
-        if (block == null) {
-            return null;
-        } else {
-            return block.getSelectionNode();
+    override fun resetSelection(rpoint: RenderableSpot?) {
+        val block = this.htmlBlockPanel
+        if (block != null) {
+            block.setSelectionStart(rpoint)
+            block.setSelectionEnd(rpoint)
+            block.repaint()
         }
+        this.selectionDispatch.fireEvent(SelectionChangeEvent(this, false))
     }
+
+    val selectionText: String?
+        /**
+         * Gets the selection text.
+         *
+         *
+         * Note: This method should be invoked in the GUI thread.
+         */
+        get() {
+            val block = this.htmlBlockPanel
+            if (block == null) {
+                return null
+            } else {
+                return block.getSelectionText()
+            }
+        }
+
+    val selectionNode: Node?
+        /**
+         * Gets a DOM node enclosing the selection. The node returned should be the
+         * inner-most node that encloses both selection start and end points. Note
+         * that the selection end point may be just outside of the selection.
+         *
+         *
+         * Note: This method should be invoked in the GUI thread.
+         *
+         * @return A node enclosing the current selection, or `null` if
+         * there is no such node. It also returns `null` for
+         * FRAMESETs.
+         */
+        get() {
+            val block = this.htmlBlockPanel
+            if (block == null) {
+                return null
+            } else {
+                return block.getSelectionNode()
+            }
+        }
 
     /**
      * Returns true only if the current block has a selection. This method has no
      * effect in FRAMESETs at the moment.
      */
-    public boolean hasSelection() {
-        final HtmlBlockPanel block = this.htmlBlockPanel;
+    fun hasSelection(): Boolean {
+        val block = this.htmlBlockPanel
         if (block == null) {
-            return false;
+            return false
         } else {
-            return block.hasSelection();
+            return block.hasSelection()
         }
     }
 
@@ -595,12 +642,12 @@ public class HtmlPanel extends JComponent implements FrameContext, DefferedLayou
      * Copies the current selection, if any, into the clipboard. This method has
      * no effect in FRAMESETs at the moment.
      */
-    public boolean copy() {
-        final HtmlBlockPanel block = this.htmlBlockPanel;
+    fun copy(): Boolean {
+        val block = this.htmlBlockPanel
         if (block != null) {
-            return block.copy();
+            return block.copy()
         } else {
-            return false;
+            return false
         }
     }
 
@@ -608,54 +655,56 @@ public class HtmlPanel extends JComponent implements FrameContext, DefferedLayou
      * Adds listener of selection changes. Note that it does not have any effect
      * on FRAMESETs.
      *
-     * @param listener An instance of {@link SelectionChangeListener}.
+     * @param listener An instance of [SelectionChangeListener].
      */
-    public void addSelectionChangeListener(final SelectionChangeListener listener) {
-        this.selectionDispatch.addListener(listener);
+    fun addSelectionChangeListener(listener: SelectionChangeListener?) {
+        this.selectionDispatch.addListener(listener)
     }
 
     /**
      * Removes a listener of selection changes that was previously added.
      */
-    public void removeSelectionChangeListener(final SelectionChangeListener listener) {
-        this.selectionDispatch.removeListener(listener);
+    fun removeSelectionChangeListener(listener: SelectionChangeListener?) {
+        this.selectionDispatch.removeListener(listener)
     }
 
     /**
      * Sets the default horizontal overflow.
-     * <p>
+     *
+     *
      * This method has no effect on FRAMESETs.
      *
-     * @param overflow See {@link RenderState}.
+     * @param overflow See [RenderState].
      */
-    public void setDefaultOverflowX(final int overflow) {
-        this.defaultOverflowX = overflow;
-        final HtmlBlockPanel block = this.htmlBlockPanel;
+    fun setDefaultOverflowX(overflow: Int) {
+        this.defaultOverflowX = overflow
+        val block = this.htmlBlockPanel
         if (block != null) {
-            block.setDefaultOverflowX(overflow);
+            block.setDefaultOverflowX(overflow)
         }
     }
 
     /**
      * Sets the default vertical overflow.
-     * <p>
+     *
+     *
      * This method has no effect on FRAMESETs.
      *
-     * @param overflow See {@link RenderState}.
+     * @param overflow See [RenderState].
      */
-    public void setDefaultOverflowY(final int overflow) {
-        this.defaultOverflowY = overflow;
-        final HtmlBlockPanel block = this.htmlBlockPanel;
+    fun setDefaultOverflowY(overflow: Int) {
+        this.defaultOverflowY = overflow
+        val block = this.htmlBlockPanel
         if (block != null) {
-            block.setDefaultOverflowY(overflow);
+            block.setDefaultOverflowY(overflow)
         }
     }
 
-    private void addNotification(final DocumentNotification notification) {
+    private fun addNotification(notification: DocumentNotification?) {
         // This can be called in a random thread.
-        final ArrayList<DocumentNotification> notifs = this.notifications;
-        synchronized (notifs) {
-            notifs.add(notification);
+        val notifs = this.notifications
+        synchronized(notifs) {
+            notifs.add(notification)
         }
         if (SwingUtilities.isEventDispatchThread()) {
             // In this case we want the notification to be processed
@@ -663,9 +712,9 @@ public class HtmlPanel extends JComponent implements FrameContext, DefferedLayou
             // to occur when a Javascript property is set in the GUI thread.
             // Additionally, many property values may be set in one
             // event block.
-            SwingUtilities.invokeLater(this.notificationImmediateAction);
+            SwingUtilities.invokeLater(this.notificationImmediateAction)
         } else {
-            this.notificationTimer.restart();
+            this.notificationTimer.restart()
         }
     }
 
@@ -673,65 +722,65 @@ public class HtmlPanel extends JComponent implements FrameContext, DefferedLayou
      * Invalidates the layout of the given node and schedules it to be layed out
      * later. Multiple invalidations may be processed in a single document layout.
      */
-    public void delayedRelayout(final NodeImpl node) {
-        final ArrayList<DocumentNotification> notifs = this.notifications;
-        synchronized (notifs) {
-            notifs.add(new DocumentNotification(DocumentNotification.SIZE, node));
+    override fun delayedRelayout(node: NodeImpl?) {
+        val notifs = this.notifications
+        synchronized(notifs) {
+            notifs.add(DocumentNotification(DocumentNotification.Companion.SIZE, node))
         }
-        this.notificationTimer.restart();
+        this.notificationTimer.restart()
     }
 
-    private void processNotifications() {
+    private fun processNotifications() {
         // This is called in the GUI thread.
-        final ArrayList<DocumentNotification> notifs = this.notifications;
-        DocumentNotification[] notifsArray;
-        synchronized (notifs) {
-            final int size = notifs.size();
+        val notifs = this.notifications
+        var notifsArray: Array<DocumentNotification>?
+        synchronized(notifs) {
+            val size = notifs.size
             if (size == 0) {
-                return;
+                return
             }
-            notifsArray = new DocumentNotification[size];
-            notifsArray = notifs.toArray(notifsArray);
-            notifs.clear();
+            notifsArray = arrayOfNulls<DocumentNotification>(size)
+            notifsArray = notifs.toArray<DocumentNotification?>(notifsArray)
+            notifs.clear()
         }
-        final int length = notifsArray.length;
-        for (int i = 0; i < length; i++) {
-            final DocumentNotification dn = notifsArray[i];
-            if ((dn.node instanceof HTMLFrameSetElement) && (this.htmlBlockPanel != null)) {
+        val length = notifsArray!!.size
+        for (i in 0..<length) {
+            val dn = notifsArray[i]
+            if ((dn.node is HTMLFrameSetElement) && (this.htmlBlockPanel != null)) {
                 if (this.resetIfFrameSet()) {
                     // Revalidation already taken care of.
-                    return;
+                    return
                 }
             }
         }
-        final HtmlBlockPanel blockPanel = this.htmlBlockPanel;
+        val blockPanel = this.htmlBlockPanel
         if (blockPanel != null) {
-            blockPanel.processDocumentNotifications(notifsArray);
+            blockPanel.processDocumentNotifications(notifsArray)
         }
-        final FrameSetPanel frameSetPanel = this.frameSetPanel;
+        val frameSetPanel = this.frameSetPanel
         if (frameSetPanel != null) {
-            frameSetPanel.processDocumentNotifications(notifsArray);
+            frameSetPanel.processDocumentNotifications(notifsArray)
         }
     }
 
-    @Override
-    public Future<Boolean> layoutCompletion() {
-        return htmlBlockPanel.layoutCompletion();
+    override fun layoutCompletion(): Future<Boolean?>? {
+        return htmlBlockPanel!!.layoutCompletion()
     }
 
-    public boolean isReadyToPaint() {
-        final HtmlBlockPanel htmlBlock = this.htmlBlockPanel;
-        if (htmlBlock != null) {
-            return (notifications.size() == 0) && htmlBlock.isReadyToPaint();
+    val isReadyToPaint: Boolean
+        get() {
+            val htmlBlock = this.htmlBlockPanel
+            if (htmlBlock != null) {
+                return (notifications.size == 0) && htmlBlock.isReadyToPaint()
+            }
+            return false
         }
-        return false;
+
+    fun disableRenderHints() {
+        this.htmlBlockPanel!!.disableRenderHints()
     }
 
-    public void disableRenderHints() {
-        this.htmlBlockPanel.disableRenderHints();
-    }
-
-    private class SelectionDispatch extends EventDispatch2 {
+    private inner class SelectionDispatch : EventDispatch2() {
         /*
          * (non-Javadoc)
          *
@@ -739,49 +788,88 @@ public class HtmlPanel extends JComponent implements FrameContext, DefferedLayou
          * org.xamjwg.util.EventDispatch2#dispatchEvent(java.util.EventListener,
          * java.util.EventObject)
          */
-        @Override
-        protected void dispatchEvent(final EventListener listener, final EventObject event) {
-            ((SelectionChangeListener) listener).selectionChanged((SelectionChangeEvent) event);
+        override fun dispatchEvent(listener: EventListener, event: EventObject?) {
+            (listener as SelectionChangeListener).selectionChanged(event as SelectionChangeEvent?)
         }
     }
 
-    private class LocalDocumentNotificationListener implements DocumentNotificationListener {
-        public void allInvalidated() {
-            HtmlPanel.this.addNotification(new DocumentNotification(DocumentNotification.GENERIC, null));
+    private inner class LocalDocumentNotificationListener : DocumentNotificationListener {
+        override fun allInvalidated() {
+            this@HtmlPanel.addNotification(
+                DocumentNotification(
+                    DocumentNotification.Companion.GENERIC,
+                    null
+                )
+            )
         }
 
-        public void invalidated(final NodeImpl node) {
-            HtmlPanel.this.addNotification(new DocumentNotification(DocumentNotification.GENERIC, node));
+        override fun invalidated(node: NodeImpl?) {
+            this@HtmlPanel.addNotification(
+                DocumentNotification(
+                    DocumentNotification.Companion.GENERIC,
+                    node
+                )
+            )
         }
 
-        public void lookInvalidated(final NodeImpl node) {
-            HtmlPanel.this.addNotification(new DocumentNotification(DocumentNotification.LOOK, node));
+        override fun lookInvalidated(node: NodeImpl?) {
+            this@HtmlPanel.addNotification(
+                DocumentNotification(
+                    DocumentNotification.Companion.LOOK,
+                    node
+                )
+            )
         }
 
-        public void positionInvalidated(final NodeImpl node) {
-            HtmlPanel.this.addNotification(new DocumentNotification(DocumentNotification.POSITION, node));
+        override fun positionInvalidated(node: NodeImpl?) {
+            this@HtmlPanel.addNotification(
+                DocumentNotification(
+                    DocumentNotification.Companion.POSITION,
+                    node
+                )
+            )
         }
 
-        public void sizeInvalidated(final NodeImpl node) {
-            HtmlPanel.this.addNotification(new DocumentNotification(DocumentNotification.SIZE, node));
+        override fun sizeInvalidated(node: NodeImpl?) {
+            this@HtmlPanel.addNotification(
+                DocumentNotification(
+                    DocumentNotification.Companion.SIZE,
+                    node
+                )
+            )
         }
 
-        public void externalScriptLoading(final NodeImpl node) {
+        override fun externalScriptLoading(node: NodeImpl?) {
             // Ignorable here.
         }
 
-        public void nodeLoaded(final NodeImpl node) {
-            HtmlPanel.this.addNotification(new DocumentNotification(DocumentNotification.GENERIC, node));
+        override fun nodeLoaded(node: NodeImpl?) {
+            this@HtmlPanel.addNotification(
+                DocumentNotification(
+                    DocumentNotification.Companion.GENERIC,
+                    node
+                )
+            )
         }
 
-        public void structureInvalidated(final NodeImpl node) {
-            HtmlPanel.this.addNotification(new DocumentNotification(DocumentNotification.GENERIC, node));
+        override fun structureInvalidated(node: NodeImpl?) {
+            this@HtmlPanel.addNotification(
+                DocumentNotification(
+                    DocumentNotification.Companion.GENERIC,
+                    node
+                )
+            )
         }
     }
 
-    private class NotificationTimerAction implements java.awt.event.ActionListener {
-        public void actionPerformed(final ActionEvent e) {
-            HtmlPanel.this.processNotifications();
+    private inner class NotificationTimerAction : ActionListener {
+        override fun actionPerformed(e: ActionEvent?) {
+            this@HtmlPanel.processNotifications()
         }
+    }
+
+    companion object {
+        private val serialVersionUID = -8342517547909796721L
+        private const val NOTIF_TIMER_DELAY = 150
     }
 }

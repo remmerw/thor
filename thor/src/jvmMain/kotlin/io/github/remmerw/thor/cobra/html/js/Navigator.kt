@@ -18,84 +18,68 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
+package io.github.remmerw.thor.cobra.html.js
 
-package io.github.remmerw.thor.cobra.html.js;
+import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate
+import io.github.remmerw.thor.cobra.ua.UserAgentContext
 
-import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext;
-
-public class Navigator extends AbstractScriptableDelegate {
-    private final UserAgentContext context;
-    private MimeTypesCollection mimeTypes;
-
-    /**
-     * @param context
-     */
-    Navigator(final UserAgentContext context) {
-        super();
-        this.context = context;
-    }
-
-    public String getAppCodeName() {
-        return this.context.getAppCodeName();
-    }
-
-    public String getAppName() {
-        return this.context.getAppName();
-    }
-
-    public String getAppVersion() {
-        return this.context.getAppVersion();
-    }
-
-    public String getAppMinorVersion() {
-        return this.context.getAppMinorVersion();
-    }
-
-    public String getPlatform() {
-        return this.context.getPlatform();
-    }
-
-    public String getUserAgent() {
-        return this.context.getUserAgent();
-    }
-
-    public String getVendor() {
-        return this.context.getVendor();
-    }
-
-    public String getProduct() {
-        return this.context.getProduct();
-    }
-
-    public boolean javaEnabled() {
-        // True always?
-        return true;
-    }
-
-    public MimeTypesCollection getMimeTypes() {
-        synchronized (this) {
-            MimeTypesCollection mt = this.mimeTypes;
-            if (mt == null) {
-                mt = new MimeTypesCollection();
-                this.mimeTypes = mt;
+class Navigator
+/**
+ * @param context
+ */ internal constructor(private val context: UserAgentContext) : AbstractScriptableDelegate() {
+    var mimeTypes: MimeTypesCollection? = null
+        get() {
+            synchronized(this) {
+                var mt = field
+                if (mt == null) {
+                    mt = MimeTypesCollection()
+                    field = mt
+                }
+                return mt
             }
-            return mt;
         }
+        private set
+
+    val appCodeName: String?
+        get() = this.context.getAppCodeName()
+
+    val appName: String?
+        get() = this.context.getAppName()
+
+    val appVersion: String?
+        get() = this.context.getAppVersion()
+
+    val appMinorVersion: String?
+        get() = this.context.getAppMinorVersion()
+
+    val platform: String?
+        get() = this.context.getPlatform()
+
+    val userAgent: String?
+        get() = this.context.getUserAgent()
+
+    val vendor: String?
+        get() = this.context.getVendor()
+
+    val product: String?
+        get() = this.context.getProduct()
+
+    fun javaEnabled(): Boolean {
+        // True always?
+        return true
     }
 
-    public class MimeTypesCollection {
-        // Class must be public to allow JavaScript access
-        public int getLength() {
-            return 0;
+    inner class MimeTypesCollection {
+        val length: Int
+            // Class must be public to allow JavaScript access
+            get() = 0
+
+        fun item(index: Int): Any? {
+            return null
         }
 
-        public Object item(final int index) {
-            return null;
-        }
-
-        public Object namedItem(final String name) {
-            return null;
+        fun namedItem(name: String?): Any? {
+            return null
         }
     }
 }

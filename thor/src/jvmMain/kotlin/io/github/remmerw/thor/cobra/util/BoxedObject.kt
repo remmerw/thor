@@ -1,22 +1,14 @@
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
 
-public class BoxedObject {
-    private Object object;
+class BoxedObject {
+    var `object`: Any? = null
+        set(object) {
+            field = this.`object`
+        }
 
-    public BoxedObject() {
+    constructor()
+
+    constructor(`object`: Any?) : super() {
+        this.`object` = `object`
     }
-
-    public BoxedObject(final Object object) {
-        super();
-        this.object = object;
-    }
-
-    public Object getObject() {
-        return object;
-    }
-
-    public void setObject(final Object object) {
-        this.object = object;
-    }
-
 }

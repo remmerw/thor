@@ -20,32 +20,31 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.github.remmerw.thor.cobra.ua;
+package io.github.remmerw.thor.cobra.ua
+
+import java.util.EventObject
 
 /**
  * A navigator event object.
  */
-public class NavigatorEvent extends java.util.EventObject {
-    private static final long serialVersionUID = -2146283038994914735L;
-    private final NavigatorFrame clientletFrame;
-    private final NavigatorEventType eventType;
+open class NavigatorEvent(
+    source: Any,
+    eventType: NavigatorEventType?,
+    clientletFrame: NavigatorFrame?
+) : EventObject(source) {
+    val navigatorFrame: NavigatorFrame?
+    val eventType: NavigatorEventType?
 
-    public NavigatorEvent(final Object source, final NavigatorEventType eventType, final NavigatorFrame clientletFrame) {
-        super(source);
-        this.clientletFrame = clientletFrame;
-        this.eventType = eventType;
+    init {
+        this.navigatorFrame = clientletFrame
+        this.eventType = eventType
     }
 
-    public NavigatorFrame getNavigatorFrame() {
-        return clientletFrame;
+    override fun toString(): String {
+        return "NavigatorEvent[type=" + this.eventType + "]"
     }
 
-    public NavigatorEventType getEventType() {
-        return eventType;
-    }
-
-    @Override
-    public String toString() {
-        return "NavigatorEvent[type=" + this.getEventType() + "]";
+    companion object {
+        private val serialVersionUID = -2146283038994914735L
     }
 }

@@ -1,15 +1,15 @@
-package io.github.remmerw.thor.cobra.util.io;
+package io.github.remmerw.thor.cobra.util.io
 
-import java.io.IOException;
-import java.io.Reader;
+import java.io.IOException
+import java.io.Reader
 
-public class EmptyReader extends Reader {
-    @Override
-    public void close() throws IOException {
+class EmptyReader : Reader() {
+    @Throws(IOException::class)
+    override fun close() {
     }
 
-    @Override
-    public int read(final char[] cbuf, final int off, final int len) throws IOException {
-        return 0;
+    @Throws(IOException::class)
+    override fun read(cbuf: CharArray?, off: Int, len: Int): Int {
+        return 0
     }
 }

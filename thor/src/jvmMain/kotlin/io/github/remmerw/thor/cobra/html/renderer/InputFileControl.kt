@@ -18,85 +18,77 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import java.awt.event.ActionEvent;
-import java.io.File;
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement
+import java.awt.Dimension
+import java.awt.event.ActionEvent
+import java.io.File
+import javax.swing.AbstractAction
+import javax.swing.Box
+import javax.swing.BoxLayout
+import javax.swing.JButton
+import javax.swing.JFileChooser
+import javax.swing.JTextField
 
-import javax.swing.AbstractAction;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JTextField;
-
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement;
-
-public class InputFileControl extends BaseInputControl {
-    private static final long serialVersionUID = 4255784506085448850L;
-    private final JTextField textField = new JTextField();
-    private final JButton browseButton = new JButton();
-    private File fileValue;
-
-    public InputFileControl(final HTMLBaseInputElement modelNode) {
-        super(modelNode);
-        this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-        final JButton browseButton = this.browseButton;
-        browseButton.setAction(new BrowseAction());
-        browseButton.setText("Browse");
-        final java.awt.Dimension ps = this.textField.getPreferredSize();
-        this.textField.setPreferredSize(new java.awt.Dimension(128, ps.height));
-        this.textField.setEditable(false);
-        this.add(this.textField);
-        this.add(Box.createHorizontalStrut(4));
-        this.add(browseButton);
-    }
-
-    @Override
-    public String getValue() {
-        // This is the way browsers behave, even
-        // though this value is not submitted.
-        return this.textField.getText();
-    }
-
-    @Override
-    public void setValue(final String value) {
-        // nop - security
-    }
-
-    @Override
-    public void setDisabled(final boolean disabled) {
-        this.browseButton.setEnabled(!disabled);
-    }
-
-    @Override
-    public File getFileValue() {
-        return this.fileValue;
-    }
-
-    private void setFileValue(final File file) {
-        this.fileValue = file;
-        if (file == null) {
-            this.textField.setText("");
-        } else {
-            this.textField.setText(file.getAbsolutePath());
-        }
-    }
-
-    public void resetInput() {
-        this.setFileValue(null);
-    }
-
-    private class BrowseAction extends AbstractAction {
-        private static final long serialVersionUID = -967133652737594806L;
-
-        public void actionPerformed(final ActionEvent e) {
-            final JFileChooser chooser = new JFileChooser();
-            if (chooser.showOpenDialog(InputFileControl.this) == JFileChooser.APPROVE_OPTION) {
-                setFileValue(chooser.getSelectedFile());
+class InputFileControl(modelNode: HTMLBaseInputElement?) : BaseInputControl(modelNode) {
+    private val textField = JTextField()
+    private val browseButton = JButton()
+    var fileValue: File? = null
+        private set(file) {
+            field = file
+            if (file == null) {
+                this.textField.setText("")
             } else {
-                setFileValue(null);
+                this.textField.setText(file.absolutePath)
             }
         }
+
+    init {
+        this.layout = BoxLayout(this, BoxLayout.X_AXIS)
+        val browseButton = this.browseButton
+        browseButton.action = BrowseAction()
+        browseButton.text = "Browse"
+        val ps = this.textField.preferredSize
+        this.textField.preferredSize = Dimension(128, ps.height)
+        this.textField.isEditable = false
+        this.add(this.textField)
+        this.add(Box.createHorizontalStrut(4))
+        this.add(browseButton)
+    }
+
+    var value: String?
+        get() =// This is the way browsers behave, even
+            // though this value is not submitted.
+            this.textField.text
+        set(value) {
+            // nop - security
+        }
+
+    override fun setDisabled(disabled: Boolean) {
+        this.browseButton.isEnabled = !disabled
+    }
+
+    override fun resetInput() {
+        this.fileValue = null
+    }
+
+    private inner class BrowseAction : AbstractAction() {
+        override fun actionPerformed(e: ActionEvent?) {
+            val chooser = JFileChooser()
+            if (chooser.showOpenDialog(this@InputFileControl) == JFileChooser.APPROVE_OPTION) {
+                this.fileValue = chooser.selectedFile
+            } else {
+                this.fileValue = null
+            }
+        }
+
+        companion object {
+            private val serialVersionUID = -967133652737594806L
+        }
+    }
+
+    companion object {
+        private const val serialVersionUID = 4255784506085448850L
     }
 }

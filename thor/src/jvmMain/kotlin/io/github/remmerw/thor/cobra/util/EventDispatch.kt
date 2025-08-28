@@ -21,53 +21,50 @@
 /*
  * Created on Mar 19, 2005
  */
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
 
-import java.util.Collection;
-import java.util.EventObject;
-import java.util.LinkedList;
+import java.util.EventObject
+import java.util.LinkedList
 
 /**
  * @author J. H. S.
  */
-public class EventDispatch {
-    private Collection<GenericEventListener> listeners;
+class EventDispatch {
+    private var listeners: MutableCollection<GenericEventListener?>? = null
 
-    public EventDispatch() {
+    fun createListenerCollection(): MutableCollection<GenericEventListener?> {
+        return LinkedList<GenericEventListener?>()
     }
 
-    public Collection<GenericEventListener> createListenerCollection() {
-        return new LinkedList<>();
-    }
-
-    public final void addListener(final GenericEventListener listener) {
-        synchronized (this) {
+    fun addListener(listener: GenericEventListener?) {
+        synchronized(this) {
             if (this.listeners == null) {
-                this.listeners = this.createListenerCollection();
+                this.listeners = this.createListenerCollection()
             }
-            this.listeners.add(listener);
+            this.listeners!!.add(listener)
         }
     }
 
-    public final void removeListener(final GenericEventListener listener) {
-        synchronized (this) {
+    fun removeListener(listener: GenericEventListener?) {
+        synchronized(this) {
             if (this.listeners != null) {
-                this.listeners.remove(listener);
+                this.listeners!!.remove(listener)
             }
         }
     }
 
-    public final void fireEvent(final EventObject event) {
-        GenericEventListener[] larray = null;
-        synchronized (this) {
+    fun fireEvent(event: EventObject?) {
+        var larray: Array<GenericEventListener>? = null
+        synchronized(this) {
             if (this.listeners != null) {
-                larray = this.listeners.toArray(GenericEventListener.EMPTY_ARRAY);
+                larray =
+                    this.listeners.toArray<GenericEventListener?>(GenericEventListener.Companion.EMPTY_ARRAY)
             }
         }
         if (larray != null) {
-            for (final GenericEventListener element : larray) {
+            for (element in larray) {
                 // Call holding no locks
-                element.processEvent(event);
+                element.processEvent(event)
             }
         }
     }

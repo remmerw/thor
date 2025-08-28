@@ -1,15 +1,8 @@
-package io.github.remmerw.thor.cobra.html.style;
+package io.github.remmerw.thor.cobra.html.style
 
-public class BaseFontRenderState extends RenderStateDelegator {
-    private final int fontBase;
-
-    public BaseFontRenderState(final RenderState prevRenderState, final int fontBase) {
-        super(prevRenderState);
-        this.fontBase = fontBase;
-    }
-
-    @Override
-    public int getFontBase() {
-        return this.fontBase;
+class BaseFontRenderState(prevRenderState: RenderState?, private val fontBase: Int) :
+    RenderStateDelegator(prevRenderState) {
+    override fun getFontBase(): Int {
+        return this.fontBase
     }
 }

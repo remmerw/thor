@@ -21,133 +21,135 @@
 /*
  * Created on Jan 28, 2006
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.Document;
-import org.w3c.dom.html.HTMLFrameElement;
+import io.github.remmerw.thor.cobra.html.BrowserFrame
+import io.github.remmerw.thor.cobra.html.js.Window
+import io.github.remmerw.thor.cobra.ua.UserAgentContext
+import io.github.remmerw.thor.cobra.ua.UserAgentContext.RequestKind
+import org.w3c.dom.Document
+import org.w3c.dom.html.HTMLFrameElement
+import java.net.MalformedURLException
+import kotlin.concurrent.Volatile
 
-import java.net.MalformedURLException;
+class HTMLFrameElementImpl : HTMLElementImpl, HTMLFrameElement, FrameNode {
+    @Volatile
+    private var browserFrame: BrowserFrame? = null
+    private var noResize = false
 
-import io.github.remmerw.thor.cobra.html.BrowserFrame;
-import io.github.remmerw.thor.cobra.html.js.Window;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext.Request;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext.RequestKind;
+    constructor(name: String?, noStyleSheet: Boolean) : super(name, noStyleSheet)
 
-public class HTMLFrameElementImpl extends HTMLElementImpl implements HTMLFrameElement, FrameNode {
-    private volatile BrowserFrame browserFrame;
-    private boolean noResize;
+    constructor(name: String?) : super(name)
 
-    public HTMLFrameElementImpl(final String name, final boolean noStyleSheet) {
-        super(name, noStyleSheet);
-    }
-
-    public HTMLFrameElementImpl(final String name) {
-        super(name);
-    }
-
-    private void loadURL() {
-        final String src = getAttribute("src");
+    private fun loadURL() {
+        val src = getAttribute("src")
         if (src != null) {
             try {
-                final java.net.URL fullURL = getFullURL(src);
-                if (getUserAgentContext().isRequestPermitted(new Request(fullURL, RequestKind.Frame))) {
-                    browserFrame.loadURL(fullURL);
+                val fullURL = getFullURL(src)
+                if (getUserAgentContext().isRequestPermitted(
+                        UserAgentContext.Request(
+                            fullURL,
+                            RequestKind.Frame
+                        )
+                    )
+                ) {
+                    browserFrame!!.loadURL(fullURL)
                 }
-            } catch (final MalformedURLException mfu) {
-                logger.warning("Frame URI=[" + src + "] is malformed.");
+            } catch (mfu: MalformedURLException) {
+                logger.warning("Frame URI=[" + src + "] is malformed.")
             }
         }
     }
 
-    public BrowserFrame getBrowserFrame() {
-        return this.browserFrame;
+    override fun getBrowserFrame(): BrowserFrame {
+        return this.browserFrame!!
     }
 
-    public void setBrowserFrame(final BrowserFrame frame) {
-        this.browserFrame = frame;
-        loadURL();
+    override fun setBrowserFrame(frame: BrowserFrame) {
+        this.browserFrame = frame
+        loadURL()
     }
 
-    public String getFrameBorder() {
-        return this.getAttribute("frameBorder");
+    override fun getFrameBorder(): String? {
+        return this.getAttribute("frameBorder")
     }
 
-    public void setFrameBorder(final String frameBorder) {
-        this.setAttribute("frameBorder", frameBorder);
+    override fun setFrameBorder(frameBorder: String?) {
+        this.setAttribute("frameBorder", frameBorder)
     }
 
-    public String getLongDesc() {
-        return this.getAttribute("longdesc");
+    override fun getLongDesc(): String? {
+        return this.getAttribute("longdesc")
     }
 
-    public void setLongDesc(final String longDesc) {
-        this.setAttribute("longdesc", longDesc);
+    override fun setLongDesc(longDesc: String?) {
+        this.setAttribute("longdesc", longDesc)
     }
 
-    public String getMarginHeight() {
-        return this.getAttribute("marginHeight");
+    override fun getMarginHeight(): String? {
+        return this.getAttribute("marginHeight")
     }
 
-    public void setMarginHeight(final String marginHeight) {
-        this.setAttribute("marginHeight", marginHeight);
+    override fun setMarginHeight(marginHeight: String?) {
+        this.setAttribute("marginHeight", marginHeight)
     }
 
-    public String getMarginWidth() {
-        return this.getAttribute("marginWidth");
+    override fun getMarginWidth(): String? {
+        return this.getAttribute("marginWidth")
     }
 
-    public void setMarginWidth(final String marginWidth) {
-        this.setAttribute("marginWidth", marginWidth);
+    override fun setMarginWidth(marginWidth: String?) {
+        this.setAttribute("marginWidth", marginWidth)
     }
 
-    public String getName() {
-        return this.getAttribute("name");
+    override fun getName(): String? {
+        return this.getAttribute("name")
     }
 
-    public void setName(final String name) {
-        this.setAttribute("name", name);
+    override fun setName(name: String?) {
+        this.setAttribute("name", name)
     }
 
-    public boolean getNoResize() {
-        return this.noResize;
+    override fun getNoResize(): Boolean {
+        return this.noResize
     }
 
-    public void setNoResize(final boolean noResize) {
-        this.noResize = noResize;
+    override fun setNoResize(noResize: Boolean) {
+        this.noResize = noResize
     }
 
-    public String getScrolling() {
-        return this.getAttribute("scrolling");
+    override fun getScrolling(): String? {
+        return this.getAttribute("scrolling")
     }
 
-    public void setScrolling(final String scrolling) {
-        this.setAttribute("scrolling", scrolling);
+    override fun setScrolling(scrolling: String?) {
+        this.setAttribute("scrolling", scrolling)
     }
 
-    public String getSrc() {
-        return this.getAttribute("src");
+    override fun getSrc(): String? {
+        return this.getAttribute("src")
     }
 
-    public void setSrc(final String src) {
-        this.setAttribute("src", src);
+    override fun setSrc(src: String?) {
+        this.setAttribute("src", src)
     }
 
-    public Document getContentDocument() {
-        final BrowserFrame frame = this.browserFrame;
+    override fun getContentDocument(): Document? {
+        val frame = this.browserFrame
         if (frame == null) {
             // Not loaded yet
-            return null;
+            return null
         }
-        return frame.getContentDocument();
+        return frame.contentDocument
     }
 
-    public Window getContentWindow() {
-        final BrowserFrame frame = this.browserFrame;
-        if (frame == null) {
-            // Not loaded yet
-            return null;
+    val contentWindow: Window?
+        get() {
+            val frame = this.browserFrame
+            if (frame == null) {
+                // Not loaded yet
+                return null
+            }
+            return Window.getWindow(frame.htmlRendererContext)
         }
-        return Window.getWindow(frame.getHtmlRendererContext());
-    }
-
 }

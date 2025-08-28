@@ -13,40 +13,32 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+package io.github.remmerw.thor.cobra.css.domimpl
 
-package io.github.remmerw.thor.cobra.css.domimpl;
+import cz.vutbr.web.css.RuleFontFace
+import org.w3c.dom.DOMException
+import org.w3c.dom.css.CSSFontFaceRule
+import org.w3c.dom.css.CSSStyleDeclaration
 
-import org.w3c.dom.DOMException;
-import org.w3c.dom.css.CSSFontFaceRule;
-import org.w3c.dom.css.CSSRule;
-import org.w3c.dom.css.CSSStyleDeclaration;
-
-import cz.vutbr.web.css.RuleFontFace;
-
-final class CSSFontFaceRuleImpl extends AbstractCSSRule implements CSSFontFaceRule {
-
-    final RuleFontFace rule;
-
-    CSSFontFaceRuleImpl(final RuleFontFace rule, final JStyleSheetWrapper containingStyleSheet) {
-        super(containingStyleSheet);
-        this.rule = rule;
+internal class CSSFontFaceRuleImpl(
+    val rule: RuleFontFace,
+    containingStyleSheet: JStyleSheetWrapper?
+) : AbstractCSSRule(containingStyleSheet), CSSFontFaceRule {
+    override fun getCssText(): String? {
+        return rule.toString()
     }
 
-    public String getCssText() {
-        return rule.toString();
-    }
-
-    public void setCssText(final String cssText) throws DOMException {
+    @Throws(DOMException::class)
+    override fun setCssText(cssText: String?) {
         // TODO implement this method
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
 
-    public CSSStyleDeclaration getStyle() {
-        return new CSSStyleDeclarationImpl(rule.asList(), this);
+    override fun getStyle(): CSSStyleDeclaration {
+        return CSSStyleDeclarationImpl(rule.asList(), this)
     }
 
-    public short getType() {
-        return CSSRule.FONT_FACE_RULE;
+    override fun getType(): Short {
+        return FONT_FACE_RULE
     }
-
 }

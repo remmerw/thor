@@ -1,142 +1,65 @@
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.Function;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import io.github.remmerw.thor.cobra.html.FormInput
+import io.github.remmerw.thor.cobra.html.domimpl.ElementImpl
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLAbstractUIElement
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLButtonElementImpl
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLDocumentImpl
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLInputElementImpl
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLLinkElementImpl
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLSelectElementImpl
+import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
+import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
+import io.github.remmerw.thor.cobra.html.js.Event
+import io.github.remmerw.thor.cobra.html.js.Executor.executeFunction
+import org.mozilla.javascript.ContextFactory
+import org.w3c.dom.Document
+import org.w3c.dom.Element
+import java.awt.Cursor
+import java.awt.event.InputEvent
+import java.awt.event.KeyEvent
+import java.awt.event.MouseEvent
+import java.util.Locale
+import java.util.Optional
+import java.util.logging.Level
+import java.util.logging.Logger
 
-import java.awt.Cursor;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import io.github.remmerw.thor.cobra.html.FormInput;
-import io.github.remmerw.thor.cobra.html.HtmlRendererContext;
-import io.github.remmerw.thor.cobra.html.domimpl.ElementImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLAbstractUIElement;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLButtonElementImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLDocumentImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLInputElementImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLLinkElementImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLSelectElementImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode;
-import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl;
-import io.github.remmerw.thor.cobra.html.js.Event;
-import io.github.remmerw.thor.cobra.html.js.Executor;
-import io.github.remmerw.thor.cobra.html.style.RenderState;
-
-class HtmlController {
-    private static final Logger logger = Logger.getLogger(HtmlController.class.getName());
-    private static final HtmlController instance = new HtmlController();
-
-    static HtmlController getInstance() {
-        return instance;
-    }
-
-    // Quick hack
-    private static ContextFactory getWindowFactory(final ElementImpl e) {
-        final HTMLDocumentImpl doc = (HTMLDocumentImpl) e.getOwnerDocument();
-        return doc.getWindow().getContextFactory();
-    }
-
-    private static void setMouseOnMouseOver(final BaseBoundableRenderable renderable, final ModelNode nodeStart, final ModelNode limit) {
-        ModelNode node = nodeStart;
-        while (node != null) {
-            if (node == limit) {
-                break;
-            }
-            if (node instanceof NodeImpl uiElement) {
-                final HtmlRendererContext rcontext = uiElement.getHtmlRendererContext();
-                final RenderState rs = uiElement.getRenderState();
-                final Optional<Cursor> cursorOpt = rs.getCursor();
-                if (rcontext != null) {
-                    if (cursorOpt.isPresent()) {
-                        rcontext.setCursor(cursorOpt);
-                        break;
-                    } else {
-                        if (node.getParentModelNode() == limit) {
-                            if ((renderable instanceof RWord) || (renderable instanceof RBlank)) {
-                                rcontext.setCursor(Optional.of(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR)));
-                            }
-                        }
-                    }
-                }
-            }
-            node = node.getParentModelNode();
-        }
-    }
-
-    // Quick hack
-  /*
-  private static boolean runFunction(final ElementImpl e, final Function f, final Event event) {
-    final HTMLDocumentImpl doc = (HTMLDocumentImpl) e.getOwnerDocument();
-    final Window window = doc.getWindow();
-    window.addJSTask(new JSRunnableTask(0, "function from HTMLController", () -> {
-      Executor.executeFunction(e, f, event, window.getContextFactory());
-    }));
-    return false;
-  }
-  */
-
-    private static void resetCursorOnMouseOut(final ModelNode nodeStart, final ModelNode limit) {
-        Optional<Cursor> foundCursorOpt = Optional.empty();
-        ModelNode node = limit;
-        while (node != null) {
-            if (node instanceof NodeImpl uiElement) {
-
-                final RenderState rs = uiElement.getRenderState();
-                final Optional<Cursor> cursorOpt = rs.getCursor();
-                foundCursorOpt = cursorOpt;
-                if (cursorOpt.isPresent()) {
-                    break;
-                }
-
-            }
-            node = node.getParentModelNode();
-        }
-
-        if (nodeStart instanceof NodeImpl uiElement) {
-            final HtmlRendererContext rcontext = uiElement.getHtmlRendererContext();
-            // rcontext.setCursor(Optional.empty());
-            if (rcontext != null) {
-                rcontext.setCursor(foundCursorOpt);
-            }
-        }
-    }
-
+internal class HtmlController {
     /**
      * @return True to propagate further and false if the event was consumed.
      */
-    public boolean onEnterPressed(final ModelNode node, final InputEvent event) {
-        if (node instanceof HTMLInputElementImpl hie) {
-            if (hie.isSubmittableWithEnterKey()) {
-                hie.submitForm(null);
-                return false;
+    fun onEnterPressed(node: ModelNode?, event: InputEvent?): Boolean {
+        if (node is HTMLInputElementImpl) {
+            if (node.isSubmittableWithEnterKey) {
+                node.submitForm(null)
+                return false
             }
         }
         // No propagation
-        return false;
-    }
-
-    public boolean onMouseClick(final ModelNode node, final MouseEvent event, final int x, final int y) {
-        return onMouseClick(node, event, x, y, false);
+        return false
     }
 
     /**
      * @return True to propagate further and false if the event was consumed.
      */
-    public boolean onMouseClick(final ModelNode node, final MouseEvent event, final int x, final int y, boolean eventDispatched) {
+    @JvmOverloads
+    fun onMouseClick(
+        node: ModelNode,
+        event: MouseEvent?,
+        x: Int,
+        y: Int,
+        eventDispatched: Boolean = false
+    ): Boolean {
+        var eventDispatched = eventDispatched
         if (logger.isLoggable(Level.INFO)) {
-            logger.info("onMouseClick(): node=" + node + ",class=" + node.getClass().getName());
+            logger.info("onMouseClick(): node=" + node + ",class=" + node.javaClass.name)
         }
+
         // System.out.println("HtmlController.onMouseClick(): " + node + " already dispatched: " + eventDispatched);
 
         // Get the node which is a valid Event target
-    /*{
+        /*{
       NodeImpl target = (NodeImpl)node;
       while(target.getParentNode() != null) {
         if (target instanceof Element || target instanceof Document) { //  TODO || node instanceof Window) {
@@ -147,87 +70,85 @@ class HtmlController {
       final Event jsEvent = new Event("click", target, event, x, y);
       target.dispatchEvent(jsEvent);
     }*/
+        if (node is HTMLAbstractUIElement) {
+            val jsEvent = Event("click", node, event, x, y)
 
-        if (node instanceof HTMLAbstractUIElement uiElement) {
-
-            final Event jsEvent = new Event("click", uiElement, event, x, y);
             // System.out.println("Ui element: " + uiElement.getId());
             // uiElement.dispatchEvent(jsEvent);
-
-            final Function f = uiElement.getOnclick();
+            val f = node.onclick
             /* TODO: This is the original code which would return immediately if f returned false. */
             if (f != null) {
                 // Changing argument to uiElement instead of event
-                if (!Executor.executeFunction(uiElement, f, jsEvent, getWindowFactory(uiElement))) {
+                if (!executeFunction(node, f, jsEvent, getWindowFactory(node))) {
                     // if (!Executor.executeFunction(uiElement, f, uiElement, getWindowFactory(uiElement))) {
-                    return false;
+                    return false
                 }
             }
-      /*
+
+            /*
       // Alternate JS Task version:
       if (f != null) {
         runFunction(uiElement, f, jsEvent);
       }*/
-
-            final HtmlRendererContext rcontext = uiElement.getHtmlRendererContext();
+            val rcontext = node.htmlRendererContext
             if (rcontext != null) {
-                if (!rcontext.onMouseClick(uiElement, event)) {
-                    return false;
+                if (!rcontext.onMouseClick(node, event)) {
+                    return false
                 }
             }
         }
-        if (node instanceof HTMLLinkElementImpl) {
-            final boolean navigated = ((HTMLLinkElementImpl) node).navigate();
+        if (node is HTMLLinkElementImpl) {
+            val navigated = node.navigate()
             if (navigated) {
-                return false;
+                return false
             }
-        } else if (node instanceof HTMLButtonElementImpl button) {
-            final String rawType = button.getAttribute("type");
-            String type;
+        } else if (node is HTMLButtonElementImpl) {
+            val rawType = node.getAttribute("type")
+            val type: String?
             if (rawType == null) {
-                type = "submit";
+                type = "submit"
             } else {
-                type = rawType.trim().toLowerCase();
+                type = rawType.trim { it <= ' ' }.lowercase(Locale.getDefault())
             }
-            if ("submit".equals(type)) {
-                FormInput[] formInputs;
-                final String name = button.getName();
+            if ("submit" == type) {
+                val formInputs: Array<FormInput?>?
+                val name = node.name
                 if (name == null) {
-                    formInputs = null;
+                    formInputs = null
                 } else {
-                    formInputs = new FormInput[]{new FormInput(name, button.getValue())};
+                    formInputs = arrayOf<FormInput>(FormInput(name, node.value))
                 }
-                button.submitForm(formInputs);
-                return false;
-            } else if ("reset".equals(type)) {
-                button.resetForm();
-                return false;
-            } else if ("button".equals(type)) {
-                System.out.println("Button TODO;");
+                node.submitForm(formInputs)
+                return false
+            } else if ("reset" == type) {
+                node.resetForm()
+                return false
+            } else if ("button" == type) {
+                println("Button TODO;")
             } else {
                 // NOP for "button"!
             }
         }
         if (!eventDispatched) {
             // Get the node which is a valid Event target
-            if ((node instanceof Element) || (node instanceof Document)) { //  TODO || node instanceof Window) {
+            if ((node is Element) || (node is Document)) { //  TODO || node instanceof Window) {
                 // System.out.println("Click accepted on " + node);
-                final NodeImpl target = (NodeImpl) node;
-                final Event jsEvent = new Event("click", target, event, x, y);
-                target.dispatchEvent(jsEvent);
-                eventDispatched = true;
+                val target = node as NodeImpl
+                val jsEvent = Event("click", target, event, x, y)
+                target.dispatchEvent(jsEvent)
+                eventDispatched = true
             }
         }
         // } else {
         // System.out.println("Bumping click to parent");
-        final ModelNode parent = node.getParentModelNode();
+        val parent = node.parentModelNode
         if (parent == null) {
-            return true;
+            return true
         }
-        return this.onMouseClick(parent, event, x, y, eventDispatched);
+        return this.onMouseClick(parent, event, x, y, eventDispatched)
         // }
         // return false;
-    /*
+        /*
     final ModelNode parent = node.getParentModelNode();
     if (parent == null) {
       return true;
@@ -235,200 +156,201 @@ class HtmlController {
     return this.onMouseClick(parent, event, x, y);*/
     }
 
-    public boolean onMiddleClick(ModelNode node, MouseEvent event, int x, int y) {
-        if (node instanceof HTMLAbstractUIElement uiElement) {
-            final HtmlRendererContext rcontext = uiElement.getHtmlRendererContext();
+    fun onMiddleClick(node: ModelNode, event: MouseEvent?, x: Int, y: Int): Boolean {
+        if (node is HTMLAbstractUIElement) {
+            val rcontext = node.htmlRendererContext
             if (rcontext != null) {
                 // Needs to be done after Javascript, so the script
                 // is able to prevent it.
-                if (!rcontext.onMiddleClick(uiElement, event)) {
-                    return false;
+                if (!rcontext.onMiddleClick(node, event)) {
+                    return false
                 }
             }
         }
-        final ModelNode parent = node.getParentModelNode();
+        val parent = node.parentModelNode
         if (parent == null) {
-            return true;
+            return true
         }
-        return this.onMiddleClick(parent, event, x, y);
+        return this.onMiddleClick(parent, event, x, y)
     }
 
-    public boolean onContextMenu(final ModelNode node, final MouseEvent event, final int x, final int y) {
+    fun onContextMenu(node: ModelNode, event: MouseEvent?, x: Int, y: Int): Boolean {
         if (logger.isLoggable(Level.INFO)) {
-            logger.info("onContextMenu(): node=" + node + ",class=" + node.getClass().getName());
+            logger.info("onContextMenu(): node=" + node + ",class=" + node.javaClass.name)
         }
-        if (node instanceof HTMLAbstractUIElement uiElement) {
-            final Function f = uiElement.getOncontextmenu();
+        if (node is HTMLAbstractUIElement) {
+            val f = node.oncontextmenu
             if (f != null) {
-                final Event jsEvent = new Event("contextmenu", uiElement, event, x, y);
-                if (!Executor.executeFunction(uiElement, f, jsEvent, getWindowFactory(uiElement))) {
-                    return false;
+                val jsEvent = Event("contextmenu", node, event, x, y)
+                if (!executeFunction(node, f, jsEvent, getWindowFactory(node))) {
+                    return false
                 }
             }
-            final HtmlRendererContext rcontext = uiElement.getHtmlRendererContext();
+            val rcontext = node.htmlRendererContext
             if (rcontext != null) {
                 // Needs to be done after Javascript, so the script
                 // is able to prevent it.
-                if (!rcontext.onContextMenu(uiElement, event)) {
-                    return false;
+                if (!rcontext.onContextMenu(node, event)) {
+                    return false
                 }
             }
         }
-        final ModelNode parent = node.getParentModelNode();
+        val parent = node.parentModelNode
         if (parent == null) {
-            return true;
+            return true
         }
-        return this.onContextMenu(parent, event, x, y);
+        return this.onContextMenu(parent, event, x, y)
     }
 
-    public void onMouseOver(final BaseBoundableRenderable renderable, final ModelNode nodeStart, final MouseEvent event, final int x,
-                            final int y, final ModelNode limit) {
-        {
-            ModelNode node = nodeStart;
+    fun onMouseOver(
+        renderable: BaseBoundableRenderable?, nodeStart: ModelNode?, event: MouseEvent?, x: Int,
+        y: Int, limit: ModelNode?
+    ) {
+        run {
+            var node = nodeStart
             while (node != null) {
-                if (node == limit) {
-                    break;
+                if (node === limit) {
+                    break
                 }
-                if (node instanceof HTMLAbstractUIElement uiElement) {
-                    uiElement.setMouseOver(true);
-                    final Function f = uiElement.getOnmouseover();
+                if (node is HTMLAbstractUIElement) {
+                    node.setMouseOver(true)
+                    val f = node.onmouseover
                     if (f != null) {
-                        final Event jsEvent = new Event("mouseover", uiElement, event, x, y);
-                        Executor.executeFunction(uiElement, f, jsEvent, getWindowFactory(uiElement));
+                        val jsEvent = Event("mouseover", node, event, x, y)
+                        executeFunction(node, f, jsEvent, getWindowFactory(node))
                     }
-                    final HtmlRendererContext rcontext = uiElement.getHtmlRendererContext();
+                    val rcontext = node.htmlRendererContext
                     if (rcontext != null) {
-                        rcontext.onMouseOver(uiElement, event);
+                        rcontext.onMouseOver(node, event)
                     }
                 }
-                node = node.getParentModelNode();
+                node = node.parentModelNode
             }
         }
 
-        setMouseOnMouseOver(renderable, nodeStart, limit);
+        setMouseOnMouseOver(renderable, nodeStart, limit)
     }
 
-    public void onMouseOut(final ModelNode nodeStart, final MouseEvent event, final int x, final int y, final ModelNode limit) {
-        {
-            ModelNode node = nodeStart;
+    fun onMouseOut(nodeStart: ModelNode?, event: MouseEvent?, x: Int, y: Int, limit: ModelNode?) {
+        run {
+            var node = nodeStart
             while (node != null) {
-                if (node == limit) {
-                    break;
+                if (node === limit) {
+                    break
                 }
-                if (node instanceof HTMLAbstractUIElement uiElement) {
-                    uiElement.setMouseOver(false);
-                    final Function f = uiElement.getOnmouseout();
+                if (node is HTMLAbstractUIElement) {
+                    node.setMouseOver(false)
+                    val f = node.onmouseout
                     if (f != null) {
-                        final Event jsEvent = new Event("mouseout", uiElement, event, x, y);
-                        Executor.executeFunction(uiElement, f, jsEvent, getWindowFactory(uiElement));
+                        val jsEvent = Event("mouseout", node, event, x, y)
+                        executeFunction(node, f, jsEvent, getWindowFactory(node))
                     }
-                    final HtmlRendererContext rcontext = uiElement.getHtmlRendererContext();
+                    val rcontext = node.htmlRendererContext
                     if (rcontext != null) {
-                        rcontext.onMouseOut(uiElement, event);
+                        rcontext.onMouseOut(node, event)
                     }
-
                 }
-                node = node.getParentModelNode();
+                node = node.parentModelNode
             }
         }
 
-        resetCursorOnMouseOut(nodeStart, limit);
+        resetCursorOnMouseOut(nodeStart, limit)
     }
 
     /**
      * @return True to propagate further, false if consumed.
      */
-    public boolean onDoubleClick(final ModelNode node, final MouseEvent event, final int x, final int y) {
+    fun onDoubleClick(node: ModelNode, event: MouseEvent?, x: Int, y: Int): Boolean {
         if (logger.isLoggable(Level.INFO)) {
-            logger.info("onDoubleClick(): node=" + node + ",class=" + node.getClass().getName());
+            logger.info("onDoubleClick(): node=" + node + ",class=" + node.javaClass.name)
         }
-        if (node instanceof HTMLAbstractUIElement uiElement) {
-            final Function f = uiElement.getOndblclick();
+        if (node is HTMLAbstractUIElement) {
+            val f = node.ondblclick
             if (f != null) {
-                final Event jsEvent = new Event("dblclick", uiElement, event, x, y);
-                if (!Executor.executeFunction(uiElement, f, jsEvent, getWindowFactory(uiElement))) {
-                    return false;
+                val jsEvent = Event("dblclick", node, event, x, y)
+                if (!executeFunction(node, f, jsEvent, getWindowFactory(node))) {
+                    return false
                 }
             }
-            final HtmlRendererContext rcontext = uiElement.getHtmlRendererContext();
+            val rcontext = node.htmlRendererContext
             if (rcontext != null) {
-                if (!rcontext.onDoubleClick(uiElement, event)) {
-                    return false;
+                if (!rcontext.onDoubleClick(node, event)) {
+                    return false
                 }
             }
         }
-        final ModelNode parent = node.getParentModelNode();
+        val parent = node.parentModelNode
         if (parent == null) {
-            return true;
+            return true
         }
-        return this.onDoubleClick(parent, event, x, y);
+        return this.onDoubleClick(parent, event, x, y)
     }
 
     /**
      * @return True to propagate further, false if consumed.
      */
-    public boolean onMouseDisarmed(final ModelNode node, final MouseEvent event) {
-        if (node instanceof HTMLLinkElementImpl) {
-            ((HTMLLinkElementImpl) node).getCurrentStyle().setOverlayColor(null);
-            return false;
+    fun onMouseDisarmed(node: ModelNode, event: MouseEvent?): Boolean {
+        if (node is HTMLLinkElementImpl) {
+            node.getCurrentStyle().setOverlayColor(null)
+            return false
         }
-        final ModelNode parent = node.getParentModelNode();
+        val parent = node.parentModelNode
         if (parent == null) {
-            return true;
+            return true
         }
-        return this.onMouseDisarmed(parent, event);
+        return this.onMouseDisarmed(parent, event)
     }
 
     /**
      * @return True to propagate further, false if consumed.
      */
-    public boolean onMouseDown(final ModelNode node, final MouseEvent event, final int x, final int y) {
-        boolean pass = true;
-        if (node instanceof HTMLAbstractUIElement uiElement) {
-            final Function f = uiElement.getOnmousedown();
+    fun onMouseDown(node: ModelNode, event: MouseEvent?, x: Int, y: Int): Boolean {
+        var pass = true
+        if (node is HTMLAbstractUIElement) {
+            val f = node.onmousedown
             if (f != null) {
-                final Event jsEvent = new Event("mousedown", uiElement, event, x, y);
-                pass = Executor.executeFunction(uiElement, f, jsEvent, getWindowFactory(uiElement));
+                val jsEvent = Event("mousedown", node, event, x, y)
+                pass = executeFunction(node, f, jsEvent, getWindowFactory(node))
             }
         }
-        if (node instanceof HTMLLinkElementImpl) {
-            ((HTMLLinkElementImpl) node).getCurrentStyle().setOverlayColor("#9090FF80");
-            return false;
+        if (node is HTMLLinkElementImpl) {
+            node.getCurrentStyle().setOverlayColor("#9090FF80")
+            return false
         }
         if (!pass) {
-            return false;
+            return false
         }
-        final ModelNode parent = node.getParentModelNode();
+        val parent = node.parentModelNode
         if (parent == null) {
-            return true;
+            return true
         }
-        return this.onMouseDown(parent, event, x, y);
+        return this.onMouseDown(parent, event, x, y)
     }
 
     /**
      * @return True to propagate further, false if consumed.
      */
-    public boolean onMouseUp(final ModelNode node, final MouseEvent event, final int x, final int y) {
-        boolean pass = true;
-        if (node instanceof HTMLAbstractUIElement uiElement) {
-            final Function f = uiElement.getOnmouseup();
+    fun onMouseUp(node: ModelNode, event: MouseEvent?, x: Int, y: Int): Boolean {
+        var pass = true
+        if (node is HTMLAbstractUIElement) {
+            val f = node.onmouseup
             if (f != null) {
-                final Event jsEvent = new Event("mouseup", uiElement, event, x, y);
-                pass = Executor.executeFunction(uiElement, f, jsEvent, getWindowFactory(uiElement));
+                val jsEvent = Event("mouseup", node, event, x, y)
+                pass = executeFunction(node, f, jsEvent, getWindowFactory(node))
             }
         }
-        if (node instanceof HTMLLinkElementImpl) {
-            ((HTMLLinkElementImpl) node).getCurrentStyle().setOverlayColor(null);
-            return false;
+        if (node is HTMLLinkElementImpl) {
+            node.getCurrentStyle().setOverlayColor(null)
+            return false
         }
         if (!pass) {
-            return false;
+            return false
         }
-        final ModelNode parent = node.getParentModelNode();
+        val parent = node.parentModelNode
         if (parent == null) {
-            return true;
+            return true
         }
-        return this.onMouseUp(parent, event, x, y);
+        return this.onMouseUp(parent, event, x, y)
     }
 
     /**
@@ -437,66 +359,68 @@ class HtmlController {
      * @param y    For images only, y coordinate of mouse click.
      * @return True to propagate further, false if consumed.
      */
-    public boolean onPressed(final ModelNode node, final InputEvent event, final int x, final int y) {
-        if (node instanceof HTMLAbstractUIElement uiElement) {
-            final Function f = uiElement.getOnclick();
+    fun onPressed(node: ModelNode?, event: InputEvent?, x: Int, y: Int): Boolean {
+        if (node is HTMLAbstractUIElement) {
+            val f = node.onclick
             if (f != null) {
-                final Event jsEvent = new Event("click", uiElement, event, x, y);
-                if (!Executor.executeFunction(uiElement, f, jsEvent, getWindowFactory(uiElement))) {
-                    return false;
+                val jsEvent = Event("click", node, event, x, y)
+                if (!executeFunction(node, f, jsEvent, getWindowFactory(node))) {
+                    return false
                 }
             }
         }
-        if (node instanceof HTMLInputElementImpl hie) {
-            if (hie.isSubmitInput()) {
-                FormInput[] formInputs;
-                final String name = hie.getName();
+        if (node is HTMLInputElementImpl) {
+            if (node.isSubmitInput) {
+                val formInputs: Array<FormInput?>?
+                val name = node.name
                 if (name == null) {
-                    formInputs = null;
+                    formInputs = null
                 } else {
-                    formInputs = new FormInput[]{new FormInput(name, hie.getValue())};
+                    formInputs = arrayOf<FormInput>(FormInput(name, node.value))
                 }
-                hie.submitForm(formInputs);
-            } else if (hie.isImageInput()) {
-                final String name = hie.getName();
-                final String prefix = name == null ? "" : name + ".";
-                final FormInput[] extraFormInputs = new FormInput[]{new FormInput(prefix + "x", String.valueOf(x)),
-                        new FormInput(prefix + "y", String.valueOf(y))};
-                hie.submitForm(extraFormInputs);
-            } else if (hie.isResetInput()) {
-                hie.resetForm();
+                node.submitForm(formInputs)
+            } else if (node.isImageInput) {
+                val name = node.name
+                val prefix = if (name == null) "" else name + "."
+                val extraFormInputs: Array<FormInput?> = arrayOf<FormInput>(
+                    FormInput(prefix + "x", x.toString()),
+                    FormInput(prefix + "y", y.toString())
+                )
+                node.submitForm(extraFormInputs)
+            } else if (node.isResetInput) {
+                node.resetForm()
             }
         }
-        if (node instanceof HTMLElementImpl htmlElem) {
-            final Event evt = new Event("click", htmlElem, event, x, y);
-            htmlElem.dispatchEvent(evt);
+        if (node is HTMLElementImpl) {
+            val evt = Event("click", node, event, x, y)
+            node.dispatchEvent(evt)
         }
         // No propagate
-        return false;
+        return false
     }
 
-    public boolean onChange(final ModelNode node) {
-        if (node instanceof HTMLSelectElementImpl uiElement) {
-            final Function f = uiElement.getOnchange();
+    fun onChange(node: ModelNode?): Boolean {
+        if (node is HTMLSelectElementImpl) {
+            val f = node.onchange
             if (f != null) {
-                final Event jsEvent = new Event("change", uiElement);
-                if (!Executor.executeFunction(uiElement, f, jsEvent, getWindowFactory(uiElement))) {
-                    return false;
+                val jsEvent = Event("change", node)
+                if (!executeFunction(node, f, jsEvent, getWindowFactory(node))) {
+                    return false
                 }
             }
         }
         // No propagate
-        return false;
+        return false
     }
 
-    public boolean onKeyUp(final ModelNode node, final KeyEvent ke) {
-        boolean pass = true;
-        if (node instanceof NodeImpl uiElement) {
-            final Event jsEvent = new Event("keyup", uiElement, ke);
-            pass = uiElement.dispatchEvent(jsEvent);
-            System.out.println("Dispatch result: " + pass);
+    fun onKeyUp(node: ModelNode?, ke: KeyEvent?): Boolean {
+        var pass = true
+        if (node is NodeImpl) {
+            val jsEvent = Event("keyup", node, ke)
+            pass = node.dispatchEvent(jsEvent)
+            println("Dispatch result: " + pass)
         }
-    /*
+        /*
     if (node instanceof HTMLAbstractUIElement) {
       final HTMLAbstractUIElement uiElement = (HTMLAbstractUIElement) node;
       final Function f = uiElement.getOnmouseup();
@@ -505,6 +429,89 @@ class HtmlController {
         pass = Executor.executeFunction(uiElement, f, jsEvent);
       }
     }*/
-        return pass;
+        return pass
+    }
+
+    companion object {
+        private val logger: Logger = Logger.getLogger(HtmlController::class.java.name)
+        val instance: HtmlController = HtmlController()
+
+        // Quick hack
+        private fun getWindowFactory(e: ElementImpl): ContextFactory {
+            val doc = e.ownerDocument as HTMLDocumentImpl?
+            return doc!!.window.contextFactory
+        }
+
+        private fun setMouseOnMouseOver(
+            renderable: BaseBoundableRenderable?,
+            nodeStart: ModelNode?,
+            limit: ModelNode?
+        ) {
+            var node = nodeStart
+            while (node != null) {
+                if (node === limit) {
+                    break
+                }
+                if (node is NodeImpl) {
+                    val rcontext = node.htmlRendererContext
+                    val rs = node.getRenderState()
+                    val cursorOpt = rs.cursor
+                    if (rcontext != null) {
+                        if (cursorOpt.isPresent()) {
+                            rcontext.setCursor(cursorOpt)
+                            break
+                        } else {
+                            if (node.parentModelNode === limit) {
+                                if ((renderable is RWord) || (renderable is RBlank)) {
+                                    rcontext.setCursor(
+                                        Optional.of<Cursor?>(
+                                            Cursor.getPredefinedCursor(
+                                                Cursor.TEXT_CURSOR
+                                            )
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+                node = node.parentModelNode
+            }
+        }
+
+        // Quick hack
+        /*
+  private static boolean runFunction(final ElementImpl e, final Function f, final Event event) {
+    final HTMLDocumentImpl doc = (HTMLDocumentImpl) e.getOwnerDocument();
+    final Window window = doc.getWindow();
+    window.addJSTask(new JSRunnableTask(0, "function from HTMLController", () -> {
+      Executor.executeFunction(e, f, event, window.getContextFactory());
+    }));
+    return false;
+  }
+  */
+        private fun resetCursorOnMouseOut(nodeStart: ModelNode?, limit: ModelNode?) {
+            var foundCursorOpt: Optional<Cursor?>? = Optional.empty<Cursor?>()
+            var node = limit
+            while (node != null) {
+                if (node is NodeImpl) {
+                    val rs = node.getRenderState()
+                    val cursorOpt = rs.cursor
+                    foundCursorOpt = cursorOpt
+                    if (cursorOpt.isPresent()) {
+                        break
+                    }
+                }
+                node = node.parentModelNode
+            }
+
+            if (nodeStart is NodeImpl) {
+                val rcontext = nodeStart.htmlRendererContext
+                // rcontext.setCursor(Optional.empty());
+                if (rcontext != null) {
+                    rcontext.setCursor(foundCursorOpt)
+                }
+            }
+        }
     }
 }

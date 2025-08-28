@@ -18,133 +18,84 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.style;
+package io.github.remmerw.thor.cobra.html.style
 
-import java.awt.Insets;
+import java.awt.Insets
 
-public class HtmlInsets {
-    public static final int TYPE_UNDEFINED = 0;
-    public static final int TYPE_PIXELS = 1;
-    public static final int TYPE_AUTO = 2;
-    public static final int TYPE_PERCENT = 3;
-
-    public int top, bottom, left, right;
+class HtmlInsets {
+    var top: Int = 0
+    var bottom: Int = 0
+    var left: Int = 0
+    var right: Int = 0
 
     /* Types assumed to be initialized as UNDEFINED */
-    public int topType, bottomType, leftType, rightType;
+    var topType: Int = 0
+    var bottomType: Int = 0
+    var leftType: Int = 0
+    var rightType: Int = 0
 
-    public HtmlInsets() {
+    constructor()
+
+    constructor(top: Int, left: Int, bottom: Int, right: Int, type: Int) {
+        this.top = top
+        this.left = left
+        this.bottom = bottom
+        this.right = right
+        this.topType = type
+        this.leftType = type
+        this.bottomType = type
+        this.rightType = type
     }
 
-    public HtmlInsets(int top, int left, int bottom, int right, int type) {
-        this.top = top;
-        this.left = left;
-        this.bottom = bottom;
-        this.right = right;
-        this.topType = type;
-        this.leftType = type;
-        this.bottomType = type;
-        this.rightType = type;
+    fun getAWTInsets(
+        defaultTop: Int, defaultLeft: Int, defaultBottom: Int, defaultRight: Int,
+        availWidth: Int,
+        availHeight: Int, autoX: Int, autoY: Int
+    ): Insets {
+        val top: Int = getInsetPixels(this.top, this.topType, defaultTop, availHeight, autoY)
+        val left: Int = getInsetPixels(this.left, this.leftType, defaultLeft, availWidth, autoX)
+        val bottom: Int =
+            getInsetPixels(this.bottom, this.bottomType, defaultBottom, availHeight, autoY)
+        val right: Int = getInsetPixels(this.right, this.rightType, defaultRight, availWidth, autoX)
+        return Insets(top, left, bottom, right)
     }
 
-    private static int getInsetPixels(final int value, final int type, final int defaultValue, final int availSize, final int autoValue) {
-        if (type == TYPE_PIXELS) {
-            return value;
-        } else if (type == TYPE_UNDEFINED) {
-            return defaultValue;
-        } else if (type == TYPE_AUTO) {
-            return autoValue;
-        } else if (type == TYPE_PERCENT) {
-            return (availSize * value) / 100;
-        } else {
-            throw new IllegalStateException();
+    fun getSimpleAWTInsets(availWidth: Int, availHeight: Int): Insets {
+        val top: Int = getInsetPixels(this.top, this.topType, 0, availHeight, 0)
+        val left: Int = getInsetPixels(this.left, this.leftType, 0, availWidth, 0)
+        val bottom: Int = getInsetPixels(this.bottom, this.bottomType, 0, availHeight, 0)
+        val right: Int = getInsetPixels(this.right, this.rightType, 0, availWidth, 0)
+        return Insets(top, left, bottom, right)
+    }
+
+    override fun toString(): String {
+        return "[" + this.top + "," + this.left + "," + this.bottom + "," + this.right + "]"
+    }
+
+    companion object {
+        const val TYPE_UNDEFINED: Int = 0
+        const val TYPE_PIXELS: Int = 1
+        const val TYPE_AUTO: Int = 2
+        const val TYPE_PERCENT: Int = 3
+
+        private fun getInsetPixels(
+            value: Int,
+            type: Int,
+            defaultValue: Int,
+            availSize: Int,
+            autoValue: Int
+        ): Int {
+            if (type == TYPE_PIXELS) {
+                return value
+            } else if (type == TYPE_UNDEFINED) {
+                return defaultValue
+            } else if (type == TYPE_AUTO) {
+                return autoValue
+            } else if (type == TYPE_PERCENT) {
+                return (availSize * value) / 100
+            } else {
+                throw IllegalStateException()
+            }
         }
-    }
-
-    public int getTop() {
-        return top;
-    }
-
-    public void setTop(final int top) {
-        this.top = top;
-    }
-
-    public int getBottom() {
-        return bottom;
-    }
-
-    public void setBottom(final int bottom) {
-        this.bottom = bottom;
-    }
-
-    public int getLeft() {
-        return left;
-    }
-
-    public void setLeft(final int left) {
-        this.left = left;
-    }
-
-    public int getRight() {
-        return right;
-    }
-
-    public void setRight(final int right) {
-        this.right = right;
-    }
-
-    public int getTopType() {
-        return topType;
-    }
-
-    public void setTopType(final int topType) {
-        this.topType = topType;
-    }
-
-    public int getBottomType() {
-        return bottomType;
-    }
-
-    public void setBottomType(final int bottomType) {
-        this.bottomType = bottomType;
-    }
-
-    public int getLeftType() {
-        return leftType;
-    }
-
-    public void setLeftType(final int leftType) {
-        this.leftType = leftType;
-    }
-
-    public int getRightType() {
-        return rightType;
-    }
-
-    public void setRightType(final int rightType) {
-        this.rightType = rightType;
-    }
-
-    public Insets getAWTInsets(final int defaultTop, final int defaultLeft, final int defaultBottom, final int defaultRight,
-                               final int availWidth,
-                               final int availHeight, final int autoX, final int autoY) {
-        final int top = getInsetPixels(this.top, this.topType, defaultTop, availHeight, autoY);
-        final int left = getInsetPixels(this.left, this.leftType, defaultLeft, availWidth, autoX);
-        final int bottom = getInsetPixels(this.bottom, this.bottomType, defaultBottom, availHeight, autoY);
-        final int right = getInsetPixels(this.right, this.rightType, defaultRight, availWidth, autoX);
-        return new Insets(top, left, bottom, right);
-    }
-
-    public Insets getSimpleAWTInsets(final int availWidth, final int availHeight) {
-        final int top = getInsetPixels(this.top, this.topType, 0, availHeight, 0);
-        final int left = getInsetPixels(this.left, this.leftType, 0, availWidth, 0);
-        final int bottom = getInsetPixels(this.bottom, this.bottomType, 0, availHeight, 0);
-        final int right = getInsetPixels(this.right, this.rightType, 0, availWidth, 0);
-        return new Insets(top, left, bottom, right);
-    }
-
-    @Override
-    public String toString() {
-        return "[" + this.top + "," + this.left + "," + this.bottom + "," + this.right + "]";
     }
 }

@@ -21,206 +21,206 @@
 /*
  * Created on Mar 19, 2005
  */
-package io.github.remmerw.thor.cobra.util.io;
+package io.github.remmerw.thor.cobra.util.io
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.HttpURLConnection;
-import java.net.URLConnection;
-import java.util.Collection;
-import java.util.stream.Collectors;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.InflaterInputStream;
+import java.io.BufferedOutputStream
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStream
+import java.io.InputStreamReader
+import java.io.PrintWriter
+import java.net.HttpURLConnection
+import java.net.URLConnection
+import java.util.function.Consumer
+import java.util.stream.Collectors
+import java.util.zip.GZIPInputStream
+import java.util.zip.InflaterInputStream
 
 /**
  * @author J. H. S.
  */
-public class IORoutines {
-    public static final byte[] LINE_BREAK_BYTES = {(byte) 13, (byte) 10};
+object IORoutines {
+    val LINE_BREAK_BYTES: ByteArray = byteArrayOf(13.toByte(), 10.toByte())
 
-    public static String loadAsText(final InputStream in, final String encoding) throws IOException {
-        return loadAsText(in, encoding, 4096);
-    }
-
-    public static String loadAsText(final InputStream in, final String encoding, final int bufferSize) throws IOException {
-        final InputStreamReader reader = new InputStreamReader(in, encoding);
-        char[] buffer = new char[bufferSize];
-        int offset = 0;
-        for (; ; ) {
-            int remain = buffer.length - offset;
+    @JvmOverloads
+    @Throws(IOException::class)
+    fun loadAsText(`in`: InputStream, encoding: String, bufferSize: Int = 4096): String {
+        val reader = InputStreamReader(`in`, encoding)
+        var buffer = CharArray(bufferSize)
+        var offset = 0
+        while (true) {
+            var remain = buffer.size - offset
             if (remain <= 0) {
-                final char[] newBuffer = new char[buffer.length * 2];
-                System.arraycopy(buffer, 0, newBuffer, 0, offset);
-                buffer = newBuffer;
-                remain = buffer.length - offset;
+                val newBuffer = CharArray(buffer.size * 2)
+                System.arraycopy(buffer, 0, newBuffer, 0, offset)
+                buffer = newBuffer
+                remain = buffer.size - offset
             }
-            final int numRead = reader.read(buffer, offset, remain);
+            val numRead = reader.read(buffer, offset, remain)
             if (numRead == -1) {
-                break;
+                break
             }
-            offset += numRead;
+            offset += numRead
         }
-        return new String(buffer, 0, offset);
+        return String(buffer, 0, offset)
     }
 
-    public static byte[] load(final File file) throws IOException {
-        final long fileLength = file.length();
-        if (fileLength > Integer.MAX_VALUE) {
-            throw new IOException("File '" + file.getName() + "' too big");
+    @Throws(IOException::class)
+    fun load(file: File): ByteArray {
+        val fileLength = file.length()
+        if (fileLength > Int.Companion.MAX_VALUE) {
+            throw IOException("File '" + file.name + "' too big")
         }
-        try (
-                final InputStream in = new FileInputStream(file)) {
-            return loadExact(in, (int) fileLength);
+        FileInputStream(file).use { `in` ->
+            return loadExact(`in`, fileLength.toInt())
         }
     }
 
-    public static byte[] load(final InputStream in) throws IOException {
-        return load(in, 4096);
-    }
-
-    public static byte[] load(final InputStream in, int initialBufferSize) throws IOException {
+    @JvmOverloads
+    @Throws(IOException::class)
+    fun load(`in`: InputStream, initialBufferSize: Int = 4096): ByteArray {
+        var initialBufferSize = initialBufferSize
         if (initialBufferSize == 0) {
-            initialBufferSize = 1;
+            initialBufferSize = 1
         }
-        byte[] buffer = new byte[initialBufferSize];
-        int offset = 0;
-        for (; ; ) {
-            int remain = buffer.length - offset;
+        var buffer = ByteArray(initialBufferSize)
+        var offset = 0
+        while (true) {
+            var remain = buffer.size - offset
             if (remain <= 0) {
-                final int newSize = buffer.length * 2;
-                final byte[] newBuffer = new byte[newSize];
-                System.arraycopy(buffer, 0, newBuffer, 0, offset);
-                buffer = newBuffer;
-                remain = buffer.length - offset;
+                val newSize = buffer.size * 2
+                val newBuffer = ByteArray(newSize)
+                System.arraycopy(buffer, 0, newBuffer, 0, offset)
+                buffer = newBuffer
+                remain = buffer.size - offset
             }
-            final int numRead = in.read(buffer, offset, remain);
+            val numRead = `in`.read(buffer, offset, remain)
             if (numRead == -1) {
-                break;
+                break
             }
-            offset += numRead;
+            offset += numRead
         }
-        if (offset < buffer.length) {
-            final byte[] newBuffer = new byte[offset];
-            System.arraycopy(buffer, 0, newBuffer, 0, offset);
-            buffer = newBuffer;
+        if (offset < buffer.size) {
+            val newBuffer = ByteArray(offset)
+            System.arraycopy(buffer, 0, newBuffer, 0, offset)
+            buffer = newBuffer
         }
-        return buffer;
+        return buffer
     }
 
-    public static byte[] loadExact(final InputStream in, final int length) throws IOException {
-        final byte[] buffer = new byte[length];
-        int offset = 0;
-        for (; ; ) {
-            final int remain = length - offset;
+    @Throws(IOException::class)
+    fun loadExact(`in`: InputStream, length: Int): ByteArray {
+        val buffer = ByteArray(length)
+        var offset = 0
+        while (true) {
+            val remain = length - offset
             if (remain <= 0) {
-                break;
+                break
             }
-            final int numRead = in.read(buffer, offset, remain);
+            val numRead = `in`.read(buffer, offset, remain)
             if (numRead == -1) {
-                throw new IOException("Reached EOF, read " + offset + " expecting " + length);
+                throw IOException("Reached EOF, read " + offset + " expecting " + length)
             }
-            offset += numRead;
+            offset += numRead
         }
-        return buffer;
+        return buffer
     }
 
-    public static boolean equalContent(final File file, final byte[] content) throws IOException {
-        final long length = file.length();
-        if (length > Integer.MAX_VALUE) {
-            throw new IOException("File '" + file + "' too big");
+    @Throws(IOException::class)
+    fun equalContent(file: File, content: ByteArray?): Boolean {
+        val length = file.length()
+        if (length > Int.Companion.MAX_VALUE) {
+            throw IOException("File '" + file + "' too big")
         }
 
-        try (
-                final InputStream in = new FileInputStream(file)) {
-            final byte[] fileContent = loadExact(in, (int) length);
-            return java.util.Arrays.equals(content, fileContent);
+        FileInputStream(file).use { `in` ->
+            val fileContent = loadExact(`in`, length.toInt())
+            return content.contentEquals(fileContent)
         }
     }
 
-    public static void save(final File file, final byte[] content) throws IOException {
-        try (
-                final FileOutputStream out = new FileOutputStream(file)) {
-            out.write(content);
+    @Throws(IOException::class)
+    fun save(file: File, content: ByteArray) {
+        FileOutputStream(file).use { out ->
+            out.write(content)
         }
     }
 
     /**
      * Reads line without buffering.
      */
-    public static String readLine(final InputStream in) throws IOException {
-        int b;
-        StringBuffer sb = null;
-        OUTER:
-        while ((b = in.read()) != -1) {
+    @Throws(IOException::class)
+    fun readLine(`in`: InputStream): String? {
+        var b: Int
+        var sb: StringBuffer? = null
+        OUTER@ while ((`in`.read().also { b = it }) != -1) {
             if (sb == null) {
-                sb = new StringBuffer();
+                sb = StringBuffer()
             }
-            switch (b) {
-                case (byte) '\n':
-                    break OUTER;
-                case (byte) '\r':
-                    break;
-                default:
-                    sb.append((char) b);
-                    break;
+            when (b) {
+                '\n'.code.toByte() -> break@OUTER
+                '\r'.code.toByte() -> {}
+                else -> sb.append(b.toChar())
             }
         }
-        return sb == null ? null : sb.toString();
+        return if (sb == null) null else sb.toString()
     }
 
-    public static void touch(final File file) {
-        file.setLastModified(System.currentTimeMillis());
+    fun touch(file: File) {
+        file.setLastModified(System.currentTimeMillis())
     }
 
-    public static void saveStrings(final File file, final Collection<String> list) throws IOException {
-        try (
-                final FileOutputStream fout = new FileOutputStream(file);
-                final BufferedOutputStream bout = new BufferedOutputStream(fout);
-                final PrintWriter writer = new PrintWriter(bout)) {
-            list.forEach(text -> writer.println(text));
-            writer.flush();
+    @Throws(IOException::class)
+    fun saveStrings(file: File, list: MutableCollection<String?>) {
+        FileOutputStream(file).use { fout ->
+            BufferedOutputStream(fout).use { bout ->
+                PrintWriter(bout).use { writer ->
+                    list.forEach(Consumer { text: String? -> writer.println(text) })
+                    writer.flush()
+                }
+            }
         }
     }
 
-    public static java.util.List<String> loadStrings(final File file) throws IOException {
-        try (
-                final InputStream in = new FileInputStream(file);
-                final BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
-            return reader.lines().collect(Collectors.toList());
+    @Throws(IOException::class)
+    fun loadStrings(file: File): MutableList<String?> {
+        FileInputStream(file).use { `in` ->
+            BufferedReader(InputStreamReader(`in`)).use { reader ->
+                return reader.lines().collect(
+                    Collectors.toList()
+                )
+            }
         }
     }
 
-    public static InputStream getDecodedStream(final URLConnection connection) throws IOException {
-        final InputStream cis = connection.getInputStream();
-        if ("gzip".equals(connection.getContentEncoding())) {
-            return new GZIPInputStream(cis);
-        } else if ("deflate".equals(connection.getContentEncoding())) {
-            return new InflaterInputStream(cis);
+    @Throws(IOException::class)
+    fun getDecodedStream(connection: URLConnection): InputStream? {
+        val cis = connection.getInputStream()
+        if ("gzip" == connection.contentEncoding) {
+            return GZIPInputStream(cis)
+        } else if ("deflate" == connection.contentEncoding) {
+            return InflaterInputStream(cis)
         } else {
-            return cis;
+            return cis
         }
     }
 
-    public static InputStream getDecodedErrorStream(final HttpURLConnection connection) throws IOException {
-        final InputStream cis = connection.getErrorStream();
+    @Throws(IOException::class)
+    fun getDecodedErrorStream(connection: HttpURLConnection): InputStream? {
+        val cis = connection.errorStream
         if (cis != null) {
-            if ("gzip".equals(connection.getContentEncoding())) {
-                return new GZIPInputStream(cis);
-            } else if ("deflate".equals(connection.getContentEncoding())) {
-                return new InflaterInputStream(cis);
+            if ("gzip" == connection.contentEncoding) {
+                return GZIPInputStream(cis)
+            } else if ("deflate" == connection.contentEncoding) {
+                return InflaterInputStream(cis)
             } else {
-                return cis;
+                return cis
             }
         } else {
-            return null;
+            return null
         }
     }
-
 }

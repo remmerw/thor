@@ -1,163 +1,172 @@
-package io.github.remmerw.thor.cobra.html.js;
+package io.github.remmerw.thor.cobra.html.js
 
-import org.mozilla.javascript.Function;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.events.EventException;
-import org.w3c.dom.events.EventListener;
+import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
+import io.github.remmerw.thor.cobra.html.js.Window.JSRunnableTask
+import org.mozilla.javascript.Function
+import org.w3c.dom.Document
+import org.w3c.dom.Element
+import org.w3c.dom.events.Event
+import org.w3c.dom.events.EventException
+import org.w3c.dom.events.EventListener
+import java.util.IdentityHashMap
+import java.util.LinkedList
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+class EventTargetManager(private val window: Window) {
+    private val nodeOnEventListeners: MutableMap<NodeImpl?, MutableMap<String?, MutableList<EventListener?>?>?> =
+        IdentityHashMap<NodeImpl?, MutableMap<String?, MutableList<EventListener?>?>?>()
 
-import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl;
-import io.github.remmerw.thor.cobra.html.js.Window.JSRunnableTask;
-
-public final class EventTargetManager {
-
-    private final Map<NodeImpl, Map<String, List<EventListener>>> nodeOnEventListeners = new IdentityHashMap<>();
-    private final Window window;
     // private final Map<String, List<Function>> onEventHandlers = new HashMap<>();
-    private final Map<NodeImpl, Map<String, List<Function>>> nodeOnEventFunctions = new IdentityHashMap<>();
+    private val nodeOnEventFunctions: MutableMap<NodeImpl?, MutableMap<String?, MutableList<Function?>?>?> =
+        IdentityHashMap<NodeImpl?, MutableMap<String?, MutableList<Function?>?>?>()
 
-    public EventTargetManager(final Window window) {
-        this.window = window;
+    fun addEventListener(
+        node: NodeImpl?,
+        type: String?,
+        listener: EventListener?,
+        useCapture: Boolean
+    ) {
+        val handlerList = getListenerList(type, node, true)
+        handlerList!!.add(listener)
     }
 
-    private static List<NodeImpl> getPropagationPath(NodeImpl node) {
-        final List<NodeImpl> nodes = new LinkedList<>();
-        while (node != null) {
-            if ((node instanceof Element) || (node instanceof Document)) { //  TODO || node instanceof Window) {
-                nodes.add(node);
-            }
-            node = (NodeImpl) node.getParentNode();
-        }
-
-        // TODO
-        // nodes.add(window);
-
-        return nodes;
-    }
-
-    public void addEventListener(final NodeImpl node, final String type, final EventListener listener, final boolean useCapture) {
-        final List<EventListener> handlerList = getListenerList(type, node, true);
-        handlerList.add(listener);
-    }
-
-    private List<EventListener> getListenerList(final String type, final NodeImpl node, final boolean createIfNotExist) {
-        final Map<String, List<EventListener>> onEventListeners = getEventListeners(node, createIfNotExist);
+    private fun getListenerList(
+        type: String?,
+        node: NodeImpl?,
+        createIfNotExist: Boolean
+    ): MutableList<EventListener?>? {
+        val onEventListeners = getEventListeners(node, createIfNotExist)
 
         if (onEventListeners != null) {
             if (onEventListeners.containsKey(type)) {
-                return onEventListeners.get(type);
+                return onEventListeners.get(type)
             } else if (createIfNotExist) {
-                final List<EventListener> handlerList = new ArrayList<>();
-                onEventListeners.put(type, handlerList);
-                return handlerList;
+                val handlerList: MutableList<EventListener?> = ArrayList<EventListener?>()
+                onEventListeners.put(type, handlerList)
+                return handlerList
             } else {
-                return null;
+                return null
             }
         } else {
-            return null;
+            return null
         }
     }
 
-    private Map<String, List<EventListener>> getEventListeners(final NodeImpl node, final boolean createIfNotExist) {
+    private fun getEventListeners(
+        node: NodeImpl?,
+        createIfNotExist: Boolean
+    ): MutableMap<String?, MutableList<EventListener?>?>? {
         if (nodeOnEventListeners.containsKey(node)) {
-            return nodeOnEventListeners.get(node);
+            return nodeOnEventListeners.get(node)
         } else {
             if (createIfNotExist) {
-                final Map<String, List<EventListener>> onEventListeners = new HashMap<>();
-                nodeOnEventListeners.put(node, onEventListeners);
-                return onEventListeners;
+                val onEventListeners: MutableMap<String?, MutableList<EventListener?>?> =
+                    HashMap<String?, MutableList<EventListener?>?>()
+                nodeOnEventListeners.put(node, onEventListeners)
+                return onEventListeners
             } else {
-                return null;
+                return null
             }
         }
     }
 
-    public void removeEventListener(final NodeImpl node, final String type, final EventListener listener, final boolean useCapture) {
-        final Map<String, List<EventListener>> onEventListeners = getEventListeners(node, false);
+    fun removeEventListener(
+        node: NodeImpl?,
+        type: String?,
+        listener: EventListener?,
+        useCapture: Boolean
+    ) {
+        val onEventListeners = getEventListeners(node, false)
         if (onEventListeners != null) {
             if (onEventListeners.containsKey(type)) {
-                onEventListeners.get(type).remove(listener);
+                onEventListeners.get(type)!!.remove(listener)
             }
         }
-
     }
 
-    private List<Function> getFunctionList(final String type, final NodeImpl node, final boolean createIfNotExist) {
-        final Map<String, List<Function>> onEventListeners = getEventFunctions(node, createIfNotExist);
+    private fun getFunctionList(
+        type: String?,
+        node: NodeImpl?,
+        createIfNotExist: Boolean
+    ): MutableList<Function?>? {
+        val onEventListeners = getEventFunctions(node, createIfNotExist)
 
         if (onEventListeners != null) {
             if (onEventListeners.containsKey(type)) {
-                return onEventListeners.get(type);
+                return onEventListeners.get(type)
             } else if (createIfNotExist) {
-                final List<Function> handlerList = new ArrayList<>();
-                onEventListeners.put(type, handlerList);
-                return handlerList;
+                val handlerList: MutableList<Function?> = ArrayList<Function?>()
+                onEventListeners.put(type, handlerList)
+                return handlerList
             } else {
-                return null;
+                return null
             }
         } else {
-            return null;
+            return null
         }
     }
 
-    private Map<String, List<Function>> getEventFunctions(final NodeImpl node, final boolean createIfNotExist) {
+    private fun getEventFunctions(
+        node: NodeImpl?,
+        createIfNotExist: Boolean
+    ): MutableMap<String?, MutableList<Function?>?>? {
         if (nodeOnEventFunctions.containsKey(node)) {
-            return nodeOnEventFunctions.get(node);
+            return nodeOnEventFunctions.get(node)
         } else {
             if (createIfNotExist) {
-                final Map<String, List<Function>> onEventListeners = new HashMap<>();
-                nodeOnEventFunctions.put(node, onEventListeners);
-                return onEventListeners;
+                val onEventListeners: MutableMap<String?, MutableList<Function?>?> =
+                    HashMap<String?, MutableList<Function?>?>()
+                nodeOnEventFunctions.put(node, onEventListeners)
+                return onEventListeners
             } else {
-                return null;
+                return null
             }
         }
     }
 
-    public boolean dispatchEvent(final NodeImpl node, final Event evt) throws EventException {
+    @Throws(EventException::class)
+    fun dispatchEvent(node: NodeImpl?, evt: Event): Boolean {
         // dispatchEventToHandlers(node, evt, onEventListeners.get(evt.getType()));
         // dispatchEventToJSHandlers(node, evt, onEventHandlers.get(evt.getType()));
 
         // TODO: Event Bubbling
         // TODO: get Window into the propagation path
-        final List<NodeImpl> propagationPath = getPropagationPath(node);
+
+        val propagationPath: MutableList<NodeImpl?> = getPropagationPath(node)
 
         // TODO: Capture phase, and distinction between target phase and bubbling phase
-        evt.setPhase(org.w3c.dom.events.Event.AT_TARGET);
+        evt.setPhase(Event.AT_TARGET)
         // TODO: The JS Task should be added with the correct base URL
-        window.addJSTask(new JSRunnableTask(0, "Event dispatch for " + evt, () -> {
-            for (int i = 0; (i < propagationPath.size()) && !evt.isPropagationStopped(); i++) {
-                final NodeImpl currNode = propagationPath.get(i);
+        window.addJSTask(JSRunnableTask(0, "Event dispatch for " + evt, Runnable {
+            var i = 0
+            while ((i < propagationPath.size) && !evt.isPropagationStopped()) {
+                val currNode = propagationPath.get(i)
                 // System.out.println("Dipatching " + i + " to: " + currNode);
                 // TODO: Make request manager checks here.
-                dispatchEventToHandlers(currNode, evt);
-                dispatchEventToJSHandlers(currNode, evt);
-                evt.setPhase(org.w3c.dom.events.Event.BUBBLING_PHASE);
+                dispatchEventToHandlers(currNode, evt)
+                dispatchEventToJSHandlers(currNode, evt)
+                evt.setPhase(Event.BUBBLING_PHASE)
+                i++
             }
         }
-        ));
+        ))
 
         // dispatchEventToHandlers(node, evt);
         // dispatchEventToJSHandlers(node, evt);
-        return false;
+        return false
     }
 
     // private void dispatchEventToHandlers(final NodeImpl node, final Event event, final List<EventListener> handlers) {
-    private void dispatchEventToHandlers(final NodeImpl node, final Event event) {
-        final List<EventListener> handlers = getListenerList(event.getType(), node, false);
+    private fun dispatchEventToHandlers(
+        node: NodeImpl?,
+        event: io.github.remmerw.thor.cobra.html.js.Event
+    ) {
+        val handlers = getListenerList(event.type, node, false)
         if (handlers != null) {
             // We clone the collection and check if original collection still contains
             // the handler before dispatching
             // This is to avoid ConcurrentModificationException during dispatch
-            final ArrayList<EventListener> handlersCopy = new ArrayList<>(handlers);
-            for (final EventListener h : handlersCopy) {
+            val handlersCopy = ArrayList<EventListener>(handlers)
+            for (h in handlersCopy) {
                 // TODO: Not sure if we should stop calling handlers after propagation is stopped
                 // if (event.isPropagationStopped()) {
                 // return;
@@ -166,7 +175,8 @@ public final class EventTargetManager {
                 if (handlers.contains(h)) {
                     // window.addJSTask(new JSRunnableTask(0, "Event dispatch for: " + event, new Runnable(){
                     // public void run() {
-                    h.handleEvent(event);
+                    h.handleEvent(event)
+
                     // }
                     // }));
                     // h.handleEvent(event);
@@ -178,14 +188,17 @@ public final class EventTargetManager {
     }
 
     // protected void dispatchEventToJSHandlers(final NodeImpl node, final Event event, final List<Function> handlers) {
-    private void dispatchEventToJSHandlers(final NodeImpl node, final Event event) {
-        final List<Function> handlers = getFunctionList(event.getType(), node, false);
+    private fun dispatchEventToJSHandlers(
+        node: NodeImpl?,
+        event: io.github.remmerw.thor.cobra.html.js.Event
+    ) {
+        val handlers = getFunctionList(event.type, node, false)
         if (handlers != null) {
             // We clone the collection and check if original collection still contains
             // the handler before dispatching
             // This is to avoid ConcurrentModificationException during dispatch
-            final ArrayList<Function> handlersCopy = new ArrayList<>(handlers);
-            for (final Function h : handlersCopy) {
+            val handlersCopy = ArrayList<Function?>(handlers)
+            for (h in handlersCopy) {
                 // TODO: Not sure if we should stop calling handlers after propagation is stopped
                 // if (event.isPropagationStopped()) {
                 // return;
@@ -194,7 +207,7 @@ public final class EventTargetManager {
                 if (handlers.contains(h)) {
                     // window.addJSTask(new JSRunnableTask(0, "Event dispatch for " + event, new Runnable(){
                     // public void run() {
-                    Executor.executeFunction(node, h, event, window.getContextFactory());
+                    Executor.executeFunction(node, h, event, window.getContextFactory())
                     // }
                     // }));
                     // Executor.executeFunction(node, h, event);
@@ -203,15 +216,17 @@ public final class EventTargetManager {
         }
     }
 
-    public void addEventListener(final NodeImpl node, final String type, final Function listener) {
-        addEventListener(node, type, listener, false);
-    }
-
-    public void addEventListener(final NodeImpl node, final String type, final Function listener, final boolean useCapture) {
+    @JvmOverloads
+    fun addEventListener(
+        node: NodeImpl?,
+        type: String?,
+        listener: Function?,
+        useCapture: Boolean = false
+    ) {
         // TODO
         // System.out.println("node by name: " + node.getNodeName() + " adding Event listener of type: " + type);
 
-    /*
+        /*
     List<Function> handlerList = null;
     if (onEventHandlers.containsKey(type)) {
       handlerList = onEventHandlers.get(type);
@@ -220,22 +235,44 @@ public final class EventTargetManager {
       onEventHandlers.put(type, handlerList);
     }*/
         // final Map<String, List<Function>> handlerList = getEventFunctions(node, true);
-        final List<Function> handlerList = getFunctionList(type, node, true);
-        handlerList.add(listener);
+
+        val handlerList = getFunctionList(type, node, true)
+        handlerList!!.add(listener)
     }
 
-    public void removeEventListener(final NodeImpl node, final String type, final Function listener, final boolean useCapture) {
-        final Map<String, List<Function>> onEventListeners = getEventFunctions(node, false);
+    fun removeEventListener(
+        node: NodeImpl?,
+        type: String?,
+        listener: Function?,
+        useCapture: Boolean
+    ) {
+        val onEventListeners = getEventFunctions(node, false)
         if (onEventListeners != null) {
             if (onEventListeners.containsKey(type)) {
-                onEventListeners.get(type).remove(listener);
+                onEventListeners.get(type)!!.remove(listener)
             }
         }
     }
 
-    public void reset() {
-        nodeOnEventFunctions.clear();
-        nodeOnEventListeners.clear();
+    fun reset() {
+        nodeOnEventFunctions.clear()
+        nodeOnEventListeners.clear()
     }
 
+    companion object {
+        private fun getPropagationPath(node: NodeImpl?): MutableList<NodeImpl?> {
+            var node = node
+            val nodes: MutableList<NodeImpl?> = LinkedList<NodeImpl?>()
+            while (node != null) {
+                if ((node is Element) || (node is Document)) { //  TODO || node instanceof Window) {
+                    nodes.add(node)
+                }
+                node = node.parentNode as NodeImpl?
+            }
+
+            // TODO
+            // nodes.add(window);
+            return nodes
+        }
+    }
 }

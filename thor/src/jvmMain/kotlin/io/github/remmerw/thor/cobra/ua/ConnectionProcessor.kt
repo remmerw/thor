@@ -20,18 +20,16 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.github.remmerw.thor.cobra.ua;
+package io.github.remmerw.thor.cobra.ua
 
-import java.net.URLConnection;
+import java.net.URLConnection
 
 /**
  * A connection pre- and post-processor.
  *
- * @see NavigatorExtensionContext#addConnectionProcessor(ConnectionProcessor)
+ * @see NavigatorExtensionContext.addConnectionProcessor
  */
-public interface ConnectionProcessor {
-    ConnectionProcessor[] EMPTY_ARRAY = new ConnectionProcessor[0];
-
+interface ConnectionProcessor {
     /**
      * This method is called after the request method and standard headers have
      * been set, and before a connection has been established or content has been
@@ -39,27 +37,32 @@ public interface ConnectionProcessor {
      * changes could affect the operation of the platform.
      *
      * @param connection A URL connection.
-     * @return It should return the <code>connection</code> object passed as a
+     * @return It should return the `connection` object passed as a
      * parameter. A different connection object can be returned if that's
      * necessary (e.g. wrapping the original connection in order to
      * process its POST stream).
      */
-    URLConnection processPreConnection(URLConnection connection);
+    fun processPreConnection(connection: URLConnection?): URLConnection?
 
     /**
      * This method is called after a connection has been established. At this
      * point there should be a response code and response headers, but the input
      * stream has not been read yet.
-     * <p>
+     *
+     *
      * Note: Reading from the input stream of the connection must not be done,
      * unless a replacement stream is provided in the connection that is returned
      * by the method.
      *
      * @param connection A URL connection.
-     * @return It should return the <code>connection</code> object passed as a
+     * @return It should return the `connection` object passed as a
      * parameter. A different connection object can be returned if that's
      * necessary (e.g. wrapping the original connection in order to
      * process its input stream).
      */
-    URLConnection processPostConnection(URLConnection connection);
+    fun processPostConnection(connection: URLConnection?): URLConnection?
+
+    companion object {
+        val EMPTY_ARRAY: Array<ConnectionProcessor?> = arrayOfNulls<ConnectionProcessor>(0)
+    }
 }

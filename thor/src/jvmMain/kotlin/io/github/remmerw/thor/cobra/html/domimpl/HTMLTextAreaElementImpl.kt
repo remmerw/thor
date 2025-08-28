@@ -21,28 +21,22 @@
 /*
  * Created on Jan 15, 2006
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.html.HTMLTextAreaElement;
+import io.github.remmerw.thor.cobra.html.FormInput
+import org.w3c.dom.html.HTMLTextAreaElement
 
-import io.github.remmerw.thor.cobra.html.FormInput;
+class HTMLTextAreaElementImpl : HTMLBaseInputElement, HTMLTextAreaElement {
+    constructor(name: String?) : super(name)
 
-public class HTMLTextAreaElementImpl extends HTMLBaseInputElement implements HTMLTextAreaElement {
-    public HTMLTextAreaElementImpl(final String name) {
-        super(name);
-    }
+    constructor() : super("TEXTAREA")
 
-    public HTMLTextAreaElementImpl() {
-        super("TEXTAREA");
-    }
-
-    @Override
-    protected FormInput[] getFormInputs() {
-        final String name = this.getName();
+    protected override fun getFormInputs(): Array<FormInput?>? {
+        val name = this.name
         if (name == null) {
-            return null;
+            return null
         }
-        return new FormInput[]{new FormInput(name, this.getValue())};
+        return arrayOf<FormInput>(FormInput(name, this.value))
     }
 
     /*
@@ -50,9 +44,9 @@ public class HTMLTextAreaElementImpl extends HTMLBaseInputElement implements HTM
      *
      * @see org.w3c.dom.html2.HTMLTextAreaElement#getCols()
      */
-    public int getCols() {
-        final InputContext ic = this.inputContext;
-        return ic == null ? 0 : ic.getCols();
+    override fun getCols(): Int {
+        val ic = this.inputContext
+        return if (ic == null) 0 else ic.getCols()
     }
 
     /*
@@ -60,10 +54,10 @@ public class HTMLTextAreaElementImpl extends HTMLBaseInputElement implements HTM
      *
      * @see org.w3c.dom.html2.HTMLTextAreaElement#setCols(int)
      */
-    public void setCols(final int cols) {
-        final InputContext ic = this.inputContext;
+    override fun setCols(cols: Int) {
+        val ic = this.inputContext
         if (ic != null) {
-            ic.setCols(cols);
+            ic.setCols(cols)
         }
     }
 
@@ -72,9 +66,9 @@ public class HTMLTextAreaElementImpl extends HTMLBaseInputElement implements HTM
      *
      * @see org.w3c.dom.html2.HTMLTextAreaElement#getRows()
      */
-    public int getRows() {
-        final InputContext ic = this.inputContext;
-        return ic == null ? 0 : ic.getRows();
+    override fun getRows(): Int {
+        val ic = this.inputContext
+        return if (ic == null) 0 else ic.getRows()
     }
 
     /*
@@ -82,10 +76,10 @@ public class HTMLTextAreaElementImpl extends HTMLBaseInputElement implements HTM
      *
      * @see org.w3c.dom.html2.HTMLTextAreaElement#setRows(int)
      */
-    public void setRows(final int rows) {
-        final InputContext ic = this.inputContext;
+    override fun setRows(rows: Int) {
+        val ic = this.inputContext
         if (ic != null) {
-            ic.setRows(rows);
+            ic.setRows(rows)
         }
     }
 
@@ -94,7 +88,7 @@ public class HTMLTextAreaElementImpl extends HTMLBaseInputElement implements HTM
      *
      * @see org.w3c.dom.html2.HTMLTextAreaElement#getType()
      */
-    public String getType() {
-        return "textarea";
+    override fun getType(): String {
+        return "textarea"
     }
 }

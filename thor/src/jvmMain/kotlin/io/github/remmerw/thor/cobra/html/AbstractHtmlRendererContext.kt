@@ -18,202 +18,206 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html;
+package io.github.remmerw.thor.cobra.html
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.w3c.dom.html.HTMLCollection;
-import org.w3c.dom.html.HTMLElement;
-import org.w3c.dom.html.HTMLLinkElement;
-
-import java.awt.event.MouseEvent;
-import java.net.URL;
-import java.util.Optional;
-
-import io.github.remmerw.thor.cobra.ua.UserAgentContext;
+import io.github.remmerw.thor.cobra.ua.UserAgentContext
+import org.w3c.dom.html.HTMLCollection
+import org.w3c.dom.html.HTMLElement
+import org.w3c.dom.html.HTMLLinkElement
+import java.awt.event.MouseEvent
+import java.net.URL
+import java.util.Optional
 
 /**
- * Abstract implementation of the {@link HtmlRendererContext} interface with
+ * Abstract implementation of the [HtmlRendererContext] interface with
  * blank methods, provided for developer convenience.
  */
-public abstract class AbstractHtmlRendererContext implements HtmlRendererContext {
-
-    public void alert(final String message) {
+abstract class AbstractHtmlRendererContext : HtmlRendererContext {
+    override fun alert(message: String?) {
     }
 
-    public void back() {
+    override fun back() {
     }
 
-    public void blur() {
+    override fun blur() {
     }
 
-    public void close() {
+    override fun close() {
     }
 
-    public boolean confirm(final String message) {
-        return false;
+    override fun confirm(message: String?): Boolean {
+        return false
     }
 
-    public BrowserFrame createBrowserFrame() {
-        return null;
+    override fun createBrowserFrame(): BrowserFrame? {
+        return null
     }
 
-    public void focus() {
+    override fun focus() {
     }
 
-    public String getDefaultStatus() {
-        return null;
+    override fun getDefaultStatus(): String? {
+        return null
     }
 
-    public void setDefaultStatus(final String value) {
+    override fun setDefaultStatus(value: String?) {
     }
 
-    public HTMLCollection getFrames() {
-        return null;
+    override fun getFrames(): HTMLCollection? {
+        return null
     }
 
-    public HtmlObject getHtmlObject(final HTMLElement element) {
-        return null;
+    override fun getHtmlObject(element: HTMLElement?): HtmlObject? {
+        return null
     }
 
-    public String getName() {
-        return null;
+    override fun getName(): String? {
+        return null
     }
 
-    public HtmlRendererContext getOpener() {
-        return null;
+    override fun getOpener(): HtmlRendererContext? {
+        return null
     }
 
-    public void setOpener(final HtmlRendererContext opener) {
+    override fun setOpener(opener: HtmlRendererContext?) {
     }
 
-    public HtmlRendererContext getParent() {
-        return null;
+    override fun getParent(): HtmlRendererContext? {
+        return null
     }
 
-    public String getStatus() {
-        return null;
+    override fun getStatus(): String? {
+        return null
     }
 
-    public void setStatus(final String message) {
+    override fun setStatus(message: String?) {
     }
 
-    public HtmlRendererContext getTop() {
-        return null;
+    override fun getTop(): HtmlRendererContext? {
+        return null
     }
 
-    public UserAgentContext getUserAgentContext() {
-        return null;
+    override fun getUserAgentContext(): UserAgentContext? {
+        return null
     }
 
-  /*
+    /*
   public void linkClicked(final HTMLElement linkNode, final @NonNull URL url, final String target) {
   }
 
   public void navigate(final URL url, final String target) {
   }*/
-
     /**
      * Returns false unless overridden.
      */
-    public boolean isClosed() {
-        return false;
+    override fun isClosed(): Boolean {
+        return false
     }
 
     /**
      * Returns true unless overridden.
      */
-    public boolean isImageLoadingEnabled() {
-        return true;
+    override fun isImageLoadingEnabled(): Boolean {
+        return true
     }
 
     /**
      * Returns false unless overridden.
      */
-    public boolean isVisitedLink(final HTMLLinkElement link) {
-        return false;
+    override fun isVisitedLink(link: HTMLLinkElement?): Boolean {
+        return false
     }
 
     /**
      * Returns true unless overridden.
      */
-    public boolean onContextMenu(final HTMLElement element, final MouseEvent event) {
-        return true;
+    override fun onContextMenu(element: HTMLElement?, event: MouseEvent?): Boolean {
+        return true
     }
 
-    public void onMouseOut(final HTMLElement element, final MouseEvent event) {
+    override fun onMouseOut(element: HTMLElement?, event: MouseEvent?) {
     }
 
-    public void onMouseOver(final HTMLElement element, final MouseEvent event) {
+    override fun onMouseOver(element: HTMLElement?, event: MouseEvent?) {
     }
 
-    public HtmlRendererContext open(final String absoluteUrl, final String windowName, final String windowFeatures, final boolean replace) {
-        return null;
+    override fun open(
+        absoluteUrl: String?,
+        windowName: String?,
+        windowFeatures: String?,
+        replace: Boolean
+    ): HtmlRendererContext? {
+        return null
     }
 
-    public HtmlRendererContext open(final @NonNull URL url, final String windowName, final String windowFeatures, final boolean replace) {
-        return null;
+    override fun open(
+        url: URL,
+        windowName: String?,
+        windowFeatures: String?,
+        replace: Boolean
+    ): HtmlRendererContext? {
+        return null
     }
 
-    public String prompt(final String message, final String inputDefault) {
-        return null;
+    override fun prompt(message: String?, inputDefault: String?): String? {
+        return null
     }
 
-    public void reload() {
+    override fun reload() {
     }
 
-    public void scroll(final int x, final int y) {
+    override fun scroll(x: Int, y: Int) {
     }
 
-  /*
+    /*
   public void submitForm(final String method, final @NonNull URL action, final String target, final String enctype, final FormInput[] formInputs) {
   }
   */
+    /**
+     * Returns true unless overridden.
+     */
+    override fun onDoubleClick(element: HTMLElement?, event: MouseEvent?): Boolean {
+        return true
+    }
 
     /**
      * Returns true unless overridden.
      */
-    public boolean onDoubleClick(final HTMLElement element, final MouseEvent event) {
-        return true;
+    override fun onMouseClick(element: HTMLElement?, event: MouseEvent?): Boolean {
+        return true
     }
 
-    /**
-     * Returns true unless overridden.
-     */
-    public boolean onMouseClick(final HTMLElement element, final MouseEvent event) {
-        return true;
+    override fun scrollBy(x: Int, y: Int) {
     }
 
-    public void scrollBy(final int x, final int y) {
+    override fun resizeBy(byWidth: Int, byHeight: Int) {
     }
 
-    public void resizeBy(final int byWidth, final int byHeight) {
+    override fun resizeTo(width: Int, height: Int) {
     }
 
-    public void resizeTo(final int width, final int height) {
+    override fun forward() {
     }
 
-    public void forward() {
+    override fun getCurrentURL(): String? {
+        return null
     }
 
-    public String getCurrentURL() {
-        return null;
+    override fun getHistoryLength(): Int {
+        return 0
     }
 
-    public int getHistoryLength() {
-        return 0;
+    override fun getNextURL(): Optional<String?> {
+        return Optional.empty<String?>()
     }
 
-    public Optional<String> getNextURL() {
-        return Optional.empty();
+    override fun getPreviousURL(): Optional<String?>? {
+        return null
     }
 
-    public Optional<String> getPreviousURL() {
-        return null;
+    override fun goToHistoryURL(url: String?) {
     }
 
-    public void goToHistoryURL(final String url) {
-    }
-
-    public void moveInHistory(final int offset) {
+    override fun moveInHistory(offset: Int) {
     }
 }

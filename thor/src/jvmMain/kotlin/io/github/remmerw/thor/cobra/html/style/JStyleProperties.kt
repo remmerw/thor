@@ -17,681 +17,668 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
  */
+package io.github.remmerw.thor.cobra.html.style
 
-package io.github.remmerw.thor.cobra.html.style;
+import cz.vutbr.web.css.CSSProperty
+import cz.vutbr.web.css.NodeData
+import cz.vutbr.web.csskit.TermURIImpl
+import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate
+import io.github.remmerw.thor.cobra.js.HideFromJS
+import io.github.remmerw.thor.cobra.util.Urls
+import org.w3c.dom.css.CSS2Properties
+import java.net.MalformedURLException
+import java.net.URL
 
-import org.w3c.dom.css.CSS2Properties;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import cz.vutbr.web.css.CSSProperty;
-import cz.vutbr.web.css.NodeData;
-import cz.vutbr.web.css.Term;
-import cz.vutbr.web.csskit.TermURIImpl;
-import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate;
-import io.github.remmerw.thor.cobra.js.HideFromJS;
-import io.github.remmerw.thor.cobra.util.Urls;
-
-abstract public class JStyleProperties extends AbstractScriptableDelegate implements CSS2Properties {
-    // TODO: this flag can be removed when the layout can handle empty strings
+abstract class JStyleProperties(
+    private val context: CSS2PropertiesContext, // TODO: this flag can be removed when the layout can handle empty strings
     // currently there is only a check for null and not for empty string
-    final protected boolean nullIfAbsent;
-    final private CSS2PropertiesContext context;
-    private String overlayColor;
-
-    public JStyleProperties(final CSS2PropertiesContext context, final boolean nullIfAbsent) {
-        this.context = context;
-        this.nullIfAbsent = nullIfAbsent;
-    }
-
-    // TODO
-    // temp hack to support border thin/medium/thick
-    // this method should be removed once it is implemented where border is actually processed
-    private static String border2Pixel(final String width) {
-        if (width != null) {
-            if ("thin".equalsIgnoreCase(width)) {
-                return HtmlValues.BORDER_THIN_SIZE;
-            }
-            if ("medium".equalsIgnoreCase(width)) {
-                return HtmlValues.BORDER_MEDIUM_SIZE;
-            }
-            if ("thick".equalsIgnoreCase(width)) {
-                return HtmlValues.BORDER_THICK_SIZE;
-            }
+    protected val nullIfAbsent: Boolean
+) : AbstractScriptableDelegate(), CSS2Properties {
+    var overlayColor: String? = null
+        set(value) {
+            field = value
+            this.context.informLookInvalid()
         }
-        return width;
-    }
 
     //TODO All the methods that are not implemented need more detailed understanding.
     // most of them are short hand properties and they need to be constructed from the long
     // forms of the respective properties
-    public String getAzimuth() {
-        return helperTryBoth("azimuth");
+    override fun getAzimuth(): String? {
+        return helperTryBoth("azimuth")
     }
 
-    public String getBackground() {
+    override fun getBackground(): String {
         // TODO need to implement this method. GH #143
-        return "";
+        return ""
     }
 
-    public String getBackgroundAttachment() {
-        return helperGetProperty("background-attachment");
+    override fun getBackgroundAttachment(): String? {
+        return helperGetProperty("background-attachment")
     }
 
-    public String getBackgroundColor() {
-        return helperTryBoth("background-color");
+    override fun getBackgroundColor(): String? {
+        return helperTryBoth("background-color")
     }
 
-    public String getBackgroundImage() {
+    override fun getBackgroundImage(): String? {
         // TODO
         // need to check if upstream can provide the absolute url of
         //  the image so that it can directly be passed.
-        String quotedUri = null;
-        final TermURIImpl t = (TermURIImpl) getNodeData().getValue("background-image", false);
+        var quotedUri: String? = null
+        val t = this.nodeData!!.getValue("background-image", false) as TermURIImpl?
         if (t != null) {
-            URL finalUrl = null;
+            var finalUrl: URL? = null
             try {
-                finalUrl = Urls.createURL(t.getBase(), t.getValue());
-            } catch (final MalformedURLException e) {
-                e.printStackTrace();
+                finalUrl = Urls.createURL(t.getBase(), t.getValue())
+            } catch (e: MalformedURLException) {
+                e.printStackTrace()
             }
-            quotedUri = finalUrl == null ? null : finalUrl.toString();
+            quotedUri = if (finalUrl == null) null else finalUrl.toString()
         }
-        return quotedUri == null ? null : "url(" + quotedUri + ")";
+        return if (quotedUri == null) null else "url(" + quotedUri + ")"
     }
 
-    public String getBackgroundPosition() {
-        return helperGetValue("background-position");
+    override fun getBackgroundPosition(): String? {
+        return helperGetValue("background-position")
     }
 
-    public String getBackgroundRepeat() {
-        return helperGetProperty("background-repeat");
+    override fun getBackgroundRepeat(): String? {
+        return helperGetProperty("background-repeat")
     }
 
-    public String getBorder() {
+    override fun getBorder(): String? {
         // TODO need to implement this method
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
 
-    public String getBorderCollapse() {
-        return helperGetProperty("border-collapse");
+    override fun getBorderCollapse(): String? {
+        return helperGetProperty("border-collapse")
     }
 
-    public String getBorderColor() {
+    override fun getBorderColor(): String? {
         // TODO need to implement this method
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
 
-    public String getBorderSpacing() {
-        return helperGetValue("border-spacing");
+    override fun getBorderSpacing(): String? {
+        return helperGetValue("border-spacing")
     }
 
-    public String getBorderStyle() {
+    override fun getBorderStyle(): String? {
         // TODO need to implement this method
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
 
-    public String getBorderTop() {
+    override fun getBorderTop(): String? {
         // TODO need to implement this method
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
 
-    public String getBorderRight() {
+    override fun getBorderRight(): String? {
         // TODO need to implement this method
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
 
-    public String getBorderBottom() {
+    override fun getBorderBottom(): String? {
         // TODO need to implement this method
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
 
-    public String getBorderLeft() {
+    override fun getBorderLeft(): String? {
         // TODO need to implement this method
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
 
-    public String getBorderTopColor() {
-        return helperTryBoth("border-top-color");
+    override fun getBorderTopColor(): String? {
+        return helperTryBoth("border-top-color")
     }
 
-    public String getBorderRightColor() {
-        return helperTryBoth("border-right-color");
+    override fun getBorderRightColor(): String? {
+        return helperTryBoth("border-right-color")
     }
 
-    public String getBorderBottomColor() {
-        return helperTryBoth("border-bottom-color");
+    override fun getBorderBottomColor(): String? {
+        return helperTryBoth("border-bottom-color")
     }
 
-    public String getBorderLeftColor() {
-        return helperTryBoth("border-left-color");
+    override fun getBorderLeftColor(): String? {
+        return helperTryBoth("border-left-color")
     }
 
-    public String getBorderTopStyle() {
-        return helperGetProperty("border-top-style");
+    override fun getBorderTopStyle(): String? {
+        return helperGetProperty("border-top-style")
     }
 
-    public String getBorderRightStyle() {
-        return helperGetProperty("border-right-style");
+    override fun getBorderRightStyle(): String? {
+        return helperGetProperty("border-right-style")
     }
 
-    public String getBorderBottomStyle() {
-        return helperGetProperty("border-bottom-style");
+    override fun getBorderBottomStyle(): String? {
+        return helperGetProperty("border-bottom-style")
     }
 
-    public String getBorderLeftStyle() {
-        return helperGetProperty("border-left-style");
+    override fun getBorderLeftStyle(): String? {
+        return helperGetProperty("border-left-style")
     }
 
-    public String getBorderTopWidth() {
-        final String width = helperTryBoth("border-top-width");
+    override fun getBorderTopWidth(): String? {
+        val width = helperTryBoth("border-top-width")
         // TODO
         // temp hack to support border thin/medium/thick
         // need to implement it at the place where it is actually being processed
-        return border2Pixel(width);
+        return border2Pixel(width)
     }
 
-    public String getBorderRightWidth() {
-        final String width = helperTryBoth("border-right-width");
+    override fun getBorderRightWidth(): String? {
+        val width = helperTryBoth("border-right-width")
         // TODO
         // temp hack to support border thin/medium/thick
         // need to implement it at the place where it is actually being processed
-        return border2Pixel(width);
+        return border2Pixel(width)
     }
 
-    public String getBorderBottomWidth() {
-        final String width = helperTryBoth("border-bottom-width");
+    override fun getBorderBottomWidth(): String? {
+        val width = helperTryBoth("border-bottom-width")
         // TODO
         // temp hack to support border thin/medium/thick
         // need to implement it at the place where it is actually being processed
-        return border2Pixel(width);
+        return border2Pixel(width)
     }
 
-    public String getBorderLeftWidth() {
-        final String width = helperTryBoth("border-left-width");
+    override fun getBorderLeftWidth(): String? {
+        val width = helperTryBoth("border-left-width")
         // TODO
         // temp hack to support border thin/medium/thick
         // need to implement it at the place where it is actually being processed
-        return border2Pixel(width);
+        return border2Pixel(width)
     }
 
-    public String getBorderWidth() {
+    override fun getBorderWidth(): String? {
         // TODO need to implement this method
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
 
-    public String getBottom() {
-        return helperTryBoth("bottom");
+    override fun getBottom(): String? {
+        return helperTryBoth("bottom")
     }
 
-    public String getCaptionSide() {
-        return helperGetProperty("caption-side");
+    override fun getCaptionSide(): String? {
+        return helperGetProperty("caption-side")
     }
 
-    public String getClear() {
-        return helperGetProperty("clear");
+    override fun getClear(): String? {
+        return helperGetProperty("clear")
     }
 
-    public String getClip() {
-        return helperTryBoth("clip");
+    override fun getClip(): String? {
+        return helperTryBoth("clip")
     }
 
-    public String getColor() {
-        return helperTryBoth("color");
+    override fun getColor(): String? {
+        return helperTryBoth("color")
     }
 
-    public String getContent() {
-        return helperTryBoth("content");
+    override fun getContent(): String? {
+        return helperTryBoth("content")
     }
 
-    public String getCounterIncrement() {
-        return helperTryBoth("couter-increment");
+    override fun getCounterIncrement(): String? {
+        return helperTryBoth("couter-increment")
     }
 
-    public String getCounterReset() {
-        return helperTryBoth("couter-reset");
+    override fun getCounterReset(): String? {
+        return helperTryBoth("couter-reset")
     }
 
-    public String getCue() {
+    override fun getCue(): String? {
         // TODO need to implement this method
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
 
-    public String getCueAfter() {
-        return helperTryBoth("cue-after");
+    override fun getCueAfter(): String? {
+        return helperTryBoth("cue-after")
     }
 
-    public String getCueBefore() {
-        return helperTryBoth("cue-before");
+    override fun getCueBefore(): String? {
+        return helperTryBoth("cue-before")
     }
 
-    public String getCursor() {
-        return helperGetProperty("cursor");
+    override fun getCursor(): String? {
+        return helperGetProperty("cursor")
     }
 
-    public String getDirection() {
-        return helperGetProperty("direction");
+    override fun getDirection(): String? {
+        return helperGetProperty("direction")
     }
 
-    public String getDisplay() {
-        return helperGetProperty("display");
+    override fun getDisplay(): String? {
+        return helperGetProperty("display")
     }
 
-    public String getElevation() {
-        return helperTryBoth("elevation");
+    override fun getElevation(): String? {
+        return helperTryBoth("elevation")
     }
 
-    public String getEmptyCells() {
-        return helperGetProperty("empty-cells");
+    override fun getEmptyCells(): String? {
+        return helperGetProperty("empty-cells")
     }
 
-    public String getCssFloat() {
-        return this.getFloat();
+    override fun getCssFloat(): String? {
+        return this.float
     }
 
-    public String getFont() {
+    override fun getFont(): String? {
         // TODO need to implement this method
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
 
-    public String getFontFamily() {
-        return helperTryBoth("font-family");
+    override fun getFontFamily(): String? {
+        return helperTryBoth("font-family")
     }
 
-    public String getFontSize() {
-        return helperTryBoth("font-size");
+    override fun getFontSize(): String? {
+        return helperTryBoth("font-size")
     }
 
-    public String getFontSizeAdjust() {
-        return helperTryBoth("font-adjust");
+    override fun getFontSizeAdjust(): String? {
+        return helperTryBoth("font-adjust")
     }
 
-    public String getFontStretch() {
-        return helperGetProperty("font-stretch");
+    override fun getFontStretch(): String? {
+        return helperGetProperty("font-stretch")
     }
 
-    public String getFontStyle() {
-        return helperGetProperty("font-style");
+    override fun getFontStyle(): String? {
+        return helperGetProperty("font-style")
     }
 
-    public String getFontVariant() {
-        return helperGetProperty("font-variant");
+    override fun getFontVariant(): String? {
+        return helperGetProperty("font-variant")
     }
 
-    public String getFontWeight() {
-        return helperGetProperty("font-weight");
+    override fun getFontWeight(): String? {
+        return helperGetProperty("font-weight")
     }
 
-    public String getHeight() {
-        return helperGetValue("height");
+    override fun getHeight(): String? {
+        return helperGetValue("height")
     }
 
-    public String getLeft() {
-        return helperTryBoth("left");
+    override fun getLeft(): String? {
+        return helperTryBoth("left")
     }
 
-    public String getLetterSpacing() {
-        return helperTryBoth("letter-spacing");
+    override fun getLetterSpacing(): String? {
+        return helperTryBoth("letter-spacing")
     }
 
-    public String getLineHeight() {
-        return helperTryBoth("line-height");
+    override fun getLineHeight(): String? {
+        return helperTryBoth("line-height")
     }
 
-    public String getListStyle() {
-        final String listStyleType = getListStyleType();
-        final String listStylePosition = getListStylePosition();
-        final StringBuilder listStyle = new StringBuilder();
+    override fun getListStyle(): String? {
+        val listStyleType = getListStyleType()
+        val listStylePosition = getListStylePosition()
+        val listStyle = StringBuilder()
 
-        if ((listStyleType != null) && !("null".equals(listStyleType))) {
-            listStyle.append(listStyleType);
-        }
-
-        if ((listStylePosition != null) && !("null".equals(listStylePosition))) {
-            listStyle.append(" " + listStylePosition);
+        if ((listStyleType != null) && !("null" == listStyleType)) {
+            listStyle.append(listStyleType)
         }
 
-        final String listStyleText = listStyle.toString().trim();
-        return listStyleText.length() == 0 ? null : listStyleText;
+        if ((listStylePosition != null) && !("null" == listStylePosition)) {
+            listStyle.append(" " + listStylePosition)
+        }
+
+        val listStyleText = listStyle.toString().trim { it <= ' ' }
+        return if (listStyleText.length == 0) null else listStyleText
     }
 
-    public String getListStyleImage() {
-        return helperTryBoth("list-style-image");
+    override fun getListStyleImage(): String? {
+        return helperTryBoth("list-style-image")
     }
 
-    public String getListStylePosition() {
-        return helperGetProperty("list-style-position");
+    override fun getListStylePosition(): String? {
+        return helperGetProperty("list-style-position")
     }
 
-    public String getListStyleType() {
-        return helperGetProperty("list-style-type");
+    override fun getListStyleType(): String? {
+        return helperGetProperty("list-style-type")
     }
 
-    public String getMargin() {
+    override fun getMargin(): String? {
         // TODO need to implement this method
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
 
-    public String getMarginTop() {
-        return helperTryBoth("margin-top");
+    override fun getMarginTop(): String? {
+        return helperTryBoth("margin-top")
     }
 
-    public String getMarginRight() {
-        return helperTryBoth("margin-right");
+    override fun getMarginRight(): String? {
+        return helperTryBoth("margin-right")
     }
 
-    public String getMarginBottom() {
-        return helperTryBoth("margin-bottom");
+    override fun getMarginBottom(): String? {
+        return helperTryBoth("margin-bottom")
     }
 
-    public String getMarginLeft() {
-        return helperTryBoth("margin-left");
+    override fun getMarginLeft(): String? {
+        return helperTryBoth("margin-left")
     }
 
-    public String getMarkerOffset() {
-        return helperTryBoth("marker-offset");
+    override fun getMarkerOffset(): String? {
+        return helperTryBoth("marker-offset")
     }
 
-    public String getMarks() {
-        return helperGetProperty("marks");
+    override fun getMarks(): String? {
+        return helperGetProperty("marks")
     }
 
-    public String getMaxHeight() {
-        return helperTryBoth("max-height");
+    override fun getMaxHeight(): String? {
+        return helperTryBoth("max-height")
     }
 
-    public String getMaxWidth() {
-        return helperTryBoth("max-width");
+    override fun getMaxWidth(): String? {
+        return helperTryBoth("max-width")
     }
 
-    public String getMinHeight() {
-        return helperTryBoth("min-height");
+    override fun getMinHeight(): String? {
+        return helperTryBoth("min-height")
     }
 
-    public String getMinWidth() {
-        return helperTryBoth("min-width");
+    override fun getMinWidth(): String? {
+        return helperTryBoth("min-width")
     }
 
-    public String getOrphans() {
-        return helperGetValue("orphans");
+    override fun getOrphans(): String? {
+        return helperGetValue("orphans")
     }
 
-    public String getOutline() {
+    override fun getOutline(): String? {
         // TODO need to implement this method
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
 
-    public String getOutlineColor() {
-        return helperTryBoth("outline-color");
+    override fun getOutlineColor(): String? {
+        return helperTryBoth("outline-color")
     }
 
-    public String getOutlineStyle() {
-        return helperGetProperty("outline-style");
+    override fun getOutlineStyle(): String? {
+        return helperGetProperty("outline-style")
     }
 
     //TODO add support for thick/think/medium
-    public String getOutlineWidth() {
-        final String width = helperTryBoth("outline-border");
-        return border2Pixel(width);
+    override fun getOutlineWidth(): String? {
+        val width = helperTryBoth("outline-border")
+        return border2Pixel(width)
     }
 
-    public String getOverflow() {
-        return helperGetProperty("overflow");
+    override fun getOverflow(): String? {
+        return helperGetProperty("overflow")
     }
 
-    public String getPadding() {
+    override fun getPadding(): String? {
         // TODO need to implement this method
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
 
-    public String getPaddingTop() {
-        return helperGetValue("padding-top");
+    override fun getPaddingTop(): String? {
+        return helperGetValue("padding-top")
     }
 
-    public String getPaddingRight() {
-        return helperGetValue("padding-right");
+    override fun getPaddingRight(): String? {
+        return helperGetValue("padding-right")
     }
 
-    public String getPaddingBottom() {
-        return helperGetValue("padding-bottom");
+    override fun getPaddingBottom(): String? {
+        return helperGetValue("padding-bottom")
     }
 
-    public String getPaddingLeft() {
-        return helperGetValue("padding-left");
+    override fun getPaddingLeft(): String? {
+        return helperGetValue("padding-left")
     }
 
-    public String getPage() {
+    override fun getPage(): String? {
         // TODO need to implement this method
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
 
-    public String getPageBreakAfter() {
-        return helperGetProperty("page-break-after");
+    override fun getPageBreakAfter(): String? {
+        return helperGetProperty("page-break-after")
     }
 
-    public String getPageBreakBefore() {
-        return helperGetProperty("page-break-before");
+    override fun getPageBreakBefore(): String? {
+        return helperGetProperty("page-break-before")
     }
 
-    public String getPageBreakInside() {
-        return helperGetProperty("page-break-inside");
+    override fun getPageBreakInside(): String? {
+        return helperGetProperty("page-break-inside")
     }
 
-    public String getPause() {
-        return helperGetValue("pause");
+    override fun getPause(): String? {
+        return helperGetValue("pause")
     }
 
-    public String getPauseAfter() {
-        return helperGetValue("pause-after");
+    override fun getPauseAfter(): String? {
+        return helperGetValue("pause-after")
     }
 
-    public String getPauseBefore() {
-        return helperGetValue("pause-before");
+    override fun getPauseBefore(): String? {
+        return helperGetValue("pause-before")
     }
 
-    public String getPitch() {
-        return helperTryBoth("pitch");
+    override fun getPitch(): String? {
+        return helperTryBoth("pitch")
     }
 
-    public String getPitchRange() {
-        return helperGetValue("pitchRange");
+    override fun getPitchRange(): String? {
+        return helperGetValue("pitchRange")
     }
 
-    public String getPlayDuring() {
-        return helperTryBoth("play-during");
+    override fun getPlayDuring(): String? {
+        return helperTryBoth("play-during")
     }
 
-    public String getPosition() {
-        return helperGetProperty("position");
+    override fun getPosition(): String? {
+        return helperGetProperty("position")
     }
 
-    public String getQuotes() {
-        return helperTryBoth("quotes");
+    override fun getQuotes(): String? {
+        return helperTryBoth("quotes")
     }
 
-    public String getRichness() {
-        return helperGetValue("richness");
+    override fun getRichness(): String? {
+        return helperGetValue("richness")
     }
 
-    public String getRight() {
-        return helperTryBoth("right");
+    override fun getRight(): String? {
+        return helperTryBoth("right")
     }
 
-    public String getSize() {
+    override fun getSize(): String? {
         // TODO need to implement this method
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
 
-    public String getSpeak() {
-        return helperGetProperty("speak");
+    override fun getSpeak(): String? {
+        return helperGetProperty("speak")
     }
 
-    public String getSpeakHeader() {
-        return helperGetProperty("speak-header");
+    override fun getSpeakHeader(): String? {
+        return helperGetProperty("speak-header")
     }
 
-    public String getSpeakNumeral() {
-        return helperGetProperty("speak-numeral");
+    override fun getSpeakNumeral(): String? {
+        return helperGetProperty("speak-numeral")
     }
 
-    public String getSpeakPunctuation() {
-        return helperGetProperty("speak-punctuation");
+    override fun getSpeakPunctuation(): String? {
+        return helperGetProperty("speak-punctuation")
     }
 
-    public String getSpeechRate() {
-        return helperTryBoth("speech-rate");
+    override fun getSpeechRate(): String? {
+        return helperTryBoth("speech-rate")
     }
 
-    public String getStress() {
-        return helperGetValue("stress");
+    override fun getStress(): String? {
+        return helperGetValue("stress")
     }
 
-    public String getTableLayout() {
-        return helperGetProperty("table-layout");
+    override fun getTableLayout(): String? {
+        return helperGetProperty("table-layout")
     }
 
-    public String getTextAlign() {
-        return helperGetProperty("text-align");
+    override fun getTextAlign(): String? {
+        return helperGetProperty("text-align")
     }
 
-    public String getTextDecoration() {
-        return helperTryBoth("text-decoration");
+    override fun getTextDecoration(): String? {
+        return helperTryBoth("text-decoration")
     }
 
-    public String getTextIndent() {
-        return helperGetValue("text-indent");
+    override fun getTextIndent(): String? {
+        return helperGetValue("text-indent")
     }
 
-    public String getTextShadow() {
+    override fun getTextShadow(): String? {
         // TODO need to implement this method
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
 
-    public String getTextTransform() {
-        return helperGetProperty("text-transform");
+    override fun getTextTransform(): String? {
+        return helperGetProperty("text-transform")
     }
 
-    public String getTop() {
-        return helperTryBoth("top");
+    override fun getTop(): String? {
+        return helperTryBoth("top")
     }
 
-    public String getUnicodeBidi() {
-        return helperGetProperty("unicode-bidi");
+    override fun getUnicodeBidi(): String? {
+        return helperGetProperty("unicode-bidi")
     }
 
-    public String getVerticalAlign() {
-        return helperGetProperty("vertical-align");
+    override fun getVerticalAlign(): String? {
+        return helperGetProperty("vertical-align")
     }
 
-    public String getVisibility() {
-        return helperGetProperty("visibility");
+    override fun getVisibility(): String? {
+        return helperGetProperty("visibility")
     }
 
-    public String getVoiceFamily() {
-        return helperTryBoth("voice-family");
+    override fun getVoiceFamily(): String? {
+        return helperTryBoth("voice-family")
     }
 
-    public String getVolume() {
-        return helperTryBoth("volume");
+    override fun getVolume(): String? {
+        return helperTryBoth("volume")
     }
 
-    public String getWhiteSpace() {
-        return helperGetProperty("white-space");
+    override fun getWhiteSpace(): String? {
+        return helperGetProperty("white-space")
     }
 
-    public String getWidows() {
-        return helperGetValue("widows");
+    override fun getWidows(): String? {
+        return helperGetValue("widows")
     }
 
-    public String getWidth() {
-        return helperGetValue("width");
+    override fun getWidth(): String? {
+        return helperGetValue("width")
     }
 
-    public String getWordSpacing() {
-        return helperTryBoth("word-spacing");
+    override fun getWordSpacing(): String? {
+        return helperTryBoth("word-spacing")
     }
 
-    public String getZIndex() {
+    override fun getZIndex(): String {
         // TODO
         // refer to issue #77
         // According to the specs ZIndex value has to be integer but
         // jStyle Parser returns an float.
         // until then this is just a temp hack.
-        final String zIndex = helperGetValue("z-index");
-        float fZIndex = 0.0f;
+        val zIndex = helperGetValue("z-index")
+        var fZIndex = 0.0f
         if (zIndex != null) {
             try {
-                fZIndex = Float.parseFloat(zIndex);
-            } catch (final NumberFormatException err) {
-                err.printStackTrace();
+                fZIndex = zIndex.toFloat()
+            } catch (err: NumberFormatException) {
+                err.printStackTrace()
             }
         }
-        final int iZIndex = (int) fZIndex;
-        return "" + iZIndex;
-    }
-
-    public String getOverlayColor() {
-        return this.overlayColor;
-    }
-
-    public void setOverlayColor(final String value) {
-        this.overlayColor = value;
-        this.context.informLookInvalid();
+        val iZIndex = fZIndex.toInt()
+        return "" + iZIndex
     }
 
     // TODO references to this in internal code can use a more specific method.
     //      (we can implement specific methods like we have for other properties)
-    public String getPropertyValue(final String string) {
-        return helperGetProperty(string);
+    fun getPropertyValue(string: String?): String? {
+        return helperGetProperty(string)
     }
 
-    public String getFloat() {
-        return helperGetProperty("float");
-    }
+    val float: String?
+        get() = helperGetProperty("float")
 
-    abstract protected NodeData getNodeData();
+    abstract val nodeData: NodeData?
 
-    private String helperGetValue(final String propertyName) {
-        final NodeData nodeData = getNodeData();
+    private fun helperGetValue(propertyName: String?): String? {
+        val nodeData = this.nodeData
         if (nodeData != null) {
-            final Term<?> value = nodeData.getValue(propertyName, true);
+            val value = nodeData.getValue(propertyName, true)
             // The trim() is a temporary work around for #154
-            return value == null ? null : value.toString().trim();
+            return if (value == null) null else value.toString().trim { it <= ' ' }
         } else {
-            return nullIfAbsent ? null : "";
+            return if (nullIfAbsent) null else ""
         }
     }
 
-    private String helperGetProperty(final String propertyName) {
-        final NodeData nodeData = getNodeData();
+    private fun helperGetProperty(propertyName: String?): String? {
+        val nodeData = this.nodeData
         if (nodeData != null) {
-            final CSSProperty property = nodeData.getProperty(propertyName, true);
+            val property = nodeData.getProperty<CSSProperty?>(propertyName, true)
             // final CSSProperty property = nodeData.getProperty(propertyName);
-            return property == null ? null : property.toString();
+            return if (property == null) null else property.toString()
         } else {
-            return nullIfAbsent ? null : "";
+            return if (nullIfAbsent) null else ""
         }
     }
 
     @HideFromJS
-    public String helperTryBoth(final String propertyName) {
+    fun helperTryBoth(propertyName: String?): String? {
         // These two implementations were deprecated after the changes in https://github.com/radkovo/jStyleParser/issues/50
 
-    /* Original
+        /* Original
     final String value = helperGetValue(propertyName);
     return value == null ? helperGetProperty(propertyName) : value;
     */
 
-    /* Corrected (equivalent to below implementation, but less optimal)
+        /* Corrected (equivalent to below implementation, but less optimal)
     final String property = helperGetProperty(propertyName);
     return property == null || property.isEmpty() ? helperGetValue(propertyName) : property;
     */
 
-        final NodeData nodeData = getNodeData();
+        val nodeData = this.nodeData
         if (nodeData == null) {
-            return null;
+            return null
         }
-        return nodeData.getAsString(propertyName, true);
+        return nodeData.getAsString(propertyName, true)
+    }
+
+    companion object {
+        // TODO
+        // temp hack to support border thin/medium/thick
+        // this method should be removed once it is implemented where border is actually processed
+        private fun border2Pixel(width: String?): String? {
+            if (width != null) {
+                if ("thin".equals(width, ignoreCase = true)) {
+                    return HtmlValues.BORDER_THIN_SIZE
+                }
+                if ("medium".equals(width, ignoreCase = true)) {
+                    return HtmlValues.BORDER_MEDIUM_SIZE
+                }
+                if ("thick".equals(width, ignoreCase = true)) {
+                    return HtmlValues.BORDER_THICK_SIZE
+                }
+            }
+            return width
+        }
     }
 }

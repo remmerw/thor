@@ -1,359 +1,333 @@
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import org.w3c.dom.html.HTMLCollection;
-import org.w3c.dom.html.HTMLOptionElement;
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLSelectElementImpl
+import io.github.remmerw.thor.cobra.util.gui.WrapperLayout
+import org.w3c.dom.html.HTMLOptionElement
+import java.awt.event.ItemEvent
+import java.awt.event.ItemListener
+import java.util.LinkedList
+import javax.swing.DefaultListModel
+import javax.swing.JComboBox
+import javax.swing.JList
+import javax.swing.JScrollPane
+import javax.swing.ListSelectionModel
+import javax.swing.event.ListSelectionEvent
+import javax.swing.event.ListSelectionListener
 
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-
-import javax.swing.DefaultListModel;
-import javax.swing.JComboBox;
-import javax.swing.JList;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLSelectElementImpl;
-import io.github.remmerw.thor.cobra.util.gui.WrapperLayout;
-
-class InputSelectControl extends BaseInputControl {
-    private static final long serialVersionUID = 286101283473109265L;
-    private static final int STATE_NONE = 0;
-    private static final int STATE_COMBO = 1;
-    private static final int STATE_LIST = 2;
-    private final JComboBox<OptionItem> comboBox;
-    private final JList<OptionItem> list;
-    private final DefaultListModel<OptionItem> listModel;
-    private boolean inSelectionEvent;
-    private int state = STATE_NONE;
-    private boolean suspendSelections = false;
-    private int selectedIndex = -1;
-
-    public InputSelectControl(final HTMLBaseInputElement modelNode) {
-        super(modelNode);
-        this.setLayout(WrapperLayout.getInstance());
-        final JComboBox<OptionItem> comboBox = new JComboBox<>();
-        comboBox.addItemListener(new ItemListener() {
-            public void itemStateChanged(final ItemEvent e) {
-                final OptionItem item = (OptionItem) e.getItem();
-                if (item != null) {
-                    switch (e.getStateChange()) {
-                        case ItemEvent.SELECTED:
-                            if (!suspendSelections) {
-                                // In this case it's better to change the
-                                // selected index. We don't want multiple selections.
-                                inSelectionEvent = true;
-                                try {
-                                    final int selectedIndex = comboBox.getSelectedIndex();
-                                    final HTMLSelectElementImpl selectElement = (HTMLSelectElementImpl) modelNode;
-                                    selectElement.setSelectedIndex(selectedIndex);
-                                } finally {
-                                    inSelectionEvent = false;
-                                }
-                                HtmlController.getInstance().onChange(modelNode);
+internal class InputSelectControl(modelNode: HTMLBaseInputElement?) : BaseInputControl(modelNode) {
+    private val comboBox: JComboBox<OptionItem?>
+    private val list: JList<OptionItem?>
+    private val listModel: DefaultListModel<OptionItem?>
+    private var inSelectionEvent = false
+    private var state: Int = STATE_NONE
+    private var suspendSelections = false
+    var selectedIndex: Int = -1
+        set(value) {
+            field = value
+            val prevSuspend = this.suspendSelections
+            this.suspendSelections = true
+            // Note that neither IE nor FireFox generate selection
+            // events when the selection is changed programmatically.
+            try {
+                if (!this.inSelectionEvent) {
+                    if (this.state == STATE_COMBO) {
+                        val comboBox = this.comboBox
+                        if (comboBox.selectedIndex != value) {
+                            // This check is done to avoid an infinite recursion
+                            // on ItemListener.
+                            val size = comboBox.itemCount
+                            if (value < size) {
+                                comboBox.setSelectedIndex(value)
                             }
-                            break;
-                        case ItemEvent.DESELECTED:
-                            // Ignore deselection here. It must necessarily
-                            // be followed by combo-box selection. If we deselect, that
-                            // changes the state of the control.
-                            break;
+                        }
+                    } else {
+                        val list = this.list
+                        val selectedIndices = list.selectedIndices
+                        if ((selectedIndices == null) || (selectedIndices.size != 1) || (selectedIndices[0] != value)) {
+                            // This check is done to avoid an infinite recursion
+                            // on ItemListener.
+                            val size = this.listModel.size
+                            if (value < size) {
+                                list.setSelectedIndex(value)
+                            }
+                        }
+                    }
+                }
+            } finally {
+                this.suspendSelections = prevSuspend
+            }
+        }
+
+    init {
+        this.layout = WrapperLayout.instance
+        val comboBox: JComboBox<OptionItem?> = JComboBox<OptionItem?>()
+        comboBox.addItemListener(object : ItemListener {
+            override fun itemStateChanged(e: ItemEvent) {
+                val item: OptionItem? = e.getItem() as OptionItem?
+                if (item != null) {
+                    when (e.getStateChange()) {
+                        ItemEvent.SELECTED -> if (!suspendSelections) {
+                            // In this case it's better to change the
+                            // selected index. We don't want multiple selections.
+                            inSelectionEvent = true
+                            try {
+                                val selectedIndex = comboBox.selectedIndex
+                                val selectElement = modelNode as HTMLSelectElementImpl
+                                selectElement.setSelectedIndex(selectedIndex)
+                            } finally {
+                                inSelectionEvent = false
+                            }
+                            HtmlController.Companion.getInstance().onChange(modelNode)
+                        }
+
+                        ItemEvent.DESELECTED -> {}
                     }
                 }
             }
-        });
-        final DefaultListModel<OptionItem> listModel = new DefaultListModel<>();
-        final JList<OptionItem> list = new JList<>(listModel);
-        this.listModel = listModel;
-        list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        list.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
-            public void valueChanged(final ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting() && !suspendSelections) {
-                    boolean changed = false;
-                    inSelectionEvent = true;
+        })
+        val listModel: DefaultListModel<OptionItem?> = DefaultListModel<OptionItem?>()
+        val list: JList<OptionItem?> = JList<OptionItem?>(listModel)
+        this.listModel = listModel
+        list.selectionMode = ListSelectionModel.MULTIPLE_INTERVAL_SELECTION
+        list.addListSelectionListener(object : ListSelectionListener {
+            override fun valueChanged(e: ListSelectionEvent) {
+                if (!e.valueIsAdjusting && !suspendSelections) {
+                    var changed = false
+                    inSelectionEvent = true
                     try {
-                        final int modelSize = listModel.getSize();
-                        for (int i = 0; i < modelSize; i++) {
-                            final OptionItem item = listModel.get(i);
+                        val modelSize = listModel.size
+                        for (i in 0..<modelSize) {
+                            val item = listModel.get(i)
                             if (item != null) {
-                                final boolean oldIsSelected = item.isSelected();
-                                final boolean newIsSelected = list.isSelectedIndex(i);
+                                val oldIsSelected = item.isSelected
+                                val newIsSelected = list.isSelectedIndex(i)
                                 if (oldIsSelected != newIsSelected) {
-                                    changed = true;
-                                    item.setSelected(newIsSelected);
+                                    changed = true
+                                    item.isSelected = newIsSelected
                                 }
                             }
                         }
                     } finally {
-                        inSelectionEvent = false;
+                        inSelectionEvent = false
                     }
                     if (changed) {
-                        HtmlController.getInstance().onChange(modelNode);
+                        HtmlController.Companion.getInstance().onChange(modelNode)
                     }
                 }
             }
-        });
+        })
 
         // Note: Value attribute cannot be set in reset() method.
         // Otherwise, layout revalidation causes typed values to
         // be lost (including revalidation due to hover.)
-
-        this.comboBox = comboBox;
-        this.list = list;
-        this.resetItemList();
+        this.comboBox = comboBox
+        this.list = list
+        this.resetItemList()
     }
 
-    private void resetItemList() {
-        final HTMLSelectElementImpl selectElement = (HTMLSelectElementImpl) this.controlElement;
-        final boolean isMultiple = selectElement.getMultiple();
+    private fun resetItemList() {
+        val selectElement = this.controlElement as HTMLSelectElementImpl
+        val isMultiple = selectElement.getMultiple()
         if (isMultiple && (this.state != STATE_LIST)) {
-            this.state = STATE_LIST;
-            this.removeAll();
-            final JScrollPane scrollPane = new JScrollPane(this.list);
-            this.add(scrollPane);
+            this.state = STATE_LIST
+            this.removeAll()
+            val scrollPane = JScrollPane(this.list)
+            this.add(scrollPane)
         } else if (!isMultiple && (this.state != STATE_COMBO)) {
-            this.state = STATE_COMBO;
-            this.removeAll();
-            this.add(this.comboBox);
+            this.state = STATE_COMBO
+            this.removeAll()
+            this.add(this.comboBox)
         }
-        this.suspendSelections = true;
+        this.suspendSelections = true
         try {
-            final HTMLCollection optionElements = selectElement.getOptions();
+            val optionElements = selectElement.options
             if (this.state == STATE_COMBO) {
-                final JComboBox<OptionItem> comboBox = this.comboBox;
+                val comboBox = this.comboBox
                 // First determine current selected option
-                HTMLOptionElement priorSelectedOption = null;
-                final int priorIndex = selectElement.getSelectedIndex();
+                var priorSelectedOption: HTMLOptionElement? = null
+                val priorIndex = selectElement.getSelectedIndex()
                 if (priorIndex != -1) {
-                    final int numOptions = optionElements.getLength();
-                    for (int index = 0; index < numOptions; index++) {
-                        final HTMLOptionElement option = (HTMLOptionElement) optionElements.item(index);
+                    val numOptions = optionElements.length
+                    for (index in 0..<numOptions) {
+                        val option = optionElements.item(index) as HTMLOptionElement?
                         if (index == priorIndex) {
-                            priorSelectedOption = option;
+                            priorSelectedOption = option
                         }
                     }
                 }
-                comboBox.removeAllItems();
-                OptionItem defaultItem = null;
-                OptionItem selectedItem = null;
-                OptionItem firstItem = null;
-                final int numOptions = optionElements.getLength();
-                for (int index = 0; index < numOptions; index++) {
-                    final HTMLOptionElement option = (HTMLOptionElement) optionElements.item(index);
+                comboBox.removeAllItems()
+                var defaultItem: OptionItem? = null
+                var selectedItem: OptionItem? = null
+                var firstItem: OptionItem? = null
+                val numOptions = optionElements.length
+                for (index in 0..<numOptions) {
+                    val option = optionElements.item(index) as HTMLOptionElement?
                     if (option != null) {
-                        final OptionItem item = new OptionItem(option);
+                        val item = OptionItem(option)
                         if (firstItem == null) {
-                            firstItem = item;
-                            comboBox.addItem(item);
+                            firstItem = item
+                            comboBox.addItem(item)
                             // Undo automatic selection that occurs
                             // when adding the first item.
                             // This might set the deferred index as well.
-                            selectElement.setSelectedIndex(-1);
+                            selectElement.setSelectedIndex(-1)
                             if (priorSelectedOption != null) {
-                                priorSelectedOption.setSelected(true);
+                                priorSelectedOption.selected = true
                             }
                         } else {
-                            comboBox.addItem(item);
+                            comboBox.addItem(item)
                         }
-                        if (option.getSelected()) {
-                            selectedItem = item;
+                        if (option.selected) {
+                            selectedItem = item
                         }
-                        if (option.getDefaultSelected()) {
-                            defaultItem = item;
+                        if (option.defaultSelected) {
+                            defaultItem = item
                         }
                     }
                 }
                 if (selectedItem != null) {
-                    comboBox.setSelectedItem(selectedItem);
+                    comboBox.selectedItem = selectedItem
                 } else if (defaultItem != null) {
-                    comboBox.setSelectedItem(defaultItem);
+                    comboBox.selectedItem = defaultItem
                 } else if (firstItem != null) {
-                    comboBox.setSelectedItem(firstItem);
+                    comboBox.selectedItem = firstItem
                 }
             } else {
-                final JList<OptionItem> list = this.list;
-                Collection<Integer> defaultSelectedIndexes = null;
-                Collection<Integer> selectedIndexes = null;
-                OptionItem firstItem = null;
-                final DefaultListModel<OptionItem> listModel = this.listModel;
-                listModel.clear();
-                final int numOptions = optionElements.getLength();
-                for (int index = 0; index < numOptions; index++) {
-                    final HTMLOptionElement option = (HTMLOptionElement) optionElements.item(index);
-                    final OptionItem item = new OptionItem(option);
+                val list = this.list
+                var defaultSelectedIndexes: MutableCollection<Int?>? = null
+                var selectedIndexes: MutableCollection<Int?>? = null
+                var firstItem: OptionItem? = null
+                val listModel = this.listModel
+                listModel.clear()
+                val numOptions = optionElements.length
+                for (index in 0..<numOptions) {
+                    val option = optionElements.item(index) as HTMLOptionElement
+                    val item = OptionItem(option)
                     if (firstItem == null) {
-                        firstItem = item;
-                        listModel.addElement(item);
+                        firstItem = item
+                        listModel.addElement(item)
                         // Do not select first item automatically.
-                        list.setSelectedIndex(-1);
+                        list.selectedIndex = -1
                     } else {
-                        listModel.addElement(item);
+                        listModel.addElement(item)
                     }
-                    if (option.getSelected()) {
+                    if (option.selected) {
                         if (selectedIndexes == null) {
-                            selectedIndexes = new LinkedList<>();
+                            selectedIndexes = LinkedList<Int?>()
                         }
-                        selectedIndexes.add(index);
+                        selectedIndexes.add(index)
                     }
-                    if (option.getDefaultSelected()) {
+                    if (option.defaultSelected) {
                         if (defaultSelectedIndexes == null) {
-                            defaultSelectedIndexes = new LinkedList<>();
+                            defaultSelectedIndexes = LinkedList<Int?>()
                         }
-                        defaultSelectedIndexes.add(index);
+                        defaultSelectedIndexes.add(index)
                     }
                 }
-                if ((selectedIndexes != null) && (selectedIndexes.size() != 0)) {
-                    final Iterator<Integer> sii = selectedIndexes.iterator();
+                if ((selectedIndexes != null) && (selectedIndexes.size != 0)) {
+                    val sii: MutableIterator<Int> = selectedIndexes.iterator()
                     while (sii.hasNext()) {
-                        final Integer si = sii.next();
-                        list.addSelectionInterval(si.intValue(), si.intValue());
+                        val si = sii.next()
+                        list.addSelectionInterval(si, si)
                     }
-                } else if ((defaultSelectedIndexes != null) && (defaultSelectedIndexes.size() != 0)) {
-                    final Iterator<Integer> sii = defaultSelectedIndexes.iterator();
+                } else if ((defaultSelectedIndexes != null) && (defaultSelectedIndexes.size != 0)) {
+                    val sii: MutableIterator<Int> = defaultSelectedIndexes.iterator()
                     while (sii.hasNext()) {
-                        final Integer si = sii.next();
-                        list.addSelectionInterval(si.intValue(), si.intValue());
+                        val si = sii.next()
+                        list.addSelectionInterval(si, si)
                     }
                 }
             }
         } finally {
-            this.suspendSelections = false;
+            this.suspendSelections = false
         }
     }
 
-    @Override
-    public void reset(final int availWidth, final int availHeight) {
-        super.reset(availWidth, availHeight);
+    override fun reset(availWidth: Int, availHeight: Int) {
+        super.reset(availWidth, availHeight)
         // Need to do this here in case element was incomplete
         // when first rendered.
-        this.resetItemList();
+        this.resetItemList()
     }
 
-    @Override
-    public String getValue() {
-        if (this.state == STATE_COMBO) {
-            final OptionItem item = (OptionItem) this.comboBox.getSelectedItem();
-            return item == null ? null : item.getValue();
-        } else {
-            final OptionItem item = this.list.getSelectedValue();
-            return item == null ? null : item.getValue();
-        }
-    }
-
-    @Override
-    public int getSelectedIndex() {
-        return this.selectedIndex;
-    }
-
-    @Override
-    public void setSelectedIndex(final int value) {
-        this.selectedIndex = value;
-        final boolean prevSuspend = this.suspendSelections;
-        this.suspendSelections = true;
-        // Note that neither IE nor FireFox generate selection
-        // events when the selection is changed programmatically.
-        try {
-            if (!this.inSelectionEvent) {
-                if (this.state == STATE_COMBO) {
-                    final JComboBox<OptionItem> comboBox = this.comboBox;
-                    if (comboBox.getSelectedIndex() != value) {
-                        // This check is done to avoid an infinite recursion
-                        // on ItemListener.
-                        final int size = comboBox.getItemCount();
-                        if (value < size) {
-                            comboBox.setSelectedIndex(value);
-                        }
-                    }
-                } else {
-                    final JList<OptionItem> list = this.list;
-                    final int[] selectedIndices = list.getSelectedIndices();
-                    if ((selectedIndices == null) || (selectedIndices.length != 1) || (selectedIndices[0] != value)) {
-                        // This check is done to avoid an infinite recursion
-                        // on ItemListener.
-                        final int size = this.listModel.getSize();
-                        if (value < size) {
-                            list.setSelectedIndex(value);
-                        }
-                    }
-                }
-            }
-        } finally {
-            this.suspendSelections = prevSuspend;
-        }
-    }
-
-    @Override
-    public int getVisibleSize() {
-        return this.comboBox.getMaximumRowCount();
-    }
-
-    @Override
-    public void setVisibleSize(final int value) {
-        this.comboBox.setMaximumRowCount(value);
-    }
-
-    public void resetInput() {
-        this.list.setSelectedIndex(-1);
-        this.comboBox.setSelectedIndex(-1);
-    }
-
-    @Override
-    public String[] getValues() {
-        if (this.state == STATE_COMBO) {
-            final OptionItem item = (OptionItem) this.comboBox.getSelectedItem();
-            return item == null ? null : new String[]{item.getValue()};
-        } else {
-            final Object[] values = this.list.getSelectedValues();
-            if (values == null) {
-                return null;
-            }
-            final ArrayList<String> al = new ArrayList<>();
-            for (final Object value2 : values) {
-                final OptionItem item = (OptionItem) value2;
-                al.add(item.getValue());
-            }
-            return al.toArray(new String[0]);
-        }
-    }
-
-    private static class OptionItem {
-        private final HTMLOptionElement option;
-        private final String caption;
-
-        public OptionItem(final HTMLOptionElement option) {
-            this.option = option;
-            final String label = option.getLabel();
-            if (label == null) {
-                this.caption = option.getText();
+    val value: String?
+        get() {
+            if (this.state == STATE_COMBO) {
+                val item: OptionItem? = this.comboBox.selectedItem as OptionItem?
+                return if (item == null) null else item.value
             } else {
-                this.caption = label;
+                val item = this.list.getSelectedValue()
+                return if (item == null) null else item.value
             }
         }
 
-        public boolean isSelected() {
-            return this.option.getSelected();
+    var visibleSize: Int
+        get() = this.comboBox.getMaximumRowCount()
+        set(value) {
+            this.comboBox.setMaximumRowCount(value)
         }
 
-        public void setSelected(final boolean value) {
-            this.option.setSelected(value);
-        }
+    override fun resetInput() {
+        this.list.selectedIndex = -1
+        this.comboBox.selectedIndex = -1
+    }
 
-        @Override
-        public String toString() {
-            return this.caption;
-        }
-
-        public String getValue() {
-            String value = this.option.getValue();
-            if (value == null) {
-                value = this.option.getText();
+    val values: Array<String?>?
+        get() {
+            if (this.state == STATE_COMBO) {
+                val item: OptionItem? = this.comboBox.selectedItem as OptionItem?
+                return if (item == null) null else arrayOf<String?>(item.value)
+            } else {
+                val values = this.list.selectedValues
+                if (values == null) {
+                    return null
+                }
+                val al = ArrayList<String?>()
+                for (value2 in values) {
+                    val item: OptionItem = value2 as OptionItem
+                    al.add(item.value)
+                }
+                return al.toTypedArray<String?>()
             }
-            return value;
         }
+
+    private class OptionItem(private val option: HTMLOptionElement) {
+        private val caption: String?
+
+        init {
+            val label = option.label
+            if (label == null) {
+                this.caption = option.text
+            } else {
+                this.caption = label
+            }
+        }
+
+        var isSelected: Boolean
+            get() = this.option.selected
+            set(value) {
+                this.option.setSelected(value)
+            }
+
+        override fun toString(): String {
+            return this.caption!!
+        }
+
+        val value: String?
+            get() {
+                var value = this.option.value
+                if (value == null) {
+                    value = this.option.text
+                }
+                return value
+            }
+    }
+
+    companion object {
+        private const val serialVersionUID = 286101283473109265L
+        private const val STATE_NONE = 0
+        private const val STATE_COMBO = 1
+        private const val STATE_LIST = 2
     }
 }

@@ -21,50 +21,48 @@
 /*
  * Created on May 14, 2005
  */
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
+
+import java.io.IOException
 
 /**
  * @author J. H. S.
  */
-public class OS {
-    /**
-     *
-     */
-    private OS() {
-        super();
-    }
+object OS {
+    val isWindows: Boolean
+        get() {
+            val osName = System.getProperty("os.name")
+            return osName.indexOf("Windows") != -1
+        }
 
-    public static boolean isWindows() {
-        final String osName = System.getProperty("os.name");
-        return osName.indexOf("Windows") != -1;
-    }
-
-    public static void launchBrowser(final String url) throws java.io.IOException {
-        String cmdLine;
-        if (isWindows()) {
-            cmdLine = "rundll32 url.dll,FileProtocolHandler " + url;
+    @Throws(IOException::class)
+    fun launchBrowser(url: String?) {
+        val cmdLine: String?
+        if (isWindows) {
+            cmdLine = "rundll32 url.dll,FileProtocolHandler " + url
         } else {
-            cmdLine = "firefox " + url;
+            cmdLine = "firefox " + url
         }
         try {
-            Runtime.getRuntime().exec(cmdLine);
-        } catch (final java.io.IOException ioe) {
-            Runtime.getRuntime().exec("netscape " + url);
+            Runtime.getRuntime().exec(cmdLine)
+        } catch (ioe: IOException) {
+            Runtime.getRuntime().exec("netscape " + url)
         }
     }
 
     /**
      * Opens a file a directory with an appropriate program.
      */
-    public static void launchPath(final String path) throws java.io.IOException {
-        if (isWindows()) {
-            Runtime.getRuntime().exec(new String[]{"cmd.exe", "/c", "start", "\"title\"", path});
+    @Throws(IOException::class)
+    fun launchPath(path: String?) {
+        if (isWindows) {
+            Runtime.getRuntime().exec(arrayOf<String?>("cmd.exe", "/c", "start", "\"title\"", path))
         } else {
-            throw new UnsupportedOperationException("Unsupported");
+            throw UnsupportedOperationException("Unsupported")
         }
     }
 
-    public static boolean supportsLaunchPath() {
-        return isWindows();
+    fun supportsLaunchPath(): Boolean {
+        return isWindows
     }
 }

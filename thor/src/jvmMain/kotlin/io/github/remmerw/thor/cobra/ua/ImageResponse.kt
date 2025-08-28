@@ -17,52 +17,51 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
  */
+package io.github.remmerw.thor.cobra.ua
 
-package io.github.remmerw.thor.cobra.ua;
+import java.awt.Image
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
+class ImageResponse {
+    val state: State?
+    val img: Image?
 
-import java.awt.Image;
-
-public final class ImageResponse {
-    public final State state;
-    public final @Nullable Image img;
-
-    public ImageResponse() {
-        this.state = State.loading;
-        this.img = null;
+    constructor() {
+        this.state = State.loading
+        this.img = null
     }
 
-    public ImageResponse(final State state, final @Nullable Image img) {
-        this.state = state;
-        this.img = img;
+    constructor(state: State?, img: Image?) {
+        this.state = state
+        this.img = img
     }
 
-    public boolean isDecoded() {
-        if (state == State.loaded) {
-            assert (img != null);
-            @NonNull Image imgLocal = img;
-            return imgLocal.getWidth(null) >= 0 && imgLocal.getHeight(null) >= 0;
-        } else {
-            return false;
+    val isDecoded: Boolean
+        get() {
+            if (state == State.loaded) {
+                checkNotNull(img)
+                val imgLocal: Image = img
+                return imgLocal.getWidth(null) >= 0 && imgLocal.getHeight(null) >= 0
+            } else {
+                return false
+            }
         }
-    }
 
-    public boolean isReadyToPaint() {
-        if (state == State.loaded) {
-            assert (img != null);
-            @NonNull Image imgLocal = img;
-            return imgLocal.getWidth(null) >= 0 && imgLocal.getHeight(null) >= 0;
-        } else {
-            return state != State.loading;
+    val isReadyToPaint: Boolean
+        get() {
+            if (state == State.loaded) {
+                checkNotNull(img)
+                val imgLocal: Image = img
+                return imgLocal.getWidth(null) >= 0 && imgLocal.getHeight(null) >= 0
+            } else {
+                return state != State.loading
+            }
         }
+
+    override fun toString(): String {
+        return "ImageResponse: " + state + ", " + img
     }
 
-    @Override
-    public String toString() {
-        return "ImageResponse: " + state + ", " + img;
+    enum class State {
+        loading, loaded, error
     }
-
-    public enum State {loading, loaded, error}
 }

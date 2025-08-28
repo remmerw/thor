@@ -21,98 +21,93 @@
 /*
  * Created on Oct 15, 2005
  */
-package io.github.remmerw.thor.cobra.html.parser;
+package io.github.remmerw.thor.cobra.html.parser
 
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Document;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.logging.Logger;
-
-import javax.xml.parsers.DocumentBuilder;
-
-import io.github.remmerw.thor.cobra.html.HtmlRendererContext;
-import io.github.remmerw.thor.cobra.html.domimpl.DOMImplementationImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLDocumentImpl;
-import io.github.remmerw.thor.cobra.html.io.WritableLineReader;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext;
+import io.github.remmerw.thor.cobra.html.HtmlRendererContext
+import io.github.remmerw.thor.cobra.html.domimpl.DOMImplementationImpl
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLDocumentImpl
+import io.github.remmerw.thor.cobra.html.io.WritableLineReader
+import io.github.remmerw.thor.cobra.ua.UserAgentContext
+import org.w3c.dom.DOMImplementation
+import org.w3c.dom.Document
+import org.xml.sax.EntityResolver
+import org.xml.sax.ErrorHandler
+import org.xml.sax.InputSource
+import org.xml.sax.SAXException
+import java.io.IOException
+import java.io.InputStreamReader
+import java.util.logging.Logger
+import javax.xml.parsers.DocumentBuilder
 
 /**
- * The <code>DocumentBuilderImpl</code> class is an HTML DOM parser that
- * implements the standard W3C <code>DocumentBuilder</code> interface.
+ * The `DocumentBuilderImpl` class is an HTML DOM parser that
+ * implements the standard W3C `DocumentBuilder` interface.
  *
  * @author J. H. S.
  */
-public class DocumentBuilderImpl extends DocumentBuilder {
-    private static final Logger logger = Logger.getLogger(DocumentBuilderImpl.class.getName());
-    private final UserAgentContext bcontext;
-    private final HtmlRendererContext rcontext;
-    private EntityResolver resolver;
-    private ErrorHandler errorHandler;
-    private DOMImplementation domImplementation;
+class DocumentBuilderImpl : DocumentBuilder {
+    private val bcontext: UserAgentContext
+    private val rcontext: HtmlRendererContext?
+    var resolver: EntityResolver? = null
+        private set
+    private var errorHandler: ErrorHandler? = null
+    private var domImplementation: DOMImplementation? = null
 
     /**
-     * Constructs a <code>DocumentBuilderImpl</code>. This constructor should be
+     * Constructs a `DocumentBuilderImpl`. This constructor should be
      * used when only the parsing functionality (without rendering) is required.
      *
-     * @param context An instance of {@link org.cobraparser.html.UserAgentContext},
-     *                which may be an instance of
-     *                {@link org.cobraparser.html.test.SimpleUserAgentContext}.
+     * @param context An instance of [org.cobraparser.html.UserAgentContext],
+     * which may be an instance of
+     * [org.cobraparser.html.test.SimpleUserAgentContext].
      */
-    public DocumentBuilderImpl(final UserAgentContext context) {
-        this.rcontext = null;
-        this.bcontext = context;
+    constructor(context: UserAgentContext) {
+        this.rcontext = null
+        this.bcontext = context
     }
 
     /**
-     * Constructs a <code>DocumentBuilderImpl</code>. This constructor should be
+     * Constructs a `DocumentBuilderImpl`. This constructor should be
      * used when rendering is expected.
      *
-     * @param ucontext An instance of {@link org.cobraparser.html.UserAgentContext},
-     *                 which may be an instance of
-     *                 {@link org.cobraparser.html.test.SimpleUserAgentContext}.
-     * @param rcontext An instance of {@link HtmlRendererContext},
-     *                 which may be an instance of
-     *                 {@link org.cobraparser.html.test.SimpleHtmlRendererContext}.
+     * @param ucontext An instance of [org.cobraparser.html.UserAgentContext],
+     * which may be an instance of
+     * [org.cobraparser.html.test.SimpleUserAgentContext].
+     * @param rcontext An instance of [HtmlRendererContext],
+     * which may be an instance of
+     * [org.cobraparser.html.test.SimpleHtmlRendererContext].
      */
-    public DocumentBuilderImpl(final UserAgentContext ucontext, final HtmlRendererContext rcontext) {
-        this.rcontext = rcontext;
-        this.bcontext = ucontext;
+    constructor(ucontext: UserAgentContext, rcontext: HtmlRendererContext?) {
+        this.rcontext = rcontext
+        this.bcontext = ucontext
     }
 
     /**
-     * Constructs a <code>DocumentBuilderImpl</code>. This constructor should be
+     * Constructs a `DocumentBuilderImpl`. This constructor should be
      * used when rendering is expected.
      *
-     * @param rcontext An instance of {@link HtmlRendererContext},
-     *                 which may be an instance of
-     *                 {@link org.cobraparser.html.test.SimpleHtmlRendererContext}.
+     * @param rcontext An instance of [HtmlRendererContext],
+     * which may be an instance of
+     * [org.cobraparser.html.test.SimpleHtmlRendererContext].
      */
-    public DocumentBuilderImpl(final HtmlRendererContext rcontext) {
-        this.rcontext = rcontext;
-        this.bcontext = rcontext.getUserAgentContext();
+    constructor(rcontext: HtmlRendererContext) {
+        this.rcontext = rcontext
+        this.bcontext = rcontext.userAgentContext
     }
 
     /**
      * Parses an HTML document. Note that this method will read the entire input
-     * source before returning a <code>Document</code> instance.
+     * source before returning a `Document` instance.
      *
      * @param is The input source, which may be an instance of
-     *           {@link InputSourceImpl}.
-     * @see #createDocument(InputSource)
+     * [InputSourceImpl].
+     * @see .createDocument
      */
-    @Override
-    public Document parse(final InputSource is) throws SAXException, IOException {
-        final HTMLDocumentImpl document = (HTMLDocumentImpl) this.createDocument(is, "");
-        document.load();
-        return document;
+    @Throws(SAXException::class, IOException::class)
+    override fun parse(`is`: InputSource): Document {
+        val document = this.createDocument(`is`, "") as HTMLDocumentImpl
+        document.load()
+        return document
     }
 
     /**
@@ -120,88 +115,70 @@ public class DocumentBuilderImpl extends DocumentBuilder {
      * object can be used for incremental rendering.
      *
      * @param is The input source, which may be an instance of
-     *           {@link InputSourceImpl}. The input
-     *           source must provide either an input stream or a reader.
-     * @see HTMLDocumentImpl#load()
+     * [InputSourceImpl]. The input
+     * source must provide either an input stream or a reader.
+     * @see HTMLDocumentImpl.load
      */
-    public Document createDocument(final InputSource is, final String contentType) throws SAXException, IOException {
-        final String encoding = is.getEncoding();
-        String charset = encoding;
+    @Throws(SAXException::class, IOException::class)
+    fun createDocument(`is`: InputSource, contentType: String?): Document {
+        val encoding = `is`.encoding
+        var charset = encoding
         if (charset == null) {
-            charset = "US-ASCII";
+            charset = "US-ASCII"
         }
-        final String uri = is.getSystemId();
+        val uri = `is`.systemId
         if (uri == null) {
-            logger.warning("parse(): InputSource has no SystemId (URI); document item URLs will not be resolvable.");
+            logger.warning("parse(): InputSource has no SystemId (URI); document item URLs will not be resolvable.")
         }
-        WritableLineReader wis;
-        final Reader reader = is.getCharacterStream();
+        val wis: WritableLineReader?
+        val reader = `is`.characterStream
         if (reader != null) {
-            wis = new WritableLineReader(reader);
+            wis = WritableLineReader(reader)
         } else {
-            final InputStream in = is.getByteStream();
-            if (in != null) {
-                wis = new WritableLineReader(new InputStreamReader(in, charset));
-            } else if (uri != null) {
-                throw new IllegalArgumentException("The input source didn't have a character stream, nor an inputstream!");
-        /*
-        // To comply with the InputSource documentation, we need
-        // to do this:
-        final java.net.URLConnection connection = new java.net.URL(uri).openConnection();
-        in = connection.getInputStream();
-        if (encoding == null) {
-          charset = org.cobraparser.util.Urls.getCharset(connection);
+            val `in` = `is`.byteStream
+            if (`in` != null) {
+                wis = WritableLineReader(InputStreamReader(`in`, charset))
+            } else require(uri == null) { "The input source didn't have a character stream, nor an inputstream!" }
+            throw IllegalArgumentException("The InputSource must have either a reader, an input stream or a URI.")
         }
-        wis = new WritableLineReader(new InputStreamReader(in, charset));
-         */
-            } else {
-                throw new IllegalArgumentException("The InputSource must have either a reader, an input stream or a URI.");
-            }
-        }
-        final HTMLDocumentImpl document = new HTMLDocumentImpl(this.bcontext, this.rcontext, wis, uri, contentType);
-        return document;
+        val document = HTMLDocumentImpl(this.bcontext, this.rcontext, wis, uri!!, contentType)
+        return document
     }
 
-    @Override
-    public boolean isNamespaceAware() {
-        return false;
+    override fun isNamespaceAware(): Boolean {
+        return false
     }
 
-    @Override
-    public boolean isValidating() {
-        return false;
+    override fun isValidating(): Boolean {
+        return false
     }
 
-    @Override
-    public void setEntityResolver(final EntityResolver er) {
-        this.resolver = er;
+    override fun setEntityResolver(er: EntityResolver?) {
+        this.resolver = er
     }
 
-    @Override
-    public Document newDocument() {
-        return new HTMLDocumentImpl(this.bcontext);
+    override fun newDocument(): Document {
+        return HTMLDocumentImpl(this.bcontext)
     }
 
-    @Override
-    public DOMImplementation getDOMImplementation() {
-        synchronized (this) {
+    override fun getDOMImplementation(): DOMImplementation {
+        synchronized(this) {
             if (this.domImplementation == null) {
-                this.domImplementation = new DOMImplementationImpl(this.bcontext);
+                this.domImplementation = DOMImplementationImpl(this.bcontext)
             }
-            return this.domImplementation;
+            return this.domImplementation!!
         }
     }
 
-    public ErrorHandler getErrorHandler() {
-        return errorHandler;
+    fun getErrorHandler(): ErrorHandler? {
+        return errorHandler
     }
 
-    @Override
-    public void setErrorHandler(final ErrorHandler eh) {
-        this.errorHandler = eh;
+    override fun setErrorHandler(eh: ErrorHandler?) {
+        this.errorHandler = eh
     }
 
-    public EntityResolver getResolver() {
-        return resolver;
+    companion object {
+        private val logger: Logger = Logger.getLogger(DocumentBuilderImpl::class.java.name)
     }
 }

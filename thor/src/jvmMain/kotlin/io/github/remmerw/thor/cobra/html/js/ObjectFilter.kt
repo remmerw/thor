@@ -21,8 +21,8 @@
 /*
  * Created on Nov 12, 2005
  */
-package io.github.remmerw.thor.cobra.html.js;
+package io.github.remmerw.thor.cobra.html.js
 
-public interface ObjectFilter {
-    boolean accept(Object target);
+interface ObjectFilter {
+    fun accept(target: Any?): Boolean
 }

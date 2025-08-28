@@ -13,120 +13,111 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+package io.github.remmerw.thor.cobra.css.domimpl
 
-package io.github.remmerw.thor.cobra.css.domimpl;
+import cz.vutbr.web.css.Declaration
+import cz.vutbr.web.css.RuleSet
+import cz.vutbr.web.css.StyleSheet
+import org.w3c.dom.DOMException
+import org.w3c.dom.css.CSSRule
+import org.w3c.dom.css.CSSStyleDeclaration
+import org.w3c.dom.css.CSSValue
 
-import org.w3c.dom.DOMException;
-import org.w3c.dom.css.CSSRule;
-import org.w3c.dom.css.CSSStyleDeclaration;
-import org.w3c.dom.css.CSSValue;
-
-import java.util.List;
-
-import cz.vutbr.web.css.Declaration;
-import cz.vutbr.web.css.RuleBlock;
-import cz.vutbr.web.css.RuleSet;
-import cz.vutbr.web.css.StyleSheet;
-
-final class CSSStyleDeclarationImpl implements CSSStyleDeclaration {
-
-    private final List<Declaration> declarations;
-    private final AbstractCSSRule parentRule;
-
-    CSSStyleDeclarationImpl(final List<Declaration> declarations, final AbstractCSSRule parentRule) {
-        this.declarations = declarations;
-        this.parentRule = parentRule;
+internal class CSSStyleDeclarationImpl(
+    private val declarations: MutableList<Declaration>,
+    private val parentRule: AbstractCSSRule
+) : CSSStyleDeclaration {
+    override fun getCssText(): String? {
+        return declarations.toString()
     }
 
-    public String getCssText() {
-        return declarations.toString();
-    }
-
-    public void setCssText(final String cssText) throws DOMException {
-        final StyleSheet jSheet = CSSUtils.parse("*{" + cssText + "}");
-        declarations.clear();
-        for (final RuleBlock<?> rule : jSheet) {
-            declarations.addAll((RuleSet) rule);
+    @Throws(DOMException::class)
+    override fun setCssText(cssText: String?) {
+        val jSheet = CSSUtils.parse("*{" + cssText + "}")
+        declarations.clear()
+        for (rule in jSheet) {
+            declarations.addAll((rule as RuleSet?)!!)
         }
-        final JStyleSheetWrapper styleSheet = parentRule.containingStyleSheet;
-        styleSheet.informChanged();
+        val styleSheet = parentRule.containingStyleSheet
+        styleSheet.informChanged()
     }
 
-    public String getPropertyValue(final String propertyName) {
-        final Declaration propertyValueTerm = getPropertyValueTerm(propertyName);
-        return propertyValueTerm == null ? null : propertyValueTerm.asList().toString();
+    override fun getPropertyValue(propertyName: String?): String? {
+        val propertyValueTerm = getPropertyValueTerm(propertyName)
+        return if (propertyValueTerm == null) null else propertyValueTerm.asList().toString()
     }
 
-    private Declaration getPropertyValueTerm(final String propertyName) {
-        for (final Declaration d : declarations) {
-            if (d.getProperty().equalsIgnoreCase(propertyName)) {
-                return d;
+    private fun getPropertyValueTerm(propertyName: String?): Declaration? {
+        for (d in declarations) {
+            if (d.property.equals(propertyName, ignoreCase = true)) {
+                return d
             }
         }
-        return null;
+        return null
     }
 
-    public CSSValue getPropertyCSSValue(final String propertyName) {
+    override fun getPropertyCSSValue(propertyName: String?): CSSValue? {
         // TODO implement this method
-        throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "This operation is not supported");
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "This operation is not supported")
     }
 
-    public String removeProperty(final String propertyName) throws DOMException {
+    @Throws(DOMException::class)
+    override fun removeProperty(propertyName: String?): String? {
         if (!declarations.isEmpty()) {
-            final Declaration currDecl = getPropertyValueTerm(propertyName);
+            val currDecl = getPropertyValueTerm(propertyName)
             if (currDecl != null) {
-                final String val = currDecl.toString();
-                declarations.remove(currDecl);
-                final JStyleSheetWrapper styleSheet = parentRule.containingStyleSheet;
-                styleSheet.informChanged();
-                return val;
+                val `val`: String? = currDecl.toString()
+                declarations.remove(currDecl)
+                val styleSheet = parentRule.containingStyleSheet
+                styleSheet.informChanged()
+                return `val`
             }
         }
-        return "";
+        return ""
     }
 
-    public String getPropertyPriority(final String propertyName) {
+    override fun getPropertyPriority(propertyName: String?): String? {
         // TODO implement this method
-        throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "This operation is not supported");
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "This operation is not supported")
     }
 
     // TODO check if priority is optional
     // see how priority can be used with respect to jStyle.
     // currently priority is not being used at all
-    public void setProperty(final String propertyName, final String value, final String priority) throws DOMException {
-        final StyleSheet jSheet = parseStyle(propertyName, value, priority);
-        for (final RuleBlock<?> rule : jSheet) {
-            final RuleSet rs = (RuleSet) rule;
-            for (final Declaration decl : rs) {
-                final Declaration currDec = getPropertyValueTerm(propertyName);
+    @Throws(DOMException::class)
+    override fun setProperty(propertyName: String?, value: String?, priority: String?) {
+        val jSheet = parseStyle(propertyName, value, priority)
+        for (rule in jSheet) {
+            val rs = rule as RuleSet
+            for (decl in rs) {
+                val currDec = getPropertyValueTerm(propertyName)
                 if (currDec == null) {
-                    declarations.add(decl);
+                    declarations.add(decl)
                 } else {
-                    currDec.clear();
-                    currDec.addAll(decl);
+                    currDec.clear()
+                    currDec.addAll(decl)
                 }
             }
         }
     }
 
-    public int getLength() {
-        return declarations.size();
+    override fun getLength(): Int {
+        return declarations.size
     }
 
-    public String item(final int index) {
-        return declarations.get(index).getProperty();
+    override fun item(index: Int): String? {
+        return declarations.get(index).property
     }
 
-    public CSSRule getParentRule() {
-        return this.parentRule;
+    override fun getParentRule(): CSSRule {
+        return this.parentRule
     }
 
-    private StyleSheet parseStyle(final String propertyName, final String value, final String priority) {
-        return CSSUtils.parse("* { " + propertyName + ": " + value + "; }");
+    private fun parseStyle(propertyName: String?, value: String?, priority: String?): StyleSheet {
+        return CSSUtils.parse("* { " + propertyName + ": " + value + "; }")
     }
 
-    @Override
-    public String toString() {
-        return declarations.toString();
+    override fun toString(): String {
+        return declarations.toString()
     }
 }

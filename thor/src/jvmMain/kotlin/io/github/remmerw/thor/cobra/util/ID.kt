@@ -21,95 +21,92 @@
 /*
  * Created on Jun 7, 2005
  */
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
 
-import java.math.BigInteger;
-import java.net.InetAddress;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.math.BigInteger
+import java.net.InetAddress
+import java.nio.charset.StandardCharsets
+import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
+import java.util.Locale
+import java.util.Random
+import java.util.logging.Level
+import java.util.logging.Logger
+import kotlin.math.abs
 
 /**
  * @author J. H. S.
  */
-public class ID {
-    private static final Random RANDOM1;
-    private static final Random RANDOM2;
-    private static final Random RANDOM3;
-
-    // Disabling. Don't like the feel of this:
-    private static final long globalProcessID;
-
-    private static final Logger logger = Logger.getLogger(ID.class.getName());
-
-    static {
-        final long time = System.currentTimeMillis();
-        final long nanoTime = System.nanoTime();
-        final long freeMemory = Runtime.getRuntime().freeMemory();
-        long addressHashCode;
-        try {
-            InetAddress inetAddress;
-            inetAddress = InetAddress.getLoopbackAddress();
-            // inetAddress = InetAddress.getLocalHost();
-            addressHashCode = inetAddress.getHostName().hashCode() ^ inetAddress.getHostAddress().hashCode();
-        } catch (final Exception err) {
-            logger.log(Level.WARNING, "Unable to get local host information.", err);
-            addressHashCode = ID.class.hashCode();
-        }
-
-        globalProcessID = time ^ nanoTime ^ freeMemory ^ addressHashCode;
-        RANDOM1 = new Random(time);
-        RANDOM2 = new Random(nanoTime);
-        RANDOM3 = new Random(addressHashCode ^ freeMemory);
-    }
-
-    private ID() {
-    }
-
-    public static long generateLong() {
-        return Math.abs(RANDOM1.nextLong() ^ RANDOM2.nextLong() ^ RANDOM3.nextLong());
-    }
-
-    public static int generateInt() {
-        return (int) generateLong();
-    }
-
-    public static byte[] getMD5Bytes(final String content) {
-        try {
-            final MessageDigest digest = MessageDigest.getInstance("MD5");
-            return digest.digest(content.getBytes(StandardCharsets.UTF_8));
-        } catch (final NoSuchAlgorithmException e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    public static String getHexString(final byte[] bytes) {
-        // This method cannot change even if it's wrong.
-        BigInteger bigInteger = BigInteger.ZERO;
-        int shift = 0;
-        for (int i = bytes.length; --i >= 0; ) {
-            BigInteger contrib = BigInteger.valueOf(bytes[i] & 0xFF);
-            contrib = contrib.shiftLeft(shift);
-            bigInteger = bigInteger.add(contrib);
-            shift += 8;
-        }
-        return bigInteger.toString(16).toUpperCase();
-    }
+object ID {
+    private val RANDOM1: Random
+    private val RANDOM2: Random
+    private val RANDOM3: Random
 
     /**
      * Gets a process ID that is nearly guaranteed to be globally unique.
      */
-    public static long getGlobalProcessID() {
-        return globalProcessID;
+    // Disabling. Don't like the feel of this:
+    val globalProcessID: Long
+
+    private val logger: Logger = Logger.getLogger(ID::class.java.name)
+
+    init {
+        val time = System.currentTimeMillis()
+        val nanoTime = System.nanoTime()
+        val freeMemory = Runtime.getRuntime().freeMemory()
+        var addressHashCode: Long
+        try {
+            val inetAddress: InetAddress
+            inetAddress = InetAddress.getLoopbackAddress()
+            // inetAddress = InetAddress.getLocalHost();
+            addressHashCode = (inetAddress.hostName.hashCode() xor inetAddress.hostAddress
+                .hashCode()).toLong()
+        } catch (err: Exception) {
+            logger.log(Level.WARNING, "Unable to get local host information.", err)
+            addressHashCode = ID::class.java.hashCode().toLong()
+        }
+
+        globalProcessID = time xor nanoTime xor freeMemory xor addressHashCode
+        RANDOM1 = Random(time)
+        RANDOM2 = Random(nanoTime)
+        RANDOM3 = Random(addressHashCode xor freeMemory)
     }
 
-    public static int random(final int min, final int max) {
-        if (max <= min) {
-            return min;
+    fun generateLong(): Long {
+        return abs(RANDOM1.nextLong() xor RANDOM2.nextLong() xor RANDOM3.nextLong())
+    }
+
+    fun generateInt(): Int {
+        return generateLong().toInt()
+    }
+
+    fun getMD5Bytes(content: String): ByteArray? {
+        try {
+            val digest = MessageDigest.getInstance("MD5")
+            return digest.digest(content.toByteArray(StandardCharsets.UTF_8))
+        } catch (e: NoSuchAlgorithmException) {
+            throw IllegalStateException(e)
         }
-        return (Math.abs(RANDOM1.nextInt()) % (max - min)) + min;
+    }
+
+    fun getHexString(bytes: ByteArray): String {
+        // This method cannot change even if it's wrong.
+        var bigInteger = BigInteger.ZERO
+        var shift = 0
+        var i = bytes.size
+        while (--i >= 0) {
+            var contrib = BigInteger.valueOf((bytes[i].toInt() and 0xFF).toLong())
+            contrib = contrib.shiftLeft(shift)
+            bigInteger = bigInteger.add(contrib)
+            shift += 8
+        }
+        return bigInteger.toString(16).uppercase(Locale.getDefault())
+    }
+
+    fun random(min: Int, max: Int): Int {
+        if (max <= min) {
+            return min
+        }
+        return (abs(RANDOM1.nextInt()) % (max - min)) + min
     }
 }

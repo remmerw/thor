@@ -21,26 +21,16 @@
 /*
  * Created on Apr 23, 2005
  */
-package io.github.remmerw.thor.cobra.html.renderer;
-
-import java.util.Collection;
+package io.github.remmerw.thor.cobra.html.renderer
 
 /**
  * @author J. H. S.
  */
-class OverflowException extends Exception {
-    private static final long serialVersionUID = -5737714010798136643L;
-    private final Collection<Renderable> renderables;
-
-    /**
-     *
-     */
-    public OverflowException(final Collection<Renderable> renderables) {
-        super();
-        this.renderables = renderables;
-    }
-
-    public Collection<Renderable> getRenderables() {
-        return this.renderables;
+internal class OverflowException
+/**
+ *
+ */(val renderables: MutableCollection<Renderable?>?) : Exception() {
+    companion object {
+        private val serialVersionUID = -5737714010798136643L
     }
 }

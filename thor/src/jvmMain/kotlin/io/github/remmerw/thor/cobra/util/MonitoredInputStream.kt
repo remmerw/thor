@@ -21,28 +21,25 @@
 /*
  * Created on Apr 15, 2005
  */
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.IOException
+import java.io.InputStream
 
 /**
  * @author J. H. S.
  */
-public class MonitoredInputStream extends InputStream {
-    public final EventDispatch evtProgress = new EventDispatch();
-    private final InputStream delegate;
-    private final long minProgressEventGap;
-    private int progress = 0;
-    private long lastEvenPosted = 0;
+class MonitoredInputStream @JvmOverloads constructor(
+    private val delegate: InputStream,
+    minProgressEventGap: Int = 200
+) : InputStream() {
+    val evtProgress: EventDispatch = EventDispatch()
+    private val minProgressEventGap: Long
+    private var progress = 0
+    private var lastEvenPosted: Long = 0
 
-    public MonitoredInputStream(final InputStream delegate, final int minProgressEventGap) {
-        this.delegate = delegate;
-        this.minProgressEventGap = minProgressEventGap;
-    }
-
-    public MonitoredInputStream(final InputStream delegate) {
-        this(delegate, 200);
+    init {
+        this.minProgressEventGap = minProgressEventGap.toLong()
     }
 
     /*
@@ -50,9 +47,9 @@ public class MonitoredInputStream extends InputStream {
      *
      * @see java.io.InputStream#available()
      */
-    @Override
-    public int available() throws IOException {
-        return this.delegate.available();
+    @Throws(IOException::class)
+    override fun available(): Int {
+        return this.delegate.available()
     }
 
     /*
@@ -60,9 +57,9 @@ public class MonitoredInputStream extends InputStream {
      *
      * @see java.io.InputStream#close()
      */
-    @Override
-    public void close() throws IOException {
-        this.delegate.close();
+    @Throws(IOException::class)
+    override fun close() {
+        this.delegate.close()
     }
 
     /*
@@ -70,9 +67,8 @@ public class MonitoredInputStream extends InputStream {
      *
      * @see java.io.InputStream#markSupported()
      */
-    @Override
-    public boolean markSupported() {
-        return false;
+    override fun markSupported(): Boolean {
+        return false
     }
 
     /*
@@ -80,13 +76,13 @@ public class MonitoredInputStream extends InputStream {
      *
      * @see java.io.InputStream#read()
      */
-    @Override
-    public int read() throws IOException {
-        final int b = this.delegate.read();
+    @Throws(IOException::class)
+    override fun read(): Int {
+        val b = this.delegate.read()
         if (b != -1) {
-            this.progress++;
+            this.progress++
         }
-        return b;
+        return b
     }
 
     /*
@@ -94,17 +90,17 @@ public class MonitoredInputStream extends InputStream {
      *
      * @see java.io.InputStream#read(byte[], int, int)
      */
-    @Override
-    public int read(final byte[] arg0, final int arg1, final int arg2) throws IOException {
-        final int numRead = this.delegate.read(arg0, arg1, arg2);
+    @Throws(IOException::class)
+    override fun read(arg0: ByteArray, arg1: Int, arg2: Int): Int {
+        val numRead = this.delegate.read(arg0, arg1, arg2)
         if (numRead != -1) {
-            this.progress += numRead;
-            final long currentTime = System.currentTimeMillis();
+            this.progress += numRead
+            val currentTime = System.currentTimeMillis()
             if ((currentTime - this.lastEvenPosted) > this.minProgressEventGap) {
-                this.evtProgress.fireEvent(new InputProgressEvent(this, this.progress));
-                this.lastEvenPosted = currentTime;
+                this.evtProgress.fireEvent(InputProgressEvent(this, this.progress))
+                this.lastEvenPosted = currentTime
             }
         }
-        return numRead;
+        return numRead
     }
 }

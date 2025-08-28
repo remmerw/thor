@@ -18,35 +18,27 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-public class LineBreak {
-    public static final int NONE = 0;
-    public static final int LEFT = 1;
-    public static final int RIGHT = 2;
-    public static final int ALL = 3;
+class LineBreak(val breakType: Int) {
+    companion object {
+        const val NONE: Int = 0
+        const val LEFT: Int = 1
+        const val RIGHT: Int = 2
+        const val ALL: Int = 3
 
-    private final int breakType;
-
-    public LineBreak(final int breakType) {
-        this.breakType = breakType;
-    }
-
-    public static int getBreakType(final String clearAttr) {
-        if (clearAttr == null) {
-            return NONE;
-        } else if ("all".equalsIgnoreCase(clearAttr)) {
-            return ALL;
-        } else if ("left".equalsIgnoreCase(clearAttr)) {
-            return LEFT;
-        } else if ("right".equalsIgnoreCase(clearAttr)) {
-            return RIGHT;
-        } else {
-            return NONE;
+        fun getBreakType(clearAttr: String?): Int {
+            if (clearAttr == null) {
+                return NONE
+            } else if ("all".equals(clearAttr, ignoreCase = true)) {
+                return ALL
+            } else if ("left".equals(clearAttr, ignoreCase = true)) {
+                return LEFT
+            } else if ("right".equals(clearAttr, ignoreCase = true)) {
+                return RIGHT
+            } else {
+                return NONE
+            }
         }
-    }
-
-    public int getBreakType() {
-        return this.breakType;
     }
 }

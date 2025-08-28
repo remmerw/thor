@@ -21,41 +21,40 @@
 /*
  * Created on Nov 13, 2005
  */
-package io.github.remmerw.thor.cobra.html.io;
+package io.github.remmerw.thor.cobra.html.io
 
-import java.io.IOException;
-import java.io.LineNumberReader;
-import java.io.Reader;
+import java.io.IOException
+import java.io.LineNumberReader
+import java.io.Reader
+import kotlin.math.min
 
-public class WritableLineReader extends LineNumberReader {
-    private final Reader delegate;
-    private StringBuffer writeBuffer = null;
+open class WritableLineReader : LineNumberReader {
+    private val delegate: Reader
+    private var writeBuffer: StringBuffer? = null
 
-    public WritableLineReader(final Reader reader, final int bufferSize) {
-        super(reader, bufferSize);
-        this.delegate = reader;
+    constructor(reader: Reader, bufferSize: Int) : super(reader, bufferSize) {
+        this.delegate = reader
     }
 
-    public WritableLineReader(final Reader reader) {
-        super(reader);
-        this.delegate = reader;
+    constructor(reader: Reader) : super(reader) {
+        this.delegate = reader
     }
 
     /*
      * Note: Not implicitly thread safe.
      */
-    @Override
-    public int read() throws IOException {
-        final StringBuffer sb = this.writeBuffer;
-        if ((sb != null) && (sb.length() > 0)) {
-            final char ch = sb.charAt(0);
-            sb.deleteCharAt(0);
-            if (sb.length() == 0) {
-                this.writeBuffer = null;
+    @Throws(IOException::class)
+    override fun read(): Int {
+        val sb = this.writeBuffer
+        if ((sb != null) && (sb.length > 0)) {
+            val ch = sb.get(0)
+            sb.deleteCharAt(0)
+            if (sb.length == 0) {
+                this.writeBuffer = null
             }
-            return ch;
+            return ch.code
         }
-        return super.read();
+        return super.read()
     }
 
     /*
@@ -63,28 +62,28 @@ public class WritableLineReader extends LineNumberReader {
      *
      * @see java.io.Reader#read(byte[], int, int)
      */
-    @Override
-    public int read(final char[] b, final int off, final int len) throws IOException {
-        final StringBuffer sb = this.writeBuffer;
-        if ((sb != null) && (sb.length() > 0)) {
-            final int srcEnd = Math.min(sb.length(), len);
-            sb.getChars(0, srcEnd, b, off);
-            sb.delete(0, srcEnd);
-            if (sb.length() == 0) {
-                this.writeBuffer = null;
+    @Throws(IOException::class)
+    override fun read(b: CharArray, off: Int, len: Int): Int {
+        val sb = this.writeBuffer
+        if ((sb != null) && (sb.length > 0)) {
+            val srcEnd = min(sb.length, len)
+            sb.getChars(0, srcEnd, b, off)
+            sb.delete(0, srcEnd)
+            if (sb.length == 0) {
+                this.writeBuffer = null
             }
-            return srcEnd;
+            return srcEnd
         }
-        return super.read(b, off, len);
+        return super.read(b, off, len)
     }
 
-    @Override
-    public boolean ready() throws IOException {
-        final StringBuffer sb = this.writeBuffer;
-        if ((sb != null) && (sb.length() > 0)) {
-            return true;
+    @Throws(IOException::class)
+    override fun ready(): Boolean {
+        val sb = this.writeBuffer
+        if ((sb != null) && (sb.length > 0)) {
+            return true
         }
-        return super.ready();
+        return super.ready()
     }
 
     /*
@@ -92,10 +91,10 @@ public class WritableLineReader extends LineNumberReader {
      *
      * @see java.io.Reader#close()
      */
-    @Override
-    public void close() throws IOException {
-        this.writeBuffer = null;
-        super.close();
+    @Throws(IOException::class)
+    override fun close() {
+        this.writeBuffer = null
+        super.close()
     }
 
     /**
@@ -104,13 +103,14 @@ public class WritableLineReader extends LineNumberReader {
      * @param text
      * @throws IOException
      */
-    public void write(final String text) throws IOException {
+    @Throws(IOException::class)
+    open fun write(text: String?) {
         // Document overrides this to know that new data is coming.
-        StringBuffer sb = this.writeBuffer;
+        var sb = this.writeBuffer
         if (sb == null) {
-            sb = new StringBuffer();
-            this.writeBuffer = sb;
+            sb = StringBuffer()
+            this.writeBuffer = sb
         }
-        sb.append(text);
+        sb.append(text)
     }
 }

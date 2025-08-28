@@ -18,10 +18,10 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
 
-import java.util.EventListener;
+import java.util.EventListener
 
-public interface RemovalListener extends EventListener {
-    void removed(RemovalEvent event);
+interface RemovalListener : EventListener {
+    fun removed(event: RemovalEvent?)
 }

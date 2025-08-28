@@ -17,33 +17,34 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
  */
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
 
-public final class Threads {
+import kotlin.math.min
 
-    final private static int STACKS_TO_SKIP_AT_START = 2;
+object Threads {
+    private const val STACKS_TO_SKIP_AT_START = 2
 
-    public static void dumpStack(final int maxStacks) {
-        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-        final int stacksToPrint = Math.min(stackTrace.length, maxStacks + STACKS_TO_SKIP_AT_START);
-        System.out.println("--- 8< ------------[START]------------ >8 ---");
-        for (int i = STACKS_TO_SKIP_AT_START; i < stacksToPrint; i++) {
-            System.out.println(stackTrace[i]);
+    fun dumpStack(maxStacks: Int) {
+        val stackTrace = Thread.currentThread().stackTrace
+        val stacksToPrint = min(stackTrace.size, maxStacks + STACKS_TO_SKIP_AT_START)
+        println("--- 8< ------------[START]------------ >8 ---")
+        for (i in STACKS_TO_SKIP_AT_START..<stacksToPrint) {
+            println(stackTrace[i])
         }
-        if (stacksToPrint < stackTrace.length) {
-            System.out.println("... skipped " + (stackTrace.length - stacksToPrint) + " traces");
+        if (stacksToPrint < stackTrace.size) {
+            println("... skipped " + (stackTrace.size - stacksToPrint) + " traces")
         }
-        System.out.println("--- 8< ------------[ END ]------------ >8 ---");
+        println("--- 8< ------------[ END ]------------ >8 ---")
     }
 
     /**
      * Sleep until interrupted
      */
-    public static void sleep(int ms) {
+    fun sleep(ms: Int) {
         try {
-            Thread.sleep(ms);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            Thread.sleep(ms.toLong())
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
         }
     }
 }

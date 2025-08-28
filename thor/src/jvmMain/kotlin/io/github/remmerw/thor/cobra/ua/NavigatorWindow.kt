@@ -20,36 +20,36 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.github.remmerw.thor.cobra.ua;
+package io.github.remmerw.thor.cobra.ua
 
-import java.awt.Component;
-import java.util.List;
+import java.awt.Component
+import javax.swing.JMenu
 
 /**
  * This interface represents a navigator window.
  */
-public interface NavigatorWindow {
+interface NavigatorWindow {
     /**
      * Adds a top-level menu to the window.
      *
      * @param menuId A globally unique ID for the menu.
      * @param menu   A JMenu instance.
-     * @see #getMenu(String)
+     * @see .getMenu
      */
-    void addMenu(String menuId, javax.swing.JMenu menu);
+    fun addMenu(menuId: String?, menu: JMenu?)
 
     /**
      * Gets a menu previously added, typically by another extension with higher
      * priority.
      *
      * @param menuId The unique ID of the menu. The convention in Lobo is to use
-     *               "lobo." followed by the name of the menu in lower case, with any
-     *               spaces converted to dots. For example, the ID of the File menu
-     *               should be "lobo.file". The ID of the Page Services menu should be
-     *               "lobo.page.services".
+     * "lobo." followed by the name of the menu in lower case, with any
+     * spaces converted to dots. For example, the ID of the File menu
+     * should be "lobo.file". The ID of the Page Services menu should be
+     * "lobo.page.services".
      * @return A JMenu instance.
      */
-    javax.swing.JMenu getMenu(String menuId);
+    fun getMenu(menuId: String?): JMenu?
 
     /**
      * Adds a "tool bar" component to the window. The preferred height of the tool
@@ -58,7 +58,7 @@ public interface NavigatorWindow {
      *
      * @param toolBar A AWT or Swing lightweight.
      */
-    void addToolBar(Component toolBar);
+    fun addToolBar(toolBar: Component?)
 
     /**
      * Adds a component to the shared tool bar. The preferred width of the
@@ -66,9 +66,9 @@ public interface NavigatorWindow {
      * the shared tool bar.
      *
      * @param toolBarComponent
-     * @see #createGlueComponent(Component, boolean)
+     * @see .createGlueComponent
      */
-    void addSharedToolBarComponent(Component toolBarComponent);
+    fun addSharedToolBarComponent(toolBarComponent: Component?)
 
     /**
      * Adds a component to the status bar. The preferred width of the component is
@@ -76,9 +76,9 @@ public interface NavigatorWindow {
      * bar.
      *
      * @param statusBarComponent
-     * @see #createGlueComponent(Component, boolean)
+     * @see .createGlueComponent
      */
-    void addStatusBarComponent(Component statusBarComponent);
+    fun addStatusBarComponent(statusBarComponent: Component?)
 
     /**
      * Adds a component to the address bar. The preferred width of the component
@@ -86,100 +86,100 @@ public interface NavigatorWindow {
      * bar.
      *
      * @param addressBarComponent
-     * @see #createGlueComponent(Component, boolean)
+     * @see .createGlueComponent
      */
-    void addAddressBarComponent(Component addressBarComponent);
+    fun addAddressBarComponent(addressBarComponent: Component?)
 
     /**
      * Adds a listener of window events.
      *
      * @param listener A listener instance.
      */
-    void addNavigatorWindowListener(NavigatorWindowListener listener);
+    fun addNavigatorWindowListener(listener: NavigatorWindowListener?)
 
     /**
      * Removes a listener previously added with
-     * {@link #addNavigatorWindowListener(NavigatorWindowListener)}
+     * [.addNavigatorWindowListener]
      *
      * @param listener
      */
-    void removeNavigatorWindowListener(NavigatorWindowListener listener);
+    fun removeNavigatorWindowListener(listener: NavigatorWindowListener?)
 
     /**
      * Gets the top frame of this window.
      */
-    NavigatorFrame getTopFrame();
+    val topFrame: NavigatorFrame?
 
     /**
      * Creates a component wrapper that expands to fill its parent's available
-     * space. It only works if the parent uses a Swing <code>BoxLayout</code>.
+     * space. It only works if the parent uses a Swing `BoxLayout`.
      * Examples of components that are wrapped this way are the address combo box
      * and the status message component.
      *
      * @param wrappedComponent The component that is wrapped by the glue box.
      * @param usingMaxSize     Whether the adjacent components have a maximum size that the
-     *                         container should try to use. If this argument is
-     *                         <code>false</code>, it is assumed that the adjacent components can
-     *                         be shrunk to their minimum sizes.
+     * container should try to use. If this argument is
+     * `false`, it is assumed that the adjacent components can
+     * be shrunk to their minimum sizes.
      */
-    Component createGlueComponent(Component wrappedComponent, boolean usingMaxSize);
+    fun createGlueComponent(wrappedComponent: Component?, usingMaxSize: Boolean): Component?
 
     /**
      * Creates a gap component that should be placed between toolbar, address bar
      * or status bar components.
      */
-    Component createGap();
+    fun createGap(): Component?
 
     /**
      * Closes the window.
      */
-    void dispose();
+    fun dispose()
 
     /**
      * Gets the navigator for the window.
      */
-    UserAgent getUserAgent();
+    val userAgent: UserAgent?
 
-    boolean canBack();
+    fun canBack(): Boolean
 
-    boolean canForward();
+    fun canForward(): Boolean
 
-    boolean back();
+    fun back(): Boolean
 
-    boolean forward();
+    fun forward(): Boolean
 
-    boolean canReload();
+    fun canReload(): Boolean
 
-    boolean reload();
+    fun reload(): Boolean
 
-    boolean stop();
+    fun stop(): Boolean
 
-    boolean canCopy();
+    fun canCopy(): Boolean
 
-    boolean copy();
+    fun copy(): Boolean
 
-    boolean hasSource();
+    fun hasSource(): Boolean
 
     /**
-     * Navigates to a {@link NavigationEntry} belonging to navigation history in
+     * Navigates to a [NavigationEntry] belonging to navigation history in
      * the current session. without generating a new entry, in much the same way
-     * that {@link #back()} and {@link #forward()} work.
+     * that [.back] and [.forward] work.
      *
-     * @param entry A existing <code>NavigationEntry</code>.
+     * @param entry A existing `NavigationEntry`.
      * @return True if the operation succeeded.
      */
-    boolean goTo(NavigationEntry entry);
+    fun goTo(entry: NavigationEntry?): Boolean
 
-    List<NavigationEntry> getBackNavigationEntries();
+    val backNavigationEntries: MutableList<NavigationEntry?>?
 
-    List<NavigationEntry> getForwardNavigationEntries();
+    val forwardNavigationEntries: MutableList<NavigationEntry?>?
 
-    NavigationEntry getCurrentNavigationEntry();
+    val currentNavigationEntry: NavigationEntry?
 
     /**
-     * Gets the <code>java.awt.Frame</code> instance associated with this
-     * <code>NavigatorWindow</code>. In most cases this method will return an
-     * instance of <code>javax.swing.JFrame</code>.
+     * Gets the `java.awt.Frame` instance associated with this
+     * `NavigatorWindow`. In most cases this method will return an
+     * instance of `javax.swing.JFrame`.
      */
-    java.awt.Window getAwtWindow();
+    val awtWindow: Window?
 }

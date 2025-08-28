@@ -20,41 +20,36 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.github.remmerw.thor.cobra.clientlet;
+package io.github.remmerw.thor.cobra.clientlet
 
 /**
  * Provides utility methods to access the current clientlet context.
  */
-public class ClientletAccess {
-    private static final ThreadLocal<ClientletContext> currentClientletContext = new ThreadLocal<>();
-
-    private ClientletAccess() {
-    }
-
-    /**
-     * Gets the {@link ClientletContext} of the current thread, if any.
-     */
-    public static ClientletContext getCurrentClientletContext() {
-        final ClientletContext ctx = currentClientletContext.get();
-        if (ctx != null) {
-            return ctx;
-        } else {
-            final ThreadGroup td = Thread.currentThread().getThreadGroup();
-            if (td instanceof ClientletThreadGroup) {
-                return ((ClientletThreadGroup) td).getClientletContext();
+object ClientletAccess {
+    var currentClientletContext: ThreadLocal<ClientletContext?> = ThreadLocal<ClientletContext?>()
+        /**
+         * Gets the [ClientletContext] of the current thread, if any.
+         */
+        get() {
+            val ctx = field.get()
+            if (ctx != null) {
+                return ctx
             } else {
-                return null;
+                val td = Thread.currentThread().threadGroup
+                if (td is ClientletThreadGroup) {
+                    return (td as ClientletThreadGroup).getClientletContext()
+                } else {
+                    return null
+                }
             }
         }
-    }
-
-    /**
-     * This method should be invoked by the clientlet platform to publish the
-     * {@link ClientletContext} of the current thread.
-     *
-     * @param context A {@link ClientletContext} instance.
-     */
-    public static void setCurrentClientletContext(final ClientletContext context) {
-        currentClientletContext.set(context);
-    }
+        /**
+         * This method should be invoked by the clientlet platform to publish the
+         * [ClientletContext] of the current thread.
+         *
+         * @param context A [ClientletContext] instance.
+         */
+        set(context) {
+            field.set(context)
+        }
 }

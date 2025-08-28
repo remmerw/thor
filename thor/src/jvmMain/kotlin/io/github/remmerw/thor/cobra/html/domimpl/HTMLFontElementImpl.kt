@@ -18,37 +18,32 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.html.HTMLFontElement;
+import org.w3c.dom.html.HTMLFontElement
 
-public class HTMLFontElementImpl extends HTMLAbstractUIElement implements HTMLFontElement {
-    public HTMLFontElementImpl(final String name) {
-        super(name);
+class HTMLFontElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLFontElement {
+    override fun getColor(): String? {
+        return this.getAttribute("color")
     }
 
-    public String getColor() {
-        return this.getAttribute("color");
+    override fun setColor(color: String?) {
+        this.setAttribute("color", color)
     }
 
-    public void setColor(final String color) {
-        this.setAttribute("color", color);
+    override fun getFace(): String? {
+        return this.getAttribute("face")
     }
 
-    public String getFace() {
-        return this.getAttribute("face");
+    override fun setFace(face: String?) {
+        this.setAttribute("face", face)
     }
 
-    public void setFace(final String face) {
-        this.setAttribute("face", face);
+    override fun getSize(): String? {
+        return this.getAttribute("size")
     }
 
-    public String getSize() {
-        return this.getAttribute("size");
+    override fun setSize(size: String?) {
+        this.setAttribute("size", size)
     }
-
-    public void setSize(final String size) {
-        this.setAttribute("size", size);
-    }
-
 }

@@ -21,138 +21,131 @@
 /*
  * Created on Apr 17, 2005
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import org.eclipse.jdt.annotation.NonNull;
-
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Insets;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
-import cz.vutbr.web.css.CSSProperty.VerticalAlign;
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode;
-import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.UINode;
-import io.github.remmerw.thor.cobra.html.style.RenderState;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext;
+import cz.vutbr.web.css.CSSProperty.VerticalAlign
+import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
+import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
+import io.github.remmerw.thor.cobra.html.domimpl.UINode
+import io.github.remmerw.thor.cobra.html.style.RenderState
+import io.github.remmerw.thor.cobra.ua.UserAgentContext
+import java.awt.Color
+import java.awt.Font
+import java.awt.Graphics
+import java.awt.event.MouseEvent
 
 /**
  * @author J. H. S.
  */
-class RUIControl extends BaseElementRenderable {
-    private static final int MAX_CACHE_SIZE = 10;
-    public final UIControl widget;
-    private final FrameContext frameContext;
-    private final Map<LayoutKey, LayoutValue> cachedLayout = new HashMap<>(5);
-    private int declaredWidth = -1;
-    private int declaredHeight = -1;
-    private LayoutKey lastLayoutKey = null;
-    private LayoutValue lastLayoutValue = null;
-    private boolean widthConstrained = false;
-    private boolean heightConstrained = false;
+internal open class RUIControl(
+    me: ModelNode?, widget: UIControl, container: RenderableContainer?, frameContext: FrameContext,
+    ucontext: UserAgentContext?
+) : BaseElementRenderable(container, me, ucontext) {
+    val widget: UIControl
+    private val frameContext: FrameContext
+    private val cachedLayout: MutableMap<LayoutKey?, LayoutValue?> =
+        HashMap<LayoutKey?, LayoutValue?>(5)
+    private var declaredWidth = -1
+    private var declaredHeight = -1
+    private var lastLayoutKey: LayoutKey? = null
+    private var lastLayoutValue: LayoutValue? = null
+    protected var isWidthConstrained: Boolean = false
+        private set
+    protected var isHeightConstrained: Boolean = false
+        private set
 
-    public RUIControl(final ModelNode me, final UIControl widget, final RenderableContainer container, final FrameContext frameContext,
-                      final UserAgentContext ucontext) {
-        super(container, me, ucontext);
-        this.widget = widget;
-        this.frameContext = frameContext;
-        widget.setRUIControl(this);
+    init {
+        this.widget = widget
+        this.frameContext = frameContext
+        widget.setRUIControl(this)
     }
 
-    @Override
-    public void focus() {
-        super.focus();
-        final java.awt.Component c = this.widget.getComponent();
-        c.requestFocus();
+    override fun focus() {
+        super.focus()
+        val c = this.widget.getComponent()
+        c.requestFocus()
     }
 
-    @Override
-    public final void invalidateLayoutLocal() {
+    override fun invalidateLayoutLocal() {
         // Invalidate widget (some redundancy)
-        super.invalidateLayoutLocal();
-        this.widget.invalidate();
+        super.invalidateLayoutLocal()
+        this.widget.invalidate()
         // Invalidate cached values
-        this.cachedLayout.clear();
-        this.lastLayoutKey = null;
-        this.lastLayoutValue = null;
+        this.cachedLayout.clear()
+        this.lastLayoutKey = null
+        this.lastLayoutValue = null
     }
 
-    public VerticalAlign getVAlign() {
-        return this.widget.getVAlign();
+    override fun getVAlign(): VerticalAlign? {
+        return this.widget.getVAlign()
     }
 
-    public boolean hasBackground() {
-        return (this.backgroundColor != null) || (this.backgroundImage != null) || (this.lastBackgroundImageUri != null);
+    fun hasBackground(): Boolean {
+        return (this.backgroundColor != null) || (this.backgroundImage != null) || (this.lastBackgroundImageUri != null)
     }
 
-    @Override
-    public final void paintShifted(final Graphics g) {
-        final RenderState rs = this.modelNode.getRenderState();
-        if ((rs != null) && (rs.getVisibility() != RenderState.VISIBILITY_VISIBLE)) {
+    override fun paintShifted(g: Graphics) {
+        val rs = this.modelNode.renderState
+        if ((rs != null) && (rs.visibility != RenderState.VISIBILITY_VISIBLE)) {
             // Just don't paint it.
-            return;
+            return
         }
         // Prepaint borders, background images, etc.
-        this.prePaint(g);
+        this.prePaint(g)
         // We need to paint the GUI component.
         // For various reasons, we need to do that
         // instead of letting AWT do it.
-        final Insets insets = this.getBorderInsets();
-        g.translate(insets.left, insets.top);
+        val insets = this.getBorderInsets()
+        g.translate(insets.left, insets.top)
         try {
-            this.widget.paint(g);
+            this.widget.paint(g)
         } finally {
-            g.translate(-insets.left, -insets.top);
+            g.translate(-insets.left, -insets.top)
         }
     }
 
-    public boolean onMouseClick(final java.awt.event.MouseEvent event, final int x, final int y) {
-        final ModelNode me = this.modelNode;
+    override fun onMouseClick(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val me = this.modelNode
         if (me != null) {
-            return HtmlController.getInstance().onMouseClick(me, event, x, y);
+            return HtmlController.Companion.getInstance().onMouseClick(me, event, x, y)
         } else {
-            return true;
+            return true
         }
     }
 
-    public boolean onDoubleClick(final java.awt.event.MouseEvent event, final int x, final int y) {
-        final ModelNode me = this.modelNode;
+    override fun onDoubleClick(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val me = this.modelNode
         if (me != null) {
-            return HtmlController.getInstance().onDoubleClick(me, event, x, y);
+            return HtmlController.Companion.getInstance().onDoubleClick(me, event, x, y)
         } else {
-            return true;
+            return true
         }
     }
 
-    public boolean onMousePressed(final java.awt.event.MouseEvent event, final int x, final int y) {
-        final ModelNode me = this.modelNode;
+    override fun onMousePressed(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val me = this.modelNode
         if (me != null) {
-            return HtmlController.getInstance().onMouseDown(me, event, x, y);
+            return HtmlController.Companion.getInstance().onMouseDown(me, event, x, y)
         } else {
-            return true;
+            return true
         }
     }
 
-    public boolean onMouseReleased(final java.awt.event.MouseEvent event, final int x, final int y) {
-        final ModelNode me = this.modelNode;
+    override fun onMouseReleased(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val me = this.modelNode
         if (me != null) {
-            return HtmlController.getInstance().onMouseUp(me, event, x, y);
+            return HtmlController.Companion.getInstance().onMouseUp(me, event, x, y)
         } else {
-            return true;
+            return true
         }
     }
 
-    public boolean onMouseDisarmed(final java.awt.event.MouseEvent event) {
-        final ModelNode me = this.modelNode;
+    override fun onMouseDisarmed(event: MouseEvent?): Boolean {
+        val me = this.modelNode
         if (me != null) {
-            return HtmlController.getInstance().onMouseDisarmed(me, event);
+            return HtmlController.Companion.getInstance().onMouseDisarmed(me, event)
         } else {
-            return true;
+            return true
         }
     }
 
@@ -163,7 +156,7 @@ class RUIControl extends BaseElementRenderable {
      * org.xamjwg.html.renderer.BoundableRenderable#invalidateState(org.xamjwg
      * .html.renderer.RenderableContext)
      */
-    public void invalidateRenderStyle() {
+    override fun invalidateRenderStyle() {
         // NOP - No RenderStyle below this node.
     }
 
@@ -174,27 +167,30 @@ class RUIControl extends BaseElementRenderable {
      * org.xamjwg.html.domimpl.ContainingBlockContext#repaint(org.xamjwg.html.
      * renderer.RenderableContext)
      */
-    public void repaint(final ModelNode modelNode) {
-        final Object widget = this.widget;
-        if (widget instanceof UINode) {
-            ((UINode) widget).repaint(modelNode);
+    override fun repaint(modelNode: ModelNode?) {
+        val widget: Any? = this.widget
+        if (widget is UINode) {
+            widget.repaint(modelNode)
         } else {
-            this.repaint();
+            this.repaint()
         }
     }
 
-    @Override
-    public void updateWidgetBounds(final int guiX, final int guiY) {
+    override fun updateWidgetBounds(guiX: Int, guiY: Int) {
         // Overrides
-        super.updateWidgetBounds(guiX, guiY);
-        final Insets insets = this.getBorderInsets();
-        this.widget.setBounds(guiX + insets.left, guiY + insets.top, this.width - insets.left - insets.right, this.height - insets.top
-                - insets.bottom);
+        super.updateWidgetBounds(guiX, guiY)
+        val insets = this.getBorderInsets()
+        this.widget.setBounds(
+            guiX + insets.left,
+            guiY + insets.top,
+            this.width - insets.left - insets.right,
+            (this.height - insets.top
+                    - insets.bottom)
+        )
     }
 
-    @Override
-    public Color getBlockBackgroundColor() {
-        return this.widget.getBackgroundColor();
+    override fun getBlockBackgroundColor(): Color? {
+        return this.widget.getBackgroundColor()
     }
 
     /*
@@ -205,153 +201,162 @@ class RUIControl extends BaseElementRenderable {
      * , boolean, org.xamjwg.html.renderer.RenderablePoint,
      * org.xamjwg.html.renderer.RenderablePoint)
      */
-    @Override
-    public boolean paintSelection(final Graphics g, boolean inSelection, final RenderableSpot startPoint, final RenderableSpot endPoint) {
-        inSelection = super.paintSelection(g, inSelection, startPoint, endPoint);
+    override fun paintSelection(
+        g: Graphics,
+        inSelection: Boolean,
+        startPoint: RenderableSpot?,
+        endPoint: RenderableSpot?
+    ): Boolean {
+        var inSelection = inSelection
+        inSelection = super.paintSelection(g, inSelection, startPoint, endPoint)
         if (inSelection) {
-            final Color over = new Color(0, 0, 255, 50);
-            final Color oldColor = g.getColor();
+            val over = Color(0, 0, 255, 50)
+            val oldColor = g.color
             try {
-                g.setColor(over);
-                g.fillRect(0, 0, this.width, this.height);
+                g.color = over
+                g.fillRect(0, 0, this.width, this.height)
             } finally {
-                g.setColor(oldColor);
+                g.color = oldColor
             }
         }
-        return inSelection;
+        return inSelection
     }
 
-    @Override
-    public boolean extractSelectionText(final StringBuffer buffer, final boolean inSelection, final RenderableSpot startPoint,
-                                        final RenderableSpot endPoint) {
+    override fun extractSelectionText(
+        buffer: StringBuffer?, inSelection: Boolean, startPoint: RenderableSpot?,
+        endPoint: RenderableSpot?
+    ): Boolean {
         // No text here
-        return inSelection;
+        return inSelection
     }
 
-    public RenderableSpot getLowestRenderableSpot(final int x, final int y) {
+    override fun getLowestRenderableSpot(x: Int, y: Int): RenderableSpot {
         // Nothing draggable - return self
-        return new RenderableSpot(this, x, y);
+        return RenderableSpot(this, x, y)
     }
 
-    @Override
-    public void doLayout(final int availWidth, final int availHeight, final boolean sizeOnly) {
-        final Map<LayoutKey, LayoutValue> cachedLayout = this.cachedLayout;
-        final RenderState rs = this.modelNode.getRenderState();
-        final int whitespace = rs == null ? RenderState.WS_NORMAL : rs.getWhiteSpace();
-        final Font font = rs == null ? null : rs.getFont();
-        final LayoutKey layoutKey = new LayoutKey(availWidth, availHeight, whitespace, font);
-        LayoutValue layoutValue;
+    override fun doLayout(availWidth: Int, availHeight: Int, sizeOnly: Boolean) {
+        val cachedLayout = this.cachedLayout
+        val rs = this.modelNode.renderState
+        val whitespace = if (rs == null) RenderState.WS_NORMAL else rs.whiteSpace
+        val font = if (rs == null) null else rs.font
+        val layoutKey = LayoutKey(availWidth, availHeight, whitespace, font)
+        var layoutValue: LayoutValue?
         if (sizeOnly) {
-            layoutValue = cachedLayout.get(layoutKey);
+            layoutValue = cachedLayout.get(layoutKey)
         } else {
-            if (java.util.Objects.equals(this.lastLayoutKey, layoutKey)) {
-                layoutValue = this.lastLayoutValue;
+            if (this.lastLayoutKey == layoutKey) {
+                layoutValue = this.lastLayoutValue
             } else {
-                layoutValue = null;
+                layoutValue = null
             }
         }
         if (layoutValue == null) {
-            this.applyStyle(availWidth, availHeight);
+            this.applyStyle(availWidth, availHeight)
 
-            final UIControl widget = this.widget;
-            widget.reset(availWidth, availHeight);
+            val widget = this.widget
+            widget.reset(availWidth, availHeight)
 
-            final RenderState renderState = this.modelNode.getRenderState();
-            Insets paddingInsets = this.paddingInsets;
+            val renderState = this.modelNode.renderState
+            var paddingInsets = this.paddingInsets
             if (paddingInsets == null) {
-                paddingInsets = RBlockViewport.ZERO_INSETS;
+                paddingInsets = RBlockViewport.Companion.ZERO_INSETS
             }
-            Insets borderInsets = this.borderInsets;
+            var borderInsets = this.borderInsets
             if (borderInsets == null) {
-                borderInsets = RBlockViewport.ZERO_INSETS;
+                borderInsets = RBlockViewport.Companion.ZERO_INSETS
             }
-            Insets marginInsets = this.marginInsets;
+            var marginInsets = this.marginInsets
             if (marginInsets == null) {
-                marginInsets = RBlockViewport.ZERO_INSETS;
+                marginInsets = RBlockViewport.Companion.ZERO_INSETS
             }
 
-            final int actualAvailWidth = availWidth - paddingInsets.left - paddingInsets.right - borderInsets.left - borderInsets.right
-                    - marginInsets.left - marginInsets.right;
-            final int actualAvailHeight = availHeight - paddingInsets.top - paddingInsets.bottom - borderInsets.top - borderInsets.bottom
-                    - marginInsets.top - marginInsets.bottom;
-            final Integer dw = this.getDeclaredWidth(renderState, actualAvailWidth);
-            final Integer dh = this.getDeclaredHeight(renderState, actualAvailHeight);
-            final int declaredWidth = dw == null ? -1 : dw.intValue();
-            final int declaredHeight = dh == null ? -1 : dh.intValue();
-            this.declaredWidth = declaredWidth;
-            this.declaredHeight = declaredHeight;
+            val actualAvailWidth =
+                (availWidth - paddingInsets!!.left - paddingInsets.right - borderInsets!!.left - borderInsets.right
+                        - marginInsets!!.left - marginInsets.right)
+            val actualAvailHeight =
+                (availHeight - paddingInsets.top - paddingInsets.bottom - borderInsets.top - borderInsets.bottom
+                        - marginInsets.top - marginInsets.bottom)
+            val dw = this.getDeclaredWidth(renderState, actualAvailWidth)
+            val dh = this.getDeclaredHeight(renderState, actualAvailHeight)
+            val declaredWidth = if (dw == null) -1 else dw
+            val declaredHeight = if (dh == null) -1 else dh
+            this.declaredWidth = declaredWidth
+            this.declaredHeight = declaredHeight
 
-            this.widthConstrained = declaredWidth != -1;
-            this.heightConstrained = declaredHeight != -1;
+            this.isWidthConstrained = declaredWidth != -1
+            this.isHeightConstrained = declaredHeight != -1
 
-            final Insets insets = this.getInsets(false, false);
-            int finalWidth = declaredWidth == -1 ? -1 : declaredWidth + insets.left + insets.right;
-            int finalHeight = declaredHeight == -1 ? -1 : declaredHeight + insets.top + insets.bottom;
+            val insets = this.getInsets(false, false)
+            var finalWidth =
+                if (declaredWidth == -1) -1 else declaredWidth + insets.left + insets.right
+            var finalHeight =
+                if (declaredHeight == -1) -1 else declaredHeight + insets.top + insets.bottom
             if ((finalWidth == -1) || (finalHeight == -1)) {
-                final Dimension size = widget.getPreferredSize();
+                val size = widget.getPreferredSize()
                 if (finalWidth == -1) {
-                    finalWidth = size.width + insets.left + insets.right;
+                    finalWidth = size.width + insets.left + insets.right
                 }
                 if (finalHeight == -1) {
-                    finalHeight = size.height + insets.top + insets.bottom;
+                    finalHeight = size.height + insets.top + insets.bottom
                 }
             }
 
-            {
-                final Integer maxWidth = getDeclaredMaxWidth(renderState, actualAvailWidth);
+            run {
+                val maxWidth = getDeclaredMaxWidth(renderState, actualAvailWidth)
                 if (maxWidth != null) {
                     if (finalWidth > maxWidth) {
-                        finalWidth = maxWidth;
-                        widthConstrained = true;
+                        finalWidth = maxWidth
+                        this.isWidthConstrained = true
                     }
                 }
             }
-            {
-                final Integer minWidth = getDeclaredMinWidth(renderState, actualAvailWidth);
+            run {
+                val minWidth = getDeclaredMinWidth(renderState, actualAvailWidth)
                 if (minWidth != null) {
                     if (finalWidth < minWidth) {
-                        finalWidth = minWidth;
-                        widthConstrained = true;
+                        finalWidth = minWidth
+                        this.isWidthConstrained = true
                     }
                 }
             }
 
-            {
-                final Integer maxHeight = getDeclaredMaxHeight(renderState, actualAvailHeight);
+            run {
+                val maxHeight = getDeclaredMaxHeight(renderState, actualAvailHeight)
                 if (maxHeight != null) {
                     if (finalHeight > maxHeight) {
-                        finalHeight = maxHeight;
-                        heightConstrained = true;
+                        finalHeight = maxHeight
+                        this.isHeightConstrained = true
                     }
                 }
             }
 
-            {
-                final Integer minHeight = getDeclaredMinHeight(renderState, actualAvailHeight);
+            run {
+                val minHeight = getDeclaredMinHeight(renderState, actualAvailHeight)
                 if (minHeight != null) {
                     if (finalHeight < minHeight) {
-                        finalHeight = minHeight;
-                        heightConstrained = true;
+                        finalHeight = minHeight
+                        this.isHeightConstrained = true
                     }
                 }
             }
 
-            layoutValue = new LayoutValue(finalWidth, finalHeight);
+            layoutValue = LayoutValue(finalWidth, finalHeight)
             if (sizeOnly) {
-                if (cachedLayout.size() > MAX_CACHE_SIZE) {
+                if (cachedLayout.size > MAX_CACHE_SIZE) {
                     // Unlikely, but we should ensure it's bounded.
-                    cachedLayout.clear();
+                    cachedLayout.clear()
                 }
-                cachedLayout.put(layoutKey, layoutValue);
-                this.lastLayoutKey = null;
-                this.lastLayoutValue = null;
+                cachedLayout.put(layoutKey, layoutValue)
+                this.lastLayoutKey = null
+                this.lastLayoutValue = null
             } else {
-                this.lastLayoutKey = layoutKey;
-                this.lastLayoutValue = layoutValue;
+                this.lastLayoutKey = layoutKey
+                this.lastLayoutValue = layoutValue
             }
         }
-        this.width = layoutValue.width;
-        this.height = layoutValue.height;
+        this.width = layoutValue.width
+        this.height = layoutValue.height
     }
 
     /**
@@ -359,89 +364,82 @@ class RUIControl extends BaseElementRenderable {
      * (e.g. an image after it's loaded). This method must be called in the GUI
      * thread.
      */
-    public final void preferredSizeInvalidated() {
-        final int dw = RUIControl.this.declaredWidth;
-        final int dh = RUIControl.this.declaredHeight;
+    fun preferredSizeInvalidated() {
+        val dw = this@RUIControl.declaredWidth
+        val dh = this@RUIControl.declaredHeight
         if ((dw == -1) || (dh == -1)) {
-            this.frameContext.delayedRelayout((NodeImpl) this.modelNode);
+            this.frameContext.delayedRelayout(this.modelNode as NodeImpl?)
         } else {
-            RUIControl.this.repaint();
+            this@RUIControl.repaint()
         }
     }
 
-    public Iterator<@NonNull Renderable> getRenderables(final boolean topFirst) {
+    override fun getRenderables(topFirst: Boolean): MutableIterator<Renderable>? {
         // No children for GUI controls
-        return null;
+        return null
     }
 
-    public Color getPaintedBackgroundColor() {
-        return this.container.getPaintedBackgroundColor();
+    override fun getPaintedBackgroundColor(): Color? {
+        return this.container.getPaintedBackgroundColor()
     }
 
-    public Color getForegroundColor() {
-        final RenderState rs = this.modelNode.getRenderState();
-        return rs == null ? null : rs.getColor();
-    }
-
-    protected boolean isWidthConstrained() {
-        return widthConstrained;
-    }
-
-    protected boolean isHeightConstrained() {
-        return heightConstrained;
-    }
-
-    @Override
-    public void setInnerWidth(Integer newWidth) {
-        super.setInnerWidth(newWidth);
-        widthConstrained = true;
-    }
-
-    @Override
-    public void setInnerHeight(Integer newHeight) {
-        super.setInnerHeight(newHeight);
-        heightConstrained = true;
-    }
-
-    private static class LayoutKey {
-        public final int availWidth;
-        public final int availHeight;
-        public final int whitespace;
-        public final Font font;
-
-        public LayoutKey(final int availWidth, final int availHeight, final int whitespace, final Font font) {
-            this.availWidth = availWidth;
-            this.availHeight = availHeight;
-            this.whitespace = whitespace;
-            this.font = font;
+    val foregroundColor: Color?
+        get() {
+            val rs = this.modelNode.renderState
+            return if (rs == null) null else rs.color
         }
 
-        @Override
-        public boolean equals(final Object obj) {
-            if (obj == this) {
-                return true;
+    override fun setInnerWidth(newWidth: Int?) {
+        super.setInnerWidth(newWidth)
+        this.isWidthConstrained = true
+    }
+
+    override fun setInnerHeight(newHeight: Int?) {
+        super.setInnerHeight(newHeight)
+        this.isHeightConstrained = true
+    }
+
+    private class LayoutKey(availWidth: Int, availHeight: Int, whitespace: Int, font: Font?) {
+        val availWidth: Int
+        val availHeight: Int
+        val whitespace: Int
+        val font: Font?
+
+        init {
+            this.availWidth = availWidth
+            this.availHeight = availHeight
+            this.whitespace = whitespace
+            this.font = font
+        }
+
+        override fun equals(obj: Any?): Boolean {
+            if (obj === this) {
+                return true
             }
-            if (!(obj instanceof LayoutKey other)) {
-                return false;
+            if (obj !is LayoutKey) {
+                return false
             }
-            return (other.availWidth == this.availWidth) && (other.availHeight == this.availHeight) && (other.whitespace == this.whitespace)
-                    && java.util.Objects.equals(other.font, this.font);
+            return (obj.availWidth == this.availWidth) && (obj.availHeight == this.availHeight) && (obj.whitespace == this.whitespace)
+                    && obj.font == this.font
         }
 
-        @Override
-        public int hashCode() {
-            final Font font = this.font;
-            return ((this.availWidth * 1000) + this.availHeight) ^ (font == null ? 0 : font.hashCode());
+        override fun hashCode(): Int {
+            val font = this.font
+            return ((this.availWidth * 1000) + this.availHeight) xor (if (font == null) 0 else font.hashCode())
         }
     }
 
-    private static class LayoutValue {
-        public final int width;
-        public final int height;
+    private class LayoutValue(width: Int, height: Int) {
+        val width: Int
+        val height: Int
 
-        public LayoutValue(final int width, final int height) {
-            this.width = width;
-            this.height = height;
+        init {
+            this.width = width
+            this.height = height
         }
+    }
+
+    companion object {
+        private const val MAX_CACHE_SIZE = 10
     }
 }

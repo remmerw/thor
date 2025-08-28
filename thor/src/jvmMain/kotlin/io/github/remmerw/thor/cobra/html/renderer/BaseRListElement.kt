@@ -18,68 +18,66 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import io.github.remmerw.thor.cobra.html.HtmlRendererContext;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl;
-import io.github.remmerw.thor.cobra.html.style.HtmlValues;
-import io.github.remmerw.thor.cobra.html.style.JStyleProperties;
-import io.github.remmerw.thor.cobra.html.style.ListStyle;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext;
+import io.github.remmerw.thor.cobra.html.HtmlRendererContext
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
+import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
+import io.github.remmerw.thor.cobra.html.style.HtmlValues
+import io.github.remmerw.thor.cobra.html.style.ListStyle
+import io.github.remmerw.thor.cobra.ua.UserAgentContext
 
-class BaseRListElement extends RBlock {
-    protected static final String DEFAULT_COUNTER_NAME = "$cobra.counter";
-    protected ListStyle listStyle = null;
+internal open class BaseRListElement(
+    modelNode: NodeImpl?, listNesting: Int, pcontext: UserAgentContext?,
+    rcontext: HtmlRendererContext?,
+    frameContext: FrameContext?, parentContainer: RenderableContainer?
+) : RBlock(modelNode, listNesting, pcontext, rcontext, frameContext, parentContainer) {
+    var listStyle: ListStyle? = null
 
-    public BaseRListElement(final NodeImpl modelNode, final int listNesting, final UserAgentContext pcontext,
-                            final HtmlRendererContext rcontext,
-                            final FrameContext frameContext, final RenderableContainer parentContainer) {
-        super(modelNode, listNesting, pcontext, rcontext, frameContext, parentContainer);
-    }
-
-    @Override
-    protected void applyStyle(final int availWidth, final int availHeight, final boolean updateLayout) {
-        this.listStyle = null;
-        super.applyStyle(availWidth, availHeight, updateLayout);
-        final Object rootNode = this.modelNode;
-        if (!(rootNode instanceof HTMLElementImpl rootElement)) {
-            return;
+    override fun applyStyle(availWidth: Int, availHeight: Int, updateLayout: Boolean) {
+        this.listStyle = null
+        super.applyStyle(availWidth, availHeight, updateLayout)
+        val rootNode: Any? = this.modelNode
+        if (rootNode !is HTMLElementImpl) {
+            return
         }
-        final JStyleProperties props = rootElement.getCurrentStyle();
-        ListStyle listStyle = null;
-        final String listStyleText = props.getListStyle();
+        val props = rootNode.getCurrentStyle()
+        var listStyle: ListStyle? = null
+        val listStyleText = props.getListStyle()
         if (listStyleText != null) {
-            listStyle = HtmlValues.getListStyle(listStyleText);
+            listStyle = HtmlValues.getListStyle(listStyleText)
         }
-        final String listStyleTypeText = props.getListStyleType();
+        val listStyleTypeText = props.listStyleType
         if (listStyleTypeText != null) {
-            final int listType = HtmlValues.getListStyleType(listStyleTypeText);
+            val listType = HtmlValues.getListStyleType(listStyleTypeText)
             if (listType != ListStyle.TYPE_UNSET) {
                 if (listStyle == null) {
-                    listStyle = new ListStyle();
+                    listStyle = ListStyle()
                 }
-                listStyle.type = listType;
+                listStyle.type = listType
             }
         }
         if ((listStyle == null) || (listStyle.type == ListStyle.TYPE_UNSET)) {
-            final String typeAttributeText = rootElement.getAttribute("type");
+            val typeAttributeText = rootNode.getAttribute("type")
             if (typeAttributeText != null) {
-                final int newStyleType = HtmlValues.getListStyleTypeDeprecated(typeAttributeText);
+                val newStyleType = HtmlValues.getListStyleTypeDeprecated(typeAttributeText)
                 if (newStyleType != ListStyle.TYPE_UNSET) {
                     if (listStyle == null) {
-                        listStyle = new ListStyle();
-                        this.listStyle = listStyle;
+                        listStyle = ListStyle()
+                        this.listStyle = listStyle
                     }
-                    listStyle.type = newStyleType;
+                    listStyle.type = newStyleType
                 }
             }
         }
-        this.listStyle = listStyle;
+        this.listStyle = listStyle
     }
 
-    @Override
-    public String toString() {
-        return "BaseRListElement[node=" + this.modelNode + "]";
+    override fun toString(): String {
+        return "BaseRListElement[node=" + this.modelNode + "]"
+    }
+
+    companion object {
+        protected const val DEFAULT_COUNTER_NAME: String = "\$cobra.counter"
     }
 }

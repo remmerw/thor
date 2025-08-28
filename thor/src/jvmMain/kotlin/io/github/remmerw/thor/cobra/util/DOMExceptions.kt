@@ -1,31 +1,24 @@
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
 
-import org.w3c.dom.DOMException;
+import org.w3c.dom.DOMException
 
-public final class DOMExceptions {
-    public enum ExtendedError {
-        SecurityError((short) 18),
-        NetworkError((short) 19),
-        AbortError((short) 20),
-        URLMismatchError((short) 21),
-        QuotaExceededError((short) 22),
-        TimeoutError((short) 23),
-        InvalidNodeTypeError((short) 24),
-        DataCloneError((short) 25);
+class DOMExceptions {
+    enum class ExtendedError(val code: Short) {
+        SecurityError(18.toShort()),
+        NetworkError(19.toShort()),
+        AbortError(20.toShort()),
+        URLMismatchError(21.toShort()),
+        QuotaExceededError(22.toShort()),
+        TimeoutError(23.toShort()),
+        InvalidNodeTypeError(24.toShort()),
+        DataCloneError(25.toShort());
 
-        final public short code;
-
-        ExtendedError(final short code) {
-            this.code = code;
+        fun createException(): DOMException {
+            return DOMException(code, name)
         }
 
-        public DOMException createException() {
-            return new DOMException(code, name());
+        fun createException(msg: String?): DOMException {
+            return DOMException(code, name + ": " + msg)
         }
-
-        public DOMException createException(final String msg) {
-            return new DOMException(code, name() + ": " + msg);
-        }
-
     }
 }

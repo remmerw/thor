@@ -18,123 +18,108 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.event.MouseEvent;
-
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode;
+import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
+import java.awt.Graphics
+import java.awt.Point
+import java.awt.Rectangle
+import java.awt.event.MouseEvent
 
 /**
  * A renderer node with well-defined bounds. Most renderer nodes implement this
  * interface.
  */
-public interface BoundableRenderable extends Renderable {
-    ModelNode getModelNode();
+interface BoundableRenderable : Renderable {
+    override fun getModelNode(): ModelNode?
 
-    Rectangle getBounds();
+    val bounds: Rectangle?
 
-    Rectangle getVisualBounds();
+    val visualBounds: Rectangle?
 
-    boolean contains(final int x, final int y);
+    fun contains(x: Int, y: Int): Boolean
 
-    Dimension getSize();
+    val size: Dimension?
 
-    Point getOrigin();
+    val origin: Point?
 
-    Point getOriginRelativeTo(RCollection ancestor);
+    fun getOriginRelativeTo(ancestor: RCollection?): Point?
 
-    Point getOriginRelativeToAbs(RCollection ancestor);
+    fun getOriginRelativeToAbs(ancestor: RCollection?): Point?
 
-    Point getOriginRelativeToNoScroll(RCollection ancestor);
+    fun getOriginRelativeToNoScroll(ancestor: RCollection?): Point?
 
     /**
      * Gets the parent where the renderable is rendered.
      */
-    RCollection getParent();
-
-    void setParent(RCollection parent);
+    var parent: RCollection?
 
     /**
-     * Gets the parent set with {@link #setOriginalParent(RCollection)}. It
+     * Gets the parent set with [.setOriginalParent]. It
      * represents the parent where the renderable would have been originally
      * rendered according to the DOM. This will be non-null only if
-     * {@link #getParent()} is not the parent where this renderable would have
+     * [.getParent] is not the parent where this renderable would have
      * been originally rendered.
      */
-    RCollection getOriginalParent();
-
-    void setOriginalParent(RCollection origParent);
+    var originalParent: RCollection?
 
     /**
-     * Returns {@link #getOriginalParent()} if not null. Otherwise it returns
-     * {@link #getParent()}.
+     * Returns [.getOriginalParent] if not null. Otherwise it returns
+     * [.getParent].
      */
-    RCollection getOriginalOrCurrentParent();
+    val originalOrCurrentParent: RCollection?
 
-    void setBounds(int x, int y, int with, int height);
+    fun setBounds(x: Int, y: Int, with: Int, height: Int)
 
-    void setOrigin(int x, int y);
+    fun setOrigin(x: Int, y: Int)
 
-    int getX();
+    var x: Int
 
-    void setX(int x);
+    var y: Int
 
-    int getY();
+    val visualX: Int
 
-    void setY(int y);
+    val visualY: Int
 
-    int getVisualX();
+    var height: Int
 
-    int getVisualY();
+    var width: Int
 
-    int getHeight();
+    val visualHeight: Int
 
-    void setHeight(int height);
-
-    int getWidth();
-
-    void setWidth(int width);
-
-    int getVisualHeight();
-
-    int getVisualWidth();
+    val visualWidth: Int
 
     // public Point getRenderablePoint(int guiX, int guiY);
+    fun getLowestRenderableSpot(x: Int, y: Int): RenderableSpot?
 
-    RenderableSpot getLowestRenderableSpot(int x, int y);
-
-    void repaint();
+    fun repaint()
 
     /**
      * Returns false if the event is consumed. True to propagate further.
      */
-    boolean onMousePressed(MouseEvent event, int x, int y);
+    fun onMousePressed(event: MouseEvent?, x: Int, y: Int): Boolean
 
-    boolean onMouseReleased(MouseEvent event, int x, int y);
+    fun onMouseReleased(event: MouseEvent?, x: Int, y: Int): Boolean
 
-    boolean onMouseDisarmed(MouseEvent event);
+    fun onMouseDisarmed(event: MouseEvent?): Boolean
 
-    boolean onMouseClick(MouseEvent event, int x, int y);
+    fun onMouseClick(event: MouseEvent?, x: Int, y: Int): Boolean
 
-    boolean onDoubleClick(MouseEvent event, int x, int y);
+    fun onDoubleClick(event: MouseEvent?, x: Int, y: Int): Boolean
 
-    boolean onMiddleClick(MouseEvent event, int x, int y);
+    fun onMiddleClick(event: MouseEvent?, x: Int, y: Int): Boolean
 
-    boolean onRightClick(MouseEvent event, int x, int y);
+    fun onRightClick(event: MouseEvent?, x: Int, y: Int): Boolean
 
-    void onMouseMoved(MouseEvent event, int x, int y, boolean triggerEvent, ModelNode limit);
+    fun onMouseMoved(event: MouseEvent?, x: Int, y: Int, triggerEvent: Boolean, limit: ModelNode?)
 
-    void onMouseOut(MouseEvent event, int x, int y, ModelNode limit);
+    fun onMouseOut(event: MouseEvent?, x: Int, y: Int, limit: ModelNode?)
 
     /**
      * Returns true if the renderable is fully contained by its modelNode, but
      * said modelNode does not fully contain an ancestor renderable.
      */
-    boolean isContainedByNode();
+    val isContainedByNode: Boolean
 
     /**
      * Asks the Renderable to paint the selection between two points. Nothing will
@@ -146,7 +131,12 @@ public interface BoundableRenderable extends Renderable {
      * @param endPoint
      * @return True iff it's in selection when finished painting.
      */
-    boolean paintSelection(Graphics g, boolean inSelection, RenderableSpot startPoint, RenderableSpot endPoint);
+    fun paintSelection(
+        g: Graphics?,
+        inSelection: Boolean,
+        startPoint: RenderableSpot?,
+        endPoint: RenderableSpot?
+    ): Boolean
 
     /**
      * Paints by either creating a new clipped graphics context corresponding to
@@ -154,37 +144,38 @@ public interface BoundableRenderable extends Renderable {
      *
      * @param g Parent's Graphics context.
      */
-    void paintTranslated(Graphics g);
+    fun paintTranslated(g: Graphics?)
 
-    boolean extractSelectionText(StringBuffer buffer, boolean inSelection, RenderableSpot startPoint, RenderableSpot endPoint);
+    fun extractSelectionText(
+        buffer: StringBuffer?,
+        inSelection: Boolean,
+        startPoint: RenderableSpot?,
+        endPoint: RenderableSpot?
+    ): Boolean
 
-    void repaint(int x, int y, int width, int height);
+    fun repaint(x: Int, y: Int, width: Int, height: Int)
 
-    void relayout();
+    fun relayout()
 
-    Point getGUIPoint(int clientX, int clientY);
+    fun getGUIPoint(clientX: Int, clientY: Int): Point?
 
-    int getOrdinal();
+    var ordinal: Int
 
-    void setOrdinal(int ordinal);
+    val zIndex: Int
 
-    int getZIndex();
+    fun invalidateLayoutUpTree()
 
-    void invalidateLayoutUpTree();
+    fun setInnerWidth(newWidth: Int?)
 
-    void setInnerWidth(Integer newWidth);
+    fun setInnerHeight(newHeight: Int?)
 
-    void setInnerHeight(Integer newHeight);
+    fun setDelegator(pDelegator: BoundableRenderable?)
 
-    void setDelegator(final BoundableRenderable pDelegator);
+    val isDelegated: Boolean
 
-    boolean isDelegated();
+    val horizontalScrollBarHeight: Int
+        get() = 0
 
-    default int getHorizontalScrollBarHeight() {
-        return 0;
-    }
-
-    default int getVerticalScrollBarHeight() {
-        return 0;
-    }
+    val verticalScrollBarHeight: Int
+        get() = 0
 }

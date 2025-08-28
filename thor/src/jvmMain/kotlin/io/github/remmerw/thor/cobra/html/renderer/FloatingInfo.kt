@@ -18,16 +18,6 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-public class FloatingInfo {
-    public final int shiftX, shiftY;
-    public final ExportableFloat[] floats;
-
-    public FloatingInfo(final int shiftX, final int shiftY, final ExportableFloat[] floats) {
-        super();
-        this.shiftX = shiftX;
-        this.shiftY = shiftY;
-        this.floats = floats;
-    }
-}
+class FloatingInfo(val shiftX: Int, val shiftY: Int, val floats: Array<ExportableFloat?>?)

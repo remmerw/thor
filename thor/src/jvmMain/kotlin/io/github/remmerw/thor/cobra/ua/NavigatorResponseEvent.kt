@@ -20,44 +20,37 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.github.remmerw.thor.cobra.ua;
+package io.github.remmerw.thor.cobra.ua
 
-import io.github.remmerw.thor.cobra.clientlet.ClientletResponse;
+import io.github.remmerw.thor.cobra.clientlet.ClientletResponse
 
 /**
  * An event containing response information.
  */
-public class NavigatorResponseEvent extends NavigatorEvent {
-    private static final long serialVersionUID = 8569384791191603705L;
-    private final ClientletResponse response;
-    private final RequestType requestType;
+open class NavigatorResponseEvent(
+    source: Any?, eventType: NavigatorEventType?, clientletFrame: NavigatorFrame?,
+    response: ClientletResponse?,
+    requestType: RequestType?
+) : NavigatorEvent(source, eventType, clientletFrame) {
+    val response: ClientletResponse?
+    val requestType: RequestType?
 
-    public NavigatorResponseEvent(final Object source, final NavigatorEventType eventType, final NavigatorFrame clientletFrame,
-                                  final ClientletResponse response,
-                                  final RequestType requestType) {
-        super(source, eventType, clientletFrame);
-        this.response = response;
-        this.requestType = requestType;
+    init {
+        this.response = response
+        this.requestType = requestType
     }
 
-    public ClientletResponse getResponse() {
-        return response;
+    val url: URL?
+        get() = if (this.response == null) null else this.response.responseURL
+
+    val method: String?
+        get() = if (this.response == null) null else this.response.lastRequestMethod
+
+    override fun toString(): String {
+        return "NavigatorWindowEvent[type=" + this.getEventType() + ",url=" + this.url + "]"
     }
 
-    public java.net.URL getUrl() {
-        return this.response == null ? null : this.response.getResponseURL();
-    }
-
-    public String getMethod() {
-        return this.response == null ? null : this.response.getLastRequestMethod();
-    }
-
-    public RequestType getRequestType() {
-        return requestType;
-    }
-
-    @Override
-    public String toString() {
-        return "NavigatorWindowEvent[type=" + this.getEventType() + ",url=" + this.getUrl() + "]";
+    companion object {
+        private const val serialVersionUID = 8569384791191603705L
     }
 }

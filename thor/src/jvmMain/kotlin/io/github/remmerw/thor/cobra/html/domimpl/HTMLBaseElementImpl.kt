@@ -18,30 +18,27 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.UserDataHandler;
+import io.github.remmerw.thor.cobra.html.parser.HtmlParser
+import org.w3c.dom.UserDataHandler
+import java.lang.Boolean
+import kotlin.Any
+import kotlin.String
 
-import io.github.remmerw.thor.cobra.html.parser.HtmlParser;
-
-public class HTMLBaseElementImpl extends HTMLElementImpl {
-    public HTMLBaseElementImpl(final String name) {
-        super(name, true);
-    }
-
-    @Override
-    public Object setUserData(final String key, final Object data, final UserDataHandler handler) {
-        if (HtmlParser.MODIFYING_KEY.equals(key) && (data != Boolean.TRUE)) {
-            this.processBaseTag();
+class HTMLBaseElementImpl(name: String?) : HTMLElementImpl(name, true) {
+    override fun setUserData(key: String?, data: Any?, handler: UserDataHandler?): Any? {
+        if (HtmlParser.MODIFYING_KEY == key && (data !== Boolean.TRUE)) {
+            this.processBaseTag()
         }
-        return super.setUserData(key, data, handler);
+        return super.setUserData(key, data, handler)
     }
 
-    private final void processBaseTag() {
-        final HTMLDocumentImpl doc = (HTMLDocumentImpl) this.document;
+    private fun processBaseTag() {
+        val doc = this.document as HTMLDocumentImpl?
         if (doc != null) {
-            doc.setBaseURI(this.getAttribute("href"));
-            doc.setDefaultTarget(this.getAttribute("target"));
+            doc.setBaseURI(this.getAttribute("href"))
+            doc.setDefaultTarget(this.getAttribute("target"))
         }
     }
 }

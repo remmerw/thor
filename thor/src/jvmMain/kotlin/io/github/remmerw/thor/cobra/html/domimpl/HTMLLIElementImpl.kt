@@ -21,36 +21,32 @@
 /*
  * Created on Feb 12, 2006
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.html.HTMLLIElement;
+import org.w3c.dom.html.HTMLLIElement
 
-public class HTMLLIElementImpl extends HTMLAbstractUIElement implements HTMLLIElement {
-    public HTMLLIElementImpl(final String name) {
-        super(name);
+class HTMLLIElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLLIElement {
+    override fun getType(): String? {
+        return this.getAttribute("type")
     }
 
-    public String getType() {
-        return this.getAttribute("type");
+    override fun setType(type: String?) {
+        this.setAttribute("type", type)
     }
 
-    public void setType(final String type) {
-        this.setAttribute("type", type);
-    }
-
-    public int getValue() {
-        final String valueText = this.getAttribute("value");
+    override fun getValue(): Int {
+        val valueText = this.getAttribute("value")
         if (valueText == null) {
-            return 0;
+            return 0
         }
         try {
-            return Integer.parseInt(valueText);
-        } catch (final NumberFormatException nfe) {
-            return 0;
+            return valueText.toInt()
+        } catch (nfe: NumberFormatException) {
+            return 0
         }
     }
 
-    public void setValue(final int value) {
-        this.setAttribute("value", String.valueOf(value));
+    override fun setValue(value: Int) {
+        this.setAttribute("value", value.toString())
     }
 }

@@ -18,40 +18,36 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
+package io.github.remmerw.thor.cobra.html.renderer
 
-package io.github.remmerw.thor.cobra.html.renderer;
-
-import java.awt.Point;
+import java.awt.Point
 
 /**
  * Contains a renderer node and a position in that node.
  */
-public class RenderableSpot {
-    public final BoundableRenderable renderable;
-    public final int x;
-    public final int y;
+class RenderableSpot(renderable: BoundableRenderable?, x: Int, y: Int) {
+    val renderable: BoundableRenderable?
+    val x: Int
+    val y: Int
 
     /**
      * @param renderable
      * @param x
      * @param y
      */
-    public RenderableSpot(final BoundableRenderable renderable, final int x, final int y) {
-        super();
-        this.renderable = renderable;
-        this.x = x;
-        this.y = y;
+    init {
+        this.renderable = renderable
+        this.x = x
+        this.y = y
     }
 
-    public Point getPoint() {
-        return new Point(this.x, this.y);
-    }
+    val point: Point
+        get() = Point(this.x, this.y)
 
-    @Override
-    public boolean equals(final Object other) {
-        if (!(other instanceof RenderableSpot otherRp)) {
-            return false;
+    override fun equals(other: Any?): Boolean {
+        if (other !is RenderableSpot) {
+            return false
         }
-        return (otherRp.renderable == this.renderable) && (otherRp.x == this.x) && (otherRp.y == this.y);
+        return (other.renderable === this.renderable) && (other.x == this.x) && (other.y == this.y)
     }
 }

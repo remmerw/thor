@@ -18,36 +18,27 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import java.awt.Graphics;
+import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
+import java.awt.Graphics
 
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode;
+internal class RFloatInfo(node: ModelNode?, element: RElement?, leftFloat: Boolean) : Renderable {
+    private val modelNode: ModelNode?
+    val renderable: RElement?
+    val isLeftFloat: Boolean
 
-final class RFloatInfo implements Renderable {
-    private final ModelNode modelNode;
-    private final RElement element;
-    private final boolean leftFloat;
-
-    public RFloatInfo(final ModelNode node, final RElement element, final boolean leftFloat) {
-        this.modelNode = node;
-        this.element = element;
-        this.leftFloat = leftFloat;
+    init {
+        this.modelNode = node
+        this.renderable = element
+        this.isLeftFloat = leftFloat
     }
 
-    public boolean isLeftFloat() {
-        return this.leftFloat;
+    override fun getModelNode(): ModelNode? {
+        return this.modelNode
     }
 
-    public ModelNode getModelNode() {
-        return this.modelNode;
-    }
-
-    public void paint(final Graphics g) {
+    override fun paint(g: Graphics?) {
         // nop
-    }
-
-    public RElement getRenderable() {
-        return element;
     }
 }

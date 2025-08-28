@@ -20,25 +20,26 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.github.remmerw.thor.cobra.clientlet;
+package io.github.remmerw.thor.cobra.clientlet
 
 /**
  * A clientlet processes a URL response and creates content renderable by a user
  * agent.
  *
- * @see ClientletSelector#select(ClientletRequest, ClientletResponse)
+ * @see ClientletSelector.select
  */
-public interface Clientlet {
+interface Clientlet {
     /**
      * This method is invoked by a clientlet engine to process a URL response.
      * After the response is processed, the clientlet should either set
      * displayable content via
-     * {@link ClientletContext#setResultingContent(ComponentContent)} or redirect
+     * [ClientletContext.setResultingContent] or redirect
      * navigation elsewhere.
      *
      * @param context An instance of ClientletContext which represents the current
-     *                request context.
+     * request context.
      * @throws ClientletException This may be thrown by a clientlet when there are document errors.
      */
-    void process(ClientletContext context) throws ClientletException;
+    @Throws(ClientletException::class)
+    fun process(context: ClientletContext?)
 }

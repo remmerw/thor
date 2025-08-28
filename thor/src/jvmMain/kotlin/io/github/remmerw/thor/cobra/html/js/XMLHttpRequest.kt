@@ -1,51 +1,264 @@
-package io.github.remmerw.thor.cobra.html.js;
+package io.github.remmerw.thor.cobra.html.js
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.ScriptRuntime;
-import org.mozilla.javascript.Scriptable;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Document;
+import io.github.remmerw.thor.cobra.html.js.Window.JSRunnableTask
+import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate
+import io.github.remmerw.thor.cobra.js.JavaScript
+import io.github.remmerw.thor.cobra.ua.NetworkRequest
+import io.github.remmerw.thor.cobra.ua.NetworkRequestEvent
+import io.github.remmerw.thor.cobra.ua.NetworkRequestListener
+import io.github.remmerw.thor.cobra.ua.UserAgentContext
+import io.github.remmerw.thor.cobra.ua.UserAgentContext.RequestKind
+import io.github.remmerw.thor.cobra.util.DOMExceptions
+import io.github.remmerw.thor.cobra.util.Urls
+import org.mozilla.javascript.Context
+import org.mozilla.javascript.Function
+import org.mozilla.javascript.ScriptRuntime
+import org.mozilla.javascript.Scriptable
+import org.w3c.dom.DOMException
+import java.io.IOException
+import java.net.MalformedURLException
+import java.net.URL
+import java.util.Locale
+import java.util.logging.Level
+import java.util.logging.Logger
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+class XMLHttpRequest(
+    private val pcontext: UserAgentContext,
+    private val codeSource: URL,
+    private val scope: Scriptable?, // TODO: This is a quick hack
+    private val window: Window
+) : AbstractScriptableDelegate() {
+    private val request: NetworkRequest
+    var onreadystatechange: Function? = null
+        get() {
+            synchronized(this) {
+                return field
+            }
+        }
+        set(value) {
+            synchronized(this) {
+                field = value
+                if ((value != null) && !this.listenerAdded) {
+                    this.request.addNetworkRequestListener(NetworkRequestListener { netEvent: NetworkRequestEvent? -> executeReadyStateChange() })
+                    this.listenerAdded = true
+                }
+            }
+        }
+    private var listenerAdded = false
+    private var onLoad: Function? = null
 
-import io.github.remmerw.thor.cobra.html.js.Window.JSRunnableTask;
-import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate;
-import io.github.remmerw.thor.cobra.js.JavaScript;
-import io.github.remmerw.thor.cobra.ua.NetworkRequest;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext.Request;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext.RequestKind;
-import io.github.remmerw.thor.cobra.util.DOMExceptions;
-import io.github.remmerw.thor.cobra.util.Urls;
+    init {
+        this.request = pcontext.createHttpRequest()
+    }
 
-public class XMLHttpRequest extends AbstractScriptableDelegate {
-    // TODO: See reference:
-    // http://www.xulplanet.com/references/objref/XMLHttpRequest.html
+    fun abort() {
+        request.abort()
+    }
 
-    private static final Logger logger = Logger.getLogger(XMLHttpRequest.class.getName());
-    // excluded as per https://dvcs.w3.org/hg/xhr/raw-file/default/xhr-1/Overview.html
-    private static final List<String> excludedResponseHeadersLowerCase = Arrays.asList(
+    @get:NotGetterSetter
+    val allResponseHeaders: String?
+        get() =// TODO: Need to also filter out based on CORS
+            request.getAllResponseHeaders(excludedResponseHeadersLowerCase)
+
+    val readyState: Int
+        get() = request.readyState
+
+    val responseBytes: ByteArray?
+        get() = request.responseBytes
+
+    fun getResponseHeader(headerName: String): String? {
+        // TODO: Need to also filter out based on CORS
+        if (excludedResponseHeadersLowerCase.contains(headerName.lowercase(Locale.getDefault()))) {
+            return request.getResponseHeader(headerName)
+        } else {
+            return null
+        }
+    }
+
+    val responseText: String?
+        get() = request.responseText
+
+    val responseXML: Document?
+        get() = request.responseXML
+
+    val status: Int
+        get() = request.status
+
+    val statusText: String?
+        get() = request.statusText
+
+    @Throws(MalformedURLException::class)
+    private fun getFullURL(relativeUrl: String?): URL {
+        return Urls.createURL(this.codeSource, relativeUrl)
+    }
+
+    @Throws(IOException::class)
+    fun open(
+        method: String?,
+        url: String?,
+        asyncFlag: Boolean,
+        userName: String?,
+        password: String?
+    ) {
+        val adjustedMethod: String? = checkAndAdjustMethod(method)
+        try {
+            request.open(adjustedMethod, this.getFullURL(url), asyncFlag, userName, password)
+        } catch (mfe: MalformedURLException) {
+            throw ScriptRuntime.typeError("url malformed")
+        }
+    }
+
+    @Throws(IOException::class)
+    fun open(method: String?, url: String?, asyncFlag: Boolean, userName: String?) {
+        val adjustedMethod: String? = checkAndAdjustMethod(method)
+        request.open(adjustedMethod, this.getFullURL(url), asyncFlag, userName)
+    }
+
+    @Throws(IOException::class)
+    fun open(method: String?, url: String?, asyncFlag: Boolean) {
+        val adjustedMethod: String? = checkAndAdjustMethod(method)
+        request.open(adjustedMethod, this.getFullURL(url), asyncFlag)
+    }
+
+    @Throws(IOException::class)
+    fun open(method: String?, url: String?) {
+        val adjustedMethod: String? = checkAndAdjustMethod(method)
+        request.open(adjustedMethod, this.getFullURL(url))
+    }
+
+    // private boolean listenerAddedLoad;
+    @Throws(IOException::class)
+    fun send(content: String?) {
+        val urlOpt = request.uRL
+        if (urlOpt.isPresent()) {
+            val url = urlOpt.get()
+            if (isSameOrigin(url, codeSource)) {
+                // final URLPermission urlPermission = new URLPermission(url.toExternalForm());
+                // final SocketPermission socketPermission = new SocketPermission(url.getHost() + ":" + Urls.getPort(url), "connect,resolve");
+                // final StoreHostPermission storeHostPermission = StoreHostPermission.forURL(url);
+
+                request.send(content, UserAgentContext.Request(url, RequestKind.XHR))
+
+                // }
+            } else {
+                val msg = String.format(
+                    "Failed to execute 'send' on 'XMLHttpRequest': Failed to load '%s'",
+                    url.toExternalForm()
+                )
+                throw DOMExceptions.ExtendedError.NetworkError.createException(msg)
+            }
+        }
+    }
+
+    fun setOnload(value: Function?) {
+        synchronized(this) {
+            this.onLoad = value
+            if ((value != null) && !this.listenerAdded) {
+                this.request.addNetworkRequestListener(NetworkRequestListener { netEvent: NetworkRequestEvent? -> executeReadyStateChange() })
+                this.listenerAdded = true
+            }
+        }
+    }
+
+    private fun executeReadyStateChange() {
+        // Not called in GUI thread to ensure consistency of readyState.
+        try {
+            val f = this@XMLHttpRequest.onreadystatechange
+            if (f != null) {
+                window.addJSTask(
+                    JSRunnableTask(
+                        0,
+                        "xhr ready state changed: " + request.readyState,
+                        Runnable {
+                            val ctx = Executor.createContext(
+                                this.codeSource,
+                                this.pcontext,
+                                window.getContextFactory()
+                            )
+                            try {
+                                val newScope = JavaScript.instance.getJavascriptObject(
+                                    this@XMLHttpRequest,
+                                    this.scope
+                                ) as Scriptable?
+                                f.call(ctx, newScope, newScope, arrayOfNulls<Any>(0))
+                            } finally {
+                                Context.exit()
+                            }
+                        })
+                )
+            }
+        } catch (err: Exception) {
+            logger.log(Level.WARNING, "Error processing ready state change.", err)
+            Executor.logJSException(err)
+        }
+
+        if (request.readyState == NetworkRequest.STATE_COMPLETE) {
+            try {
+                val f = this.onLoad
+                if (f != null) {
+                    window.addJSTaskUnchecked(JSRunnableTask(0, "xhr on load : ", Runnable {
+                        val ctx = Executor.createContext(
+                            this.codeSource,
+                            this.pcontext,
+                            window.getContextFactory()
+                        )
+                        try {
+                            val newScope = JavaScript.instance
+                                .getJavascriptObject(this@XMLHttpRequest, this.scope) as Scriptable?
+                            f.call(ctx, newScope, newScope, arrayOfNulls<Any>(0))
+                        } finally {
+                            Context.exit()
+                        }
+                    }))
+                }
+            } catch (err: Exception) {
+                logger.log(Level.WARNING, "Error processing ready state change.", err)
+            }
+        }
+    }
+
+    // As per: http://www.w3.org/TR/XMLHttpRequest2/#the-setrequestheader-method
+    fun setRequestHeader(header: String, value: String?) {
+        val readyState = request.readyState
+        if (readyState == NetworkRequest.STATE_LOADING) {
+            if (isWellFormattedHeaderValue(header, value)) {
+                if (!isProhibited(header)) {
+                    request.addRequestedHeader(header, value)
+                } else {
+                    // TODO: Throw exception?
+                    println("Prohibited header: " + header)
+                }
+            } else {
+                throw DOMException(DOMException.SYNTAX_ERR, "header or value not well formatted")
+            }
+        } else {
+            throw DOMException(
+                DOMException.INVALID_STATE_ERR,
+                "Can't set header when request state is: " + readyState
+            )
+        }
+    }
+
+    companion object {
+        // TODO: See reference:
+        // http://www.xulplanet.com/references/objref/XMLHttpRequest.html
+        private val logger: Logger = Logger.getLogger(XMLHttpRequest::class.java.name)
+
+        // excluded as per https://dvcs.w3.org/hg/xhr/raw-file/default/xhr-1/Overview.html
+        private val excludedResponseHeadersLowerCase = mutableListOf<String?>(
             "set-cookie",
             "set-cookie2"
-    );
-    private static final String[] prohibitedMethods = {
+        )
+        private val prohibitedMethods = arrayOf<String?>(
             "CONNECT", "TRACE", "TRACK"
-    };
-    private static final String[] upperCaseMethods = {
+        )
+        private val upperCaseMethods = arrayOf<String?>(
             "DELETE", "GET", "HEAD", "OPTIONS", "POST", "PUT"
-    };
-    // This list comes from https://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-setrequestheader()-method
-    // It has been lower-cased for faster comparison
-    private static final String[] prohibitedHeaders = {
+        )
+
+        // This list comes from https://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-setrequestheader()-method
+        // It has been lower-cased for faster comparison
+        private val prohibitedHeaders = arrayOf<String?>(
             "accept-charset",
             "accept-encoding",
             "access-control-request-headers",
@@ -67,239 +280,44 @@ public class XMLHttpRequest extends AbstractScriptableDelegate {
             "upgrade",
             "user-agent",
             "via"
-    };
-    private final NetworkRequest request;
-    private final UserAgentContext pcontext;
-    private final Scriptable scope;
-    private final URL codeSource;
-    // TODO: This is a quick hack
-    private final Window window;
-    private Function onreadystatechange;
-    private boolean listenerAdded;
-    private Function onLoad;
+        )
 
-    public XMLHttpRequest(final UserAgentContext pcontext, final URL codeSource, final Scriptable scope, final Window window) {
-        this.request = pcontext.createHttpRequest();
-        this.pcontext = pcontext;
-        this.scope = scope;
-        this.codeSource = codeSource;
-        this.window = window;
-    }
-
-    private static String checkAndAdjustMethod(final String method) {
-        for (final String p : prohibitedMethods) {
-            if (p.equalsIgnoreCase(method)) {
-                throw DOMExceptions.ExtendedError.SecurityError.createException();
-            }
-        }
-
-        for (final String u : upperCaseMethods) {
-            if (u.equalsIgnoreCase(method)) {
-                return u;
-            }
-        }
-
-        return method;
-    }
-
-    private static boolean isSameOrigin(final URL url1, final URL url2) {
-        return url1.getHost().equals(url2.getHost()) &&
-                (url1.getPort() == (url2.getPort())) &&
-                url1.getProtocol().equals(url2.getProtocol());
-
-    }
-
-    private static boolean isProhibited(final String header) {
-        final String headerTL = header.toLowerCase();
-        for (final String prohibitedHeader : prohibitedHeaders) {
-            if (prohibitedHeader.equals(headerTL)) {
-                return true;
-            }
-        }
-        final boolean prohibitedPrefixMatch = headerTL.startsWith("proxy-") || headerTL.startsWith("sec-");
-        return prohibitedPrefixMatch;
-    }
-
-    private static boolean isWellFormattedHeaderValue(final String header, final String value) {
-        // TODO Needs implementation as per https://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-setrequestheader()-method
-        return true;
-    }
-
-    public void abort() {
-        request.abort();
-    }
-
-    @NotGetterSetter
-    public String getAllResponseHeaders() {
-        // TODO: Need to also filter out based on CORS
-        return request.getAllResponseHeaders(excludedResponseHeadersLowerCase);
-    }
-
-    public int getReadyState() {
-        return request.getReadyState();
-    }
-
-    public byte[] getResponseBytes() {
-        return request.getResponseBytes();
-    }
-
-    public String getResponseHeader(final String headerName) {
-        // TODO: Need to also filter out based on CORS
-        if (excludedResponseHeadersLowerCase.contains(headerName.toLowerCase())) {
-            return request.getResponseHeader(headerName);
-        } else {
-            return null;
-        }
-    }
-
-    public String getResponseText() {
-        return request.getResponseText();
-    }
-
-    public Document getResponseXML() {
-        return request.getResponseXML();
-    }
-
-    public int getStatus() {
-        return request.getStatus();
-    }
-
-    public String getStatusText() {
-        return request.getStatusText();
-    }
-
-    private @NonNull URL getFullURL(final String relativeUrl) throws MalformedURLException {
-        return Urls.createURL(this.codeSource, relativeUrl);
-    }
-
-    public void open(final String method, final String url, final boolean asyncFlag, final String userName, final String password)
-            throws IOException {
-        final String adjustedMethod = checkAndAdjustMethod(method);
-        try {
-            request.open(adjustedMethod, this.getFullURL(url), asyncFlag, userName, password);
-        } catch (final MalformedURLException mfe) {
-            throw ScriptRuntime.typeError("url malformed");
-        }
-    }
-
-    public void open(final String method, final String url, final boolean asyncFlag, final String userName) throws IOException {
-        final String adjustedMethod = checkAndAdjustMethod(method);
-        request.open(adjustedMethod, this.getFullURL(url), asyncFlag, userName);
-    }
-
-    public void open(final String method, final String url, final boolean asyncFlag) throws IOException {
-        final String adjustedMethod = checkAndAdjustMethod(method);
-        request.open(adjustedMethod, this.getFullURL(url), asyncFlag);
-    }
-
-    public void open(final String method, final String url) throws IOException {
-        final String adjustedMethod = checkAndAdjustMethod(method);
-        request.open(adjustedMethod, this.getFullURL(url));
-    }
-    // private boolean listenerAddedLoad;
-
-    public void send(final String content) throws IOException {
-        final Optional<URL> urlOpt = request.getURL();
-        if (urlOpt.isPresent()) {
-            final URL url = urlOpt.get();
-            if (isSameOrigin(url, codeSource)) {
-                // final URLPermission urlPermission = new URLPermission(url.toExternalForm());
-                // final SocketPermission socketPermission = new SocketPermission(url.getHost() + ":" + Urls.getPort(url), "connect,resolve");
-                // final StoreHostPermission storeHostPermission = StoreHostPermission.forURL(url);
-
-                request.send(content, new Request(url, RequestKind.XHR));
-
-                // }
-            } else {
-                final String msg = String.format("Failed to execute 'send' on 'XMLHttpRequest': Failed to load '%s'", url.toExternalForm());
-                throw DOMExceptions.ExtendedError.NetworkError.createException(msg);
-            }
-        }
-    }
-
-    public Function getOnreadystatechange() {
-        synchronized (this) {
-            return this.onreadystatechange;
-        }
-    }
-
-    public void setOnreadystatechange(final Function value) {
-        synchronized (this) {
-            this.onreadystatechange = value;
-            if ((value != null) && !this.listenerAdded) {
-                this.request.addNetworkRequestListener(netEvent -> executeReadyStateChange());
-                this.listenerAdded = true;
-            }
-        }
-    }
-
-    public void setOnload(final Function value) {
-        synchronized (this) {
-            this.onLoad = value;
-            if ((value != null) && !this.listenerAdded) {
-                this.request.addNetworkRequestListener(netEvent -> executeReadyStateChange());
-                this.listenerAdded = true;
-            }
-        }
-    }
-
-    private void executeReadyStateChange() {
-        // Not called in GUI thread to ensure consistency of readyState.
-        try {
-            final Function f = XMLHttpRequest.this.getOnreadystatechange();
-            if (f != null) {
-                window.addJSTask(new JSRunnableTask(0, "xhr ready state changed: " + request.getReadyState(), () -> {
-                    final Context ctx = Executor.createContext(this.codeSource, this.pcontext, window.getContextFactory());
-                    try {
-                        final Scriptable newScope = (Scriptable) JavaScript.getInstance().getJavascriptObject(XMLHttpRequest.this, this.scope);
-                        f.call(ctx, newScope, newScope, new Object[0]);
-                    } finally {
-                        Context.exit();
-                    }
-                }));
-            }
-        } catch (final Exception err) {
-            logger.log(Level.WARNING, "Error processing ready state change.", err);
-            Executor.logJSException(err);
-        }
-
-        if (request.getReadyState() == NetworkRequest.STATE_COMPLETE) {
-            try {
-                final Function f = this.onLoad;
-                if (f != null) {
-                    window.addJSTaskUnchecked(new JSRunnableTask(0, "xhr on load : ", () -> {
-                        final Context ctx = Executor.createContext(this.codeSource, this.pcontext, window.getContextFactory());
-                        try {
-                            final Scriptable newScope = (Scriptable) JavaScript.getInstance().getJavascriptObject(XMLHttpRequest.this, this.scope);
-                            f.call(ctx, newScope, newScope, new Object[0]);
-                        } finally {
-                            Context.exit();
-                        }
-                    }));
+        private fun checkAndAdjustMethod(method: String?): String? {
+            for (p in prohibitedMethods) {
+                if (p.equals(method, ignoreCase = true)) {
+                    throw DOMExceptions.ExtendedError.SecurityError.createException()
                 }
-            } catch (final Exception err) {
-                logger.log(Level.WARNING, "Error processing ready state change.", err);
             }
-        }
-    }
 
-    // As per: http://www.w3.org/TR/XMLHttpRequest2/#the-setrequestheader-method
-    public void setRequestHeader(final String header, final String value) {
-        final int readyState = request.getReadyState();
-        if (readyState == NetworkRequest.STATE_LOADING) {
-            if (isWellFormattedHeaderValue(header, value)) {
-                if (!isProhibited(header)) {
-                    request.addRequestedHeader(header, value);
-                } else {
-                    // TODO: Throw exception?
-                    System.out.println("Prohibited header: " + header);
+            for (u in upperCaseMethods) {
+                if (u.equals(method, ignoreCase = true)) {
+                    return u
                 }
-            } else {
-                throw new DOMException(DOMException.SYNTAX_ERR, "header or value not well formatted");
             }
-        } else {
-            throw new DOMException(DOMException.INVALID_STATE_ERR, "Can't set header when request state is: " + readyState);
+
+            return method
+        }
+
+        private fun isSameOrigin(url1: URL, url2: URL): Boolean {
+            return url1.host == url2.host &&
+                    (url1.port == (url2.port)) &&
+                    url1.protocol == url2.protocol
+        }
+
+        private fun isProhibited(header: String): Boolean {
+            val headerTL = header.lowercase(Locale.getDefault())
+            for (prohibitedHeader in prohibitedHeaders) {
+                if (prohibitedHeader == headerTL) {
+                    return true
+                }
+            }
+            val prohibitedPrefixMatch = headerTL.startsWith("proxy-") || headerTL.startsWith("sec-")
+            return prohibitedPrefixMatch
+        }
+
+        private fun isWellFormattedHeaderValue(header: String?, value: String?): Boolean {
+            // TODO Needs implementation as per https://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-setrequestheader()-method
+            return true
         }
     }
-
 }

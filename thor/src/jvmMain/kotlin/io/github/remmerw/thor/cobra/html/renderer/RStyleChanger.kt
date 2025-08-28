@@ -21,43 +21,30 @@
 /*
  * Created on Apr 17, 2005
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import java.awt.Graphics;
-
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode;
-import io.github.remmerw.thor.cobra.html.style.RenderState;
+import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
+import io.github.remmerw.thor.cobra.html.style.RenderState
+import java.awt.Graphics
+import java.awt.event.MouseEvent
 
 //import java.util.logging.*;
-
 /**
  * @author J. H. S.
  */
-final class RStyleChanger extends BaseRenderable {
+internal class RStyleChanger(modelNode: ModelNode) : BaseRenderable() {
     // private final static Logger logger = Logger.getLogger(RStyleChanger.class);
-    private final ModelNode modelNode;
+    private val modelNode: ModelNode
 
     /**
      *
      */
-    public RStyleChanger(final ModelNode modelNode) {
-        this.modelNode = modelNode;
+    init {
+        this.modelNode = modelNode
     }
 
-    public static void onMouseClick(final java.awt.event.MouseEvent event, final int x, final int y) {
-        throw new UnsupportedOperationException("unexpected");
-    }
-
-    public static void onMousePressed(final java.awt.event.MouseEvent event, final int x, final int y) {
-        throw new UnsupportedOperationException("unexpected");
-    }
-
-    public static void onMouseReleased(final java.awt.event.MouseEvent event, final int x, final int y) {
-        throw new UnsupportedOperationException("unexpected");
-    }
-
-    public ModelNode getModelNode() {
-        return this.modelNode;
+    override fun getModelNode(): ModelNode {
+        return this.modelNode
     }
 
     /*
@@ -66,10 +53,10 @@ final class RStyleChanger extends BaseRenderable {
      * @see
      * net.sourceforge.xamj.domimpl.markup.Renderable#paint(java.awt.Graphics)
      */
-    public void paint(final Graphics g) {
-        final RenderState rs = this.modelNode.getRenderState();
-        g.setColor(rs.getColor());
-        g.setFont(rs.getFont());
+    override fun paint(g: Graphics) {
+        val rs: RenderState = this.modelNode.renderState!!
+        g.color = rs.color
+        g.font = rs.font
     }
 
     /*
@@ -77,6 +64,20 @@ final class RStyleChanger extends BaseRenderable {
      *
      * @see org.xamjwg.html.renderer.Renderable#invalidate()
      */
-    public void invalidateLayoutUpTree() {
+    fun invalidateLayoutUpTree() {
+    }
+
+    companion object {
+        fun onMouseClick(event: MouseEvent?, x: Int, y: Int) {
+            throw UnsupportedOperationException("unexpected")
+        }
+
+        fun onMousePressed(event: MouseEvent?, x: Int, y: Int) {
+            throw UnsupportedOperationException("unexpected")
+        }
+
+        fun onMouseReleased(event: MouseEvent?, x: Int, y: Int) {
+            throw UnsupportedOperationException("unexpected")
+        }
     }
 }

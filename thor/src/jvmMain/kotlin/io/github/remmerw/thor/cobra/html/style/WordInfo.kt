@@ -21,17 +21,17 @@
 /*
  * Created on Apr 17, 2005
  */
-package io.github.remmerw.thor.cobra.html.style;
+package io.github.remmerw.thor.cobra.html.style
 
-import java.awt.FontMetrics;
+import java.awt.FontMetrics
 
 /**
  * @author J. H. S.
  */
-class WordInfo {
-    public FontMetrics fontMetrics;
-    public int descent;
-    public int ascentPlusLeading;
-    public int width;
-    public int height;
+internal class WordInfo {
+    var fontMetrics: FontMetrics? = null
+    var descent: Int = 0
+    var ascentPlusLeading: Int = 0
+    var width: Int = 0
+    var height: Int = 0
 }

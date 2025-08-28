@@ -21,71 +21,60 @@
 /*
  * Created on Nov 19, 2005
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import org.eclipse.jdt.annotation.NonNull;
+import io.github.remmerw.thor.cobra.html.HtmlRendererContext
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
+import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
+import io.github.remmerw.thor.cobra.html.style.RenderState
+import io.github.remmerw.thor.cobra.html.style.RenderThreadState
+import io.github.remmerw.thor.cobra.ua.UserAgentContext
+import io.github.remmerw.thor.cobra.util.CollectionUtilities
+import java.awt.Color
+import java.awt.Font
+import java.awt.Graphics
+import java.awt.event.MouseEvent
+import java.util.Collections
+import java.util.LinkedList
+import java.util.SortedSet
+import java.util.TreeSet
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Insets;
-import java.awt.Rectangle;
-import java.awt.event.MouseEvent;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
+internal class RTable(
+    modelNode: HTMLElementImpl?, pcontext: UserAgentContext?, rcontext: HtmlRendererContext?,
+    frameContext: FrameContext?,
+    container: RenderableContainer?
+) : BaseBlockyRenderable(container, modelNode, pcontext) {
+    private val cachedLayout: MutableMap<LayoutKey?, LayoutValue?> =
+        HashMap<LayoutKey?, LayoutValue?>(5)
+    private val tableMatrix: TableMatrix
+    private var positionedRenderables: SortedSet<PositionedRenderable>? = null
+    private var otherOrdinal = 0
+    private var lastLayoutKey: LayoutKey? = null
+    private var lastLayoutValue: LayoutValue? = null
 
-import io.github.remmerw.thor.cobra.html.HtmlRendererContext;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode;
-import io.github.remmerw.thor.cobra.html.renderer.TableMatrix.RTableRowGroup;
-import io.github.remmerw.thor.cobra.html.style.RenderState;
-import io.github.remmerw.thor.cobra.html.style.RenderThreadState;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext;
-import io.github.remmerw.thor.cobra.util.CollectionUtilities;
-
-class RTable extends BaseBlockyRenderable {
-    private static final int MAX_CACHE_SIZE = 10;
-    private final Map<LayoutKey, LayoutValue> cachedLayout = new HashMap<>(5);
-    private final TableMatrix tableMatrix;
-    private SortedSet<@NonNull PositionedRenderable> positionedRenderables;
-    private int otherOrdinal;
-    private LayoutKey lastLayoutKey = null;
-    private LayoutValue lastLayoutValue = null;
-
-    public RTable(final HTMLElementImpl modelNode, final UserAgentContext pcontext, final HtmlRendererContext rcontext,
-                  final FrameContext frameContext,
-                  final RenderableContainer container) {
-        super(container, modelNode, pcontext);
-        this.tableMatrix = new TableMatrix(modelNode, pcontext, rcontext, frameContext, this, this);
+    init {
+        this.tableMatrix = TableMatrix(modelNode, pcontext, rcontext, frameContext, this, this)
     }
 
-    @Override
-    public void paintShifted(final Graphics g) {
-        final RenderState rs = this.modelNode.getRenderState();
-        if ((rs != null) && (rs.getVisibility() != RenderState.VISIBILITY_VISIBLE)) {
+    override fun paintShifted(g: Graphics?) {
+        val rs = this.modelNode.renderState
+        if ((rs != null) && (rs.visibility != RenderState.VISIBILITY_VISIBLE)) {
             // Just don't paint it.
-            return;
+            return
         }
 
-        this.prePaint(g);
-        final Dimension size = this.getSize();
+        this.prePaint(g)
+        val size = this.getSize()
         // TODO: No scrollbars
-        final TableMatrix tm = this.tableMatrix;
-        tm.paint(g, size);
-        final Collection<PositionedRenderable> prs = this.positionedRenderables;
+        val tm = this.tableMatrix
+        tm.paint(g, size)
+        val prs: MutableCollection<PositionedRenderable>? = this.positionedRenderables
         if (prs != null) {
-            final Iterator<PositionedRenderable> i = prs.iterator();
+            val i = prs.iterator()
             while (i.hasNext()) {
-                final PositionedRenderable pr = i.next();
-                pr.paint(g);
-        /*
+                val pr = i.next()
+                pr.paint(g)
+                /*
         final BoundableRenderable r = pr.renderable;
         r.paintTranslated(g);
         */
@@ -93,80 +82,78 @@ class RTable extends BaseBlockyRenderable {
         }
     }
 
-    @Override
-    public void doLayout(final int availWidth, final int availHeight, final boolean sizeOnly) {
-        final Map<LayoutKey, LayoutValue> cachedLayout = this.cachedLayout;
-        final RenderState rs = this.modelNode.getRenderState();
-        final int whitespace = rs == null ? RenderState.WS_NORMAL : rs.getWhiteSpace();
-        final Font font = rs == null ? null : rs.getFont();
+    override fun doLayout(availWidth: Int, availHeight: Int, sizeOnly: Boolean) {
+        val cachedLayout = this.cachedLayout
+        val rs = this.modelNode.renderState
+        val whitespace = if (rs == null) RenderState.WS_NORMAL else rs.whiteSpace
+        val font = if (rs == null) null else rs.font
         // Having whiteSpace == NOWRAP and having a NOWRAP override
         // are not exactly the same thing.
-        final boolean overrideNoWrap = RenderThreadState.getState().overrideNoWrap;
-        final LayoutKey layoutKey = new LayoutKey(availWidth, availHeight, whitespace, font, overrideNoWrap);
-        LayoutValue layoutValue;
+        val overrideNoWrap = RenderThreadState.getState().overrideNoWrap
+        val layoutKey = LayoutKey(availWidth, availHeight, whitespace, font, overrideNoWrap)
+        var layoutValue: LayoutValue?
         if (sizeOnly) {
-            layoutValue = cachedLayout.get(layoutKey);
+            layoutValue = cachedLayout.get(layoutKey)
         } else {
-            if (java.util.Objects.equals(layoutKey, this.lastLayoutKey)) {
-                layoutValue = this.lastLayoutValue;
+            if (layoutKey == this.lastLayoutKey) {
+                layoutValue = this.lastLayoutValue
             } else {
-                layoutValue = null;
+                layoutValue = null
             }
         }
         if (layoutValue == null) {
-            final Collection<PositionedRenderable> prs = this.positionedRenderables;
+            val prs: MutableCollection<PositionedRenderable>? = this.positionedRenderables
             if (prs != null) {
-                prs.clear();
+                prs.clear()
             }
-            this.otherOrdinal = 0;
-            this.clearGUIComponents();
-            this.clearDelayedPairs();
-            this.applyStyle(availWidth, availHeight);
-            final TableMatrix tm = this.tableMatrix;
-            final Insets insets = this.getInsets(false, false);
-            tm.reset(insets, availWidth, availHeight);
+            this.otherOrdinal = 0
+            this.clearGUIComponents()
+            this.clearDelayedPairs()
+            this.applyStyle(availWidth, availHeight)
+            val tm = this.tableMatrix
+            val insets = this.getInsets(false, false)
+            tm.reset(insets, availWidth, availHeight)
             // TODO: No scrollbars
-            tm.build(availWidth, availHeight, sizeOnly);
-            tm.doLayout(insets);
+            tm.build(availWidth, availHeight, sizeOnly)
+            tm.doLayout(insets)
 
             // Import applicable delayed pairs.
             // Only needs to be done if layout was forced. Otherwise, they should've been imported already.
-            final Collection<DelayedPair> pairs = this.delayedPairs;
+            val pairs = this.delayedPairs
             if (pairs != null) {
-                final Iterator<DelayedPair> i = pairs.iterator();
+                val i: MutableIterator<DelayedPair> = pairs.iterator()
                 while (i.hasNext()) {
-                    final DelayedPair pair = i.next();
-                    if (pair.containingBlock == this) {
-                        this.importDelayedPair(pair);
+                    val pair = i.next()
+                    if (pair.containingBlock === this) {
+                        this.importDelayedPair(pair)
                     }
                 }
             }
-            layoutValue = new LayoutValue(tm.getTableWidth(), tm.getTableHeight());
+            layoutValue = LayoutValue(tm.getTableWidth(), tm.getTableHeight())
             if (sizeOnly) {
-                if (cachedLayout.size() > MAX_CACHE_SIZE) {
+                if (cachedLayout.size > MAX_CACHE_SIZE) {
                     // Unlikely, but we should ensure it's bounded.
-                    cachedLayout.clear();
+                    cachedLayout.clear()
                 }
-                cachedLayout.put(layoutKey, layoutValue);
-                this.lastLayoutKey = null;
-                this.lastLayoutValue = null;
+                cachedLayout.put(layoutKey, layoutValue)
+                this.lastLayoutKey = null
+                this.lastLayoutValue = null
             } else {
-                this.lastLayoutKey = layoutKey;
-                this.lastLayoutValue = layoutValue;
+                this.lastLayoutKey = layoutKey
+                this.lastLayoutValue = layoutValue
             }
         }
-        this.width = layoutValue.width;
-        this.height = layoutValue.height;
-        this.sendGUIComponentsToParent();
-        this.sendDelayedPairsToParent();
+        this.width = layoutValue.width
+        this.height = layoutValue.height
+        this.sendGUIComponentsToParent()
+        this.sendDelayedPairsToParent()
     }
 
-    @Override
-    public void invalidateLayoutLocal() {
-        super.invalidateLayoutLocal();
-        this.cachedLayout.clear();
-        this.lastLayoutKey = null;
-        this.lastLayoutValue = null;
+    override fun invalidateLayoutLocal() {
+        super.invalidateLayoutLocal()
+        this.cachedLayout.clear()
+        this.lastLayoutKey = null
+        this.lastLayoutValue = null
     }
 
     /*
@@ -175,26 +162,26 @@ class RTable extends BaseBlockyRenderable {
      * @see org.xamjwg.html.renderer.BoundableRenderable#getRenderablePoint(int,
      * int)
      */
-    public RenderableSpot getLowestRenderableSpot(final int x, final int y) {
-        final Collection<PositionedRenderable> prs = this.positionedRenderables;
+    override fun getLowestRenderableSpot(x: Int, y: Int): RenderableSpot {
+        val prs: MutableCollection<PositionedRenderable>? = this.positionedRenderables
         if (prs != null) {
-            final Iterator<PositionedRenderable> i = prs.iterator();
+            val i = prs.iterator()
             while (i.hasNext()) {
-                final PositionedRenderable pr = i.next();
-                final BoundableRenderable r = pr.renderable;
-                final int childX = x - r.getVisualX();
-                final int childY = y - r.getVisualY();
-                final RenderableSpot rs = r.getLowestRenderableSpot(childX, childY);
+                val pr = i.next()
+                val r = pr.renderable
+                val childX = x - r.getVisualX()
+                val childY = y - r.getVisualY()
+                val rs = r.getLowestRenderableSpot(childX, childY)
                 if (rs != null) {
-                    return rs;
+                    return rs
                 }
             }
         }
-        final RenderableSpot rs = this.tableMatrix.getLowestRenderableSpot(x, y);
+        val rs = this.tableMatrix.getLowestRenderableSpot(x, y)
         if (rs != null) {
-            return rs;
+            return rs
         }
-        return new RenderableSpot(this, x, y);
+        return RenderableSpot(this, x, y)
     }
 
     /*
@@ -204,44 +191,44 @@ class RTable extends BaseBlockyRenderable {
      * org.xamjwg.html.renderer.BoundableRenderable#onMouseClick(java.awt.event
      * .MouseEvent, int, int)
      */
-    public boolean onMouseClick(final MouseEvent event, final int x, final int y) {
-        final Collection<PositionedRenderable> prs = this.positionedRenderables;
+    override fun onMouseClick(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val prs: MutableCollection<PositionedRenderable>? = this.positionedRenderables
         if (prs != null) {
-            final Iterator<PositionedRenderable> i = prs.iterator();
+            val i = prs.iterator()
             while (i.hasNext()) {
-                final PositionedRenderable pr = i.next();
-                final BoundableRenderable r = pr.renderable;
-                final Rectangle bounds = r.getVisualBounds();
+                val pr = i.next()
+                val r = pr.renderable
+                val bounds = r.getVisualBounds()
                 if (bounds.contains(x, y)) {
-                    final int childX = x - r.getVisualX();
-                    final int childY = y - r.getVisualY();
+                    val childX = x - r.getVisualX()
+                    val childY = y - r.getVisualY()
                     if (!r.onMouseClick(event, childX, childY)) {
-                        return false;
+                        return false
                     }
                 }
             }
         }
-        return this.tableMatrix.onMouseClick(event, x, y);
+        return this.tableMatrix.onMouseClick(event, x, y)
     }
 
-    public boolean onDoubleClick(final MouseEvent event, final int x, final int y) {
-        final Collection<PositionedRenderable> prs = this.positionedRenderables;
+    override fun onDoubleClick(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val prs: MutableCollection<PositionedRenderable>? = this.positionedRenderables
         if (prs != null) {
-            final Iterator<PositionedRenderable> i = prs.iterator();
+            val i = prs.iterator()
             while (i.hasNext()) {
-                final PositionedRenderable pr = i.next();
-                final BoundableRenderable r = pr.renderable;
-                final Rectangle bounds = r.getVisualBounds();
+                val pr = i.next()
+                val r = pr.renderable
+                val bounds = r.getVisualBounds()
                 if (bounds.contains(x, y)) {
-                    final int childX = x - r.getVisualX();
-                    final int childY = y - r.getVisualY();
+                    val childX = x - r.getVisualX()
+                    val childY = y - r.getVisualY()
                     if (!r.onDoubleClick(event, childX, childY)) {
-                        return false;
+                        return false
                     }
                 }
             }
         }
-        return this.tableMatrix.onDoubleClick(event, x, y);
+        return this.tableMatrix.onDoubleClick(event, x, y)
     }
 
     /*
@@ -251,8 +238,8 @@ class RTable extends BaseBlockyRenderable {
      * org.xamjwg.html.renderer.BoundableRenderable#onMouseDisarmed(java.awt.event
      * .MouseEvent)
      */
-    public boolean onMouseDisarmed(final MouseEvent event) {
-        return this.tableMatrix.onMouseDisarmed(event);
+    override fun onMouseDisarmed(event: MouseEvent?): Boolean {
+        return this.tableMatrix.onMouseDisarmed(event)
     }
 
     /*
@@ -262,24 +249,24 @@ class RTable extends BaseBlockyRenderable {
      * org.xamjwg.html.renderer.BoundableRenderable#onMousePressed(java.awt.event
      * .MouseEvent, int, int)
      */
-    public boolean onMousePressed(final MouseEvent event, final int x, final int y) {
-        final Collection<PositionedRenderable> prs = this.positionedRenderables;
+    override fun onMousePressed(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val prs: MutableCollection<PositionedRenderable>? = this.positionedRenderables
         if (prs != null) {
-            final Iterator<PositionedRenderable> i = prs.iterator();
+            val i = prs.iterator()
             while (i.hasNext()) {
-                final PositionedRenderable pr = i.next();
-                final BoundableRenderable r = pr.renderable;
-                final Rectangle bounds = r.getVisualBounds();
+                val pr = i.next()
+                val r = pr.renderable
+                val bounds = r.getVisualBounds()
                 if (bounds.contains(x, y)) {
-                    final int childX = x - r.getVisualX();
-                    final int childY = y - r.getVisualY();
+                    val childX = x - r.getVisualX()
+                    val childY = y - r.getVisualY()
                     if (!r.onMousePressed(event, childX, childY)) {
-                        return false;
+                        return false
                     }
                 }
             }
         }
-        return this.tableMatrix.onMousePressed(event, x, y);
+        return this.tableMatrix.onMousePressed(event, x, y)
     }
 
     /*
@@ -289,24 +276,24 @@ class RTable extends BaseBlockyRenderable {
      * org.xamjwg.html.renderer.BoundableRenderable#onMouseReleased(java.awt.event
      * .MouseEvent, int, int)
      */
-    public boolean onMouseReleased(final MouseEvent event, final int x, final int y) {
-        final Collection<PositionedRenderable> prs = this.positionedRenderables;
+    override fun onMouseReleased(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val prs: MutableCollection<PositionedRenderable>? = this.positionedRenderables
         if (prs != null) {
-            final Iterator<PositionedRenderable> i = prs.iterator();
+            val i = prs.iterator()
             while (i.hasNext()) {
-                final PositionedRenderable pr = i.next();
-                final BoundableRenderable r = pr.renderable;
-                final Rectangle bounds = r.getVisualBounds();
+                val pr = i.next()
+                val r = pr.renderable
+                val bounds = r.getVisualBounds()
                 if (bounds.contains(x, y)) {
-                    final int childX = x - r.getVisualX();
-                    final int childY = y - r.getVisualY();
+                    val childX = x - r.getVisualX()
+                    val childY = y - r.getVisualY()
                     if (!r.onMouseReleased(event, childX, childY)) {
-                        return false;
+                        return false
                     }
                 }
             }
         }
-        return this.tableMatrix.onMouseReleased(event, x, y);
+        return this.tableMatrix.onMouseReleased(event, x, y)
     }
 
     /*
@@ -314,38 +301,41 @@ class RTable extends BaseBlockyRenderable {
      *
      * @see org.xamjwg.html.renderer.RCollection#getRenderables()
      */
-    public Iterator<@NonNull ? extends Renderable> getRenderables(final boolean topFirst) {
-        final Collection<@NonNull PositionedRenderable> prs = this.positionedRenderables;
+    override fun getRenderables(topFirst: Boolean): MutableIterator<out Renderable> {
+        val prs: MutableCollection<PositionedRenderable>? = this.positionedRenderables
         if (prs != null) {
-            final List<@NonNull Renderable> c = new java.util.LinkedList<>();
-            final Iterator<@NonNull PositionedRenderable> i = prs.iterator();
+            val c: MutableList<Renderable> = LinkedList<Renderable>()
+            val i = prs.iterator()
             while (i.hasNext()) {
-                final PositionedRenderable pr = i.next();
-                final BoundableRenderable r = pr.renderable;
-                c.add(r);
+                val pr = i.next()
+                val r = pr.renderable
+                c.add(r)
             }
-            final Iterator<@NonNull RAbstractCell> i2 = this.tableMatrix.getCells();
+            val i2 = this.tableMatrix.getCells()
             while (i2.hasNext()) {
-                c.add(i2.next());
+                c.add(i2.next())
             }
 
-            final Iterator<@NonNull RTableRowGroup> i3 = this.tableMatrix.getRowGroups();
+            val i3 = this.tableMatrix.getRowGroups()
             while (i3.hasNext()) {
-                c.add(i3.next());
+                c.add(i3.next())
             }
 
             if (topFirst) {
-                Collections.reverse(c);
+                Collections.reverse(c)
             }
 
-            return c.iterator();
+            return c.iterator()
         } else {
-            final Iterator<@NonNull Renderable>[] rs = new Iterator[]{this.tableMatrix.getCells(), this.tableMatrix.getRowGroups()};
-            return CollectionUtilities.iteratorUnion(rs);
+            val rs: Array<MutableIterator<Renderable>?> = arrayOf<MutableIterator<*>>(
+                this.tableMatrix.getCells(),
+                this.tableMatrix.getRowGroups()
+            )
+            return CollectionUtilities.iteratorUnion<Renderable>(rs)
         }
     }
 
-    public void repaint(final ModelNode modelNode) {
+    override fun repaint(modelNode: ModelNode?) {
         // NOP
     }
 
@@ -354,83 +344,108 @@ class RTable extends BaseBlockyRenderable {
      *
      * @see org.xamjwg.html.renderer.RenderableContainer#getBackground()
      */
-    public Color getPaintedBackgroundColor() {
-        return this.container.getPaintedBackgroundColor();
+    override fun getPaintedBackgroundColor(): Color? {
+        return this.container.getPaintedBackgroundColor()
     }
 
-    private final void addPositionedRenderable(final @NonNull BoundableRenderable renderable, final boolean verticalAlignable, final boolean isFloat, final boolean isFixed) {
+    private fun addPositionedRenderable(
+        renderable: BoundableRenderable,
+        verticalAlignable: Boolean,
+        isFloat: Boolean,
+        isFixed: Boolean
+    ) {
         // Expected to be called only in GUI thread.
-        SortedSet<@NonNull PositionedRenderable> others = this.positionedRenderables;
+        var others = this.positionedRenderables
         if (others == null) {
-            others = new TreeSet<>(new ZIndexComparator());
-            this.positionedRenderables = others;
+            others = TreeSet<PositionedRenderable>(ZIndexComparator())
+            this.positionedRenderables = others
         }
-        others.add(new PositionedRenderable(renderable, verticalAlignable, this.otherOrdinal++, isFloat, isFixed, false));
-        renderable.setParent(this);
-        if (renderable instanceof RUIControl) {
-            this.container.addComponent(((RUIControl) renderable).widget.getComponent());
+        others.add(
+            PositionedRenderable(
+                renderable,
+                verticalAlignable,
+                this.otherOrdinal++,
+                isFloat,
+                isFixed,
+                false
+            )
+        )
+        renderable.setParent(this)
+        if (renderable is RUIControl) {
+            this.container.addComponent(renderable.widget.getComponent())
         }
     }
 
-    private void importDelayedPair(final DelayedPair pair) {
-        BoundableRenderable r = pair.positionPairChild();
+    private fun importDelayedPair(pair: DelayedPair) {
+        val r = pair.positionPairChild()
         // final BoundableRenderable r = pair.child;
-        this.addPositionedRenderable(r, false, false, pair.isFixed);
+        this.addPositionedRenderable(r, false, false, pair.isFixed)
     }
 
-    @Override
-    public String toString() {
-        return "RTable[this=" + System.identityHashCode(this) + ",node=" + this.modelNode + "]";
+    override fun toString(): String {
+        return "RTable[this=" + System.identityHashCode(this) + ",node=" + this.modelNode + "]"
     }
 
-    @Override
-    public void layout(int availWidth, int availHeight, boolean b, boolean c, FloatingBoundsSource source, boolean sizeOnly) {
-        this.doLayout(availWidth, availHeight, sizeOnly);
+    override fun layout(
+        availWidth: Int,
+        availHeight: Int,
+        b: Boolean,
+        c: Boolean,
+        source: FloatingBoundsSource?,
+        sizeOnly: Boolean
+    ) {
+        this.doLayout(availWidth, availHeight, sizeOnly)
     }
 
-    private static class LayoutKey {
-        public final int availWidth;
-        public final int availHeight;
-        public final int whitespace;
-        public final Font font;
-        public final boolean overrideNoWrap;
+    private class LayoutKey(
+        availWidth: Int,
+        availHeight: Int,
+        whitespace: Int,
+        font: Font?,
+        overrideNoWrap: Boolean
+    ) {
+        val availWidth: Int
+        val availHeight: Int
+        val whitespace: Int
+        val font: Font?
+        val overrideNoWrap: Boolean
 
-        public LayoutKey(final int availWidth, final int availHeight, final int whitespace, final Font font, final boolean overrideNoWrap) {
-            super();
-            this.availWidth = availWidth;
-            this.availHeight = availHeight;
-            this.whitespace = whitespace;
-            this.font = font;
-            this.overrideNoWrap = overrideNoWrap;
+        init {
+            this.availWidth = availWidth
+            this.availHeight = availHeight
+            this.whitespace = whitespace
+            this.font = font
+            this.overrideNoWrap = overrideNoWrap
         }
 
-        @Override
-        public boolean equals(final Object obj) {
-            if (obj == this) {
-                return true;
+        override fun equals(obj: Any?): Boolean {
+            if (obj === this) {
+                return true
             }
-            if (!(obj instanceof LayoutKey other)) {
-                return false;
+            if (obj !is LayoutKey) {
+                return false
             }
-            return (other.availWidth == this.availWidth) && (other.availHeight == this.availHeight) && (other.whitespace == this.whitespace)
-                    && (other.overrideNoWrap == this.overrideNoWrap) && java.util.Objects.equals(other.font, this.font);
+            return (obj.availWidth == this.availWidth) && (obj.availHeight == this.availHeight) && (obj.whitespace == this.whitespace)
+                    && (obj.overrideNoWrap == this.overrideNoWrap) && obj.font == this.font
         }
 
-        @Override
-        public int hashCode() {
-            final Font font = this.font;
-            return ((this.availWidth * 1000) + this.availHeight) ^ (font == null ? 0 : font.hashCode()) ^ this.whitespace;
-        }
-    }
-
-    private static class LayoutValue {
-        public final int width;
-        public final int height;
-
-        public LayoutValue(final int width, final int height) {
-            this.width = width;
-            this.height = height;
+        override fun hashCode(): Int {
+            val font = this.font
+            return ((this.availWidth * 1000) + this.availHeight) xor (if (font == null) 0 else font.hashCode()) xor this.whitespace
         }
     }
 
+    private class LayoutValue(width: Int, height: Int) {
+        val width: Int
+        val height: Int
+
+        init {
+            this.width = width
+            this.height = height
+        }
+    }
+
+    companion object {
+        private const val MAX_CACHE_SIZE = 10
+    }
 }

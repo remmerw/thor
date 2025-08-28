@@ -18,120 +18,120 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.util.gui;
+package io.github.remmerw.thor.cobra.util.gui
 
-import java.awt.Container;
-import java.awt.Dialog;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Frame;
-import java.awt.HeadlessException;
-import java.awt.event.ActionEvent;
-import java.net.PasswordAuthentication;
-
-import javax.swing.AbstractAction;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
+import java.awt.Dialog
+import java.awt.Dimension
+import java.awt.FlowLayout
+import java.awt.Frame
+import java.awt.event.ActionEvent
+import java.net.PasswordAuthentication
+import javax.swing.AbstractAction
+import javax.swing.Box
+import javax.swing.BoxLayout
+import javax.swing.JButton
+import javax.swing.JDialog
+import javax.swing.JLabel
+import javax.swing.JPasswordField
+import javax.swing.JTextField
+import javax.swing.SwingConstants
+import javax.swing.border.EmptyBorder
 
 /**
  * Dialog used in HTTP and proxy authentication.
  */
-public class AuthenticationDialog extends JDialog {
-    private static final long serialVersionUID = 5601837809153264164L;
-    private final JTextField userNameField = new JTextField();
-    private final JPasswordField passwordField = new JPasswordField();
-    private PasswordAuthentication authentication;
+class AuthenticationDialog : JDialog {
+    private val userNameField = JTextField()
+    private val passwordField = JPasswordField()
+    var authentication: PasswordAuthentication? = null
+        private set
 
-    public AuthenticationDialog(final Frame owner) throws HeadlessException {
-        super(owner);
-        this.init();
+    constructor(owner: Frame?) : super(owner) {
+        this.init()
     }
 
-    public AuthenticationDialog(final Dialog owner) throws HeadlessException {
-        super(owner);
-        this.init();
+    constructor(owner: Dialog?) : super(owner) {
+        this.init()
     }
 
-    private void init() {
-        final Container contentPane = this.getContentPane();
-        contentPane.setLayout(new FlowLayout());
+    private fun init() {
+        val contentPane = this.contentPane
+        contentPane.layout = FlowLayout()
 
-        final Box rootBox = new Box(BoxLayout.Y_AXIS);
-        rootBox.setBorder(new EmptyBorder(4, 4, 4, 4));
+        val rootBox = Box(BoxLayout.Y_AXIS)
+        rootBox.border = EmptyBorder(4, 4, 4, 4)
 
-        final Box userNameBox = new Box(BoxLayout.X_AXIS);
-        final JLabel userNameLabel = new JLabel("User name:");
-        final int unph = userNameLabel.getPreferredSize().height;
-        userNameLabel.setPreferredSize(new Dimension(100, unph));
-        userNameLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        userNameBox.add(userNameLabel);
-        userNameBox.add(Box.createRigidArea(new Dimension(4, 1)));
-        userNameBox.add(this.userNameField);
-        userNameBox.setPreferredSize(new Dimension(300, unph + 4));
+        val userNameBox = Box(BoxLayout.X_AXIS)
+        val userNameLabel = JLabel("User name:")
+        val unph = userNameLabel.preferredSize.height
+        userNameLabel.preferredSize = Dimension(100, unph)
+        userNameLabel.horizontalAlignment = SwingConstants.RIGHT
+        userNameBox.add(userNameLabel)
+        userNameBox.add(Box.createRigidArea(Dimension(4, 1)))
+        userNameBox.add(this.userNameField)
+        userNameBox.preferredSize = Dimension(300, unph + 4)
 
-        final Box passwordBox = new Box(BoxLayout.X_AXIS);
-        final JLabel passwordLabel = new JLabel("Password:");
-        final int pwph = passwordLabel.getPreferredSize().height;
-        passwordLabel.setPreferredSize(new Dimension(100, pwph));
-        passwordLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        passwordBox.add(passwordLabel);
-        passwordBox.add(Box.createRigidArea(new Dimension(4, 1)));
-        passwordBox.add(this.passwordField);
-        passwordBox.setPreferredSize(new Dimension(300, pwph + 4));
+        val passwordBox = Box(BoxLayout.X_AXIS)
+        val passwordLabel = JLabel("Password:")
+        val pwph = passwordLabel.preferredSize.height
+        passwordLabel.preferredSize = Dimension(100, pwph)
+        passwordLabel.horizontalAlignment = SwingConstants.RIGHT
+        passwordBox.add(passwordLabel)
+        passwordBox.add(Box.createRigidArea(Dimension(4, 1)))
+        passwordBox.add(this.passwordField)
+        passwordBox.preferredSize = Dimension(300, pwph + 4)
 
-        final Box buttonBox = new Box(BoxLayout.X_AXIS);
-        final JButton okButton = new JButton();
-        okButton.setAction(new OkAction());
-        okButton.setText("OK");
-        final JButton cancelButton = new JButton();
-        cancelButton.setAction(new CancelAction());
-        cancelButton.setText("Cancel");
-        buttonBox.add(Box.createHorizontalGlue());
-        buttonBox.add(okButton);
-        buttonBox.add(Box.createHorizontalStrut(4));
-        buttonBox.add(cancelButton);
-        buttonBox.add(Box.createHorizontalGlue());
+        val buttonBox = Box(BoxLayout.X_AXIS)
+        val okButton = JButton()
+        okButton.action = OkAction()
+        okButton.text = "OK"
+        val cancelButton = JButton()
+        cancelButton.action = CancelAction()
+        cancelButton.text = "Cancel"
+        buttonBox.add(Box.createHorizontalGlue())
+        buttonBox.add(okButton)
+        buttonBox.add(Box.createHorizontalStrut(4))
+        buttonBox.add(cancelButton)
+        buttonBox.add(Box.createHorizontalGlue())
 
-        rootBox.add(userNameBox);
-        rootBox.add(Box.createVerticalStrut(2));
-        rootBox.add(passwordBox);
-        rootBox.add(Box.createVerticalStrut(4));
-        rootBox.add(buttonBox);
+        rootBox.add(userNameBox)
+        rootBox.add(Box.createVerticalStrut(2))
+        rootBox.add(passwordBox)
+        rootBox.add(Box.createVerticalStrut(4))
+        rootBox.add(buttonBox)
 
-        contentPane.add(rootBox);
+        contentPane.add(rootBox)
     }
 
-    public void setUserName(final String userName) {
-        this.userNameField.setText(userName);
-        this.passwordField.grabFocus();
+    fun setUserName(userName: String?) {
+        this.userNameField.text = userName
+        this.passwordField.grabFocus()
     }
 
-    public PasswordAuthentication getAuthentication() {
-        return this.authentication;
-    }
+    private inner class OkAction : AbstractAction() {
+        override fun actionPerformed(e: ActionEvent?) {
+            authentication =
+                PasswordAuthentication(userNameField.text, passwordField.password)
+            this@AuthenticationDialog.dispose()
+        }
 
-    private class OkAction extends AbstractAction {
-        private static final long serialVersionUID = 3308644732677944619L;
-
-        public void actionPerformed(final ActionEvent e) {
-            authentication = new PasswordAuthentication(userNameField.getText(), passwordField.getPassword());
-            AuthenticationDialog.this.dispose();
+        companion object {
+            private const val serialVersionUID = 3308644732677944619L
         }
     }
 
-    private class CancelAction extends AbstractAction {
-        private static final long serialVersionUID = 703637268854289240L;
-
-        public void actionPerformed(final ActionEvent e) {
-            authentication = null;
-            AuthenticationDialog.this.dispose();
+    private inner class CancelAction : AbstractAction() {
+        override fun actionPerformed(e: ActionEvent?) {
+            authentication = null
+            this@AuthenticationDialog.dispose()
         }
+
+        companion object {
+            private const val serialVersionUID = 703637268854289240L
+        }
+    }
+
+    companion object {
+        private const val serialVersionUID = 5601837809153264164L
     }
 }

@@ -21,65 +21,70 @@
 /*
  * Created on Oct 15, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.unbescape.xml.XmlEscape;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Document;
-import org.w3c.dom.DocumentType;
-import org.xml.sax.SAXException;
+import io.github.remmerw.thor.cobra.html.parser.HtmlParser
+import io.github.remmerw.thor.cobra.ua.UserAgentContext
+import org.unbescape.xml.XmlEscape
+import org.w3c.dom.DOMException
+import org.w3c.dom.DOMImplementation
+import org.w3c.dom.Document
+import org.w3c.dom.DocumentType
+import org.xml.sax.SAXException
+import java.io.ByteArrayInputStream
+import java.io.IOException
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-
-import io.github.remmerw.thor.cobra.html.parser.HtmlParser;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext;
-
-public class DOMImplementationImpl implements DOMImplementation {
-    private final UserAgentContext context;
-
-    public DOMImplementationImpl(final UserAgentContext context) {
-        this.context = context;
+class DOMImplementationImpl(private val context: UserAgentContext?) : DOMImplementation {
+    override fun hasFeature(feature: String?, version: String): Boolean {
+        return "HTML" == feature && ("2.0".compareTo(version) <= 0)
     }
 
-    public boolean hasFeature(final String feature, final String version) {
-        return "HTML".equals(feature) && ("2.0".compareTo(version) <= 0);
-    }
-
-    public DocumentType createDocumentType(final String qualifiedName, final String publicId, final String systemId) throws DOMException {
-        return new DocumentTypeImpl(qualifiedName, publicId, systemId);
+    @Throws(DOMException::class)
+    override fun createDocumentType(
+        qualifiedName: String?,
+        publicId: String?,
+        systemId: String?
+    ): DocumentType {
+        return DocumentTypeImpl(qualifiedName, publicId, systemId)
     }
 
     // TODO: Use default parameter values instead of replicating function. GH #126
-    public Document createDocument(final String namespaceURI, final String qualifiedName) throws DOMException {
-        return createDocument(namespaceURI, qualifiedName, null);
+    @Throws(DOMException::class)
+    fun createDocument(namespaceURI: String?, qualifiedName: String?): Document {
+        return createDocument(namespaceURI, qualifiedName, null)
     }
 
-    public Document createDocument(final String namespaceURI, final String qualifiedName, final DocumentType doctype) throws DOMException {
-        return new HTMLDocumentImpl(this.context);
+    @Throws(DOMException::class)
+    override fun createDocument(
+        namespaceURI: String?,
+        qualifiedName: String?,
+        doctype: DocumentType?
+    ): Document {
+        return HTMLDocumentImpl(this.context)
     }
 
-    public Object getFeature(final String feature, final String version) {
-        if ("HTML".equals(feature) && ("2.0".compareTo(version) <= 0)) {
-            return this;
+    override fun getFeature(feature: String?, version: String): Any? {
+        if ("HTML" == feature && ("2.0".compareTo(version) <= 0)) {
+            return this
         } else {
-            return null;
+            return null
         }
     }
 
-    public Document createHTMLDocument(final String title) throws DOMException {
+    @Throws(DOMException::class)
+    fun createHTMLDocument(title: String?): Document {
         // TODO: Should a new context / null context be used?
-        final HTMLDocumentImpl doc = new HTMLDocumentImpl(this.context);
-        final HtmlParser parser = new HtmlParser(context, doc);
-        final String escapedTitle = XmlEscape.escapeXml11(title);
-        final String initString = "<html><head><title>" + escapedTitle + "</title><body></body></html>";
+        val doc = HTMLDocumentImpl(this.context)
+        val parser = HtmlParser(context, doc)
+        val escapedTitle = XmlEscape.escapeXml11(title)
+        val initString = "<html><head><title>" + escapedTitle + "</title><body></body></html>"
         try {
-            parser.parse(new ByteArrayInputStream(initString.getBytes()));
-        } catch (IOException | SAXException e) {
-            throw new RuntimeException("Couldn't create HTML Document", e);
+            parser.parse(ByteArrayInputStream(initString.toByteArray()))
+        } catch (e: IOException) {
+            throw RuntimeException("Couldn't create HTML Document", e)
+        } catch (e: SAXException) {
+            throw RuntimeException("Couldn't create HTML Document", e)
         }
-        return doc;
+        return doc
     }
-
 }

@@ -13,43 +13,38 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+package io.github.remmerw.thor.cobra.css.domimpl
 
-package io.github.remmerw.thor.cobra.css.domimpl;
+import cz.vutbr.web.css.CSSException
+import cz.vutbr.web.css.CSSFactory
+import cz.vutbr.web.css.CombinedSelector
+import cz.vutbr.web.css.RuleSet
+import cz.vutbr.web.css.StyleSheet
+import org.w3c.dom.DOMException
+import java.io.IOException
+import java.util.Arrays
 
-import org.w3c.dom.DOMException;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import cz.vutbr.web.css.CSSException;
-import cz.vutbr.web.css.CSSFactory;
-import cz.vutbr.web.css.CombinedSelector;
-import cz.vutbr.web.css.RuleSet;
-import cz.vutbr.web.css.StyleSheet;
-
-final class CSSUtils {
-
-    static StyleSheet parse(final String css) {
+internal object CSSUtils {
+    fun parse(css: String?): StyleSheet {
         try {
-            return CSSFactory.parse(css);
-        } catch (IOException | CSSException e) {
-            throw new DOMException(DOMException.SYNTAX_ERR, "");
+            return CSSFactory.parse(css)
+        } catch (e: IOException) {
+            throw DOMException(DOMException.SYNTAX_ERR, "")
+        } catch (e: CSSException) {
+            throw DOMException(DOMException.SYNTAX_ERR, "")
         }
     }
 
-    static List<CombinedSelector> createCombinedSelectors(final String selectorText) {
-        final StyleSheet jSheet = parse(selectorText + "{}");
-        if (jSheet.size() > 0) {
-            final RuleSet ruleSet = (RuleSet) jSheet.get(0);
-            return Arrays.asList(ruleSet.getSelectors());
+    fun createCombinedSelectors(selectorText: String?): MutableList<CombinedSelector?> {
+        val jSheet = parse(selectorText + "{}")
+        if (jSheet.size > 0) {
+            val ruleSet = jSheet.get(0) as RuleSet
+            return Arrays.asList<CombinedSelector?>(*ruleSet.selectors)
         }
-        return new ArrayList<CombinedSelector>();
+        return ArrayList<CombinedSelector?>()
     }
 
-    static String removeBrackets(final String str) {
-        return str.substring(1, str.length() - 1);
+    fun removeBrackets(str: String): String {
+        return str.substring(1, str.length - 1)
     }
-
 }

@@ -20,23 +20,21 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.github.remmerw.thor.cobra.clientlet;
+package io.github.remmerw.thor.cobra.clientlet
 
 /**
  * Exception thrown by clientlets.
  */
-public class ClientletException extends Exception {
-    private static final long serialVersionUID = -3172234813987721169L;
-    private final String sourceCode;
+open class ClientletException : Exception {
+    val sourceCode: String?
 
     /**
      * Constructs a ClientletException.
      *
      * @param message The exception message.
      */
-    public ClientletException(final String message) {
-        super(message);
-        this.sourceCode = null;
+    constructor(message: String?) : super(message) {
+        this.sourceCode = null
     }
 
     /**
@@ -44,11 +42,10 @@ public class ClientletException extends Exception {
      *
      * @param message    The exception message.
      * @param sourceCode If the source code of the document generating the error is known,
-     *                   it should be passed in this parameter.
+     * it should be passed in this parameter.
      */
-    public ClientletException(final String message, final String sourceCode) {
-        super(message);
-        this.sourceCode = sourceCode;
+    constructor(message: String?, sourceCode: String?) : super(message) {
+        this.sourceCode = sourceCode
     }
 
     /**
@@ -57,9 +54,8 @@ public class ClientletException extends Exception {
      * @param message   The exception message.
      * @param rootCause The root cause exception.
      */
-    public ClientletException(final String message, final Throwable rootCause) {
-        super(message, rootCause);
-        this.sourceCode = null;
+    constructor(message: String?, rootCause: Throwable?) : super(message, rootCause) {
+        this.sourceCode = null
     }
 
     /**
@@ -67,12 +63,11 @@ public class ClientletException extends Exception {
      *
      * @param rootCause The root cause exception.
      */
-    public ClientletException(final Throwable rootCause) {
-        super(rootCause);
-        this.sourceCode = null;
+    constructor(rootCause: Throwable?) : super(rootCause) {
+        this.sourceCode = null
     }
 
-    public String getSourceCode() {
-        return sourceCode;
+    companion object {
+        private val serialVersionUID = -3172234813987721169L
     }
 }

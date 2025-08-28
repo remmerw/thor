@@ -21,57 +21,42 @@
 /*
  * Created on Apr 17, 2005
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import java.awt.Color;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.event.MouseEvent;
+import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
+import io.github.remmerw.thor.cobra.html.style.RenderState
+import java.awt.FontMetrics
+import java.awt.Graphics
+import java.awt.event.MouseEvent
+import java.util.Locale
 
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode;
-import io.github.remmerw.thor.cobra.html.style.RenderState;
+internal open class RWord(
+    me: ModelNode?, word: String, container: RenderableContainer?, fontMetrics: FontMetrics,
+    descent: Int, ascentPlusLeading: Int,
+    height: Int, textTransform: Int
+) : BaseBoundableRenderable(container, me) {
+    val fontMetrics: FontMetrics
+    val descent: Int
+    val ascentPlusLeading: Int
+    val shownWord: String
 
-class RWord extends BaseBoundableRenderable {
-    public final FontMetrics fontMetrics;
-    public final int descent;
-    public final int ascentPlusLeading;
-    final String shownWord;
-
-    public RWord(final ModelNode me, final String word, final RenderableContainer container, final FontMetrics fontMetrics,
-                 final int descent, final int ascentPlusLeading,
-                 final int height, final int textTransform) {
-        super(container, me);
-        final String renderedWord = textTransform == RenderState.TEXTTRANSFORM_NONE ? word : transformText(word, textTransform);
-        this.shownWord = renderedWord;
-        this.fontMetrics = fontMetrics;
-        this.descent = descent;
-        this.ascentPlusLeading = ascentPlusLeading;
-        this.height = height;
+    init {
+        val renderedWord =
+            (if (textTransform == RenderState.TEXTTRANSFORM_NONE) word else transformText(
+                word,
+                textTransform
+            ))!!
+        this.shownWord = renderedWord
+        this.fontMetrics = fontMetrics
+        this.descent = descent
+        this.ascentPlusLeading = ascentPlusLeading
+        this.height = height
         // TODO: In anti-aliasing, stringWidth is said not to be reliable.
         // Dimensions set when constructed.
-        this.width = fontMetrics.stringWidth(renderedWord);
+        this.width = fontMetrics.stringWidth(renderedWord)
     }
 
-    private static String transformText(final String word, final int textTransform) {
-        String string;
-        switch (textTransform) {
-            case RenderState.TEXTTRANSFORM_CAPITALIZE:
-                string = Character.toTitleCase(word.charAt(0)) + word.substring(1).toLowerCase();
-                break;
-            case RenderState.TEXTTRANSFORM_LOWERCASE:
-                string = word.toLowerCase();
-                break;
-            case RenderState.TEXTTRANSFORM_UPPERCASE:
-                string = word.toUpperCase();
-                break;
-            default:
-                string = word;
-        }
-        return string;
-    }
-
-    @Override
-    protected void invalidateLayoutLocal() {
+    override fun invalidateLayoutLocal() {
     }
 
     /*
@@ -80,263 +65,286 @@ class RWord extends BaseBoundableRenderable {
      * @see
      * net.sourceforge.xamj.domimpl.markup.Renderable#paint(java.awt.Graphics)
      */
-    public void paint(final Graphics g) {
-        final RenderState rs = this.modelNode.getRenderState();
+    override fun paint(g: Graphics) {
+        val rs: RenderState = this.modelNode.renderState!!
 
-        if (rs.getVisibility() != RenderState.VISIBILITY_VISIBLE) {
+        if (rs.visibility != RenderState.VISIBILITY_VISIBLE) {
             // Just don't paint it.
-            return;
+            return
         }
 
-        final String word = this.shownWord;
-        final int width = this.width;
-        final int ascentPlusLeading = this.ascentPlusLeading;
-        final int height = this.height;
-        final int textDecoration = rs.getTextDecorationMask();
-        final Color bkg = rs.getTextBackgroundColor();
+        val word = this.shownWord
+        val width = this.width
+        val ascentPlusLeading = this.ascentPlusLeading
+        val height = this.height
+        val textDecoration = rs.textDecorationMask
+        val bkg = rs.textBackgroundColor
         if (bkg != null) {
-            final Color oldColor = g.getColor();
+            val oldColor = g.color
             try {
-                g.setColor(bkg);
-                g.fillRect(0, 0, width, height);
+                g.setColor(bkg)
+                g.fillRect(0, 0, width, height)
             } finally {
-                g.setColor(oldColor);
+                g.color = oldColor
             }
         }
-        g.drawString(word, 0, ascentPlusLeading);
-        final int td = textDecoration;
+        g.drawString(word, 0, ascentPlusLeading)
+        val td = textDecoration
         if (td != 0) {
-            if ((td & RenderState.MASK_TEXTDECORATION_UNDERLINE) != 0) {
-                final int lineOffset = ascentPlusLeading + 2;
-                g.drawLine(0, lineOffset, width, lineOffset);
+            if ((td and RenderState.MASK_TEXTDECORATION_UNDERLINE) != 0) {
+                val lineOffset = ascentPlusLeading + 2
+                g.drawLine(0, lineOffset, width, lineOffset)
             }
-            if ((td & RenderState.MASK_TEXTDECORATION_LINE_THROUGH) != 0) {
-                final FontMetrics fm = this.fontMetrics;
-                final int lineOffset = fm.getLeading() + ((fm.getAscent() + fm.getDescent()) / 2);
-                g.drawLine(0, lineOffset, width, lineOffset);
+            if ((td and RenderState.MASK_TEXTDECORATION_LINE_THROUGH) != 0) {
+                val fm = this.fontMetrics
+                val lineOffset = fm.leading + ((fm.ascent + fm.descent) / 2)
+                g.drawLine(0, lineOffset, width, lineOffset)
             }
-            if ((td & RenderState.MASK_TEXTDECORATION_OVERLINE) != 0) {
-                final FontMetrics fm = this.fontMetrics;
-                final int lineOffset = fm.getLeading();
-                g.drawLine(0, lineOffset, width, lineOffset);
+            if ((td and RenderState.MASK_TEXTDECORATION_OVERLINE) != 0) {
+                val fm = this.fontMetrics
+                val lineOffset = fm.leading
+                g.drawLine(0, lineOffset, width, lineOffset)
             }
-            if ((td & RenderState.MASK_TEXTDECORATION_BLINK) != 0) {
+            if ((td and RenderState.MASK_TEXTDECORATION_BLINK) != 0) {
                 // TODO
             }
         }
-        final Color over = rs.getOverlayColor();
+        val over = rs.overlayColor
         if (over != null) {
-            final Color oldColor = g.getColor();
+            val oldColor = g.color
             try {
-                g.setColor(over);
-                g.fillRect(0, 0, width, height);
+                g.setColor(over)
+                g.fillRect(0, 0, width, height)
             } finally {
-                g.setColor(oldColor);
+                g.color = oldColor
             }
         }
     }
 
-    public boolean paintSelection(final Graphics g, final boolean inSelection, final RenderableSpot startPoint, final RenderableSpot endPoint) {
-        int startX = -1;
-        int endX = -1;
-        if (this == startPoint.renderable) {
-            startX = startPoint.x;
+    override fun paintSelection(
+        g: Graphics,
+        inSelection: Boolean,
+        startPoint: RenderableSpot,
+        endPoint: RenderableSpot
+    ): Boolean {
+        var startX = -1
+        var endX = -1
+        if (this === startPoint.renderable) {
+            startX = startPoint.x
         }
-        if (this == endPoint.renderable) {
-            endX = endPoint.x;
+        if (this === endPoint.renderable) {
+            endX = endPoint.x
         }
         if (!inSelection && (startX == -1) && (endX == -1)) {
-            return false;
+            return false
         }
         if ((startX != -1) && (endX != -1)) {
             if (endX < startX) {
-                final int temp = startX;
-                startX = endX;
-                endX = temp;
+                val temp = startX
+                startX = endX
+                endX = temp
             }
         } else if ((startX != -1) && (endX == -1) && inSelection) {
-            endX = startX;
-            startX = -1;
+            endX = startX
+            startX = -1
         } else if ((startX == -1) && (endX != -1) && !inSelection) {
-            startX = endX;
-            endX = -1;
+            startX = endX
+            endX = -1
         }
-        int width1 = -1;
-        int width2 = -1;
-        final char[] wordChars = this.shownWord.toCharArray();
+        var width1 = -1
+        var width2 = -1
+        val wordChars = this.shownWord.toCharArray()
         if (startX != -1) {
-            width1 = 0;
-            final FontMetrics fm = this.fontMetrics;
-            for (int len = 0; len < wordChars.length; len++) {
-                final int w = fm.charsWidth(wordChars, 0, len);
+            width1 = 0
+            val fm = this.fontMetrics
+            for (len in wordChars.indices) {
+                val w = fm.charsWidth(wordChars, 0, len)
                 if (w > startX) {
-                    break;
+                    break
                 }
-                width1 = w;
+                width1 = w
             }
         }
         if (endX != -1) {
-            width2 = 0;
-            final FontMetrics fm = this.fontMetrics;
-            for (int len = 0; len < wordChars.length; len++) {
-                final int w = fm.charsWidth(wordChars, 0, len);
+            width2 = 0
+            val fm = this.fontMetrics
+            for (len in wordChars.indices) {
+                val w = fm.charsWidth(wordChars, 0, len)
                 if (w > endX) {
-                    break;
+                    break
                 }
-                width2 = w;
+                width2 = w
             }
         }
         if ((width1 != -1) || (width2 != -1)) {
-            final int startPaint = width1 == -1 ? 0 : width1;
-            final int endPaint = width2 == -1 ? this.width : width2;
-            g.setColor(SELECTION_COLOR);
-            g.setXORMode(SELECTION_XOR);
-            g.fillRect(startPaint, 0, endPaint - startPaint, this.height);
-            g.setPaintMode();
-            return (width2 == -1);
+            val startPaint = if (width1 == -1) 0 else width1
+            val endPaint = if (width2 == -1) this.width else width2
+            g.color = SELECTION_COLOR
+            g.setXORMode(SELECTION_XOR)
+            g.fillRect(startPaint, 0, endPaint - startPaint, this.height)
+            g.setPaintMode()
+            return (width2 == -1)
         } else {
             if (inSelection) {
-                g.setColor(SELECTION_COLOR);
-                g.setXORMode(SELECTION_XOR);
-                g.fillRect(0, 0, this.width, this.height);
-                g.setPaintMode();
+                g.color = SELECTION_COLOR
+                g.setXORMode(SELECTION_XOR)
+                g.fillRect(0, 0, this.width, this.height)
+                g.setPaintMode()
             }
-            return inSelection;
+            return inSelection
         }
     }
 
-    public boolean extractSelectionText(final StringBuffer buffer, final boolean inSelection, final RenderableSpot startPoint,
-                                        final RenderableSpot endPoint) {
-        int startX = -1;
-        int endX = -1;
-        if (this == startPoint.renderable) {
-            startX = startPoint.x;
+    override fun extractSelectionText(
+        buffer: StringBuffer, inSelection: Boolean, startPoint: RenderableSpot,
+        endPoint: RenderableSpot
+    ): Boolean {
+        var startX = -1
+        var endX = -1
+        if (this === startPoint.renderable) {
+            startX = startPoint.x
         }
-        if (this == endPoint.renderable) {
-            endX = endPoint.x;
+        if (this === endPoint.renderable) {
+            endX = endPoint.x
         }
         if (!inSelection && (startX == -1) && (endX == -1)) {
-            return false;
+            return false
         }
         if ((startX != -1) && (endX != -1)) {
             if (endX < startX) {
-                final int temp = startX;
-                startX = endX;
-                endX = temp;
+                val temp = startX
+                startX = endX
+                endX = temp
             }
         } else if ((startX != -1) && (endX == -1) && inSelection) {
-            endX = startX;
-            startX = -1;
+            endX = startX
+            startX = -1
         } else if ((startX == -1) && (endX != -1) && !inSelection) {
-            startX = endX;
-            endX = -1;
+            startX = endX
+            endX = -1
         }
-        int index1 = -1;
-        int index2 = -1;
-        final char[] wordChars = this.shownWord.toCharArray();
+        var index1 = -1
+        var index2 = -1
+        val wordChars = this.shownWord.toCharArray()
         if (startX != -1) {
-            index1 = 0;
-            final FontMetrics fm = this.fontMetrics;
-            for (int len = 0; len < wordChars.length; len++) {
-                final int w = fm.charsWidth(wordChars, 0, len);
+            index1 = 0
+            val fm = this.fontMetrics
+            for (len in wordChars.indices) {
+                val w = fm.charsWidth(wordChars, 0, len)
                 if (w > startX) {
-                    break;
+                    break
                 }
-                index1 = len;
+                index1 = len
             }
         }
         if (endX != -1) {
-            index2 = 0;
-            final FontMetrics fm = this.fontMetrics;
-            for (int len = 0; len < wordChars.length; len++) {
-                final int w = fm.charsWidth(wordChars, 0, len);
+            index2 = 0
+            val fm = this.fontMetrics
+            for (len in wordChars.indices) {
+                val w = fm.charsWidth(wordChars, 0, len)
                 if (w > endX) {
-                    break;
+                    break
                 }
-                index2 = len;
+                index2 = len
             }
         }
         if ((index1 != -1) || (index2 != -1)) {
-            final int startIndex = index1 == -1 ? 0 : index1;
-            final int endIndex = index2 == -1 ? wordChars.length : index2;
-            buffer.append(wordChars, startIndex, endIndex - startIndex);
+            val startIndex = if (index1 == -1) 0 else index1
+            val endIndex = if (index2 == -1) wordChars.size else index2
+            buffer.append(wordChars, startIndex, endIndex - startIndex)
         } else {
             if (inSelection) {
-                buffer.append(wordChars);
-                return true;
+                buffer.append(wordChars)
+                return true
             }
         }
         if ((index1 != -1) && (index2 != -1)) {
-            return false;
+            return false
         } else {
-            return !inSelection;
+            return !inSelection
         }
     }
 
-    public boolean onMouseClick(final MouseEvent event, final int x, final int y) {
-        final ModelNode me = this.modelNode;
+    override fun onMouseClick(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val me = this.modelNode
         if (me != null) {
-            return HtmlController.getInstance().onMouseClick(me, event, x, y);
+            return HtmlController.Companion.getInstance().onMouseClick(me, event, x, y)
         } else {
-            return true;
+            return true
         }
     }
 
-    public boolean onDoubleClick(final MouseEvent event, final int x, final int y) {
-        final ModelNode me = this.modelNode;
+    override fun onDoubleClick(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val me = this.modelNode
         if (me != null) {
-            return HtmlController.getInstance().onDoubleClick(me, event, x, y);
+            return HtmlController.Companion.getInstance().onDoubleClick(me, event, x, y)
         } else {
-            return true;
+            return true
         }
     }
 
-    public boolean onMousePressed(final MouseEvent event, final int x, final int y) {
-        final ModelNode me = this.modelNode;
+    override fun onMousePressed(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val me = this.modelNode
         if (me != null) {
-            return HtmlController.getInstance().onMouseDown(me, event, x, y);
+            return HtmlController.Companion.getInstance().onMouseDown(me, event, x, y)
         } else {
-            return true;
+            return true
         }
     }
 
-    public boolean onMouseReleased(final MouseEvent event, final int x, final int y) {
-        final ModelNode me = this.modelNode;
+    override fun onMouseReleased(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val me = this.modelNode
         if (me != null) {
-            return HtmlController.getInstance().onMouseUp(me, event, x, y);
+            return HtmlController.Companion.getInstance().onMouseUp(me, event, x, y)
         } else {
-            return true;
+            return true
         }
     }
 
-    public boolean onMouseDisarmed(final MouseEvent event) {
-        final ModelNode me = this.modelNode;
+    override fun onMouseDisarmed(event: MouseEvent?): Boolean {
+        val me = this.modelNode
         if (me != null) {
-            return HtmlController.getInstance().onMouseDisarmed(me, event);
+            return HtmlController.Companion.getInstance().onMouseDisarmed(me, event)
         } else {
-            return true;
+            return true
         }
     }
 
-    public RenderableSpot getLowestRenderableSpot(final int x, final int y) {
-        return new RenderableSpot(this, x, y);
+    override fun getLowestRenderableSpot(x: Int, y: Int): RenderableSpot {
+        return RenderableSpot(this, x, y)
     }
 
-    public boolean isContainedByNode() {
-        return true;
+    override fun isContainedByNode(): Boolean {
+        return true
     }
 
-    public boolean onRightClick(final MouseEvent event, final int x, final int y) {
-        final ModelNode me = this.modelNode;
+    override fun onRightClick(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val me = this.modelNode
         if (me != null) {
-            return HtmlController.getInstance().onContextMenu(me, event, x, y);
+            return HtmlController.Companion.getInstance().onContextMenu(me, event, x, y)
         } else {
-            return true;
+            return true
         }
     }
 
-    @Override
-    public String toString() {
-        return "RWord[word=" + this.shownWord + "]";
+    override fun toString(): String {
+        return "RWord[word=" + this.shownWord + "]"
+    }
+
+    companion object {
+        private fun transformText(word: String, textTransform: Int): String? {
+            val string: String?
+            when (textTransform) {
+                RenderState.TEXTTRANSFORM_CAPITALIZE -> string =
+                    word.get(0).titlecaseChar().toString() + word.substring(1).lowercase(
+                        Locale.getDefault()
+                    )
+
+                RenderState.TEXTTRANSFORM_LOWERCASE -> string = word.lowercase(Locale.getDefault())
+                RenderState.TEXTTRANSFORM_UPPERCASE -> string = word.uppercase(Locale.getDefault())
+                else -> string = word
+            }
+            return string
+        }
     }
 }

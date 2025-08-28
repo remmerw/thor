@@ -18,88 +18,90 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
+package io.github.remmerw.thor.cobra.html.renderer
 
-package io.github.remmerw.thor.cobra.html.renderer;
-
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.Component
+import java.awt.Insets
+import java.awt.Point
+import java.awt.Rectangle
 
 /**
  * A RenderableContainer is either usually a parent block or the root GUI
  * component. It's is a Renderable or GUI component whose layout may be
  * invalidated.
  */
-public interface RenderableContainer {
+interface RenderableContainer {
     // public Insets getInsets();
-    Component addComponent(Component component);
+    fun addComponent(component: Component?): Component?
 
     // public void remove(Component component);
-    void invalidateLayoutUpTree();
+    fun invalidateLayoutUpTree()
 
-    void repaint(int x, int y, int width, int height);
+    fun repaint(x: Int, y: Int, width: Int, height: Int)
 
-    void relayout();
+    fun relayout()
 
-    void updateAllWidgetBounds();
+    fun updateAllWidgetBounds()
 
-    Color getPaintedBackgroundColor();
+    val paintedBackgroundColor: Color?
 
-    Point getGUIPoint(int x, int y);
+    fun getGUIPoint(x: Int, y: Int): Point?
 
-    void focus();
+    fun focus()
 
-    void addDelayedPair(DelayedPair pair);
+    fun addDelayedPair(pair: DelayedPair?)
 
-    java.util.Collection<DelayedPair> getDelayedPairs();
+    val delayedPairs: MutableCollection<DelayedPair?>?
 
-    RenderableContainer getParentContainer();
+    val parentContainer: RenderableContainer?
 
-    void clearDelayedPairs();
+    fun clearDelayedPairs()
 
-    int getHeight();
+    val height: Int
 
-    int getWidth();
+    val width: Int
 
-    int getX();
+    val x: Int
 
-    int getY();
+    val y: Int
 
-    Insets getInsets(final boolean hscroll, final boolean vscroll);
+    fun getInsets(hscroll: Boolean, vscroll: Boolean): Insets?
 
-    Insets getInsetsMarginBorder(final boolean hscroll, final boolean vscroll);
+    fun getInsetsMarginBorder(hscroll: Boolean, vscroll: Boolean): Insets?
 
-    default int getInnerWidth() {
-        final Insets insets = getInsetsMarginBorder(false, false);
-        return getWidth() - (insets.left + insets.right);
-    }
+    val innerWidth: Int
+        get() {
+            val insets = getInsetsMarginBorder(false, false)
+            return this.width - (insets!!.left + insets.right)
+        }
 
-    default int getInnerMostWidth() {
-        final Insets insets = getInsets(false, false);
-        return getWidth() - (insets.left + insets.right);
-    }
+    val innerMostWidth: Int
+        get() {
+            val insets = getInsets(false, false)
+            return this.width - (insets!!.left + insets.right)
+        }
 
-    default int getInnerMostHeight() {
-        final Insets insets = getInsets(false, false);
-        return getHeight() - (insets.top + insets.bottom);
-    }
+    val innerMostHeight: Int
+        get() {
+            val insets = getInsets(false, false)
+            return this.height - (insets!!.top + insets.bottom)
+        }
 
-    default int getInnerHeight() {
-        final Insets insets = getInsetsMarginBorder(false, false);
-        return getHeight() - (insets.top + insets.bottom);
-    }
+    val innerHeight: Int
+        get() {
+            val insets = getInsetsMarginBorder(false, false)
+            return this.height - (insets!!.top + insets.bottom)
+        }
 
-    Rectangle getVisualBounds();
+    val visualBounds: Rectangle?
 
-    int getVisualWidth();
+    val visualWidth: Int
 
-    int getVisualHeight();
+    val visualHeight: Int
 
-    Point translateDescendentPoint(BoundableRenderable descendent, int x, int y);
+    fun translateDescendentPoint(descendent: BoundableRenderable?, x: Int, y: Int): Point?
 
-    Point getOriginRelativeTo(RCollection bodyLayout);
+    fun getOriginRelativeTo(bodyLayout: RCollection?): Point?
 
-    Point getOriginRelativeToAbs(RCollection bodyLayout);
+    fun getOriginRelativeToAbs(bodyLayout: RCollection?): Point?
 }

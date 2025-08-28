@@ -18,29 +18,16 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-class ExportedRenderable {
-    public final RBlockViewport originalTarget;
-    public final BoundableRenderable renderable;
-
+internal class ExportedRenderable(
+    val originalTarget: RBlockViewport?, val renderable: BoundableRenderable?,
     /**
      * Coordinates in original target, for aligned blocks.
      */
-    public final int x, y;
-
+    val x: Int, val y: Int,
     /**
      * -1 (left), 0, or +1 (right).
      */
-    public final int alignment;
-
-    public ExportedRenderable(final RBlockViewport originalTarget, final BoundableRenderable renderable, final int x, final int y,
-                              final int alignment) {
-        super();
-        this.originalTarget = originalTarget;
-        this.x = x;
-        this.y = y;
-        this.alignment = alignment;
-        this.renderable = renderable;
-    }
-}
+    val alignment: Int
+) 

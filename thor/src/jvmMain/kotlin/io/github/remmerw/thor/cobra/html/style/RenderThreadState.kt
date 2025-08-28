@@ -18,25 +18,25 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.style;
+package io.github.remmerw.thor.cobra.html.style
 
 /**
  * Additional state that may be set during rendering to override state
  * determined from elements.
  */
-public class RenderThreadState {
-    private static final ThreadLocal<RenderThreadState> stateTL = new ThreadLocal<>();
-    public boolean overrideNoWrap;
+class RenderThreadState private constructor() {
+    var overrideNoWrap: Boolean = false
 
-    private RenderThreadState() {
-    }
-
-    public static RenderThreadState getState() {
-        RenderThreadState ts = stateTL.get();
-        if (ts == null) {
-            ts = new RenderThreadState();
-            stateTL.set(ts);
-        }
-        return ts;
+    companion object {
+        private val stateTL = ThreadLocal<RenderThreadState?>()
+        val state: RenderThreadState
+            get() {
+                var ts: RenderThreadState? = stateTL.get()
+                if (ts == null) {
+                    ts = RenderThreadState()
+                    stateTL.set(ts)
+                }
+                return ts
+            }
     }
 }

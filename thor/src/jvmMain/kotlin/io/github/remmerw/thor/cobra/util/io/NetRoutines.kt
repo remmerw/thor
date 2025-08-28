@@ -18,17 +18,18 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.util.io;
+package io.github.remmerw.thor.cobra.util.io
 
-import java.net.InetAddress;
+import java.net.InetAddress
+import java.net.UnknownHostException
 
-public class NetRoutines {
-    public static boolean isLocalAddress(final String host) {
+object NetRoutines {
+    fun isLocalAddress(host: String?): Boolean {
         try {
-            final InetAddress address = InetAddress.getByName(host);
-            return address.isAnyLocalAddress() || address.isLinkLocalAddress() || address.isLoopbackAddress() || address.isSiteLocalAddress();
-        } catch (final java.net.UnknownHostException uhe) {
-            return false;
+            val address = InetAddress.getByName(host)
+            return address.isAnyLocalAddress || address.isLinkLocalAddress || address.isLoopbackAddress || address.isSiteLocalAddress
+        } catch (uhe: UnknownHostException) {
+            return false
         }
     }
 }

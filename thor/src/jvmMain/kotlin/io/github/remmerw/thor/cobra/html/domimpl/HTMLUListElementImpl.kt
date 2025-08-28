@@ -21,30 +21,25 @@
 /*
  * Created on Feb 12, 2006
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.html.HTMLUListElement;
+import org.w3c.dom.html.HTMLUListElement
 
-public class HTMLUListElementImpl extends HTMLAbstractUIElement implements HTMLUListElement {
-    public HTMLUListElementImpl(final String name) {
-        super(name);
+class HTMLUListElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLUListElement {
+    override fun getCompact(): Boolean {
+        val compactText = this.getAttribute("compact")
+        return "compact".equals(compactText, ignoreCase = true)
     }
 
-    public boolean getCompact() {
-        final String compactText = this.getAttribute("compact");
-        return "compact".equalsIgnoreCase(compactText);
+    override fun setCompact(compact: Boolean) {
+        this.setAttribute("compact", if (compact) "compact" else null)
     }
 
-    public void setCompact(final boolean compact) {
-        this.setAttribute("compact", compact ? "compact" : null);
+    override fun getType(): String? {
+        return this.getAttribute("type")
     }
 
-    public String getType() {
-        return this.getAttribute("type");
+    override fun setType(type: String?) {
+        this.setAttribute("type", type)
     }
-
-    public void setType(final String type) {
-        this.setAttribute("type", type);
-    }
-
 }

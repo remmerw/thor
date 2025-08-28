@@ -21,225 +21,228 @@
 /*
  * Created on Sep 3, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.mozilla.javascript.Function;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Comment;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.ProcessingInstruction;
-import org.w3c.dom.Text;
-import org.w3c.dom.UserDataHandler;
-import org.w3c.dom.html.HTMLCollection;
-import org.w3c.dom.html.HTMLDocument;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
-import cz.vutbr.web.css.CSSException;
-import cz.vutbr.web.css.CSSFactory;
-import cz.vutbr.web.css.CombinedSelector;
-import cz.vutbr.web.css.RuleSet;
-import cz.vutbr.web.css.Selector;
-import cz.vutbr.web.css.StyleSheet;
-import io.github.remmerw.thor.cobra.html.HtmlRendererContext;
-import io.github.remmerw.thor.cobra.html.js.Event;
-import io.github.remmerw.thor.cobra.html.parser.HtmlParser;
-import io.github.remmerw.thor.cobra.html.style.RenderState;
-import io.github.remmerw.thor.cobra.html.style.StyleSheetRenderState;
-import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate;
-import io.github.remmerw.thor.cobra.js.HideFromJS;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext;
-import io.github.remmerw.thor.cobra.util.Strings;
-import io.github.remmerw.thor.cobra.util.Urls;
+import cz.vutbr.web.css.CSSException
+import cz.vutbr.web.css.CSSFactory
+import cz.vutbr.web.css.CombinedSelector
+import cz.vutbr.web.css.RuleSet
+import cz.vutbr.web.css.Selector
+import io.github.remmerw.thor.cobra.html.HtmlRendererContext
+import io.github.remmerw.thor.cobra.html.js.Event
+import io.github.remmerw.thor.cobra.html.parser.HtmlParser
+import io.github.remmerw.thor.cobra.html.style.RenderState
+import io.github.remmerw.thor.cobra.html.style.StyleSheetRenderState
+import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate
+import io.github.remmerw.thor.cobra.js.HideFromJS
+import io.github.remmerw.thor.cobra.ua.UserAgentContext
+import io.github.remmerw.thor.cobra.util.Strings
+import io.github.remmerw.thor.cobra.util.Urls
+import org.mozilla.javascript.Function
+import org.w3c.dom.Attr
+import org.w3c.dom.Comment
+import org.w3c.dom.DOMException
+import org.w3c.dom.Document
+import org.w3c.dom.Element
+import org.w3c.dom.NamedNodeMap
+import org.w3c.dom.Node
+import org.w3c.dom.NodeList
+import org.w3c.dom.ProcessingInstruction
+import org.w3c.dom.Text
+import org.w3c.dom.UserDataHandler
+import org.w3c.dom.html.HTMLDocument
+import java.io.IOException
+import java.lang.Boolean
+import java.net.MalformedURLException
+import java.net.URL
+import java.util.Arrays
+import java.util.LinkedList
+import java.util.logging.Level
+import java.util.logging.Logger
+import java.util.stream.Collectors
+import kotlin.Any
+import kotlin.Array
+import kotlin.Exception
+import kotlin.IllegalStateException
+import kotlin.IndexOutOfBoundsException
+import kotlin.Int
+import kotlin.Short
+import kotlin.String
+import kotlin.Throwable
+import kotlin.Throws
+import kotlin.also
+import kotlin.arrayOfNulls
+import kotlin.concurrent.Volatile
+import kotlin.plus
+import kotlin.run
+import kotlin.synchronized
 
 // TODO: Implement org.w3c.dom.events.EventTarget ?
-public abstract class NodeImpl extends AbstractScriptableDelegate implements Node, ModelNode {
-    protected static final Logger logger = Logger.getLogger(NodeImpl.class.getName());
-    private static final NodeImpl[] EMPTY_ARRAY = new NodeImpl[0];
-    private static final @NonNull RenderState BLANK_RENDER_STATE = new StyleSheetRenderState(null);
-    protected UINode uiNode;
-    protected ArrayList<Node> nodeList;
-    protected volatile Document document;
+abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
+    // Called in GUI thread always.
+    // Called in GUI thread always.
+    @get:HideFromJS
+    @set:HideFromJS
+    var uINode: UINode? = null
+    protected var nodeList: java.util.ArrayList<Node>? = null
+
+    @Volatile
+    protected var document: Document? = null
 
     /**
      * A tree lock is less deadlock-prone than a node-level lock. This is assigned
      * in setOwnerDocument.
      */
-    protected volatile Object treeLock = this;
-    protected volatile boolean notificationsSuspended = false;
-    protected volatile Node parentNode;
-    private Map<String, Object> userData;
+    @Volatile
+    var treeLock: Any = this
+
+    @Volatile
+    protected var notificationsSuspended: Boolean = false
+
+    @Volatile
+    protected var parentNode: Node? = null
+    private var userData: MutableMap<String?, Any?>? = null
+
     // TODO: Inform handlers on cloning, etc.
-    private Map<String, UserDataHandler> userDataHandlers;
-    private volatile String prefix;
-    private RenderState renderState = null;
-    private volatile boolean attachedToDocument = this instanceof HTMLDocument;
+    private var userDataHandlers: MutableMap<String?, UserDataHandler?>? = null
 
-    public NodeImpl() {
-        super();
-    }
+    @Volatile
+    private var prefix: String? = null
+    private var renderState: RenderState? = null
 
-    private final static RenderState getParentRenderState(final Object parent) {
-        if (parent instanceof NodeImpl) {
-            return ((NodeImpl) parent).getRenderState();
-        } else {
-            return null;
-        }
-    }
-
-    private static CombinedSelector[] makeSelectors(final String query) throws IOException, CSSException {
-        // this is quick way to parse the selectors. TODO: check if jStyleParser supports a better option.
-        final String tempBlock = query + " { display: none}";
-        final StyleSheet styleSheet = CSSFactory.parseString(tempBlock, null);
-        final RuleSet firstRuleBlock = (RuleSet) styleSheet.get(0);
-        final CombinedSelector[] selectors = firstRuleBlock.getSelectors();
-        return selectors;
-    }
-
-    @HideFromJS
-    public UINode getUINode() {
-        // Called in GUI thread always.
-        return this.uiNode;
-    }
-
-    @HideFromJS
-    public void setUINode(final UINode uiNode) {
-        // Called in GUI thread always.
-        this.uiNode = uiNode;
-    }
+    /**
+     * @return the attachment with the document. true if the element is attached
+     * to the document, false otherwise. Document nodes are considered
+     * attached by default.
+     */
+    @Volatile
+    protected var isAttachedToDocument: Boolean = this is HTMLDocument
+        private set
 
     /**
      * Tries to get a UINode associated with the current node. Failing that, it
      * tries ancestors recursively. This method will return the closest
-     * <i>block-level</i> renderer node, if any.
+     * *block-level* renderer node, if any.
      */
     @HideFromJS
-    public UINode findUINode() {
+    fun findUINode(): UINode? {
         // Called in GUI thread always.
-        final UINode uiNode = this.uiNode;
+        val uiNode: UINode? = this.uINode
         if (uiNode != null) {
-            return uiNode;
+            return uiNode
         }
-        final NodeImpl parentNode = (NodeImpl) this.getParentNode();
-        return parentNode == null ? null : parentNode.findUINode();
+        val parentNode = this.parentNode as NodeImpl?
+        return if (parentNode == null) null else parentNode.findUINode()
     }
 
-    public Node appendChild(final Node newChild) throws DOMException {
+    @Throws(DOMException::class)
+    override fun appendChild(newChild: Node?): Node {
         if (newChild != null) {
-            synchronized (this.treeLock) {
+            synchronized(this.treeLock) {
                 if (isInclusiveAncestorOf(newChild)) {
-                    final Node prevParent = newChild.getParentNode();
-                    if (prevParent instanceof NodeImpl) {
-                        prevParent.removeChild(newChild);
+                    val prevParent = newChild.parentNode
+                    if (prevParent is NodeImpl) {
+                        prevParent.removeChild(newChild)
                     }
-                } else if ((newChild instanceof NodeImpl) && ((NodeImpl) newChild).isInclusiveAncestorOf(this)) {
-                    throw new DOMException(DOMException.HIERARCHY_REQUEST_ERR, "Trying to append an ancestor element.");
+                } else if ((newChild is NodeImpl) && newChild.isInclusiveAncestorOf(this)) {
+                    throw DOMException(
+                        DOMException.HIERARCHY_REQUEST_ERR,
+                        "Trying to append an ancestor element."
+                    )
                 }
-
-                ArrayList<Node> nl = this.nodeList;
+                var nl = this.nodeList
                 if (nl == null) {
-                    nl = new ArrayList<>(3);
-                    this.nodeList = nl;
+                    nl = java.util.ArrayList<Node>(3)
+                    this.nodeList = nl
                 }
-                nl.add(newChild);
-                if (newChild instanceof NodeImpl) {
-                    ((NodeImpl) newChild).handleAddedToParent(this);
+                nl.add(newChild)
+                if (newChild is NodeImpl) {
+                    newChild.handleAddedToParent(this)
                 }
             }
 
-            this.postChildListChanged();
+            this.postChildListChanged()
 
-            return newChild;
+            return newChild
         } else {
-            throw new DOMException(DOMException.INVALID_ACCESS_ERR, "Trying to append a null child!");
+            throw DOMException(DOMException.INVALID_ACCESS_ERR, "Trying to append a null child!")
         }
     }
 
     // TODO not used by anyone
-    protected void removeAllChildren() {
-        this.removeAllChildrenImpl();
+    protected fun removeAllChildren() {
+        this.removeAllChildrenImpl()
     }
 
-    protected void removeAllChildrenImpl() {
-        synchronized (this.treeLock) {
-            final ArrayList<Node> nl = this.nodeList;
+    protected fun removeAllChildrenImpl() {
+        synchronized(this.treeLock) {
+            val nl = this.nodeList
             if (nl != null) {
-                for (final Node node : nl) {
-                    if (node instanceof NodeImpl) {
-                        ((NodeImpl) node).handleDeletedFromParent();
+                for (node in nl) {
+                    if (node is NodeImpl) {
+                        node.handleDeletedFromParent()
                     }
                 }
-                this.nodeList = null;
+                this.nodeList = null
             }
         }
 
-        this.postChildListChanged();
-
+        this.postChildListChanged()
     }
 
-    protected NodeList getNodeList(final NodeFilter filter) {
-        final Collection<Node> collection = new ArrayList<>();
-        synchronized (this.treeLock) {
-            this.appendChildrenToCollectionImpl(filter, collection);
+    protected fun getNodeList(filter: NodeFilter): NodeList {
+        val collection: MutableCollection<Node?> = java.util.ArrayList<Node?>()
+        synchronized(this.treeLock) {
+            this.appendChildrenToCollectionImpl(filter, collection)
         }
-        return new NodeListImpl(collection);
+        return NodeListImpl(collection)
     }
 
-    /*
-     * TODO: If this is not a w3c DOM method, we can return an Iterator instead of
-     * creating a new array But, it changes the semantics slightly (when
-     * modifications are needed during iteration). For those cases, we can retain
-     * this method.
-     */
-    public NodeImpl[] getChildrenArray() {
-        final ArrayList<Node> nl = this.nodeList;
-        synchronized (this.treeLock) {
-            return nl == null ? null : nl.toArray(NodeImpl.EMPTY_ARRAY);
+    open val childrenArray: Array<NodeImpl?>?
+        /*
+              * TODO: If this is not a w3c DOM method, we can return an Iterator instead of
+              * creating a new array But, it changes the semantics slightly (when
+              * modifications are needed during iteration). For those cases, we can retain
+              * this method.
+              */
+        get() {
+            val nl = this.nodeList
+            synchronized(this.treeLock) {
+                return if (nl == null) null else nl.toArray<NodeImpl?>(
+                    EMPTY_ARRAY
+                )
+            }
         }
-    }
 
-    int getChildCount() {
-        synchronized (this.treeLock) {
-            final ArrayList<Node> nl = this.nodeList;
-            return nl == null ? 0 : nl.size();
+    val childCount: Int
+        get() {
+            synchronized(this.treeLock) {
+                val nl = this.nodeList
+                return if (nl == null) 0 else nl.size
+            }
         }
-    }
 
-    // TODO: This is needed to be implemented only by Element, Document and DocumentFragment as per https://developer.mozilla.org/en-US/docs/Web/API/ParentNode
-    public HTMLCollection getChildren() {
-        return new DescendentHTMLCollection(this, new NodeFilter.ElementFilter(), this.treeLock);
-    }
+    val children: HTMLCollection
+        // TODO: This is needed to be implemented only by Element, Document and DocumentFragment as per https://developer.mozilla.org/en-US/docs/Web/API/ParentNode
+        get() = DescendentHTMLCollection(
+            this,
+            NodeFilter.ElementFilter(),
+            this.treeLock
+        )
 
     /**
-     * Creates an <code>ArrayList</code> of descendent nodes that the given filter
+     * Creates an `ArrayList` of descendent nodes that the given filter
      * condition.
      */
-    public ArrayList<NodeImpl> getDescendents(final NodeFilter filter, final boolean nestIntoMatchingNodes) {
-        final ArrayList<NodeImpl> al = new ArrayList<>();
-        synchronized (this.treeLock) {
-            this.extractDescendentsArrayImpl(filter, al, nestIntoMatchingNodes);
+    fun getDescendents(
+        filter: NodeFilter,
+        nestIntoMatchingNodes: Boolean
+    ): java.util.ArrayList<NodeImpl?> {
+        val al = java.util.ArrayList<NodeImpl?>()
+        synchronized(this.treeLock) {
+            this.extractDescendentsArrayImpl(filter, al, nestIntoMatchingNodes)
         }
-        return al;
+        return al
     }
 
     /**
@@ -249,34 +252,41 @@ public abstract class NodeImpl extends AbstractScriptableDelegate implements Nod
      * @param filter
      * @param al
      */
-    private void extractDescendentsArrayImpl(final NodeFilter filter, final ArrayList<NodeImpl> al, final boolean nestIntoMatchingNodes) {
-        final ArrayList<Node> nl = this.nodeList;
+    private fun extractDescendentsArrayImpl(
+        filter: NodeFilter,
+        al: java.util.ArrayList<NodeImpl?>,
+        nestIntoMatchingNodes: Boolean
+    ) {
+        val nl = this.nodeList
         if (nl != null) {
-            final Iterator<Node> i = nl.iterator();
+            val i: MutableIterator<Node?> = nl.iterator()
             while (i.hasNext()) {
-                final NodeImpl n = (NodeImpl) i.next();
+                val n = i.next() as NodeImpl
                 if (filter.accept(n)) {
-                    al.add(n);
+                    al.add(n)
                     if (nestIntoMatchingNodes) {
-                        n.extractDescendentsArrayImpl(filter, al, nestIntoMatchingNodes);
+                        n.extractDescendentsArrayImpl(filter, al, nestIntoMatchingNodes)
                     }
                 } else if (n.getNodeType() == Node.ELEMENT_NODE) {
-                    n.extractDescendentsArrayImpl(filter, al, nestIntoMatchingNodes);
+                    n.extractDescendentsArrayImpl(filter, al, nestIntoMatchingNodes)
                 }
             }
         }
     }
 
-    private void appendChildrenToCollectionImpl(final NodeFilter filter, final Collection<Node> collection) {
-        final ArrayList<Node> nl = this.nodeList;
+    private fun appendChildrenToCollectionImpl(
+        filter: NodeFilter,
+        collection: MutableCollection<Node?>
+    ) {
+        val nl = this.nodeList
         if (nl != null) {
-            final Iterator<Node> i = nl.iterator();
+            val i: MutableIterator<Node?> = nl.iterator()
             while (i.hasNext()) {
-                final NodeImpl node = (NodeImpl) i.next();
+                val node = i.next() as NodeImpl
                 if (filter.accept(node)) {
-                    collection.add(node);
+                    collection.add(node)
                 }
-                node.appendChildrenToCollectionImpl(filter, collection);
+                node.appendChildrenToCollectionImpl(filter, collection)
             }
         }
     }
@@ -285,67 +295,73 @@ public abstract class NodeImpl extends AbstractScriptableDelegate implements Nod
      * Should create a node with some cloned properties, like the node name, but
      * not attributes or children.
      */
-    protected abstract Node createSimilarNode();
+    protected abstract fun createSimilarNode(): Node
 
-    public Node cloneNode(final boolean deep) {
+    override fun cloneNode(deep: Boolean): Node {
         // TODO: Synchronize with treeLock?
         try {
-            final Node newNode = this.createSimilarNode();
-            final NodeList children = this.getChildNodes();
-            final int length = children.getLength();
-            for (int i = 0; i < length; i++) {
-                final Node child = children.item(i);
-                final Node newChild = deep ? child.cloneNode(deep) : child;
-                newNode.appendChild(newChild);
+            val newNode = this.createSimilarNode()
+            val children = this.childNodes
+            val length = children.length
+            for (i in 0..<length) {
+                val child = children.item(i)
+                val newChild = if (deep) child.cloneNode(deep) else child
+                newNode.appendChild(newChild)
             }
-            if (newNode instanceof Element elem) {
-                final NamedNodeMap nnmap = this.getAttributes();
+            if (newNode is Element) {
+                val nnmap = this.attributes
                 if (nnmap != null) {
-                    final int nnlength = nnmap.getLength();
-                    for (int i = 0; i < nnlength; i++) {
-                        final Attr attr = (Attr) nnmap.item(i);
-                        elem.setAttributeNode((Attr) attr.cloneNode(true));
+                    val nnlength = nnmap.length
+                    for (i in 0..<nnlength) {
+                        val attr = nnmap.item(i) as Attr
+                        newNode.setAttributeNode(attr.cloneNode(true) as Attr?)
                     }
                 }
             }
 
-            synchronized (this) {
+            synchronized(this) {
                 if ((userDataHandlers != null) && (userData != null)) {
-                    userDataHandlers.forEach((k, handler) -> handler.handle(UserDataHandler.NODE_CLONED, k, userData.get(k), this, newNode));
+                    userDataHandlers.forEach { (k: String?, handler: UserDataHandler?) ->
+                        handler!!.handle(
+                            UserDataHandler.NODE_CLONED, k, userData!!.get(k), this, newNode
+                        )
+                    }
                 }
             }
 
-            return newNode;
-        } catch (final Exception err) {
-            throw new IllegalStateException(err.getMessage());
+            return newNode
+        } catch (err: Exception) {
+            throw IllegalStateException(err.message)
         }
     }
 
-    private int getNodeIndex() {
-        final NodeImpl parent = (NodeImpl) this.getParentNode();
-        return parent == null ? -1 : parent.getChildIndex(this);
-    }
+    private val nodeIndex: Int
+        get() {
+            val parent =
+                this.parentNode as NodeImpl?
+            return if (parent == null) -1 else parent.getChildIndex(this)
+        }
 
-    int getChildIndex(final Node child) {
-        synchronized (this.treeLock) {
-            final ArrayList<Node> nl = this.nodeList;
-            return nl == null ? -1 : nl.indexOf(child);
+    fun getChildIndex(child: Node?): Int {
+        synchronized(this.treeLock) {
+            val nl = this.nodeList
+            return if (nl == null) -1 else nl.indexOf(child)
         }
     }
 
-    Node getChildAtIndex(final int index) {
-        synchronized (this.treeLock) {
-            final ArrayList<Node> nl = this.nodeList;
+    fun getChildAtIndex(index: Int): Node? {
+        synchronized(this.treeLock) {
+            val nl = this.nodeList
             try {
-                return nl == null ? null : nl.get(index);
-            } catch (final IndexOutOfBoundsException iob) {
-                this.warn("getChildAtIndex(): Bad index=" + index + " for node=" + this + ".");
-                return null;
+                return if (nl == null) null else nl.get(index)
+            } catch (iob: IndexOutOfBoundsException) {
+                this.warn("getChildAtIndex(): Bad index=" + index + " for node=" + this + ".")
+                return null
             }
         }
     }
 
-  /*
+    /*
   public Node insertBefore(final Node newChild, final Node refChild) throws DOMException {
     synchronized (this.treeLock) {
       final ArrayList<Node> nl = getNonEmptyNodeList();
@@ -370,491 +386,511 @@ public abstract class NodeImpl extends AbstractScriptableDelegate implements Nod
 
     return newChild;
   }*/
-
-    private boolean isAncestorOf(final Node other) {
-        final NodeImpl parent = (NodeImpl) other.getParentNode();
-        if (parent == this) {
-            return true;
+    private fun isAncestorOf(other: Node): Boolean {
+        val parent = other.parentNode as NodeImpl?
+        if (parent === this) {
+            return true
         } else if (parent == null) {
-            return false;
+            return false
         } else {
-            return this.isAncestorOf(parent);
+            return this.isAncestorOf(parent)
         }
     }
 
-    private boolean isInclusiveAncestorOf(final Node other) {
-        if (other == this) {
-            return true;
+    private fun isInclusiveAncestorOf(other: Node?): Boolean {
+        if (other === this) {
+            return true
         } else if (other == null) {
-            return false;
+            return false
         } else {
-            return this.isAncestorOf(other);
+            return this.isAncestorOf(other)
         }
     }
 
-    public short compareDocumentPosition(final Node other) throws DOMException {
-        final Node parent = this.getParentNode();
-        if (!(other instanceof NodeImpl)) {
-            throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "Unknwon node implementation");
+    @Throws(DOMException::class)
+    override fun compareDocumentPosition(other: Node?): Short {
+        val parent = this.parentNode
+        if (other !is NodeImpl) {
+            throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Unknwon node implementation")
         }
-        if ((parent != null) && (parent == other.getParentNode())) {
-            final int thisIndex = this.getNodeIndex();
-            final int otherIndex = ((NodeImpl) other).getNodeIndex();
+        if ((parent != null) && (parent === other.parentNode)) {
+            val thisIndex = this.nodeIndex
+            val otherIndex =
+                other.nodeIndex
             if ((thisIndex == -1) || (otherIndex == -1)) {
-                return Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC;
+                return Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
             }
             if (thisIndex < otherIndex) {
-                return Node.DOCUMENT_POSITION_FOLLOWING;
+                return Node.DOCUMENT_POSITION_FOLLOWING
             } else {
-                return Node.DOCUMENT_POSITION_PRECEDING;
+                return Node.DOCUMENT_POSITION_PRECEDING
             }
         } else if (this.isAncestorOf(other)) {
-            return Node.DOCUMENT_POSITION_CONTAINED_BY;
-        } else if (((NodeImpl) other).isAncestorOf(this)) {
-            return Node.DOCUMENT_POSITION_CONTAINS;
+            return Node.DOCUMENT_POSITION_CONTAINED_BY
+        } else if (other.isAncestorOf(this)) {
+            return Node.DOCUMENT_POSITION_CONTAINS
         } else {
-            return Node.DOCUMENT_POSITION_DISCONNECTED;
+            return Node.DOCUMENT_POSITION_DISCONNECTED
         }
     }
 
-    public NamedNodeMap getAttributes() {
-        return null;
+    override fun getAttributes(): NamedNodeMap? {
+        return null
     }
 
-    public Document getOwnerDocument() {
-        return this.document;
+    override fun getOwnerDocument(): Document? {
+        return this.document
     }
 
-    void setOwnerDocument(final Document value) {
-        this.document = value;
-        this.treeLock = value == null ? this : value;
+    open fun setOwnerDocument(value: Document?) {
+        this.document = value
+        this.treeLock = if (value == null) this else value
     }
 
-    void setOwnerDocument(final Document value, final boolean deep) {
-        this.document = value;
-        this.treeLock = value == null ? this : value;
+    open fun setOwnerDocument(value: Document?, deep: Boolean) {
+        this.document = value
+        this.treeLock = if (value == null) this else value
         if (deep) {
-            synchronized (this.treeLock) {
-                final ArrayList<Node> nl = this.nodeList;
+            synchronized(this.treeLock) {
+                val nl = this.nodeList
                 if (nl != null) {
-                    final Iterator<Node> i = nl.iterator();
+                    val i: MutableIterator<Node?> = nl.iterator()
                     while (i.hasNext()) {
-                        final NodeImpl child = (NodeImpl) i.next();
-                        child.setOwnerDocument(value, deep);
+                        val child = i.next() as NodeImpl
+                        child.setOwnerDocument(value, deep)
                     }
                 }
             }
         }
     }
 
-    void visitImpl(final NodeVisitor visitor) {
+    fun visitImpl(visitor: NodeVisitor) {
         try {
-            visitor.visit(this);
-        } catch (final SkipVisitorException sve) {
-            return;
-        } catch (final StopVisitorException sve) {
-            throw sve;
+            visitor.visit(this)
+        } catch (sve: SkipVisitorException) {
+            return
+        } catch (sve: StopVisitorException) {
+            throw sve
         }
-        final ArrayList<Node> nl = this.nodeList;
+        val nl = this.nodeList
         if (nl != null) {
-            final Iterator<Node> i = nl.iterator();
+            val i: MutableIterator<Node?> = nl.iterator()
             while (i.hasNext()) {
-                final NodeImpl child = (NodeImpl) i.next();
+                val child = i.next() as NodeImpl
                 try {
                     // Call with child's synchronization
-                    child.visit(visitor);
-                } catch (final StopVisitorException sve) {
-                    throw sve;
+                    child.visit(visitor)
+                } catch (sve: StopVisitorException) {
+                    throw sve
                 }
             }
         }
     }
 
-    void visit(final NodeVisitor visitor) {
-        synchronized (this.treeLock) {
-            this.visitImpl(visitor);
+    fun visit(visitor: NodeVisitor) {
+        synchronized(this.treeLock) {
+            this.visitImpl(visitor)
         }
     }
 
     // Ongoing issue : 152
     // This is a changed and better version of the above. It gives the same number of pass / failures on http://web-platform.test:8000/dom/nodes/Node-insertBefore.html
     // Pass 2: FAIL: 24
-    public Node insertBefore(final Node newChild, final Node refChild) throws DOMException {
+    @Throws(DOMException::class)
+    override fun insertBefore(newChild: Node, refChild: Node?): Node {
         if (newChild == null) {
-            throw new DOMException(DOMException.TYPE_MISMATCH_ERR, "child is null");
+            throw DOMException(DOMException.TYPE_MISMATCH_ERR, "child is null")
         }
-        synchronized (this.treeLock) {
-            if (newChild instanceof NodeImpl newChildImpl) {
-                if (newChildImpl.isInclusiveAncestorOf(this)) {
-                    throw new DOMException(DOMException.HIERARCHY_REQUEST_ERR, "new child is an ancestor");
+        synchronized(this.treeLock) {
+            if (newChild is NodeImpl) {
+                if (newChild.isInclusiveAncestorOf(this)) {
+                    throw DOMException(
+                        DOMException.HIERARCHY_REQUEST_ERR,
+                        "new child is an ancestor"
+                    )
                 }
             }
-
             // From what I understand from https://developer.mozilla.org/en-US/docs/Web/API/Node.insertBefore
             // a null or undefined refChild will cause the new child to be appended at the end of the list
             // otherwise, this function will throw an exception if refChild is not found in the child list
-            final ArrayList<Node> nl = refChild == null ? getNonEmptyNodeList() : this.nodeList;
-            final int idx = refChild == null ? nl.size() : (nl == null ? -1 : nl.indexOf(refChild));
+            val nl = if (refChild == null) this.nonEmptyNodeList else this.nodeList
+            val idx =
+                if (refChild == null) nl!!.size else (if (nl == null) -1 else nl.indexOf(refChild))
             if (idx == -1) {
-                throw new DOMException(DOMException.NOT_FOUND_ERR, "refChild not found");
+                throw DOMException(DOMException.NOT_FOUND_ERR, "refChild not found")
             }
-            nl.add(idx, newChild);
-            if (newChild instanceof NodeImpl) {
-                ((NodeImpl) newChild).handleAddedToParent(this);
-            }
-        }
-
-        this.postChildListChanged();
-
-        return newChild;
-    }
-
-    // TODO: Use this wherever nodeList needs to be non empty
-    private @NonNull ArrayList<Node> getNonEmptyNodeList() {
-        ArrayList<Node> nl = this.nodeList;
-        if (nl == null) {
-            nl = new ArrayList<>();
-            this.nodeList = nl;
-        }
-        return nl;
-    }
-
-    protected Node insertAt(final Node newChild, final int idx) throws DOMException {
-        synchronized (this.treeLock) {
-            final ArrayList<Node> nl = getNonEmptyNodeList();
-            nl.add(idx, newChild);
-            if (newChild instanceof NodeImpl) {
-                ((NodeImpl) newChild).handleAddedToParent(this);
+            nl!!.add(idx, newChild)
+            if (newChild is NodeImpl) {
+                newChild.handleAddedToParent(this)
             }
         }
 
-        this.postChildListChanged();
+        this.postChildListChanged()
 
-        return newChild;
+        return newChild
     }
 
-    public Node replaceChild(final Node newChild, final Node oldChild) throws DOMException {
-        synchronized (this.treeLock) {
+    private val nonEmptyNodeList: ArrayList<Node>
+        // TODO: Use this wherever nodeList needs to be non empty
+        get() {
+            var nl = this.nodeList
+            if (nl == null) {
+                nl = java.util.ArrayList<Node>()
+                this.nodeList = nl
+            }
+            return nl
+        }
+
+    @Throws(DOMException::class)
+    protected fun insertAt(newChild: Node?, idx: Int): Node? {
+        synchronized(this.treeLock) {
+            val nl = this.nonEmptyNodeList
+            nl.add(idx, newChild!!)
+            if (newChild is NodeImpl) {
+                newChild.handleAddedToParent(this)
+            }
+        }
+
+        this.postChildListChanged()
+
+        return newChild
+    }
+
+    @Throws(DOMException::class)
+    override fun replaceChild(newChild: Node?, oldChild: Node?): Node? {
+        synchronized(this.treeLock) {
             if (this.isInclusiveAncestorOf(newChild)) {
-                throw new DOMException(DOMException.HIERARCHY_REQUEST_ERR, "newChild is already a child of the node");
+                throw DOMException(
+                    DOMException.HIERARCHY_REQUEST_ERR,
+                    "newChild is already a child of the node"
+                )
             }
-            if ((newChild instanceof NodeImpl) && ((NodeImpl) newChild).isInclusiveAncestorOf(this)) {
-                throw new DOMException(DOMException.HIERARCHY_REQUEST_ERR, "Trying to set an ancestor element as a child.");
+            if ((newChild is NodeImpl) && newChild.isInclusiveAncestorOf(this)) {
+                throw DOMException(
+                    DOMException.HIERARCHY_REQUEST_ERR,
+                    "Trying to set an ancestor element as a child."
+                )
             }
 
-            final ArrayList<Node> nl = this.nodeList;
-            final int idx = nl == null ? -1 : nl.indexOf(oldChild);
+            val nl = this.nodeList
+            val idx = if (nl == null) -1 else nl.indexOf(oldChild)
             if (idx == -1) {
-                throw new DOMException(DOMException.NOT_FOUND_ERR, "oldChild not found");
+                throw DOMException(DOMException.NOT_FOUND_ERR, "oldChild not found")
             }
-            nl.set(idx, newChild);
+            nl!!.set(idx, newChild!!)
 
-            if (newChild instanceof NodeImpl) {
-                ((NodeImpl) newChild).handleAddedToParent(this);
+            if (newChild is NodeImpl) {
+                newChild.handleAddedToParent(this)
             }
-
-            if (oldChild instanceof NodeImpl) {
-                ((NodeImpl) oldChild).handleDeletedFromParent();
+            if (oldChild is NodeImpl) {
+                oldChild.handleDeletedFromParent()
             }
         }
 
-        this.postChildListChanged();
+        this.postChildListChanged()
 
-        return newChild;
+        return newChild
     }
 
-    public Node removeChild(final Node oldChild) throws DOMException {
-        synchronized (this.treeLock) {
-            final ArrayList<Node> nl = this.nodeList;
+    @Throws(DOMException::class)
+    override fun removeChild(oldChild: Node?): Node? {
+        synchronized(this.treeLock) {
+            val nl = this.nodeList
             if ((nl == null) || !nl.remove(oldChild)) {
-                throw new DOMException(DOMException.NOT_FOUND_ERR, "oldChild not found");
+                throw DOMException(DOMException.NOT_FOUND_ERR, "oldChild not found")
             }
-            if (oldChild instanceof NodeImpl) {
-                ((NodeImpl) oldChild).handleDeletedFromParent();
+            if (oldChild is NodeImpl) {
+                oldChild.handleDeletedFromParent()
             }
         }
 
-        this.postChildListChanged();
+        this.postChildListChanged()
 
-        return oldChild;
+        return oldChild
     }
 
     @HideFromJS
-    public Node removeChildAt(final int index) throws DOMException {
+    @Throws(DOMException::class)
+    fun removeChildAt(index: Int): Node {
         try {
-            synchronized (this.treeLock) {
-                final ArrayList<Node> nl = this.nodeList;
+            synchronized(this.treeLock) {
+                val nl = this.nodeList
                 if (nl == null) {
-                    throw new DOMException(DOMException.INDEX_SIZE_ERR, "Empty list of children");
+                    throw DOMException(DOMException.INDEX_SIZE_ERR, "Empty list of children")
                 }
-                final Node n = nl.remove(index);
+                val n = nl.removeAt(index)
                 if (n == null) {
-                    throw new DOMException(DOMException.INDEX_SIZE_ERR, "No node with that index");
+                    throw DOMException(DOMException.INDEX_SIZE_ERR, "No node with that index")
                 }
-                if (n instanceof NodeImpl) {
-                    ((NodeImpl) n).handleDeletedFromParent();
+                if (n is NodeImpl) {
+                    n.handleDeletedFromParent()
                 }
-                return n;
+                return n
             }
         } finally {
-            this.postChildListChanged();
+            this.postChildListChanged()
         }
     }
 
-    public boolean hasChildNodes() {
-        synchronized (this.treeLock) {
-            final ArrayList<Node> nl = this.nodeList;
-            return (nl != null) && !nl.isEmpty();
+    override fun hasChildNodes(): Boolean {
+        synchronized(this.treeLock) {
+            val nl = this.nodeList
+            return (nl != null) && !nl.isEmpty()
         }
     }
 
-    public String getBaseURI() {
-        final Document document = this.document;
-        return document == null ? null : document.getBaseURI();
+    override fun getBaseURI(): String? {
+        val document = this.document
+        return if (document == null) null else document.baseURI
     }
 
-    public NodeList getChildNodes() {
-        synchronized (this.treeLock) {
-            final ArrayList<Node> nl = this.nodeList;
-            return new NodeListImpl(nl == null ? Collections.emptyList() : nl);
+    override fun getChildNodes(): NodeList {
+        synchronized(this.treeLock) {
+            val nl = this.nodeList
+            return NodeListImpl(if (nl == null) mutableListOf<Node?>() else nl)
         }
     }
 
-    public Node getFirstChild() {
-        synchronized (this.treeLock) {
-            final ArrayList<Node> nl = this.nodeList;
+    override fun getFirstChild(): Node? {
+        synchronized(this.treeLock) {
+            val nl = this.nodeList
             try {
-                return nl == null ? null : nl.get(0);
-            } catch (final IndexOutOfBoundsException iob) {
-                return null;
+                return if (nl == null) null else nl.get(0)
+            } catch (iob: IndexOutOfBoundsException) {
+                return null
             }
         }
     }
 
-    public Node getLastChild() {
-        synchronized (this.treeLock) {
-            final ArrayList<Node> nl = this.nodeList;
+    override fun getLastChild(): Node? {
+        synchronized(this.treeLock) {
+            val nl = this.nodeList
             try {
-                return nl == null ? null : nl.get(nl.size() - 1);
-            } catch (final IndexOutOfBoundsException iob) {
-                return null;
+                return if (nl == null) null else nl.get(nl.size - 1)
+            } catch (iob: IndexOutOfBoundsException) {
+                return null
             }
         }
     }
 
-    private Node getPreviousTo(final Node node) {
-        synchronized (this.treeLock) {
-            final ArrayList<Node> nl = this.nodeList;
-            final int idx = nl == null ? -1 : nl.indexOf(node);
+    private fun getPreviousTo(node: Node?): Node? {
+        synchronized(this.treeLock) {
+            val nl = this.nodeList
+            val idx = if (nl == null) -1 else nl.indexOf(node)
             if (idx == -1) {
-                throw new DOMException(DOMException.NOT_FOUND_ERR, "node not found");
+                throw DOMException(DOMException.NOT_FOUND_ERR, "node not found")
             }
             try {
-                return nl.get(idx - 1);
-            } catch (final IndexOutOfBoundsException iob) {
-                return null;
+                return nl!!.get(idx - 1)
+            } catch (iob: IndexOutOfBoundsException) {
+                return null
             }
         }
     }
 
-    private Node getNextTo(final Node node) {
-        synchronized (this.treeLock) {
-            final ArrayList<Node> nl = this.nodeList;
-            final int idx = nl == null ? -1 : nl.indexOf(node);
+    private fun getNextTo(node: Node?): Node? {
+        synchronized(this.treeLock) {
+            val nl = this.nodeList
+            val idx = if (nl == null) -1 else nl.indexOf(node)
             if (idx == -1) {
-                throw new DOMException(DOMException.NOT_FOUND_ERR, "node not found");
+                throw DOMException(DOMException.NOT_FOUND_ERR, "node not found")
             }
             try {
-                return nl.get(idx + 1);
-            } catch (final IndexOutOfBoundsException iob) {
-                return null;
+                return nl!!.get(idx + 1)
+            } catch (iob: IndexOutOfBoundsException) {
+                return null
             }
         }
     }
 
-    public Node getPreviousSibling() {
-        final NodeImpl parent = (NodeImpl) this.getParentNode();
-        return parent == null ? null : parent.getPreviousTo(this);
+    override fun getPreviousSibling(): Node? {
+        val parent = this.parentNode as NodeImpl?
+        return if (parent == null) null else parent.getPreviousTo(this)
     }
 
-    public Node getNextSibling() {
-        final NodeImpl parent = (NodeImpl) this.getParentNode();
-        return parent == null ? null : parent.getNextTo(this);
+    override fun getNextSibling(): Node? {
+        val parent = this.parentNode as NodeImpl?
+        return if (parent == null) null else parent.getNextTo(this)
     }
 
-    public Element getPreviousElementSibling() {
-        final NodeImpl parent = (NodeImpl) this.getParentNode();
-        if (parent != null) {
-            Node previous = this;
-            do {
-                previous = parent.getPreviousTo(previous);
-                if ((previous != null) && (previous instanceof Element)) {
-                    return (Element) previous;
-                }
-            } while (previous != null);
-            return null;
-        } else {
-            return null;
+    val previousElementSibling: Element?
+        get() {
+            val parent =
+                this.parentNode as NodeImpl?
+            if (parent != null) {
+                var previous: Node? = this
+                do {
+                    previous = parent.getPreviousTo(previous)
+                    if ((previous != null) && (previous is Element)) {
+                        return previous
+                    }
+                } while (previous != null)
+                return null
+            } else {
+                return null
+            }
         }
-    }
 
-    public Element getNextElementSibling() {
-        final NodeImpl parent = (NodeImpl) this.getParentNode();
-        if (parent != null) {
-            Node next = this;
-            do {
-                next = parent.getNextTo(next);
-                if ((next != null) && (next instanceof Element)) {
-                    return (Element) next;
-                }
-            } while (next != null);
-            return null;
-        } else {
-            return null;
+    val nextElementSibling: Element?
+        get() {
+            val parent =
+                this.parentNode as NodeImpl?
+            if (parent != null) {
+                var next: Node? = this
+                do {
+                    next = parent.getNextTo(next)
+                    if ((next != null) && (next is Element)) {
+                        return next
+                    }
+                } while (next != null)
+                return null
+            } else {
+                return null
+            }
         }
-    }
 
-    public Object getFeature(final String feature, final String version) {
+    override fun getFeature(feature: String?, version: String?): Any? {
         // TODO What should this do?
-        return null;
+        return null
     }
 
-    public Object setUserData(final String key, final Object data, final UserDataHandler handler) {
-        if (HtmlParser.MODIFYING_KEY.equals(key)) {
-            final boolean ns = (Boolean.TRUE == data);
-            this.notificationsSuspended = ns;
+    override fun setUserData(key: String?, data: Any?, handler: UserDataHandler?): Any? {
+        if (HtmlParser.MODIFYING_KEY == key) {
+            val ns = (Boolean.TRUE === data)
+            this.notificationsSuspended = ns
             if (!ns) {
-                this.informNodeLoaded();
+                this.informNodeLoaded()
             }
         }
         // here we spent some effort preventing our maps from growing too much
-        synchronized (this) {
+        synchronized(this) {
             if (handler != null) {
                 if (this.userDataHandlers == null) {
-                    this.userDataHandlers = new HashMap<>();
+                    this.userDataHandlers = HashMap<String?, UserDataHandler?>()
                 } else {
-                    this.userDataHandlers.remove(key);
+                    this.userDataHandlers!!.remove(key)
                 }
-                this.userDataHandlers.put(key, handler);
+                this.userDataHandlers!!.put(key, handler)
             }
-
-            Map<String, Object> userData = this.userData;
+            var userData = this.userData
             if (data != null) {
                 if (userData == null) {
-                    userData = new HashMap<>();
-                    this.userData = userData;
+                    userData = HashMap<String?, Any?>()
+                    this.userData = userData
                 }
-                return userData.put(key, data);
+                return userData.put(key, data)
             } else if (userData != null) {
-                return userData.remove(key);
+                return userData.remove(key)
             } else {
-                return null;
+                return null
             }
         }
     }
 
-    public Object getUserData(final String key) {
-        synchronized (this) {
-            final Map<String, Object> ud = this.userData;
-            return ud == null ? null : ud.get(key);
+    override fun getUserData(key: String?): Any? {
+        synchronized(this) {
+            val ud = this.userData
+            return if (ud == null) null else ud.get(key)
         }
     }
 
-    public abstract String getLocalName();
+    abstract override fun getLocalName(): String?
 
-    public boolean hasAttributes() {
-        return false;
+    override fun hasAttributes(): kotlin.Boolean {
+        return false
     }
 
-    public String getNamespaceURI() {
-        return null;
+    override fun getNamespaceURI(): String? {
+        return null
     }
 
-    public abstract String getNodeName();
+    abstract override fun getNodeName(): String
 
-    public abstract String getNodeValue() throws DOMException;
+    @Throws(DOMException::class)
+    abstract override fun getNodeValue(): String?
 
-    public abstract void setNodeValue(String nodeValue) throws DOMException;
+    @Throws(DOMException::class)
+    abstract override fun setNodeValue(nodeValue: String?)
 
-    public String getPrefix() {
-        return this.prefix;
+    override fun getPrefix(): String? {
+        return this.prefix
     }
 
-    public void setPrefix(final String prefix) throws DOMException {
-        this.prefix = prefix;
+    @Throws(DOMException::class)
+    override fun setPrefix(prefix: String?) {
+        this.prefix = prefix
     }
 
-    public abstract short getNodeType();
+    abstract override fun getNodeType(): Short
 
     /**
      * Gets the text content of this node and its descendents.
      */
-    public String getTextContent() throws DOMException {
-        final StringBuffer sb = new StringBuffer();
-        synchronized (this.treeLock) {
-            final ArrayList<Node> nl = this.nodeList;
+    @Throws(DOMException::class)
+    override fun getTextContent(): String {
+        val sb = StringBuffer()
+        synchronized(this.treeLock) {
+            val nl = this.nodeList
             if (nl != null) {
-                final Iterator<Node> i = nl.iterator();
+                val i = nl.iterator()
                 while (i.hasNext()) {
-                    final Node node = i.next();
-                    final short type = node.getNodeType();
-                    switch (type) {
-                        case Node.CDATA_SECTION_NODE:
-                        case Node.TEXT_NODE:
-                        case Node.ELEMENT_NODE:
-                            final String textContent = node.getTextContent();
+                    val node = i.next()
+                    val type = node.nodeType
+                    when (type) {
+                        Node.CDATA_SECTION_NODE, Node.TEXT_NODE, Node.ELEMENT_NODE -> {
+                            val textContent = node.textContent
                             if (textContent != null) {
-                                sb.append(textContent);
+                                sb.append(textContent)
                             }
-                            break;
-                        default:
-                            break;
+                        }
+
+                        else -> {}
                     }
                 }
             }
         }
-        return sb.toString();
+        return sb.toString()
     }
 
-    public void setTextContent(final String textContent) throws DOMException {
-        synchronized (this.treeLock) {
-            this.removeChildrenImpl(new TextFilter());
-            if ((textContent != null) && !"".equals(textContent)) {
-                final TextImpl t = new TextImpl(textContent);
-                t.setOwnerDocument(this.document);
-                t.setParentImpl(this);
-                ArrayList<Node> nl = this.nodeList;
+    @Throws(DOMException::class)
+    override fun setTextContent(textContent: String?) {
+        synchronized(this.treeLock) {
+            this.removeChildrenImpl(TextFilter())
+            if ((textContent != null) && "" != textContent) {
+                val t = TextImpl(textContent)
+                t.setOwnerDocument(this.document)
+                t.setParentImpl(this)
+                var nl = this.nodeList
                 if (nl == null) {
-                    nl = new ArrayList<>();
-                    this.nodeList = nl;
+                    nl = java.util.ArrayList<Node>()
+                    this.nodeList = nl
                 }
-                nl.add(t);
+                nl.add(t)
             }
         }
 
-        this.postChildListChanged();
-
+        this.postChildListChanged()
     }
 
-    protected void removeChildren(final NodeFilter filter) {
-        synchronized (this.treeLock) {
-            this.removeChildrenImpl(filter);
+    protected fun removeChildren(filter: NodeFilter) {
+        synchronized(this.treeLock) {
+            this.removeChildrenImpl(filter)
         }
 
-        this.postChildListChanged();
-
+        this.postChildListChanged()
     }
 
-    protected void removeChildrenImpl(final NodeFilter filter) {
-        final ArrayList<Node> nl = this.nodeList;
+    protected fun removeChildrenImpl(filter: NodeFilter) {
+        val nl = this.nodeList
         if (nl != null) {
-            final int len = nl.size();
-            for (int i = len; --i >= 0; ) {
-                final Node node = nl.get(i);
+            val len = nl.size
+            var i = len
+            while (--i >= 0) {
+                val node: Node? = nl.get(i)
                 if (filter.accept(node)) {
-                    final Node n = nl.remove(i);
-                    if (n instanceof NodeImpl) {
-                        ((NodeImpl) n).handleDeletedFromParent();
+                    val n: Node? = nl.removeAt(i)
+                    if (n is NodeImpl) {
+                        n.handleDeletedFromParent()
                     }
                 }
             }
@@ -862,198 +898,206 @@ public abstract class NodeImpl extends AbstractScriptableDelegate implements Nod
     }
 
     @HideFromJS
-    public Node insertAfter(final Node newChild, final Node refChild) {
-        synchronized (this.treeLock) {
-            final ArrayList<Node> nl = this.nodeList;
-            final int idx = nl == null ? -1 : nl.indexOf(refChild);
+    fun insertAfter(newChild: Node?, refChild: Node?): Node? {
+        synchronized(this.treeLock) {
+            val nl = this.nodeList
+            val idx = if (nl == null) -1 else nl.indexOf(refChild)
             if (idx == -1) {
-                throw new DOMException(DOMException.NOT_FOUND_ERR, "refChild not found");
+                throw DOMException(DOMException.NOT_FOUND_ERR, "refChild not found")
             }
-            nl.add(idx + 1, newChild);
-            if (newChild instanceof NodeImpl) {
-                ((NodeImpl) newChild).handleAddedToParent(this);
+            nl!!.add(idx + 1, newChild!!)
+            if (newChild is NodeImpl) {
+                newChild.handleAddedToParent(this)
             }
         }
 
-        this.postChildListChanged();
+        this.postChildListChanged()
 
-        return newChild;
+        return newChild
     }
 
     @HideFromJS
-    public Text replaceAdjacentTextNodes(final Text node, final String textContent) {
+    fun replaceAdjacentTextNodes(node: Text?, textContent: String?): Text {
         try {
-            synchronized (this.treeLock) {
-                final ArrayList<Node> nl = this.nodeList;
+            synchronized(this.treeLock) {
+                val nl = this.nodeList
                 if (nl == null) {
-                    throw new DOMException(DOMException.NOT_FOUND_ERR, "Node not a child");
+                    throw DOMException(DOMException.NOT_FOUND_ERR, "Node not a child")
                 }
-                final int idx = nl.indexOf(node);
+                val idx = nl.indexOf(node)
                 if (idx == -1) {
-                    throw new DOMException(DOMException.NOT_FOUND_ERR, "Node not a child");
+                    throw DOMException(DOMException.NOT_FOUND_ERR, "Node not a child")
                 }
-                int firstIdx = idx;
-                final List<Object> toDelete = new LinkedList<>();
-                for (int adjIdx = idx; --adjIdx >= 0; ) {
-                    final Object child = this.nodeList.get(adjIdx);
-                    if (child instanceof Text) {
-                        firstIdx = adjIdx;
-                        toDelete.add(child);
+                var firstIdx = idx
+                val toDelete: MutableList<Any?> = LinkedList<Any?>()
+                run {
+                    var adjIdx = idx
+                    while (--adjIdx >= 0) {
+                        val child: Any? = this.nodeList!!.get(adjIdx)
+                        if (child is Text) {
+                            firstIdx = adjIdx
+                            toDelete.add(child)
+                        }
                     }
                 }
-                final int length = this.nodeList.size();
-                for (int adjIdx = idx; ++adjIdx < length; ) {
-                    final Object child = this.nodeList.get(adjIdx);
-                    if (child instanceof Text) {
-                        toDelete.add(child);
+                val length = this.nodeList!!.size
+                var adjIdx = idx
+                while (++adjIdx < length) {
+                    val child: Any? = this.nodeList!!.get(adjIdx)
+                    if (child is Text) {
+                        toDelete.add(child)
                     }
                 }
-                this.nodeList.removeAll(toDelete);
-                final TextImpl textNode = new TextImpl(textContent);
-                textNode.setOwnerDocument(this.document);
-                textNode.setParentImpl(this);
-                this.nodeList.add(firstIdx, textNode);
-                return textNode;
+                this.nodeList!!.removeAll(toDelete)
+                val textNode = TextImpl(textContent)
+                textNode.setOwnerDocument(this.document)
+                textNode.setParentImpl(this)
+                this.nodeList!!.add(firstIdx, textNode)
+                return textNode
             }
         } finally {
-            this.postChildListChanged();
+            this.postChildListChanged()
         }
     }
 
     @HideFromJS
-    public Text replaceAdjacentTextNodes(final Text node) {
+    fun replaceAdjacentTextNodes(node: Text?): Text {
         try {
-            synchronized (this.treeLock) {
-                final ArrayList<Node> nl = this.nodeList;
+            synchronized(this.treeLock) {
+                val nl = this.nodeList
                 if (nl == null) {
-                    throw new DOMException(DOMException.NOT_FOUND_ERR, "Node not a child");
+                    throw DOMException(DOMException.NOT_FOUND_ERR, "Node not a child")
                 }
-                final int idx = nl.indexOf(node);
+                val idx = nl.indexOf(node)
                 if (idx == -1) {
-                    throw new DOMException(DOMException.NOT_FOUND_ERR, "Node not a child");
+                    throw DOMException(DOMException.NOT_FOUND_ERR, "Node not a child")
                 }
-                final StringBuffer textBuffer = new StringBuffer();
-                int firstIdx = idx;
-                final List<Object> toDelete = new LinkedList<>();
-                for (int adjIdx = idx; --adjIdx >= 0; ) {
-                    final Object child = this.nodeList.get(adjIdx);
-                    if (child instanceof Text) {
-                        firstIdx = adjIdx;
-                        toDelete.add(child);
-                        textBuffer.append(((Text) child).getNodeValue());
+                val textBuffer = StringBuffer()
+                var firstIdx = idx
+                val toDelete: MutableList<Any?> = LinkedList<Any?>()
+                run {
+                    var adjIdx = idx
+                    while (--adjIdx >= 0) {
+                        val child: Any? = this.nodeList!!.get(adjIdx)
+                        if (child is Text) {
+                            firstIdx = adjIdx
+                            toDelete.add(child)
+                            textBuffer.append(child.nodeValue)
+                        }
                     }
                 }
-                final int length = this.nodeList.size();
-                for (int adjIdx = idx; ++adjIdx < length; ) {
-                    final Object child = this.nodeList.get(adjIdx);
-                    if (child instanceof Text) {
-                        toDelete.add(child);
-                        textBuffer.append(((Text) child).getNodeValue());
+                val length = this.nodeList!!.size
+                var adjIdx = idx
+                while (++adjIdx < length) {
+                    val child: Any? = this.nodeList!!.get(adjIdx)
+                    if (child is Text) {
+                        toDelete.add(child)
+                        textBuffer.append(child.nodeValue)
                     }
                 }
-                this.nodeList.removeAll(toDelete);
-                final TextImpl textNode = new TextImpl(textBuffer.toString());
-                textNode.setOwnerDocument(this.document);
-                textNode.setParentImpl(this);
-                this.nodeList.add(firstIdx, textNode);
-                return textNode;
+                this.nodeList!!.removeAll(toDelete)
+                val textNode = TextImpl(textBuffer.toString())
+                textNode.setOwnerDocument(this.document)
+                textNode.setParentImpl(this)
+                this.nodeList!!.add(firstIdx, textNode)
+                return textNode
             }
         } finally {
-            this.postChildListChanged();
+            this.postChildListChanged()
         }
     }
 
-    public Node getParentNode() {
+    override fun getParentNode(): Node? {
         // Should it be synchronized? Could have side-effects.
-        return this.parentNode;
+        return this.parentNode
     }
 
-    public boolean isSameNode(final Node other) {
-        return this == other;
+    override fun isSameNode(other: Node?): kotlin.Boolean {
+        return this === other
     }
 
-    public boolean isSupported(final String feature, final String version) {
-        return ("HTML".equals(feature) && (version.compareTo("4.01") <= 0));
+    override fun isSupported(feature: String?, version: String): kotlin.Boolean {
+        return ("HTML" == feature && (version.compareTo("4.01") <= 0))
     }
 
-    public String lookupNamespaceURI(final String prefix) {
-        return null;
+    override fun lookupNamespaceURI(prefix: String?): String? {
+        return null
     }
 
-    public boolean equalAttributes(final Node arg) {
-        return false;
+    open fun equalAttributes(arg: Node?): kotlin.Boolean {
+        return false
     }
 
-    public boolean isEqualNode(final Node arg) {
-        return (arg instanceof NodeImpl) && (this.getNodeType() == arg.getNodeType()) && java.util.Objects.equals(this.getNodeName(), arg.getNodeName())
-                && java.util.Objects.equals(this.getNodeValue(), arg.getNodeValue()) && java.util.Objects.equals(this.getLocalName(), arg.getLocalName())
-                && java.util.Objects.equals(this.nodeList, ((NodeImpl) arg).nodeList) && this.equalAttributes(arg);
+    override fun isEqualNode(arg: Node?): kotlin.Boolean {
+        return (arg is NodeImpl) && (this.getNodeType() == arg.getNodeType()) && this.getNodeName() == arg.getNodeName()
+                && this.getNodeValue() == arg.getNodeValue() && this.getLocalName() == arg.getLocalName()
+                && this.nodeList == arg.nodeList && this.equalAttributes(arg)
     }
 
-    public boolean isDefaultNamespace(final String namespaceURI) {
-        return namespaceURI == null;
+    override fun isDefaultNamespace(namespaceURI: String?): kotlin.Boolean {
+        return namespaceURI == null
     }
 
-    public String lookupPrefix(final String namespaceURI) {
-        return null;
+    override fun lookupPrefix(namespaceURI: String?): String? {
+        return null
     }
 
-    public void normalize() {
-        synchronized (this.treeLock) {
-            final ArrayList<Node> nl = this.nodeList;
+    override fun normalize() {
+        synchronized(this.treeLock) {
+            val nl = this.nodeList
             if (nl != null) {
-                Iterator<Node> i = nl.iterator();
-                final List<Node> textNodes = new LinkedList<>();
-                boolean prevText = false;
+                var i = nl.iterator()
+                val textNodes: MutableList<Node?> = LinkedList<Node?>()
+                var prevText = false
                 while (i.hasNext()) {
-                    final Node child = i.next();
-                    if (child.getNodeType() == Node.TEXT_NODE) {
+                    val child = i.next()
+                    if (child.nodeType == Node.TEXT_NODE) {
                         if (!prevText) {
-                            prevText = true;
-                            textNodes.add(child);
+                            prevText = true
+                            textNodes.add(child)
                         }
                     } else {
-                        prevText = false;
+                        prevText = false
                     }
                 }
-                i = textNodes.iterator();
+                i = textNodes.iterator()
                 while (i.hasNext()) {
-                    final Text text = (Text) i.next();
-                    this.replaceAdjacentTextNodes(text);
+                    val text = i.next() as Text?
+                    this.replaceAdjacentTextNodes(text)
                 }
             }
         }
-        this.postChildListChanged();
+        this.postChildListChanged()
     }
 
     // ----- ModelNode implementation
-
-    @Override
-    public String toString() {
-        return this.getNodeName();
+    override fun toString(): String {
+        return this.getNodeName()
     }
 
-    public UserAgentContext getUserAgentContext() {
-        final Object doc = this.document;
-        if (doc instanceof HTMLDocumentImpl) {
-            return ((HTMLDocumentImpl) doc).getUserAgentContext();
-        } else {
-            return null;
+    open val userAgentContext: UserAgentContext?
+        get() {
+            val doc: Any? = this.document
+            if (doc is HTMLDocumentImpl) {
+                return doc.getUserAgentContext()
+            } else {
+                return null
+            }
         }
-    }
 
-    public HtmlRendererContext getHtmlRendererContext() {
-        final Object doc = this.document;
-        if (doc instanceof HTMLDocumentImpl) {
-            return ((HTMLDocumentImpl) doc).getHtmlRendererContext();
-        } else {
-            return null;
+    open val htmlRendererContext: HtmlRendererContext?
+        get() {
+            val doc: Any? = this.document
+            if (doc is HTMLDocumentImpl) {
+                return doc.getHtmlRendererContext()
+            } else {
+                return null
+            }
         }
-    }
 
-    final void setParentImpl(final Node parent) {
+    fun setParentImpl(parent: Node?) {
         // Call holding treeLock.
-        this.parentNode = parent;
+        this.parentNode = parent
     }
 
     /*
@@ -1062,24 +1106,26 @@ public abstract class NodeImpl extends AbstractScriptableDelegate implements Nod
      * @see
      * org.xamjwg.html.renderer.RenderableContext#getFullURL(java.lang.String)
      */
-    public @NonNull URL getFullURL(final String spec) throws MalformedURLException {
-        final Object doc = this.document;
-        final String cleanSpec = Urls.encodeIllegalCharacters(spec);
-        if (doc instanceof HTMLDocumentImpl) {
-            return ((HTMLDocumentImpl) doc).getFullURL(cleanSpec);
+    @Throws(MalformedURLException::class)
+    override fun getFullURL(spec: String): URL {
+        val doc: Any? = this.document
+        val cleanSpec = Urls.encodeIllegalCharacters(spec)
+        if (doc is HTMLDocumentImpl) {
+            return doc.getFullURL(cleanSpec)
         } else {
-            return new URL(cleanSpec);
+            return URL(cleanSpec)
         }
     }
 
-    public URL getDocumentURL() {
-        final Object doc = this.document;
-        if (doc instanceof HTMLDocumentImpl) {
-            return ((HTMLDocumentImpl) doc).getDocumentURL();
-        } else {
-            return null;
+    open val documentURL: URL?
+        get() {
+            val doc: Any? = this.document
+            if (doc is HTMLDocumentImpl) {
+                return doc.getDocumentURL()
+            } else {
+                return null
+            }
         }
-    }
 
     /*
      * (non-Javadoc)
@@ -1088,9 +1134,9 @@ public abstract class NodeImpl extends AbstractScriptableDelegate implements Nod
      * org.xamjwg.html.renderer.RenderableContext#getDocumentItem(java.lang.String
      * )
      */
-    public Object getDocumentItem(final String name) {
-        final Document document = this.document;
-        return document == null ? null : document.getUserData(name);
+    override fun getDocumentItem(name: String?): Any? {
+        val document = this.document
+        return if (document == null) null else document.getUserData(name)
     }
 
     /*
@@ -1100,12 +1146,12 @@ public abstract class NodeImpl extends AbstractScriptableDelegate implements Nod
      * org.xamjwg.html.renderer.RenderableContext#setDocumentItem(java.lang.String
      * , java.lang.Object)
      */
-    public void setDocumentItem(final String name, final Object value) {
-        final Document document = this.document;
+    override fun setDocumentItem(name: String?, value: Any?) {
+        val document = this.document
         if (document == null) {
-            return;
+            return
         }
-        document.setUserData(name, value, null);
+        document.setUserData(name, value, null)
     }
 
     /*
@@ -1115,187 +1161,188 @@ public abstract class NodeImpl extends AbstractScriptableDelegate implements Nod
      * org.xamjwg.html.renderer.RenderableContext#isEqualOrDescendentOf(org.xamjwg
      * .html.renderer.RenderableContext)
      */
-    public final boolean isEqualOrDescendentOf(final ModelNode otherContext) {
-        if (otherContext == this) {
-            return true;
+    override fun isEqualOrDescendentOf(otherContext: ModelNode?): kotlin.Boolean {
+        if (otherContext === this) {
+            return true
         }
-        final Object parent = this.getParentNode();
-        if (parent instanceof HTMLElementImpl) {
-            return ((HTMLElementImpl) parent).isEqualOrDescendentOf(otherContext);
+        val parent: Any? = this.parentNode
+        if (parent is HTMLElementImpl) {
+            return parent.isEqualOrDescendentOf(otherContext)
         } else {
-            return false;
+            return false
         }
     }
 
-    public final ModelNode getParentModelNode() {
-        return (ModelNode) this.parentNode;
+    override fun getParentModelNode(): ModelNode? {
+        return this.parentNode as ModelNode?
     }
 
-    public void warn(final String message, final Throwable err) {
-        logger.log(Level.WARNING, message, err);
+    override fun warn(message: String?, err: Throwable?) {
+        logger.log(Level.WARNING, message, err)
     }
 
-    public void warn(final String message) {
-        logger.log(Level.WARNING, message);
+    open fun warn(message: String?) {
+        logger.log(Level.WARNING, message)
     }
 
-    public void informSizeInvalid() {
-        final HTMLDocumentImpl doc = (HTMLDocumentImpl) this.document;
+    fun informSizeInvalid() {
+        val doc = this.document as HTMLDocumentImpl?
         if (doc != null) {
-            doc.sizeInvalidated(this);
+            doc.sizeInvalidated(this)
         }
     }
 
-    public void informLookInvalid() {
-        this.forgetRenderState();
-        final HTMLDocumentImpl doc = (HTMLDocumentImpl) this.document;
+    fun informLookInvalid() {
+        this.forgetRenderState()
+        val doc = this.document as HTMLDocumentImpl?
         if (doc != null) {
-            doc.lookInvalidated(this);
+            doc.lookInvalidated(this)
         }
     }
 
-    public void informPositionInvalid() {
-        final HTMLDocumentImpl doc = (HTMLDocumentImpl) this.document;
+    fun informPositionInvalid() {
+        val doc = this.document as HTMLDocumentImpl?
         if (doc != null) {
-            doc.positionInParentInvalidated(this);
+            doc.positionInParentInvalidated(this)
         }
     }
 
-    public void informInvalid() {
+    open fun informInvalid() {
         // This is called when an attribute or child changes.
-        this.forgetRenderState();
-        final HTMLDocumentImpl doc = (HTMLDocumentImpl) this.document;
+        this.forgetRenderState()
+        val doc = this.document as HTMLDocumentImpl?
         if (doc != null) {
-            doc.invalidated(this);
+            doc.invalidated(this)
         }
     }
 
-    public void informStructureInvalid() {
+    fun informStructureInvalid() {
         // This is called when an attribute or child changes.
-        this.forgetRenderState();
-        final HTMLDocumentImpl doc = (HTMLDocumentImpl) this.document;
+        this.forgetRenderState()
+        val doc = this.document as HTMLDocumentImpl?
         if (doc != null) {
-            doc.structureInvalidated(this);
+            doc.structureInvalidated(this)
         }
     }
 
-    protected void informNodeLoaded() {
+    protected fun informNodeLoaded() {
         // This is called when an attribute or child changes.
-        this.forgetRenderState();
-        final HTMLDocumentImpl doc = (HTMLDocumentImpl) this.document;
+        this.forgetRenderState()
+        val doc = this.document as HTMLDocumentImpl?
         if (doc != null) {
-            doc.nodeLoaded(this);
+            doc.nodeLoaded(this)
         }
     }
 
-    protected void informExternalScriptLoading() {
+    protected fun informExternalScriptLoading() {
         // This is called when an attribute or child changes.
-        this.forgetRenderState();
-        final HTMLDocumentImpl doc = (HTMLDocumentImpl) this.document;
+        this.forgetRenderState()
+        val doc = this.document as HTMLDocumentImpl?
         if (doc != null) {
-            doc.externalScriptLoading(this);
+            doc.externalScriptLoading(this)
         }
     }
 
-    public void informLayoutInvalid() {
+    fun informLayoutInvalid() {
         // This is called by the style properties object.
-        this.forgetRenderState();
-        final HTMLDocumentImpl doc = (HTMLDocumentImpl) this.document;
+        this.forgetRenderState()
+        val doc = this.document as HTMLDocumentImpl?
         if (doc != null) {
-            doc.invalidated(this);
+            doc.invalidated(this)
         }
     }
 
-    public void informDocumentInvalid() {
+    fun informDocumentInvalid() {
         // This is called when an attribute or child changes.
-        final HTMLDocumentImpl doc = (HTMLDocumentImpl) this.document;
+        val doc = this.document as HTMLDocumentImpl?
         if (doc != null) {
-            doc.allInvalidated(true);
+            doc.allInvalidated(true)
         }
     }
 
-    public @NonNull RenderState getRenderState() {
+    override fun getRenderState(): RenderState {
         // Generally called from the GUI thread, except for
         // offset properties.
-        synchronized (this.treeLock) {
-            RenderState rs = this.renderState;
-            rs = this.renderState;
+        synchronized(this.treeLock) {
+            var rs: RenderState? = this.renderState
+            rs = this.renderState
             if (rs != null) {
-                return rs;
+                return rs
             }
-            final Object parent = this.parentNode;
-            if ((parent != null) || (this instanceof Document)) {
-                final RenderState prs = getParentRenderState(parent);
-                rs = this.createRenderState(prs);
-                this.renderState = rs;
-                return rs;
+            val parent: Any? = this.parentNode
+            if ((parent != null) || (this is Document)) {
+                val prs: RenderState? = getParentRenderState(parent)
+                rs = this.createRenderState(prs)
+                this.renderState = rs
+                return rs
             } else {
                 // Scenario is possible due to Javascript.
-                return BLANK_RENDER_STATE;
+                return BLANK_RENDER_STATE
             }
         }
     }
 
     // abstract protected RenderState createRenderState(final RenderState prevRenderState);
-    protected @NonNull RenderState createRenderState(final RenderState prevRenderState) {
+    protected open fun createRenderState(prevRenderState: RenderState?): RenderState {
         if (prevRenderState == null) {
-            return BLANK_RENDER_STATE;
+            return BLANK_RENDER_STATE
         } else {
-            return prevRenderState;
+            return prevRenderState
         }
     }
 
-    protected void forgetRenderState() {
-        synchronized (this.treeLock) {
+    protected fun forgetRenderState() {
+        synchronized(this.treeLock) {
             if (this.renderState != null) {
-                this.renderState = null;
+                this.renderState = null
                 // Note that getRenderState() "validates"
                 // ancestor states as well.
-                final ArrayList<Node> nl = this.nodeList;
+                val nl = this.nodeList
                 if (nl != null) {
-                    final Iterator<Node> i = nl.iterator();
+                    val i: MutableIterator<Node?> = nl.iterator()
                     while (i.hasNext()) {
-                        ((NodeImpl) i.next()).forgetRenderState();
+                        (i.next() as NodeImpl).forgetRenderState()
                     }
                 }
             }
         }
     }
 
-    public String getInnerHTML() {
-        final StringBuffer buffer = new StringBuffer();
-        synchronized (this) {
-            this.appendInnerHTMLImpl(buffer);
+    val innerHTML: String
+        get() {
+            val buffer = StringBuffer()
+            synchronized(this) {
+                this.appendInnerHTMLImpl(buffer)
+            }
+            return buffer.toString()
         }
-        return buffer.toString();
-    }
 
-    protected void appendInnerHTMLImpl(final StringBuffer buffer) {
-        final ArrayList<Node> nl = this.nodeList;
-        int size;
-        if ((nl != null) && ((size = nl.size()) > 0)) {
-            for (int i = 0; i < size; i++) {
-                final Node child = nl.get(i);
-                if (child instanceof HTMLElementImpl) {
-                    ((HTMLElementImpl) child).appendOuterHTMLImpl(buffer);
-                } else if (child instanceof Comment) {
-                    buffer.append("<!--" + child.getTextContent() + "-->");
-                } else if (child instanceof Text) {
-                    final String text = child.getTextContent();
-                    final String encText = this.htmlEncodeChildText(text);
-                    buffer.append(encText);
-                } else if (child instanceof ProcessingInstruction) {
-                    buffer.append(child);
+    protected fun appendInnerHTMLImpl(buffer: StringBuffer) {
+        val nl = this.nodeList
+        val size: Int
+        if ((nl != null) && ((nl.size.also { size = it }) > 0)) {
+            for (i in 0..<size) {
+                val child: Node? = nl.get(i)
+                if (child is HTMLElementImpl) {
+                    child.appendOuterHTMLImpl(buffer)
+                } else if (child is Comment) {
+                    buffer.append("<!--" + child.textContent + "-->")
+                } else if (child is Text) {
+                    val text = child.textContent
+                    val encText = this.htmlEncodeChildText(text)
+                    buffer.append(encText)
+                } else if (child is ProcessingInstruction) {
+                    buffer.append(child)
                 }
             }
         }
     }
 
-    protected String htmlEncodeChildText(final String text) {
-        return Strings.strictHtmlEncode(text, false);
+    protected open fun htmlEncodeChildText(text: String): String? {
+        return Strings.strictHtmlEncode(text, false)
     }
 
-  /*
+    /*
   protected void dispatchEventToHandlers(final Event event, final List<Function> handlers) {
     if (handlers != null) {
       // We clone the collection and check if original collection still contains
@@ -1344,56 +1391,46 @@ public abstract class NodeImpl extends AbstractScriptableDelegate implements Nod
     dispatchEventToHandlers(evt, onEventHandlers.get(evt.getType()));
     return false;
   }*/
-
-    /**
-     * Attempts to convert the subtree starting at this point to a close text
-     * representation. BR elements are converted to line breaks, and so forth.
-     */
-    public String getInnerText() {
-        final StringBuffer buffer = new StringBuffer();
-        synchronized (this.treeLock) {
-            this.appendInnerTextImpl(buffer);
+    val innerText: String
+        /**
+         * Attempts to convert the subtree starting at this point to a close text
+         * representation. BR elements are converted to line breaks, and so forth.
+         */
+        get() {
+            val buffer = StringBuffer()
+            synchronized(this.treeLock) {
+                this.appendInnerTextImpl(buffer)
+            }
+            return buffer.toString()
         }
-        return buffer.toString();
-    }
 
-    protected void appendInnerTextImpl(final StringBuffer buffer) {
-        final ArrayList<Node> nl = this.nodeList;
+    protected open fun appendInnerTextImpl(buffer: StringBuffer) {
+        val nl = this.nodeList
         if (nl == null) {
-            return;
+            return
         }
-        final int size = nl.size();
+        val size = nl.size
         if (size == 0) {
-            return;
+            return
         }
-        for (int i = 0; i < size; i++) {
-            final Node child = nl.get(i);
-            if (child instanceof ElementImpl) {
-                ((ElementImpl) child).appendInnerTextImpl(buffer);
+        for (i in 0..<size) {
+            val child: Node? = nl.get(i)
+            if (child is ElementImpl) {
+                child.appendInnerTextImpl(buffer)
             }
-            if (child instanceof Comment) {
+            if (child is Comment) {
                 // skip
-            } else if (child instanceof Text) {
-                buffer.append(child.getTextContent());
+            } else if (child is Text) {
+                buffer.append(child.textContent)
             }
         }
-    }
-
-    /**
-     * @return the attachment with the document. true if the element is attached
-     * to the document, false otherwise. Document nodes are considered
-     * attached by default.
-     */
-    protected final boolean isAttachedToDocument() {
-        return this.attachedToDocument;
     }
 
     /**
      * This method is intended to be overriden by subclasses that are interested
      * in processing their child-list whenever it is updated.
      */
-    protected void handleChildListChanged() {
-
+    protected open fun handleChildListChanged() {
     }
 
     /**
@@ -1401,32 +1438,33 @@ public abstract class NodeImpl extends AbstractScriptableDelegate implements Nod
      * in performing some operation when they are attached/detached from the
      * document.
      */
-    protected void handleDocumentAttachmentChanged() {
-
+    protected open fun handleDocumentAttachmentChanged() {
     }
 
     /**
      * This method will be called on a node whenever it is being appended to a
      * parent node.
-     * <p>
+     *
+     *
      * NOTE: changeDocumentAttachment will call updateIds() which needs to be tree
      * locked, and hence these methods are also being tree locked
      */
-    private void handleAddedToParent(final NodeImpl parent) {
-        this.setParentImpl(parent);
-        changeDocumentAttachment(parent.isAttachedToDocument());
+    private fun handleAddedToParent(parent: NodeImpl) {
+        this.setParentImpl(parent)
+        changeDocumentAttachment(parent.isAttachedToDocument)
     }
 
     /**
      * This method will be called on a node whenever it is being deleted from a
      * parent node.
-     * <p>
+     *
+     *
      * NOTE: changeDocumentAttachment will call updateIds() which needs to be tree
      * locked, and hence these methods are also being tree locked
      */
-    private void handleDeletedFromParent() {
-        this.setParentImpl(null);
-        changeDocumentAttachment(false);
+    private fun handleDeletedFromParent() {
+        this.setParentImpl(null)
+        changeDocumentAttachment(false)
     }
 
     /**
@@ -1434,26 +1472,26 @@ public abstract class NodeImpl extends AbstractScriptableDelegate implements Nod
      * also change the attachment of all its descendant nodes.
      *
      * @param attached the attachment with the document. true when attached, false
-     *                 otherwise.
+     * otherwise.
      */
-    private void changeDocumentAttachment(final boolean attached) {
-        if (this.attachedToDocument != attached) {
-            this.attachedToDocument = attached;
-            handleDocumentAttachmentChanged();
-            if (this instanceof ElementImpl elementImpl) {
-                elementImpl.updateIdMap(attached);
+    private fun changeDocumentAttachment(attached: kotlin.Boolean) {
+        if (this.isAttachedToDocument != attached) {
+            this.isAttachedToDocument = attached
+            handleDocumentAttachmentChanged()
+            if (this is ElementImpl) {
+                elementImpl.updateIdMap(attached)
             }
         }
         if (nodeList != null) {
-            for (final Node node : this.nodeList) {
-                if (node instanceof NodeImpl) {
-                    ((NodeImpl) node).changeDocumentAttachment(attached);
+            for (node in this.nodeList) {
+                if (node is NodeImpl) {
+                    node.changeDocumentAttachment(attached)
                 }
             }
         }
     }
 
-  /*
+    /*
   public void addEventListener(final String type, final EventListener listener) {
     addEventListener(type, listener, false);
   }
@@ -1473,36 +1511,34 @@ public abstract class NodeImpl extends AbstractScriptableDelegate implements Nod
     // TODO Auto-generated method stub
     return false;
   }*/
-
     /**
      * Common tasks to be performed when the NodeList of an element is changed.
      */
-    private void postChildListChanged() {
-        this.handleChildListChanged();
+    private fun postChildListChanged() {
+        this.handleChildListChanged()
 
         if (!this.notificationsSuspended) {
-            this.informStructureInvalid();
+            this.informStructureInvalid()
         }
     }
 
-    public void addEventListener(final String type, final Function listener) {
-        addEventListener(type, listener, false);
-    }
-
-    public void addEventListener(final String type, final Function listener, final boolean useCapture) {
+    @JvmOverloads
+    fun addEventListener(type: String?, listener: Function?, useCapture: kotlin.Boolean = false) {
         // TODO
-        System.out.println("node by name: " + getNodeName() + " adding Event listener of type: " + type);
+        println("node by name: " + getNodeName() + " adding Event listener of type: " + type)
         // System.out.println("  txt content: " + getInnerText());
-        ((HTMLDocumentImpl) getOwnerDocument()).getEventTargetManager().addEventListener(this, type, listener);
+        (ownerDocument as HTMLDocumentImpl).getEventTargetManager()
+            .addEventListener(this, type, listener)
     }
 
-    public void removeEventListener(final String type, final Function listener, final boolean useCapture) {
+    fun removeEventListener(type: String?, listener: Function?, useCapture: kotlin.Boolean) {
         // TODO
-        System.out.println("node remove Event listener: " + type);
-        ((HTMLDocumentImpl) getOwnerDocument()).getEventTargetManager().removeEventListener(this, type, listener, useCapture);
+        println("node remove Event listener: " + type)
+        (ownerDocument as HTMLDocumentImpl).getEventTargetManager()
+            .removeEventListener(this, type, listener, useCapture)
     }
 
-  /*
+    /*
   public void addEventListener(final String type, final EventListener listener) {
     addEventListener(type, listener, false);
   }
@@ -1522,25 +1558,24 @@ public abstract class NodeImpl extends AbstractScriptableDelegate implements Nod
     // TODO Auto-generated method stub
     return false;
   }*/
-
-    public boolean dispatchEvent(final Event evt) {
-        System.out.println("Dispatching event: " + evt);
+    fun dispatchEvent(evt: Event): kotlin.Boolean {
+        println("Dispatching event: " + evt)
         // dispatchEventToHandlers(evt, onEventHandlers.get(evt.getType()));
-        ((HTMLDocumentImpl) getOwnerDocument()).getEventTargetManager().dispatchEvent(this, evt);
-        return false;
+        (ownerDocument as HTMLDocumentImpl).getEventTargetManager().dispatchEvent(this, evt)
+        return false
     }
 
-    public Element querySelector(final String query) {
+    fun querySelector(query: String?): Element? {
         // TODO: Optimize: Avoid getting all matches. Only first match is sufficient.
-        final NodeList matchingElements = querySelectorAll(query);
-        if (matchingElements.getLength() > 0) {
-            return (Element) matchingElements.item(0);
+        val matchingElements = querySelectorAll(query)
+        if (matchingElements.length > 0) {
+            return matchingElements.item(0) as Element?
         } else {
-            return null;
+            return null
         }
     }
 
-  /*
+    /*
   protected Collection<Node> getMatchingChildren(CombinedSelector selectors) {
     final Collection<Node> matchingElements = new LinkedList<>();
     final NodeImpl[] childrenArray = getChildrenArray();
@@ -1558,70 +1593,99 @@ public abstract class NodeImpl extends AbstractScriptableDelegate implements Nod
     }
     return matchingElements;
   }*/
-
-    protected Collection<Node> getMatchingChildren(final List<Selector> selectors) {
-        final Collection<Node> matchingElements = new LinkedList<>();
-        final int numSelectors = selectors.size();
+    protected fun getMatchingChildren(selectors: MutableList<Selector>): MutableCollection<Node?> {
+        val matchingElements: MutableCollection<Node?> = LinkedList<Node?>()
+        val numSelectors = selectors.size
         if (numSelectors > 0) {
-            final Selector firstSelector = selectors.get(0);
-            final NodeImpl[] childrenArray = getChildrenArray();
+            val firstSelector = selectors.get(0)
+            val childrenArray =
+                this.childrenArray
             if (childrenArray != null) {
-                for (final NodeImpl n : childrenArray) {
-                    if (n instanceof ElementImpl element) {
-                        if (firstSelector.matches(element)) {
+                for (n in childrenArray) {
+                    if (n is ElementImpl) {
+                        if (firstSelector.matches(n)) {
                             if (numSelectors > 1) {
-                                final List<Selector> tailSelectors = selectors.subList(1, numSelectors);
-                                matchingElements.addAll(element.getMatchingChildren(tailSelectors));
+                                val tailSelectors = selectors.subList(1, numSelectors)
+                                matchingElements.addAll(n.getMatchingChildren(tailSelectors))
                             } else {
-                                matchingElements.add(element);
+                                matchingElements.add(n)
                             }
                         }
-                        matchingElements.addAll(element.getMatchingChildren(selectors));
+                        matchingElements.addAll(n.getMatchingChildren(selectors))
                     }
                 }
             }
         }
-        return matchingElements;
+        return matchingElements
     }
 
-    public NodeList querySelectorAll(final String query) {
+    fun querySelectorAll(query: String?): NodeList {
         try {
-            final CombinedSelector[] selectors = makeSelectors(query);
-            final LinkedList<Node> matches = new LinkedList<>();
-            for (final CombinedSelector selector : selectors) {
-                matches.addAll(getMatchingChildren(selector));
+            val selectors: Array<CombinedSelector> = makeSelectors(query)
+            val matches = LinkedList<Node?>()
+            for (selector in selectors) {
+                matches.addAll(getMatchingChildren(selector))
             }
-            return new NodeListImpl(matches);
-        } catch (final IOException | CSSException e) {
-            e.printStackTrace();
-            throw new DOMException(DOMException.SYNTAX_ERR, "Couldn't parse selector: " + query);
+            return NodeListImpl(matches)
+        } catch (e: IOException) {
+            e.printStackTrace()
+            throw DOMException(DOMException.SYNTAX_ERR, "Couldn't parse selector: " + query)
+        } catch (e: CSSException) {
+            e.printStackTrace()
+            throw DOMException(DOMException.SYNTAX_ERR, "Couldn't parse selector: " + query)
         }
     }
 
-    public NodeList getElementsByClassName(final String classNames) {
-        final String[] classNamesArray = classNames.split("\\s");
+    fun getElementsByClassName(classNames: String): NodeList {
+        val classNamesArray: Array<String?> =
+            classNames.split("\\s".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         // TODO: escape commas in class-names
-        final String query = Arrays.stream(classNamesArray)
-                .filter(cn -> cn.length() > 0)
-                .map(cn -> "." + cn)
-                .collect(Collectors.joining(","));
-        return querySelectorAll(query);
+        val query = Arrays.stream<String?>(classNamesArray)
+            .filter { cn: String? -> cn!!.length > 0 }
+            .map<String?> { cn: String? -> "." + cn }
+            .collect(Collectors.joining(","))
+        return querySelectorAll(query)
     }
 
-    public NodeList getElementsByTagName(final String classNames) {
-        final String[] classNamesArray = classNames.split("\\s");
+    open fun getElementsByTagName(classNames: String): NodeList {
+        val classNamesArray: Array<String?> =
+            classNames.split("\\s".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         // TODO: escape commas in class-names
-        final String query = Arrays.stream(classNamesArray).collect(Collectors.joining(","));
-        return querySelectorAll(query);
+        val query = Arrays.stream<String?>(classNamesArray).collect(Collectors.joining(","))
+        return querySelectorAll(query)
     }
 
-    // TODO: This is a plug
-    public String getNameSpaceURI() {
-        final short nodeType = getNodeType();
-        if (nodeType == ELEMENT_NODE || nodeType == ATTRIBUTE_NODE) {
-            return "http://www.w3.org/1999/xhtml";
-        } else {
-            return null;
+    val nameSpaceURI: String?
+        // TODO: This is a plug
+        get() {
+            val nodeType = getNodeType()
+            if (nodeType == Node.ELEMENT_NODE || nodeType == Node.ATTRIBUTE_NODE) {
+                return "http://www.w3.org/1999/xhtml"
+            } else {
+                return null
+            }
+        }
+
+    companion object {
+        protected val logger: Logger = Logger.getLogger(NodeImpl::class.java.name)
+        private val EMPTY_ARRAY = arrayOfNulls<NodeImpl>(0)
+        private val BLANK_RENDER_STATE: RenderState = StyleSheetRenderState(null)
+        private fun getParentRenderState(parent: Any?): RenderState? {
+            if (parent is NodeImpl) {
+                return parent.getRenderState()
+            } else {
+                return null
+            }
+        }
+
+        @Throws(IOException::class, CSSException::class)
+        private fun makeSelectors(query: String?): Array<CombinedSelector> {
+            // this is quick way to parse the selectors. TODO: check if jStyleParser supports a better option.
+            val tempBlock = query + " { display: none}"
+            val styleSheet = CSSFactory.parseString(tempBlock, null)
+            val firstRuleBlock = styleSheet.get(0) as RuleSet
+            val selectors = firstRuleBlock.selectors
+            return selectors
         }
     }
 }

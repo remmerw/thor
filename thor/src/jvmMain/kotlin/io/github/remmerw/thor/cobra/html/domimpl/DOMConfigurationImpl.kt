@@ -21,42 +21,37 @@
 /*
  * Created on Oct 9, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.DOMConfiguration;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.DOMStringList;
+import org.w3c.dom.DOMConfiguration
+import org.w3c.dom.DOMException
+import org.w3c.dom.DOMStringList
 
-import java.util.HashMap;
-import java.util.Map;
+class DOMConfigurationImpl : DOMConfiguration {
+    private val parameters: MutableMap<String?, Any?> = HashMap<String?, Any?>()
 
-public class DOMConfigurationImpl implements DOMConfiguration {
-    private final Map<String, Object> parameters = new HashMap<>();
-
-    public DOMConfigurationImpl() {
-        super();
-    }
-
-    public void setParameter(final String name, final Object value) throws DOMException {
-        synchronized (this) {
-            this.parameters.put(name, value);
+    @Throws(DOMException::class)
+    override fun setParameter(name: String?, value: Any?) {
+        synchronized(this) {
+            this.parameters.put(name, value)
         }
     }
 
-    public Object getParameter(final String name) throws DOMException {
-        synchronized (this) {
-            return this.parameters.get(name);
+    @Throws(DOMException::class)
+    override fun getParameter(name: String?): Any? {
+        synchronized(this) {
+            return this.parameters.get(name)
         }
     }
 
-    public boolean canSetParameter(final String name, final Object value) {
+    override fun canSetParameter(name: String?, value: Any?): Boolean {
         // TODO
-        return true;
+        return true
     }
 
-    public DOMStringList getParameterNames() {
-        synchronized (this) {
-            return new DOMStringListImpl(parameters.keySet());
+    override fun getParameterNames(): DOMStringList {
+        synchronized(this) {
+            return DOMStringListImpl(parameters.keys)
         }
     }
 }

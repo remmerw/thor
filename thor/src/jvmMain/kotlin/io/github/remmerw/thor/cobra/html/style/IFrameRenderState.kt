@@ -18,123 +18,127 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.style;
+package io.github.remmerw.thor.cobra.html.style
 
-import java.awt.Color;
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
+import java.awt.Color
+import java.util.Locale
 
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl;
-
-public class IFrameRenderState extends StyleSheetRenderState {
-    public IFrameRenderState(final RenderState prevRenderState, final HTMLElementImpl element) {
-        super(prevRenderState, element);
-    }
-
+class IFrameRenderState(prevRenderState: RenderState?, element: HTMLElementImpl) :
+    StyleSheetRenderState(prevRenderState, element) {
     // TODO: if this logic can be moved to attr2Styles, then this render state could be chopped off.
-    @Override
-    public int getOverflowX() {
-        int overflow = this.overflowX;
+    override fun getOverflowX(): Int {
+        var overflow = this.overflowX
         if (overflow != -1) {
-            return overflow;
+            return overflow
         }
-        overflow = super.getOverflowX();
-        if (overflow == OVERFLOW_NONE) {
-            final HTMLElementImpl element = this.element;
+        overflow = super.getOverflowX()
+        if (overflow == RenderState.Companion.OVERFLOW_NONE) {
+            val element = this.element
             if (element != null) {
-                String scrolling = element.getAttribute("scrolling");
+                var scrolling = element.getAttribute("scrolling")
                 if (scrolling != null) {
-                    scrolling = scrolling.trim().toLowerCase();
-                    if ("no".equals(scrolling)) {
-                        overflow = OVERFLOW_HIDDEN;
-                    } else if ("yes".equals(scrolling)) {
-                        overflow = OVERFLOW_SCROLL;
-                    } else if ("auto".equals(scrolling)) {
-                        overflow = OVERFLOW_AUTO;
+                    scrolling = scrolling.trim { it <= ' ' }.lowercase(Locale.getDefault())
+                    if ("no" == scrolling) {
+                        overflow = RenderState.Companion.OVERFLOW_HIDDEN
+                    } else if ("yes" == scrolling) {
+                        overflow = RenderState.Companion.OVERFLOW_SCROLL
+                    } else if ("auto" == scrolling) {
+                        overflow = RenderState.Companion.OVERFLOW_AUTO
                     }
                 }
             }
         }
-        this.overflowX = overflow;
-        return overflow;
+        this.overflowX = overflow
+        return overflow
     }
 
-    @Override
-    public int getOverflowY() {
-        int overflow = this.overflowY;
+    override fun getOverflowY(): Int {
+        var overflow = this.overflowY
         if (overflow != -1) {
-            return overflow;
+            return overflow
         }
-        overflow = super.getOverflowY();
-        if (overflow == OVERFLOW_NONE) {
-            final HTMLElementImpl element = this.element;
+        overflow = super.getOverflowY()
+        if (overflow == RenderState.Companion.OVERFLOW_NONE) {
+            val element = this.element
             if (element != null) {
-                String scrolling = element.getAttribute("scrolling");
+                var scrolling = element.getAttribute("scrolling")
                 if (scrolling != null) {
-                    scrolling = scrolling.trim().toLowerCase();
-                    if ("no".equals(scrolling)) {
-                        overflow = OVERFLOW_HIDDEN;
-                    } else if ("yes".equals(scrolling)) {
-                        overflow = OVERFLOW_SCROLL;
-                    } else if ("auto".equals(scrolling)) {
-                        overflow = OVERFLOW_AUTO;
+                    scrolling = scrolling.trim { it <= ' ' }.lowercase(Locale.getDefault())
+                    if ("no" == scrolling) {
+                        overflow = RenderState.Companion.OVERFLOW_HIDDEN
+                    } else if ("yes" == scrolling) {
+                        overflow = RenderState.Companion.OVERFLOW_SCROLL
+                    } else if ("auto" == scrolling) {
+                        overflow = RenderState.Companion.OVERFLOW_AUTO
                     }
                 }
             }
         }
-        this.overflowY = overflow;
-        return overflow;
+        this.overflowY = overflow
+        return overflow
     }
 
-    @Override
-    public BorderInfo getBorderInfo() {
-        BorderInfo binfo = this.borderInfo;
-        if (binfo != INVALID_BORDER_INFO) {
-            return binfo;
+    override fun getBorderInfo(): BorderInfo? {
+        var binfo = this.borderInfo
+        if (binfo !== INVALID_BORDER_INFO) {
+            return binfo
         }
-        binfo = super.getBorderInfo();
+        binfo = super.getBorderInfo()
         if ((binfo == null)
-                || ((binfo.topStyle == HtmlValues.BORDER_STYLE_NONE) && (binfo.bottomStyle == HtmlValues.BORDER_STYLE_NONE)
-                && (binfo.leftStyle == HtmlValues.BORDER_STYLE_NONE) && (binfo.rightStyle == HtmlValues.BORDER_STYLE_NONE))) {
+            || ((binfo.topStyle == HtmlValues.BORDER_STYLE_NONE) && (binfo.bottomStyle == HtmlValues.BORDER_STYLE_NONE)
+                    && (binfo.leftStyle == HtmlValues.BORDER_STYLE_NONE) && (binfo.rightStyle == HtmlValues.BORDER_STYLE_NONE))
+        ) {
             if (binfo == null) {
-                binfo = new BorderInfo();
+                binfo = BorderInfo()
             }
-            final HTMLElementImpl element = this.element;
+            val element = this.element
             if (element != null) {
-                String border = element.getAttribute("frameborder");
+                var border = element.getAttribute("frameborder")
                 if (border != null) {
-                    border = border.trim();
+                    border = border.trim { it <= ' ' }
                 }
-                int value;
+                var value: Int
                 if (border != null) {
                     try {
-                        value = Integer.parseInt(border);
-                    } catch (final NumberFormatException nfe) {
-                        value = 0;
+                        value = border.toInt()
+                    } catch (nfe: NumberFormatException) {
+                        value = 0
                     }
                 } else {
-                    value = 1;
+                    value = 1
                 }
-                final HtmlInsets borderInsets = new HtmlInsets();
-                borderInsets.top = borderInsets.left = borderInsets.right = borderInsets.bottom = (value != 0 ? 1 : 0);
-                borderInsets.topType = borderInsets.leftType = borderInsets.rightType = borderInsets.bottomType = HtmlInsets.TYPE_PIXELS;
-                binfo.insets = borderInsets;
+                val borderInsets = HtmlInsets()
+                borderInsets.bottom = (if (value != 0) 1 else 0)
+                borderInsets.right = borderInsets.bottom
+                borderInsets.left = borderInsets.right
+                borderInsets.top = borderInsets.left
+                borderInsets.bottomType = HtmlInsets.Companion.TYPE_PIXELS
+                borderInsets.rightType = borderInsets.bottomType
+                borderInsets.leftType = borderInsets.rightType
+                borderInsets.topType = borderInsets.leftType
+                binfo.insets = borderInsets
                 if (binfo.topColor == null) {
-                    binfo.topColor = Color.DARK_GRAY;
+                    binfo.topColor = Color.DARK_GRAY
                 }
                 if (binfo.leftColor == null) {
-                    binfo.leftColor = Color.DARK_GRAY;
+                    binfo.leftColor = Color.DARK_GRAY
                 }
                 if (binfo.rightColor == null) {
-                    binfo.rightColor = Color.LIGHT_GRAY;
+                    binfo.rightColor = Color.LIGHT_GRAY
                 }
                 if (binfo.bottomColor == null) {
-                    binfo.bottomColor = Color.LIGHT_GRAY;
+                    binfo.bottomColor = Color.LIGHT_GRAY
                 }
                 if (value != 0) {
-                    binfo.topStyle = binfo.leftStyle = binfo.rightStyle = binfo.bottomStyle = HtmlValues.BORDER_STYLE_SOLID;
+                    binfo.bottomStyle = HtmlValues.BORDER_STYLE_SOLID
+                    binfo.rightStyle = binfo.bottomStyle
+                    binfo.leftStyle = binfo.rightStyle
+                    binfo.topStyle = binfo.leftStyle
                 }
             }
         }
-        this.borderInfo = binfo;
-        return binfo;
+        this.borderInfo = binfo
+        return binfo
     }
 }

@@ -18,99 +18,77 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import org.eclipse.jdt.annotation.NonNull;
+import io.github.remmerw.thor.cobra.html.style.HtmlValues
+import io.github.remmerw.thor.cobra.html.style.RenderState
 
-import java.awt.Insets;
+class DelayedPair(
+    private val immediateContainingBlock: RenderableContainer,
+    val containingBlock: RenderableContainer,
+    val child: BoundableRenderable,
+    private val left: String?,
+    private val right: String?,
+    private val top: String?,
+    private val bottom: String?,
+    private val width: String?,
+    private val height: String?,
+    private val rs: RenderState?,
+    private val initX: Int,
+    private val initY: Int,
+    position: Int
+) {
+    val isFixed: Boolean
+    val isRelative: Boolean
 
-import io.github.remmerw.thor.cobra.html.style.HtmlValues;
-import io.github.remmerw.thor.cobra.html.style.RenderState;
+    @get:Synchronized
+    var isAdded: Boolean = false
+        private set
 
-public class DelayedPair {
-    public final RenderableContainer containingBlock;
-    public final @NonNull BoundableRenderable child;
-    final boolean isFixed;
-    final boolean isRelative;
-    private final RenderableContainer immediateContainingBlock;
-    private final String left;
-    private final String top;
-    private final String bottom;
-    private final String right;
-    private final String width;
-    private final String height;
-    private final RenderState rs;
-    private final int initX;
-    private final int initY;
-    private boolean isAdded = false;
-
-    public DelayedPair(final RenderableContainer immediateContainingBlock, final RenderableContainer containingBlock,
-                       final @NonNull BoundableRenderable child, final String left, final String right, final String top, final String bottom,
-                       final String width, final String height,
-                       final RenderState rs,
-                       final int initX, final int initY, final int position) {
-        this.immediateContainingBlock = immediateContainingBlock;
-        this.containingBlock = containingBlock;
-        this.child = child;
-        this.left = left;
-        this.right = right;
-        this.top = top;
-        this.bottom = bottom;
-        this.width = width;
-        this.height = height;
-        this.rs = rs;
-        this.initX = initX;
-        this.initY = initY;
-        this.isFixed = position == RenderState.POSITION_FIXED;
-        this.isRelative = position == RenderState.POSITION_RELATIVE;
+    init {
+        this.isFixed = position == RenderState.POSITION_FIXED
+        this.isRelative = position == RenderState.POSITION_RELATIVE
     }
 
-    private static Integer helperGetPixelSize(final String spec, final RenderState rs, final int errorValue, final int avail) {
-        if (spec != null) {
-            return "auto".equals(spec) ? null : HtmlValues.getPixelSize(spec, rs, errorValue, avail);
-        } else {
-            return null;
-        }
+    private fun getLeft(): Int? {
+        return helperGetPixelSize(left, rs, 0, containingBlock.getInnerWidth())
     }
 
-    private Integer getLeft() {
-        return helperGetPixelSize(left, rs, 0, containingBlock.getInnerWidth());
+    private fun getWidth(): Int? {
+        return helperGetPixelSize(width, rs, 0, containingBlock.getInnerWidth())
     }
 
-    private Integer getWidth() {
-        return helperGetPixelSize(width, rs, 0, containingBlock.getInnerWidth());
+    private fun getHeight(): Int? {
+        return helperGetPixelSize(height, rs, 0, containingBlock.getInnerHeight())
     }
 
-    private Integer getHeight() {
-        return helperGetPixelSize(height, rs, 0, containingBlock.getInnerHeight());
+    private fun getRight(): Int? {
+        return helperGetPixelSize(right, rs, 0, containingBlock.getInnerWidth())
     }
 
-    private Integer getRight() {
-        return helperGetPixelSize(right, rs, 0, containingBlock.getInnerWidth());
+    private fun getTop(): Int? {
+        return helperGetPixelSize(top, rs, 0, containingBlock.getInnerHeight())
     }
 
-    private Integer getTop() {
-        return helperGetPixelSize(top, rs, 0, containingBlock.getInnerHeight());
+    private fun getBottom(): Int? {
+        return helperGetPixelSize(bottom, rs, 0, containingBlock.getInnerHeight())
     }
 
-    private Integer getBottom() {
-        return helperGetPixelSize(bottom, rs, 0, containingBlock.getInnerHeight());
-    }
-
-    public @NonNull BoundableRenderable positionPairChild() {
-        final RenderableContainer parent = this.containingBlock;
+    fun positionPairChild(): BoundableRenderable {
+        val parent = this.containingBlock
         if (isRelative) {
-            final RElement rChild = (RElement) this.child;
-            rChild.setupRelativePosition(this.immediateContainingBlock);
-            TranslatedRenderable tr = new TranslatedRenderable(rChild);
+            val rChild = this.child as RElement
+            rChild.setupRelativePosition(this.immediateContainingBlock)
+            val tr = TranslatedRenderable(rChild)
             // tr.setX(rChild.getX() + tp.x);
             // tr.setY(rChild.getY() + tp.y);
-            rChild.setDelegator(tr);
-            return tr;
+            rChild.setDelegator(tr)
+            return tr
         }
 
-        final BoundableRenderable child = this.child;
-    /*
+        val child = this.child
+
+        /*
     System.out.println("DP: " + this);
     System.out.println("  child block           : " + child);
     System.out.println("  containing block: " + this.containingBlock);
@@ -119,75 +97,91 @@ public class DelayedPair {
 
         // final java.awt.Point tp = parent.translateDescendentPoint((BoundableRenderable)(immediateContainingBlock), initX, initY);
         // final java.awt.Point tp = immediateContainingBlock.getOriginRelativeTo(((RBlock)parent).bodyLayout);
-        final java.awt.Point tp = immediateContainingBlock.getOriginRelativeToAbs((RCollection) parent);
-        tp.translate(initX, initY);
+        val tp = immediateContainingBlock.getOriginRelativeToAbs(parent as RCollection?)
+        tp.translate(initX, initY)
 
-        if (this.immediateContainingBlock != parent) {
-            final Insets immediateInsets = this.immediateContainingBlock.getInsetsMarginBorder(false, false);
-            tp.translate(immediateInsets.left, immediateInsets.top);
+        if (this.immediateContainingBlock !== parent) {
+            val immediateInsets = this.immediateContainingBlock.getInsetsMarginBorder(false, false)
+            tp.translate(immediateInsets.left, immediateInsets.top)
         }
 
-        Integer x = this.getLeft();
-        Integer y = this.getTop();
+        var x = this.getLeft()
+        var y = this.getTop()
 
-        final Integer width = getWidth();
-        final Integer height = getHeight();
-        final Integer right = this.getRight();
-        final Integer bottom = this.getBottom();
-        final int childVerticalScrollBarHeight = child.getVerticalScrollBarHeight();
+        val width = getWidth()
+        val height = getHeight()
+        val right = this.getRight()
+        val bottom = this.getBottom()
+        val childVerticalScrollBarHeight = child.getVerticalScrollBarHeight()
         if (right != null) {
             if (x != null) {
                 // width = parent.getInnerWidth() - (x + right);
-                child.setInnerWidth(parent.getInnerWidth() - (x + right) - childVerticalScrollBarHeight);
+                child.setInnerWidth(parent.getInnerWidth() - (x + right) - childVerticalScrollBarHeight)
             } else {
                 if (width != null) {
-                    child.setInnerWidth(width - childVerticalScrollBarHeight);
+                    child.setInnerWidth(width - childVerticalScrollBarHeight)
                 }
-                final int childWidth = child.getWidth();
-                x = parent.getInnerWidth() - (childWidth + right - childVerticalScrollBarHeight);
+                val childWidth = child.getWidth()
+                x = parent.getInnerWidth() - (childWidth + right - childVerticalScrollBarHeight)
             }
         } else {
             if (width != null) {
-                child.setInnerWidth(width - childVerticalScrollBarHeight);
+                child.setInnerWidth(width - childVerticalScrollBarHeight)
             }
         }
 
-        final int childHorizontalScrollBarHeight = child.getHorizontalScrollBarHeight();
+        val childHorizontalScrollBarHeight = child.getHorizontalScrollBarHeight()
         if (bottom != null) {
             if (y != null) {
                 // height = parent.getInnerHeight() - (y + bottom);
-                child.setInnerHeight(parent.getInnerHeight() - (y + bottom) - childHorizontalScrollBarHeight);
+                child.setInnerHeight(parent.getInnerHeight() - (y + bottom) - childHorizontalScrollBarHeight)
             } else {
                 if (height != null) {
-                    child.setInnerHeight(height - childHorizontalScrollBarHeight);
+                    child.setInnerHeight(height - childHorizontalScrollBarHeight)
                 }
                 // final int childHeight = height == null? child.getHeight() : height;
-                final int childHeight = child.getHeight();
-                y = parent.getInnerHeight() - (childHeight + bottom - childHorizontalScrollBarHeight);
+                val childHeight = child.getHeight()
+                y =
+                    parent.getInnerHeight() - (childHeight + bottom - childHorizontalScrollBarHeight)
             }
         } else {
             if (height != null) {
-                child.setInnerHeight(height - childHorizontalScrollBarHeight);
+                child.setInnerHeight(height - childHorizontalScrollBarHeight)
             }
         }
 
-        child.setX((x == null ? tp.x : x));
-        child.setY((y == null ? tp.y : y));
+        child.setX((if (x == null) tp.x else x))
+        child.setY((if (y == null) tp.y else y))
 
-        return child;
+        return child
     }
 
-    @Override
-    public String toString() {
-        return "DP " + child + " containing block: " + containingBlock;
+    override fun toString(): String {
+        return "DP " + child + " containing block: " + containingBlock
     }
 
-    public synchronized boolean isAdded() {
-        return isAdded;
+    @Synchronized
+    fun markAdded() {
+        isAdded = true
     }
 
-    public synchronized void markAdded() {
-        isAdded = true;
+    companion object {
+        private fun helperGetPixelSize(
+            spec: String?,
+            rs: RenderState?,
+            errorValue: Int,
+            avail: Int
+        ): Int? {
+            if (spec != null) {
+                return if ("auto" == spec) null else HtmlValues.getPixelSize(
+                    spec,
+                    rs,
+                    errorValue,
+                    avail
+                )
+            } else {
+                return null
+            }
+        }
     }
-
 }

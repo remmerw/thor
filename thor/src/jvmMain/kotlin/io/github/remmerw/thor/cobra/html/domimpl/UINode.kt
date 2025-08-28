@@ -21,27 +21,27 @@
 /*
  * Created on Jan 14, 2006
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import java.awt.Rectangle;
+import java.awt.Rectangle
 
 /**
  * A UI node abstraction that is used to send notifications back to the UI and
  * to obtain information the DOM needs from the UI (such as image dimensions).
  */
-public interface UINode {
+interface UINode {
     /**
      * Called
      *
      * @param modelNode
      */
-    void repaint(ModelNode modelNode);
+    fun repaint(modelNode: ModelNode?)
 
-    Rectangle getBounds();
+    val bounds: Rectangle?
 
-    Rectangle getBoundsRelativeToBlock();
+    val boundsRelativeToBlock: Rectangle?
 
-    void focus();
+    fun focus()
 
-    void blur();
+    fun blur()
 }

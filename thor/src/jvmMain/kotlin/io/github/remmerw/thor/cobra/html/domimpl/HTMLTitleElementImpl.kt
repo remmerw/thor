@@ -18,29 +18,24 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.Document;
-import org.w3c.dom.UserDataHandler;
+import io.github.remmerw.thor.cobra.html.parser.HtmlParser
+import org.w3c.dom.UserDataHandler
+import java.lang.Boolean
+import kotlin.Any
+import kotlin.String
 
-import io.github.remmerw.thor.cobra.html.parser.HtmlParser;
-
-public class HTMLTitleElementImpl extends HTMLElementImpl {
-    public HTMLTitleElementImpl(final String name) {
-        super(name, true);
-    }
-
-    @Override
-    public Object setUserData(final String key, final Object data, final UserDataHandler handler) {
-        if (HtmlParser.MODIFYING_KEY.equals(key) && (data == Boolean.FALSE)) {
-            final Document document = this.document;
-            if (document instanceof HTMLDocumentImpl) {
-                final String textContent = this.getTextContent();
-                final String title = textContent == null ? null : textContent.trim();
-                ((HTMLDocumentImpl) document).setTitle(title);
+class HTMLTitleElementImpl(name: String?) : HTMLElementImpl(name, true) {
+    override fun setUserData(key: String?, data: Any?, handler: UserDataHandler?): Any? {
+        if (HtmlParser.MODIFYING_KEY == key && (data === Boolean.FALSE)) {
+            val document = this.document
+            if (document is HTMLDocumentImpl) {
+                val textContent = this.getTextContent()
+                val title = if (textContent == null) null else textContent.trim { it <= ' ' }
+                document.title = title
             }
         }
-        return super.setUserData(key, data, handler);
+        return super.setUserData(key, data, handler)
     }
-
 }

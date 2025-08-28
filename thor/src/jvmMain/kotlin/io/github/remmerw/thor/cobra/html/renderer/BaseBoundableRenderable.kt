@@ -21,49 +21,23 @@
 /*
  * Created on Apr 17, 2005
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.event.MouseEvent;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.swing.SwingUtilities;
-
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode;
+import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
+import java.awt.Color
+import java.awt.Dimension
+import java.awt.Graphics
+import java.awt.Point
+import java.awt.Rectangle
+import java.awt.event.MouseEvent
+import java.util.logging.Level
+import java.util.logging.Logger
+import javax.swing.SwingUtilities
 
 /**
  * @author J. H. S.
  */
-abstract class BaseBoundableRenderable extends BaseRenderable implements BoundableRenderable {
-    protected static final Logger logger = Logger.getLogger(BaseBoundableRenderable.class.getName());
-    protected static final Color SELECTION_COLOR = Color.BLUE;
-    protected static final Color SELECTION_XOR = Color.LIGHT_GRAY;
-
-    // protected final Rectangle bounds = new Rectangle();
-    protected final RenderableContainer container;
-    protected final ModelNode modelNode;
-    public int width, height;
-    protected int x, y;
-    /**
-     * Starts as true because ancestors could be invalidated.
-     */
-    protected boolean layoutUpTreeCanBeInvalidated = true;
-    /**
-     * Parent for graphics coordinates.
-     */
-    protected RCollection parent;
-    /**
-     * Parent for invalidation.
-     */
-    protected RCollection originalParent;
-    private BoundableRenderable delegator;
-
-  /*
+internal abstract class BaseBoundableRenderable /*
   public Point getRenderablePoint(final int guiX, final int guiY) {
     final Renderable parent = this.getParent();
     if (parent instanceof BoundableRenderable) {
@@ -73,100 +47,118 @@ abstract class BaseBoundableRenderable extends BaseRenderable implements Boundab
     } else {
       throw new IllegalStateException("parent=" + parent);
     }
-  }*/
+  }*/(// protected final Rectangle bounds = new Rectangle();
+    protected val container: RenderableContainer, val modelNode: ModelNode?
+) : BaseRenderable(), BoundableRenderable {
+    var width: Int = 0
+    var height: Int = 0
+    var x: Int = 0
+    var y: Int = 0
 
-    public BaseBoundableRenderable(final RenderableContainer container, final ModelNode modelNode) {
-        this.container = container;
-        this.modelNode = modelNode;
+    /**
+     * Starts as true because ancestors could be invalidated.
+     */
+    var isValid: Boolean = true
+        protected set
+
+    /**
+     * Parent for graphics coordinates.
+     */
+    protected var parent: RCollection? = null
+
+    /**
+     * Parent for invalidation.
+     */
+    protected var originalParent: RCollection? = null
+    private var delegator: BoundableRenderable? = null
+
+    open fun markLayoutValid() {
+        this.isValid = true
     }
 
-    public void markLayoutValid() {
-        this.layoutUpTreeCanBeInvalidated = true;
-    }
-
-    public Point getGUIPoint(final int clientX, final int clientY) {
-        final Renderable parent = this.getParent();
-        if (parent instanceof BoundableRenderable) {
-            return ((BoundableRenderable) parent).getGUIPoint(clientX + this.x, clientY + this.y);
+    override fun getGUIPoint(clientX: Int, clientY: Int): Point? {
+        val parent: Renderable? = this.getParent()
+        if (parent is BoundableRenderable) {
+            return parent.getGUIPoint(clientX + this.x, clientY + this.y)
         } else if (parent == null) {
-            return this.container.getGUIPoint(clientX + this.x, clientY + this.y);
+            return this.container.getGUIPoint(clientX + this.x, clientY + this.y)
         } else {
-            throw new IllegalStateException("parent=" + parent);
+            throw IllegalStateException("parent=" + parent)
         }
     }
 
-    public int getHeight() {
-        return height;
+    override fun getHeight(): Int {
+        return height
     }
 
-    public void setHeight(final int height) {
-        this.height = height;
+    override fun setHeight(height: Int) {
+        this.height = height
     }
 
-    public int getWidth() {
-        return width;
+    override fun getWidth(): Int {
+        return width
     }
 
-    public void setWidth(final int width) {
-        this.width = width;
+    override fun setWidth(width: Int) {
+        this.width = width
     }
 
-    public int getVisualX() {
-        return getX();
+    override fun getVisualX(): Int {
+        return getX()
     }
 
-    public int getVisualY() {
-        return getY();
+    override fun getVisualY(): Int {
+        return getY()
     }
 
-    public int getVisualHeight() {
-        return getHeight();
+    override fun getVisualHeight(): Int {
+        return getHeight()
     }
 
-    public int getVisualWidth() {
-        return getWidth();
+    override fun getVisualWidth(): Int {
+        return getWidth()
     }
 
-    public int getX() {
-        return x;
+    override fun getX(): Int {
+        return x
     }
 
-    public void setX(final int x) {
-        this.x = x;
+    override fun setX(x: Int) {
+        this.x = x
     }
 
-    public int getY() {
-        return y;
+    override fun getY(): Int {
+        return y
     }
 
-    public void setY(final int y) {
-        this.y = y;
+    override fun setY(y: Int) {
+        this.y = y
     }
 
-    public boolean contains(final int x, final int y) {
-        final int mx = this.getVisualX();
-        final int my = this.getVisualY();
-        return (x >= mx) && (y >= my) && (x < (mx + this.getVisualWidth())) && (y < (my + this.getVisualHeight()));
+    override fun contains(x: Int, y: Int): Boolean {
+        val mx = this.getVisualX()
+        val my = this.getVisualY()
+        return (x >= mx) && (y >= my) && (x < (mx + this.getVisualWidth())) && (y < (my + this.getVisualHeight()))
     }
 
-    public Rectangle getBounds() {
-        return new Rectangle(this.x, this.y, this.width, this.height);
+    override fun getBounds(): Rectangle? {
+        return Rectangle(this.x, this.y, this.width, this.height)
     }
 
     /**
      * returns the visual bounds
      * They are distinct from layout bounds when {overflow:visible} or {position:relative} is set on the element
      */
-    public Rectangle getVisualBounds() {
-        return new Rectangle(getVisualX(), getVisualY(), getVisualWidth(), getVisualHeight());
+    override fun getVisualBounds(): Rectangle? {
+        return Rectangle(getVisualX(), getVisualY(), getVisualWidth(), getVisualHeight())
     }
 
-    public Dimension getSize() {
-        return new Dimension(this.width, this.height);
+    override fun getSize(): Dimension? {
+        return Dimension(this.width, this.height)
     }
 
-    public ModelNode getModelNode() {
-        return this.modelNode;
+    override fun getModelNode(): ModelNode? {
+        return this.modelNode
     }
 
     // /* (non-Javadoc)
@@ -176,67 +168,63 @@ abstract class BaseBoundableRenderable extends BaseRenderable implements Boundab
     // return this.bounds;
     // }
     //
-    public void setBounds(final int x, final int y, final int width, final int height) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
+    override fun setBounds(x: Int, y: Int, width: Int, height: Int) {
+        this.x = x
+        this.y = y
+        this.width = width
+        this.height = height
     }
 
-    public void setOrigin(final int x, final int y) {
-        this.x = x;
-        this.y = y;
+    override fun setOrigin(x: Int, y: Int) {
+        this.x = x
+        this.y = y
     }
 
-    protected abstract void invalidateLayoutLocal();
+    protected abstract fun invalidateLayoutLocal()
 
     /**
      * Invalidates this Renderable and its parent (i.e. all ancestors).
      */
-    public final void invalidateLayoutUpTree() {
-        if (this.layoutUpTreeCanBeInvalidated) {
-            this.layoutUpTreeCanBeInvalidated = false;
-            this.invalidateLayoutLocal();
+    override fun invalidateLayoutUpTree() {
+        if (this.isValid) {
+            this.isValid = false
+            this.invalidateLayoutLocal()
             // Try original parent first.
-            RCollection parent = this.originalParent;
+            var parent = this.originalParent
             if (parent == null) {
-                parent = this.parent;
+                parent = this.parent
                 if (parent == null) {
                     // Has to be top block
-                    final RenderableContainer rc = this.container;
+                    val rc = this.container
                     if (rc != null) {
-                        rc.invalidateLayoutUpTree();
+                        rc.invalidateLayoutUpTree()
                     }
                 } else {
-                    parent.invalidateLayoutUpTree();
+                    parent.invalidateLayoutUpTree()
                 }
             } else {
-                parent.invalidateLayoutUpTree();
+                parent.invalidateLayoutUpTree()
             }
         } else {
         }
     }
 
-    protected boolean isValid() {
-        return this.layoutUpTreeCanBeInvalidated;
-    }
-
-    private final void relayoutImpl(final boolean invalidateLocal, final boolean onlyIfValid) {
-        if (onlyIfValid && !this.layoutUpTreeCanBeInvalidated) {
-            return;
+    private fun relayoutImpl(invalidateLocal: Boolean, onlyIfValid: Boolean) {
+        if (onlyIfValid && !this.isValid) {
+            return
         }
         if (invalidateLocal) {
-            this.invalidateLayoutUpTree();
+            this.invalidateLayoutUpTree()
         }
-        final Renderable parent = this.parent;
-        if (parent instanceof BaseBoundableRenderable) {
-            ((BaseBoundableRenderable) parent).relayoutImpl(false, false);
+        val parent: Renderable? = this.parent
+        if (parent is BaseBoundableRenderable) {
+            parent.relayoutImpl(false, false)
         } else if (parent == null) {
             // Has to be top RBlock.
-            this.container.relayout();
+            this.container.relayout()
         } else {
             if (logger.isLoggable(Level.INFO)) {
-                logger.warning("relayout(): Don't know how to relayout " + this + ", parent being " + parent);
+                logger.warning("relayout(): Don't know how to relayout " + this + ", parent being " + parent)
             }
         }
     }
@@ -246,219 +234,237 @@ abstract class BaseBoundableRenderable extends BaseRenderable implements Boundab
      * then requests the top level GUI container to do the layout and repaint.
      * It's safe to call this method outside the GUI thread.
      */
-    public void relayout() {
+    override fun relayout() {
         if (SwingUtilities.isEventDispatchThread()) {
-            this.relayoutImpl(true, false);
+            this.relayoutImpl(true, false)
         } else {
-            SwingUtilities.invokeLater(() -> relayoutImpl(true, false));
+            SwingUtilities.invokeLater(Runnable { relayoutImpl(true, false) })
         }
     }
 
-    public void relayoutIfValid() {
+    fun relayoutIfValid() {
         if (SwingUtilities.isEventDispatchThread()) {
-            this.relayoutImpl(true, true);
+            this.relayoutImpl(true, true)
         } else {
-            SwingUtilities.invokeLater(() -> relayoutImpl(true, true));
+            SwingUtilities.invokeLater(Runnable { relayoutImpl(true, true) })
         }
     }
 
-    public RCollection getParent() {
-        return this.parent;
+    override fun getParent(): RCollection? {
+        return this.parent
     }
 
-    public void setParent(final RCollection parent) {
-        this.parent = parent;
+    override fun setParent(parent: RCollection?) {
+        this.parent = parent
     }
 
     /**
      * This is the parent based on the original element hierarchy.
      */
-    public RCollection getOriginalParent() {
-        return this.originalParent;
+    override fun getOriginalParent(): RCollection? {
+        return this.originalParent
     }
 
-    public void setOriginalParent(final RCollection origParent) {
-        this.originalParent = origParent;
+    override fun setOriginalParent(origParent: RCollection?) {
+        this.originalParent = origParent
     }
 
-    public RCollection getOriginalOrCurrentParent() {
-        final RCollection origParent = this.originalParent;
+    override fun getOriginalOrCurrentParent(): RCollection? {
+        val origParent = this.originalParent
         if (origParent == null) {
-            return this.parent;
+            return this.parent
         }
-        return origParent;
+        return origParent
     }
 
-    public void repaint(final int x, final int y, final int width, final int height) {
+    override fun repaint(x: Int, y: Int, width: Int, height: Int) {
         if (isDelegated()) {
-            delegator.repaint(x, y, width, height);
-            return;
+            delegator!!.repaint(x, y, width, height)
+            return
         }
 
-        final Renderable parent = this.parent;
-        if (parent instanceof BoundableRenderable) {
-            ((BoundableRenderable) parent).repaint(x + this.getVisualX(), y + this.getVisualY(), getVisualWidth(), getVisualHeight());
+        val parent: Renderable? = this.parent
+        if (parent is BoundableRenderable) {
+            parent.repaint(
+                x + this.getVisualX(),
+                y + this.getVisualY(),
+                getVisualWidth(),
+                getVisualHeight()
+            )
         } else if (parent == null) {
             // Has to be top RBlock.
-            this.container.repaint(x, y, width, height);
+            this.container.repaint(x, y, width, height)
         } else {
             if (logger.isLoggable(Level.INFO)) {
-                logger.warning("repaint(): Don't know how to repaint " + this + ", parent being " + parent);
+                logger.warning("repaint(): Don't know how to repaint " + this + ", parent being " + parent)
             }
         }
     }
 
-    public void repaint() {
-        this.repaint(0, 0, this.width, this.height);
+    override fun repaint() {
+        this.repaint(0, 0, this.width, this.height)
     }
 
-    public Color getBlockBackgroundColor() {
-        return this.container.getPaintedBackgroundColor();
-    }
+    open val blockBackgroundColor: Color?
+        get() = this.container.getPaintedBackgroundColor()
 
-    public final void paintTranslated(final Graphics g) {
-        final int x = this.x;
-        final int y = this.y;
-        g.translate(x, y);
+    override fun paintTranslated(g: Graphics) {
+        val x = this.x
+        val y = this.y
+        g.translate(x, y)
         try {
-            this.paint(g);
+            this.paint(g)
         } finally {
-            g.translate(-x, -y);
+            g.translate(-x, -y)
         }
     }
 
-    public void onMouseOut(final MouseEvent event, final int x, final int y, final ModelNode limit) {
+    override fun onMouseOut(event: MouseEvent?, x: Int, y: Int, limit: ModelNode?) {
         if (this.isContainedByNode()) {
-            HtmlController.getInstance().onMouseOut(this.modelNode, event, x, y, limit);
+            HtmlController.Companion.getInstance().onMouseOut(this.modelNode, event, x, y, limit)
         }
     }
 
-    public void onMouseMoved(final MouseEvent event, final int x, final int y, final boolean triggerEvent, final ModelNode limit) {
+    override fun onMouseMoved(
+        event: MouseEvent?,
+        x: Int,
+        y: Int,
+        triggerEvent: Boolean,
+        limit: ModelNode?
+    ) {
         if (triggerEvent) {
             if (this.isContainedByNode()) {
-                HtmlController.getInstance().onMouseOver(this, this.modelNode, event, x, y, limit);
+                HtmlController.Companion.getInstance()
+                    .onMouseOver(this, this.modelNode, event, x, y, limit)
             }
         }
     }
 
-    public Point getOrigin() {
-        return new Point(this.x, this.y);
+    override fun getOrigin(): Point? {
+        return Point(this.x, this.y)
     }
 
-    public Point getOriginRelativeTo(final RCollection ancestor) {
-        if (ancestor == this) {
-            return new Point(0, 0);
+    override fun getOriginRelativeTo(ancestor: RCollection?): Point? {
+        if (ancestor === this) {
+            return Point(0, 0)
         }
 
-        int x = this.getVisualX();
-        int y = this.getVisualY();
+        var x = this.getVisualX()
+        var y = this.getVisualY()
 
-        RCollection parent = this.parent;
-        for (; ; ) {
+        var parent = this.parent
+        while (true) {
             if (parent == null) {
                 // throw new java.lang.IllegalArgumentException("Not an ancestor: " + ancestor);
                 /* This condition can legitimately happen when mousing-out of an old
                  * renderable which is no longer part of the render hierarchy due to a
                  * layout change between the mouse-in and mouse-out events.
                  */
-                return new Point(x, y);
+                return Point(x, y)
             }
-            if (parent == ancestor) {
-                return new Point(x, y);
+            if (parent === ancestor) {
+                return Point(x, y)
             }
-            x += parent.getVisualX();
-            y += parent.getVisualY();
-            parent = parent.getParent();
+            x += parent.getVisualX()
+            y += parent.getVisualY()
+            parent = parent.getParent()
         }
     }
 
-    public Point getOriginRelativeToAbs(final RCollection ancestor) {
-        if (ancestor == this) {
-            return new Point(0, 0);
+    override fun getOriginRelativeToAbs(ancestor: RCollection?): Point? {
+        if (ancestor === this) {
+            return Point(0, 0)
         }
 
-        int x = this.getVisualX();
-        int y = this.getVisualY();
+        var x = this.getVisualX()
+        var y = this.getVisualY()
 
-        int nextX = 0;
-        int nextY = 0;
+        var nextX = 0
+        var nextY = 0
 
-        RCollection parent = this.parent;
-        for (; ; ) {
+        var parent = this.parent
+        while (true) {
             if (parent == null) {
                 // throw new java.lang.IllegalArgumentException("Not an ancestor: " + ancestor);
                 /* This condition can legitimately happen when mousing-out of an old
                  * renderable which is no longer part of the render hierarchy due to a
                  * layout change between the mouse-in and mouse-out events.
                  */
-                return new Point(x, y);
+                return Point(x, y)
             }
-            if (parent == ancestor) {
-                return new Point(x, y);
+            if (parent === ancestor) {
+                return Point(x, y)
             }
-            x += nextX;
-            y += nextY;
-            nextX = parent.getVisualX();
-            nextY = parent.getVisualY();
-            parent = parent.getParent();
+            x += nextX
+            y += nextY
+            nextX = parent.getVisualX()
+            nextY = parent.getVisualY()
+            parent = parent.getParent()
         }
     }
 
-    public Point getOriginRelativeToNoScroll(final RCollection ancestor) {
-        if (ancestor == this) {
-            return new Point(0, 0);
+    override fun getOriginRelativeToNoScroll(ancestor: RCollection?): Point? {
+        if (ancestor === this) {
+            return Point(0, 0)
         }
 
-        int x = this.getVisualX();
-        int y = this.getVisualY();
+        var x = this.getVisualX()
+        var y = this.getVisualY()
 
 
-        if (this instanceof RBlockViewport rBV) {
-            x -= rBV.scrollX;
-            y -= rBV.scrollY;
+        if (this is RBlockViewport) {
+            x -= rBV.scrollX
+            y -= rBV.scrollY
         }
 
-        RCollection parent = this.parent;
-        for (; ; ) {
+        var parent = this.parent
+        while (true) {
             if (parent == null) {
                 // throw new java.lang.IllegalArgumentException("Not an ancestor: " + ancestor);
                 /* This condition can legitimately happen when mousing-out of an old
                  * renderable which is no longer part of the render hierarchy due to a
                  * layout change between the mouse-in and mouse-out events.
                  */
-                return new Point(x, y);
+                return Point(x, y)
             }
-            if (parent == ancestor) {
-                return new Point(x, y);
+            if (parent === ancestor) {
+                return Point(x, y)
             }
-            x += parent.getVisualX();
-            y += parent.getVisualY();
-            parent = parent.getParent();
+            x += parent.getVisualX()
+            y += parent.getVisualY()
+            parent = parent.getParent()
         }
     }
 
-    public void setInnerWidth(final Integer newWidth) {
-        setWidth(newWidth);
+    override fun setInnerWidth(newWidth: Int) {
+        setWidth(newWidth)
     }
 
-    public void setInnerHeight(final Integer newHeight) {
-        setHeight(newHeight);
+    override fun setInnerHeight(newHeight: Int) {
+        setHeight(newHeight)
     }
 
-    public void setDelegator(final BoundableRenderable pDelegator) {
-        this.delegator = pDelegator;
+    override fun setDelegator(pDelegator: BoundableRenderable?) {
+        this.delegator = pDelegator
     }
 
-    public boolean isDelegated() {
-        return delegator != null;
+    override fun isDelegated(): Boolean {
+        return delegator != null
     }
 
-    public boolean onMiddleClick(final MouseEvent event, final int x, final int y) {
-        final ModelNode me = this.modelNode;
+    override fun onMiddleClick(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val me = this.modelNode
         if (me != null) {
-            return HtmlController.getInstance().onMiddleClick(me, event, x, y);
+            return HtmlController.Companion.getInstance().onMiddleClick(me, event, x, y)
         } else {
-            return true;
+            return true
         }
+    }
+
+    companion object {
+        protected val logger: Logger =
+            Logger.getLogger(BaseBoundableRenderable::class.java.name)
+        protected val SELECTION_COLOR: Color? = Color.BLUE
+        protected val SELECTION_XOR: Color? = Color.LIGHT_GRAY
     }
 }

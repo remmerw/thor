@@ -18,148 +18,139 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
+import cz.vutbr.web.css.CSSProperty.VerticalAlign
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement
+import io.github.remmerw.thor.cobra.html.domimpl.ImageEvent
+import io.github.remmerw.thor.cobra.html.domimpl.ImageListener
+import io.github.remmerw.thor.cobra.html.style.HtmlValues
+import io.github.remmerw.thor.cobra.ua.ImageResponse
+import io.github.remmerw.thor.cobra.util.gui.WrapperLayout
+import java.awt.Color
+import java.awt.Dimension
+import java.awt.Graphics
+import java.awt.Image
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
+import javax.swing.SwingUtilities
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Insets;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.image.ImageObserver;
-
-import javax.swing.SwingUtilities;
-
-import cz.vutbr.web.css.CSSProperty.VerticalAlign;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.ImageEvent;
-import io.github.remmerw.thor.cobra.html.domimpl.ImageListener;
-import io.github.remmerw.thor.cobra.html.style.HtmlValues;
-import io.github.remmerw.thor.cobra.ua.ImageResponse;
-import io.github.remmerw.thor.cobra.ua.ImageResponse.State;
-import io.github.remmerw.thor.cobra.util.gui.WrapperLayout;
-
-class InputImageControl extends BaseInputControl implements ImageListener {
-    private static final long serialVersionUID = -2242175570423778798L;
+internal class InputImageControl(modelNode: HTMLBaseInputElement) : BaseInputControl(modelNode),
+    ImageListener {
     // private JButton button;
-    private boolean mouseBeingPressed;
-    private Dimension preferredSize;
-    private int declaredWidth;
-    private int declaredHeight;
-    private ImageResponse imageResponse;
+    private var mouseBeingPressed = false
+    private var preferredSize: Dimension? = null
+    private var declaredWidth = 0
+    private var declaredHeight = 0
+    private var imageResponse: ImageResponse? = null
 
-    public InputImageControl(final HTMLBaseInputElement modelNode) {
-        super(modelNode);
-        this.setLayout(WrapperLayout.getInstance());
+    init {
+        this.layout = WrapperLayout.instance
         // JButton button = new LocalButton();
         // this.button = button;
         // button.setMargin(RBlockViewport.ZERO_INSETS);
         // button.setBorder(null);
         // this.add(button);
-        modelNode.addImageListener(this);
-        this.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(final MouseEvent e) {
-                mouseBeingPressed = true;
-                repaint();
+        modelNode.addImageListener(this)
+        this.addMouseListener(object : MouseAdapter() {
+            override fun mousePressed(e: MouseEvent?) {
+                mouseBeingPressed = true
+                repaint()
             }
 
             // public void mouseExited(MouseEvent e) {
             // mouseBeingPressed = false;
             // repaint();
             // }
-
-            @Override
-            public void mouseReleased(final MouseEvent e) {
-                mouseBeingPressed = false;
-                repaint();
-                HtmlController.getInstance().onPressed(modelNode, e, e.getX(), e.getY());
+            override fun mouseReleased(e: MouseEvent) {
+                mouseBeingPressed = false
+                repaint()
+                HtmlController.Companion.getInstance().onPressed(modelNode, e, e.getX(), e.getY())
             }
-        });
+        })
     }
 
-    @Override
-    public void reset(final int availWidth, final int availHeight) {
-        super.reset(availWidth, availHeight);
-        final HTMLElementImpl element = this.controlElement;
-        final int dw = HtmlValues.getOldSyntaxPixelSize(element.getAttribute("width"), availWidth, -1);
-        final int dh = HtmlValues.getOldSyntaxPixelSize(element.getAttribute("height"), availHeight, -1);
-        this.declaredWidth = dw;
-        this.declaredHeight = dh;
-        this.preferredSize = this.createPreferredSize(dw, dh);
+    override fun reset(availWidth: Int, availHeight: Int) {
+        super.reset(availWidth, availHeight)
+        val element = this.controlElement
+        val dw = HtmlValues.getOldSyntaxPixelSize(element.getAttribute("width"), availWidth, -1)
+        val dh = HtmlValues.getOldSyntaxPixelSize(element.getAttribute("height"), availHeight, -1)
+        this.declaredWidth = dw
+        this.declaredHeight = dh
+        this.preferredSize = this.createPreferredSize(dw, dh)
     }
 
-    @Override
-    public VerticalAlign getVAlign() {
-        final HTMLElementImpl element = this.controlElement;
-        return element.getRenderState().getVerticalAlign();
+    override fun getVAlign(): VerticalAlign? {
+        val element = this.controlElement
+        return element.getRenderState().verticalAlign
     }
 
-    @Override
-    public void paintComponent(final Graphics g) {
-        super.paintComponent(g);
-        final Dimension size = this.getSize();
-        final Insets insets = this.getInsets();
-        synchronized (this) {
-        }
-        final ImageResponse imageResponse = this.imageResponse;
-        if (imageResponse.state == State.loaded) {
-            g.drawImage(imageResponse.img, insets.left, insets.top, size.width - insets.left - insets.right, size.height - insets.top - insets.bottom, this);
+    override fun paintComponent(g: Graphics) {
+        super.paintComponent(g)
+        val size = this.size
+        val insets = this.insets
+        synchronized(this) {}
+        val imageResponse = this.imageResponse!!
+        if (imageResponse.state == ImageResponse.State.loaded) {
+            g.drawImage(
+                imageResponse.img,
+                insets.left,
+                insets.top,
+                size.width - insets.left - insets.right,
+                size.height - insets.top - insets.bottom,
+                this
+            )
         } else {
             // TODO: alt
         }
         if (this.mouseBeingPressed) {
-            final Color over = new Color(255, 100, 100, 64);
-            final Color oldColor = g.getColor();
+            val over = Color(255, 100, 100, 64)
+            val oldColor = g.color
             try {
-                g.setColor(over);
-                g.fillRect(0, 0, size.width, size.height);
+                g.color = over
+                g.fillRect(0, 0, size.width, size.height)
             } finally {
-                g.setColor(oldColor);
+                g.color = oldColor
             }
         }
     }
 
-    @Override
-    public Dimension getPreferredSize() {
-        final Dimension ps = this.preferredSize;
-        return ps == null ? new Dimension(0, 0) : ps;
+    override fun getPreferredSize(): Dimension {
+        val ps = this.preferredSize
+        return if (ps == null) Dimension(0, 0) else ps
     }
 
-    public Dimension createPreferredSize(int dw, int dh) {
-        final ImageResponse imgResponse = this.imageResponse;
+    fun createPreferredSize(dw: Int, dh: Int): Dimension {
+        var dw = dw
+        var dh = dh
+        val imgResponse = this.imageResponse!!
         if (!imgResponse.isDecoded()) {
-            return new Dimension(dw == -1 ? 0 : dw, dh == -1 ? 0 : dh);
+            return Dimension(if (dw == -1) 0 else dw, if (dh == -1) 0 else dh)
         }
 
-        assert (imgResponse.img != null);
-        final @NonNull Image img = imgResponse.img;
+        checkNotNull(imgResponse.img)
+        val img: Image = imgResponse.img
 
         if (dw == -1) {
-            dw = HtmlValues.scaleToDevicePixels(img.getWidth(this));
+            dw = HtmlValues.scaleToDevicePixels(img.getWidth(this).toDouble())
         }
         if (dh == -1) {
-            dh = HtmlValues.scaleToDevicePixels(img.getHeight(this));
+            dh = HtmlValues.scaleToDevicePixels(img.getHeight(this).toDouble())
         }
-        return new Dimension(dw, dh);
+        return Dimension(dw, dh)
     }
 
-    private final boolean checkPreferredSizeChange() {
-        final Dimension newPs = this.createPreferredSize(this.declaredWidth, this.declaredHeight);
-        final Dimension ps = this.preferredSize;
+    private fun checkPreferredSizeChange(): Boolean {
+        val newPs = this.createPreferredSize(this.declaredWidth, this.declaredHeight)
+        val ps = this.preferredSize
         if (ps == null) {
-            return true;
+            return true
         }
         if ((ps.width != newPs.width) || (ps.height != newPs.height)) {
-            this.preferredSize = newPs;
-            return true;
+            this.preferredSize = newPs
+            return true
         } else {
-            return false;
+            return false
         }
     }
 
@@ -169,18 +160,17 @@ class InputImageControl extends BaseInputControl implements ImageListener {
      * @see java.awt.Component#imageUpdate(java.awt.Image, int, int, int, int,
      * int)
      */
-    @Override
-    public boolean imageUpdate(final Image img, final int infoflags, final int x, final int y, final int w, final int h) {
-        if (((infoflags & ImageObserver.ALLBITS) != 0) || ((infoflags & ImageObserver.FRAMEBITS) != 0)) {
-            SwingUtilities.invokeLater(() -> {
+    override fun imageUpdate(img: Image?, infoflags: Int, x: Int, y: Int, w: Int, h: Int): Boolean {
+        if (((infoflags and ALLBITS) != 0) || ((infoflags and FRAMEBITS) != 0)) {
+            SwingUtilities.invokeLater(Runnable {
                 if (!checkPreferredSizeChange()) {
-                    repaint();
+                    repaint()
                 } else {
-                    ruicontrol.preferredSizeInvalidated();
+                    ruicontrol.preferredSizeInvalidated()
                 }
-            });
+            })
         }
-        return true;
+        return true
     }
 
     /*
@@ -189,50 +179,51 @@ class InputImageControl extends BaseInputControl implements ImageListener {
      * @see java.awt.Component#imageUpdate(java.awt.Image, int, int, int, int,
      * int)
      */
-    public void imageUpdate(final Image img, final int w, final int h) {
-        SwingUtilities.invokeLater(() -> {
+    fun imageUpdate(img: Image?, w: Int, h: Int) {
+        SwingUtilities.invokeLater(Runnable {
             if (!checkPreferredSizeChange()) {
-                repaint();
+                repaint()
             } else {
-                ruicontrol.preferredSizeInvalidated();
+                ruicontrol.preferredSizeInvalidated()
             }
-        });
+        })
     }
 
-    @Override
-    public boolean paintSelection(final Graphics g, final boolean inSelection, final RenderableSpot startPoint, final RenderableSpot endPoint) {
-        return inSelection;
+    override fun paintSelection(
+        g: Graphics?,
+        inSelection: Boolean,
+        startPoint: RenderableSpot?,
+        endPoint: RenderableSpot?
+    ): Boolean {
+        return inSelection
     }
 
-    public void imageLoaded(final ImageEvent event) {
+    override fun imageLoaded(event: ImageEvent) {
         // Implementation of ImageListener. Invoked in a request thread most likely.
-        final ImageResponse imageResponseLocal = event.imageResponse;
+        val imageResponseLocal = event.imageResponse
         // ImageIcon imageIcon = new ImageIcon(image);
         // this.button.setIcon(imageIcon);
-        this.imageResponse = imageResponseLocal;
+        this.imageResponse = imageResponseLocal
         if (imageResponseLocal.isDecoded()) {
-            assert (imageResponseLocal.img != null);
-            @Nullable Image image = imageResponseLocal.img;
-            final int width = image.getWidth(this);
-            final int height = image.getHeight(this);
-            this.imageUpdate(image, width, height);
+            checkNotNull(imageResponseLocal.img)
+            val image = imageResponseLocal.img
+            val width = image.getWidth(this)
+            val height = image.getHeight(this)
+            this.imageUpdate(image, width, height)
         }
     }
 
-    public void imageAborted() {
+    override fun imageAborted() {
         // do nothing
     }
 
-    public void resetInput() {
+    override fun resetInput() {
         // NOP
     }
 
-    @Override
-    public boolean isReadyToPaint() {
-        return imageResponse.isReadyToPaint();
-    }
-
-    // private static class LocalButton extends JButton {
+    override fun isReadyToPaint(): Boolean {
+        return imageResponse!!.isReadyToPaint()
+    } // private static class LocalButton extends JButton {
     // public void revalidate() {
     // // ignore
     // }
@@ -241,4 +232,8 @@ class InputImageControl extends BaseInputControl implements ImageListener {
     // // ignore
     // }
     // }
+
+    companion object {
+        private val serialVersionUID = -2242175570423778798L
+    }
 }

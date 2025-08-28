@@ -18,24 +18,18 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.util.io;
+package io.github.remmerw.thor.cobra.util.io
 
-public class BufferExceededException extends Exception {
-    private static final long serialVersionUID = -3105309904365634760L;
+class BufferExceededException : Exception {
+    constructor() : super()
 
-    public BufferExceededException() {
-        super();
-    }
+    constructor(message: String?, cause: Throwable?) : super(message, cause)
 
-    public BufferExceededException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
+    constructor(message: String?) : super(message)
 
-    public BufferExceededException(final String message) {
-        super(message);
-    }
+    constructor(cause: Throwable?) : super(cause)
 
-    public BufferExceededException(final Throwable cause) {
-        super(cause);
+    companion object {
+        private val serialVersionUID = -3105309904365634760L
     }
 }

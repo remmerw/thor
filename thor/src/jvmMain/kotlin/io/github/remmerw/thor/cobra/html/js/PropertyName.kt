@@ -1,18 +1,11 @@
-package io.github.remmerw.thor.cobra.html.js;
+package io.github.remmerw.thor.cobra.html.js
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-import io.github.remmerw.thor.cobra.js.JavaClassWrapper;
+import io.github.remmerw.thor.cobra.js.JavaClassWrapper
 
 /**
  * Specifies the property name directly instead of being inferred. In the longer
- * run, it might be better to add {@link java.beans.BeanInfo} awareness in
- * {@link JavaClassWrapper}
+ * run, it might be better to add [java.beans.BeanInfo] awareness in
+ * [JavaClassWrapper]
  */
-@Retention(RetentionPolicy.RUNTIME)
-public @interface PropertyName {
-
-    String value();
-
-}
+@Retention(AnnotationRetention.RUNTIME)
+annotation class PropertyName(val value: String)

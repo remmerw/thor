@@ -18,12 +18,12 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.style;
+package io.github.remmerw.thor.cobra.html.style
 
-class FontInfo {
-    public String fontFamily;
-    public String fontStyle;
-    public String fontVariant;
-    public String fontWeight;
-    public String fontSize;
+internal class FontInfo {
+    var fontFamily: String? = null
+    var fontStyle: String? = null
+    var fontVariant: String? = null
+    var fontWeight: String? = null
+    var fontSize: String? = null
 }

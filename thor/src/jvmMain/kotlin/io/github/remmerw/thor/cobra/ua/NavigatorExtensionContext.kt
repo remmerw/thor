@@ -20,23 +20,24 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.github.remmerw.thor.cobra.ua;
+package io.github.remmerw.thor.cobra.ua
 
-import io.github.remmerw.thor.cobra.clientlet.ClientletSelector;
+import io.github.remmerw.thor.cobra.clientlet.ClientletSelector
+import java.net.URLStreamHandlerFactory
 
 /**
  * This interface gives extensions access to the platform.
  *
- * @see NavigatorExtension#init(NavigatorExtensionContext)
+ * @see NavigatorExtension.init
  */
-public interface NavigatorExtensionContext {
+interface NavigatorExtensionContext {
     /**
      * Adds a clientlet selector. This is how platform extensions register
      * additional content handlers.
      */
-    void addClientletSelector(ClientletSelector selector);
+    fun addClientletSelector(selector: ClientletSelector?)
 
-    void removeClientletSelector(ClientletSelector selector);
+    fun removeClientletSelector(selector: ClientletSelector?)
 
     /**
      * Adds an object that can view connections made by the browser and
@@ -44,43 +45,43 @@ public interface NavigatorExtensionContext {
      *
      * @param processor An connection processor.
      */
-    void addConnectionProcessor(ConnectionProcessor processor);
+    fun addConnectionProcessor(processor: ConnectionProcessor?)
 
-    void removeConnectionProcessor(ConnectionProcessor processor);
+    fun removeConnectionProcessor(processor: ConnectionProcessor?)
 
     /**
      * Adds a listener of navigator events.
      */
-    void addNavigatorErrorListener(NavigatorErrorListener listener);
+    fun addNavigatorErrorListener(listener: NavigatorErrorListener?)
 
     /**
      * Removes a listener of navigation events.
      */
-    void removeNavigatorErrorListener(NavigatorErrorListener listener);
+    fun removeNavigatorErrorListener(listener: NavigatorErrorListener?)
 
     /**
      * Adds a global listener of navigation events.
      *
      * @param listener The listener.
      */
-    void addNavigationListener(NavigationListener listener);
+    fun addNavigationListener(listener: NavigationListener?)
 
-    void removeNavigationListener(NavigationListener listener);
+    fun removeNavigationListener(listener: NavigationListener?)
 
     /**
-     * Gets the {@link UserAgent} instance associated with this context.
+     * Gets the [UserAgent] instance associated with this context.
      */
-    UserAgent getUserAgent();
+    val userAgent: UserAgent?
 
     /**
      * Registers a URL stream handler factory which may be used to implement
      * custom protocols. Note that Java platform protocols (HTTP, HTTPS, etc.) or
      * protocols defined by extensions with higher priority cannot be overridden.
-     * The factory must return <code>null</code> if it does not know how to handle
+     * The factory must return `null` if it does not know how to handle
      * a particular protocol.
      *
-     * @param factory An implementation of <code>java.net.URLStreamHandlerFactory</code>
-     *                .
+     * @param factory An implementation of `java.net.URLStreamHandlerFactory`
+     * .
      */
-    void addURLStreamHandlerFactory(java.net.URLStreamHandlerFactory factory);
+    fun addURLStreamHandlerFactory(factory: URLStreamHandlerFactory?)
 }

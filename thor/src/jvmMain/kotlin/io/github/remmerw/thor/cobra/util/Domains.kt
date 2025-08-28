@@ -21,13 +21,12 @@
 /*
  * Created on Jun 2, 2005
  */
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
 
 /**
  * @author J. H. S.
  */
-public class Domains {
-  /*
+class Domains  /*
   private static final Collection<String> gTLDs;
 
   static {
@@ -48,16 +47,10 @@ public class Domains {
     gTLDs.add(".museum");
     // TODO: New gTLDs?
   }*/
-
-    /**
-     *
-     */
-    private Domains() {
-        super();
-    }
-
-    /** @deprecated use the method in DomainValidation.java */
-  /*
+/**
+ *
+ */
+private constructor()  /*
   public static boolean isValidCookieDomain(String domain, final String hostName) {
     String plainDomain;
     if (!domain.startsWith(".")) {
@@ -84,8 +77,7 @@ public class Domains {
       return Strings.countChars(domain, '.') >= 3;
     }
   }*/
-
-  /*
+/*
    *
    * @param host
    *          A host name in lower case.
@@ -132,4 +124,3 @@ public class Domains {
     domains.addAll(Domains.getPossibleDomains(testDomain.substring(1)));
     return domains;
   }*/
-}

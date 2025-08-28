@@ -20,42 +20,41 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.github.remmerw.thor.cobra.clientlet;
+package io.github.remmerw.thor.cobra.clientlet
 
 /**
  * Thrown when a clientlet requires a newer Java version than the one running
  * the clientlet engine.
  */
-public class JavaVersionException extends ClientletException {
-    private static final long serialVersionUID = -6317337395233908091L;
-    private final String expectingVersion;
+class JavaVersionException : ClientletException {
+    val expectingVersion: String?
 
     /**
      * @param message
      */
-    public JavaVersionException(final String expectingVersion, final String message) {
-        super(message);
-        this.expectingVersion = expectingVersion;
+    constructor(expectingVersion: String?, message: String?) : super(message) {
+        this.expectingVersion = expectingVersion
     }
 
     /**
      * @param message
      * @param rootCause
      */
-    public JavaVersionException(final String message, final String expectingVersion, final Throwable rootCause) {
-        super(message, rootCause);
-        this.expectingVersion = expectingVersion;
+    constructor(message: String?, expectingVersion: String?, rootCause: Throwable?) : super(
+        message,
+        rootCause
+    ) {
+        this.expectingVersion = expectingVersion
     }
 
     /**
      * @param rootCause
      */
-    public JavaVersionException(final String expectingVersion, final Throwable rootCause) {
-        super(rootCause);
-        this.expectingVersion = expectingVersion;
+    constructor(expectingVersion: String?, rootCause: Throwable?) : super(rootCause) {
+        this.expectingVersion = expectingVersion
     }
 
-    public String getExpectingVersion() {
-        return expectingVersion;
+    companion object {
+        private val serialVersionUID = -6317337395233908091L
     }
 }

@@ -21,25 +21,18 @@
 /*
  * Created on Dec 3, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-class SkipVisitorException extends RuntimeException {
-    private static final long serialVersionUID = 4031730152218808122L;
+internal class SkipVisitorException : RuntimeException {
+    constructor() : super()
 
-    public SkipVisitorException() {
-        super();
+    constructor(message: String?) : super(message)
+
+    constructor(message: String?, cause: Throwable?) : super(message, cause)
+
+    constructor(cause: Throwable?) : super(cause)
+
+    companion object {
+        private const val serialVersionUID = 4031730152218808122L
     }
-
-    public SkipVisitorException(final String message) {
-        super(message);
-    }
-
-    public SkipVisitorException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
-
-    public SkipVisitorException(final Throwable cause) {
-        super(cause);
-    }
-
 }

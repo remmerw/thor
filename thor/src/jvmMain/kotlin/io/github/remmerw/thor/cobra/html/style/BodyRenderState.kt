@@ -18,49 +18,38 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.style;
+package io.github.remmerw.thor.cobra.html.style
 
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl;
-import io.github.remmerw.thor.cobra.util.gui.ColorFactory;
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
+import io.github.remmerw.thor.cobra.util.gui.ColorFactory
 
-public class BodyRenderState extends StyleSheetRenderState {
-    // Note: BODY behaves like an inline element, but the root
-    // block uses the element and treats its properties as those
-    // of a block element.
-
-    public BodyRenderState(final RenderState prevRenderState, final HTMLElementImpl element) {
-        super(prevRenderState, element);
-    }
-
-    @Override
-    public void invalidate() {
-        super.invalidate();
-    }
+class BodyRenderState  // Note: BODY behaves like an inline element, but the root
+// block uses the element and treats its properties as those
+// of a block element.
+    (prevRenderState: RenderState?, element: HTMLElementImpl) :
+    StyleSheetRenderState(prevRenderState, element) {
 
     // TODO: We can get rid of this if #158 is implemented
-    @Override
-    public BackgroundInfo getBackgroundInfo() {
-        BackgroundInfo binfo = this.iBackgroundInfo;
-        if (binfo != INVALID_BACKGROUND_INFO) {
-            return binfo;
+    override fun getBackgroundInfo(): BackgroundInfo? {
+        var binfo = this.iBackgroundInfo
+        if (binfo !== INVALID_BACKGROUND_INFO) {
+            return binfo
         }
-        binfo = super.getBackgroundInfo();
+        binfo = super.getBackgroundInfo()
         if ((binfo == null) || (binfo.backgroundColor == null)) {
-            final String bgcolor = this.element.getAttribute("bgcolor");
-            if ((bgcolor != null) && (bgcolor.length() != 0)) {
+            val bgcolor = this.element.getAttribute("bgcolor")
+            if ((bgcolor != null) && (bgcolor.length != 0)) {
                 if (binfo == null) {
-                    binfo = new BackgroundInfo();
+                    binfo = BackgroundInfo()
                 }
-                binfo.backgroundColor = ColorFactory.getInstance().getColor(bgcolor);
+                binfo.backgroundColor = ColorFactory.getInstance().getColor(bgcolor)
             }
         }
-        this.iBackgroundInfo = binfo;
-        return binfo;
-    }
-
-    // TODO: This currently doesn't have any effect because margins are being set by default styles.
+        this.iBackgroundInfo = binfo
+        return binfo
+    } // TODO: This currently doesn't have any effect because margins are being set by default styles.
     //       It would be best to move this into StyleElements.attribute2Style() as part of #158
-  /*
+    /*
   public HtmlInsets getMarginInsets() {
     HtmlInsets insets = this.marginInsets;
     if (insets != INVALID_INSETS) {
@@ -119,5 +108,4 @@ public class BodyRenderState extends StyleSheetRenderState {
     this.marginInsets = insets;
     return insets;
   }*/
-
 }

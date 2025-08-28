@@ -21,153 +21,161 @@
 /*
  * Created on Apr 16, 2005
  */
-package io.github.remmerw.thor.cobra.html.gui;
+package io.github.remmerw.thor.cobra.html.gui
 
-import org.eclipse.jdt.annotation.Nullable;
-import org.w3c.dom.Node;
-
-import java.awt.Adjustable;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GraphicsEnvironment;
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.ClipboardOwner;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.swing.JComponent;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-
-import io.github.remmerw.thor.cobra.html.HtmlRendererContext;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLDocumentImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode;
-import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.UINode;
-import io.github.remmerw.thor.cobra.html.renderer.BoundableRenderable;
-import io.github.remmerw.thor.cobra.html.renderer.DelayedPair;
-import io.github.remmerw.thor.cobra.html.renderer.FrameContext;
-import io.github.remmerw.thor.cobra.html.renderer.NodeRenderer;
-import io.github.remmerw.thor.cobra.html.renderer.PositionedRenderable;
-import io.github.remmerw.thor.cobra.html.renderer.RBlock;
-import io.github.remmerw.thor.cobra.html.renderer.RCollection;
-import io.github.remmerw.thor.cobra.html.renderer.RElement;
-import io.github.remmerw.thor.cobra.html.renderer.Renderable;
-import io.github.remmerw.thor.cobra.html.renderer.RenderableContainer;
-import io.github.remmerw.thor.cobra.html.renderer.RenderableSpot;
-import io.github.remmerw.thor.cobra.html.renderer.TranslatedRenderable;
-import io.github.remmerw.thor.cobra.html.style.RenderState;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext;
-import io.github.remmerw.thor.cobra.util.Nodes;
-import io.github.remmerw.thor.cobra.util.gui.ColorFactory;
+import io.github.remmerw.thor.cobra.html.HtmlRendererContext
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLDocumentImpl
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
+import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
+import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
+import io.github.remmerw.thor.cobra.html.domimpl.UINode
+import io.github.remmerw.thor.cobra.html.renderer.BoundableRenderable
+import io.github.remmerw.thor.cobra.html.renderer.DelayedPair
+import io.github.remmerw.thor.cobra.html.renderer.FrameContext
+import io.github.remmerw.thor.cobra.html.renderer.NodeRenderer
+import io.github.remmerw.thor.cobra.html.renderer.PositionedRenderable
+import io.github.remmerw.thor.cobra.html.renderer.RBlock
+import io.github.remmerw.thor.cobra.html.renderer.RCollection
+import io.github.remmerw.thor.cobra.html.renderer.RElement
+import io.github.remmerw.thor.cobra.html.renderer.Renderable
+import io.github.remmerw.thor.cobra.html.renderer.RenderableContainer
+import io.github.remmerw.thor.cobra.html.renderer.RenderableSpot
+import io.github.remmerw.thor.cobra.html.renderer.TranslatedRenderable
+import io.github.remmerw.thor.cobra.html.style.RenderState
+import io.github.remmerw.thor.cobra.ua.UserAgentContext
+import io.github.remmerw.thor.cobra.util.Nodes
+import io.github.remmerw.thor.cobra.util.gui.ColorFactory
+import org.w3c.dom.Node
+import java.awt.Adjustable
+import java.awt.Color
+import java.awt.Component
+import java.awt.Dimension
+import java.awt.Graphics
+import java.awt.Graphics2D
+import java.awt.GraphicsEnvironment
+import java.awt.Insets
+import java.awt.Point
+import java.awt.Rectangle
+import java.awt.RenderingHints
+import java.awt.Toolkit
+import java.awt.datatransfer.Clipboard
+import java.awt.datatransfer.ClipboardOwner
+import java.awt.datatransfer.StringSelection
+import java.awt.datatransfer.Transferable
+import java.awt.event.ActionEvent
+import java.awt.event.ActionListener
+import java.awt.event.KeyEvent
+import java.awt.event.MouseEvent
+import java.awt.event.MouseListener
+import java.awt.event.MouseMotionListener
+import java.awt.event.MouseWheelEvent
+import java.awt.event.MouseWheelListener
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Future
+import java.util.logging.Level
+import java.util.logging.Logger
+import javax.swing.JComponent
+import javax.swing.KeyStroke
+import javax.swing.SwingUtilities
+import kotlin.concurrent.Volatile
+import kotlin.math.max
 
 /**
  * A Swing component that renders a HTML block, given by a DOM root or an
- * internal element, typically a DIV. This component <i>cannot</i> render
- * FRAMESETs. <code>HtmlBlockPanel</code> is used by {@link HtmlPanel} whenever
- * the DOM is determined <i>not</i> to be a FRAMESET.
+ * internal element, typically a DIV. This component *cannot* render
+ * FRAMESETs. `HtmlBlockPanel` is used by [HtmlPanel] whenever
+ * the DOM is determined *not* to be a FRAMESET.
  *
  * @author J. H. S.
  * @see HtmlPanel
+ *
  * @see FrameSetPanel
  */
-public class HtmlBlockPanel extends JComponent implements NodeRenderer, RenderableContainer, ClipboardOwner {
-    private static final long serialVersionUID = 7851587340938903001L;
-    private static final Logger logger = Logger.getLogger(HtmlBlockPanel.class.getName());
-    private static final boolean loggableInfo = logger.isLoggable(Level.INFO);
-    protected final FrameContext frameContext;
-    protected final UserAgentContext ucontext;
-    protected final HtmlRendererContext rcontext;
+class HtmlBlockPanel(
+    background: Color?,
+    opaque: Boolean,
+    pcontext: UserAgentContext?,
+    rcontext: HtmlRendererContext?,
+    frameContext: FrameContext
+) : JComponent(), NodeRenderer, RenderableContainer, ClipboardOwner {
+    protected val frameContext: FrameContext
+    protected val ucontext: UserAgentContext?
+    protected val rcontext: HtmlRendererContext?
 
-    protected RenderableSpot startSelection;
-    protected RenderableSpot endSelection;
-    protected RBlock rblock;
-    protected int preferredWidth = -1;
-    protected int defaultOverflowX = RenderState.OVERFLOW_AUTO;
-    protected int defaultOverflowY = RenderState.OVERFLOW_SCROLL;
-    private volatile boolean scrollCompleted = false;
-    private BoundableRenderable mousePressTarget;
-    private Map<?, ?> desktopHints = null;
-    private boolean applyRenderHints = true;
-    private boolean processingDocumentNotification = false;
-    private Set<Component> components;
-    private CompletableFuture<Boolean> layoutCompleted = new CompletableFuture<>();
+    protected var startSelection: RenderableSpot? = null
+    protected var endSelection: RenderableSpot? = null
+    protected var rblock: RBlock? = null
+    protected var preferredWidth: Int = -1
+    protected var defaultOverflowX: Int = RenderState.OVERFLOW_AUTO
+    protected var defaultOverflowY: Int = RenderState.OVERFLOW_SCROLL
 
-    public HtmlBlockPanel(final UserAgentContext pcontext, final HtmlRendererContext rcontext, final FrameContext frameContext) {
-        this(ColorFactory.TRANSPARENT, false, pcontext, rcontext, frameContext);
-    }
+    @Volatile
+    private var scrollCompleted = false
+    private var mousePressTarget: BoundableRenderable? = null
+    private var desktopHints: MutableMap<*, *>? = null
+    private var applyRenderHints = true
+    private var processingDocumentNotification = false
+    private var components: MutableSet<Component?>? = null
+    private var layoutCompleted = CompletableFuture<Boolean?>()
 
-    public HtmlBlockPanel(final Color background, final boolean opaque, final UserAgentContext pcontext, final HtmlRendererContext rcontext,
-                          final FrameContext frameContext) {
-        this.setLayout(null);
-        this.setAutoscrolls(true);
-        this.frameContext = frameContext;
-        this.ucontext = pcontext;
-        this.rcontext = rcontext;
-        this.setOpaque(opaque);
-        this.setBackground(background);
-        final ActionListener actionListener = new ActionListener() {
-            public void actionPerformed(final ActionEvent e) {
-                final String command = e.getActionCommand();
-                if ("copy".equals(command)) {
-                    copy();
+    constructor(
+        pcontext: UserAgentContext?,
+        rcontext: HtmlRendererContext?,
+        frameContext: FrameContext
+    ) : this(ColorFactory.TRANSPARENT, false, pcontext, rcontext, frameContext)
+
+    init {
+        this.layout = null
+        this.autoscrolls = true
+        this.frameContext = frameContext
+        this.ucontext = pcontext
+        this.rcontext = rcontext
+        this.isOpaque = opaque
+        this.setBackground(background)
+        val actionListener: ActionListener = object : ActionListener {
+            override fun actionPerformed(e: ActionEvent) {
+                val command = e.getActionCommand()
+                if ("copy" == command) {
+                    copy()
                 }
             }
-        };
-        if (!GraphicsEnvironment.isHeadless()) {
-            this.registerKeyboardAction(actionListener, "copy", KeyStroke.getKeyStroke(KeyEvent.VK_COPY, 0), JComponent.WHEN_FOCUSED);
-            this.registerKeyboardAction(actionListener, "copy",
-                    KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), JComponent.WHEN_FOCUSED);
         }
-        this.addMouseListener(new MouseListener() {
-            public void mouseClicked(final MouseEvent e) {
-                onMouseClick(e);
+        if (!GraphicsEnvironment.isHeadless()) {
+            this.registerKeyboardAction(
+                actionListener,
+                "copy",
+                KeyStroke.getKeyStroke(KeyEvent.VK_COPY, 0),
+                WHEN_FOCUSED
+            )
+            this.registerKeyboardAction(
+                actionListener, "copy",
+                KeyStroke.getKeyStroke(
+                    KeyEvent.VK_C,
+                    Toolkit.getDefaultToolkit().menuShortcutKeyMask
+                ), WHEN_FOCUSED
+            )
+        }
+        this.addMouseListener(object : MouseListener {
+            override fun mouseClicked(e: MouseEvent) {
+                onMouseClick(e)
             }
 
-            public void mouseEntered(final MouseEvent e) {
+            override fun mouseEntered(e: MouseEvent?) {
             }
 
-            public void mouseExited(final MouseEvent e) {
-                onMouseExited(e);
+            override fun mouseExited(e: MouseEvent?) {
+                onMouseExited(e)
             }
 
-            public void mousePressed(final MouseEvent e) {
-                onMousePressed(e);
+            override fun mousePressed(e: MouseEvent) {
+                onMousePressed(e)
             }
 
-            public void mouseReleased(final MouseEvent e) {
-                onMouseReleased(e);
+            override fun mouseReleased(e: MouseEvent) {
+                onMouseReleased(e)
             }
-        });
-        this.addMouseMotionListener(new MouseMotionListener() {
+        })
+        this.addMouseMotionListener(object : MouseMotionListener {
             /*
              * (non-Javadoc)
              *
@@ -175,8 +183,8 @@ public class HtmlBlockPanel extends JComponent implements NodeRenderer, Renderab
              * java.awt.event.MouseMotionListener#mouseDragged(java.awt.event.MouseEvent
              * )
              */
-            public void mouseDragged(final MouseEvent e) {
-                onMouseDragged(e);
+            override fun mouseDragged(e: MouseEvent) {
+                onMouseDragged(e)
             }
 
             /*
@@ -186,52 +194,46 @@ public class HtmlBlockPanel extends JComponent implements NodeRenderer, Renderab
              * java.awt.event.MouseMotionListener#mouseMoved(java.awt.event.MouseEvent
              * )
              */
-            public void mouseMoved(final MouseEvent arg0) {
-                onMouseMoved(arg0);
+            override fun mouseMoved(arg0: MouseEvent) {
+                onMouseMoved(arg0)
             }
-        });
-        this.addMouseWheelListener(new MouseWheelListener() {
-            public void mouseWheelMoved(final MouseWheelEvent e) {
-                onMouseWheelMoved(e);
+        })
+        this.addMouseWheelListener(object : MouseWheelListener {
+            override fun mouseWheelMoved(e: MouseWheelEvent) {
+                onMouseWheelMoved(e)
             }
-        });
-    }
-
-    @SuppressWarnings("unused")
-    private static void dumpRndTree(final Renderable root) {
-        System.out.println("------------------------------");
-        RBlock.dumpRndTree("", true, root, true);
-        System.out.println("------------------------------");
+        })
     }
 
     /**
      * Scrolls the body area to the given location.
-     * <p>
+     *
+     *
      * This method should be called from the GUI thread.
      *
      * @param bounds    The bounds in the scrollable block area that should become
-     *                  visible.
+     * visible.
      * @param xIfNeeded If this parameter is true, scrolling will only occur if the
-     *                  requested bounds are not currently visible horizontally.
+     * requested bounds are not currently visible horizontally.
      * @param yIfNeeded If this parameter is true, scrolling will only occur if the
-     *                  requested bounds are not currently visible vertically.
+     * requested bounds are not currently visible vertically.
      */
-    public void scrollTo(final Rectangle bounds, final boolean xIfNeeded, final boolean yIfNeeded) {
-        final @Nullable HTMLDocumentImpl doc = (HTMLDocumentImpl) getRootNode();
+    fun scrollTo(bounds: Rectangle?, xIfNeeded: Boolean, yIfNeeded: Boolean) {
+        val doc = getRootNode() as HTMLDocumentImpl?
         if (doc != null) {
-            RBlock bodyBlock = (RBlock) ((HTMLElementImpl) doc.getBody()).getUINode();
-            bodyBlock.scrollTo(bounds, xIfNeeded, yIfNeeded);
+            val bodyBlock = (doc.body as HTMLElementImpl).uINode as RBlock?
+            bodyBlock!!.scrollTo(bounds, xIfNeeded, yIfNeeded)
         }
     }
 
-    public void scrollBy(final int xOffset, final int yOffset) {
-        final RBlock block = this.rblock;
+    fun scrollBy(xOffset: Int, yOffset: Int) {
+        val block = this.rblock
         if (block != null) {
             if (xOffset != 0) {
-                block.scrollBy(Adjustable.HORIZONTAL, xOffset);
+                block.scrollBy(Adjustable.HORIZONTAL, xOffset)
             }
             if (yOffset != 0) {
-                block.scrollBy(Adjustable.VERTICAL, yOffset);
+                block.scrollBy(Adjustable.VERTICAL, yOffset)
             }
         }
     }
@@ -239,405 +241,438 @@ public class HtmlBlockPanel extends JComponent implements NodeRenderer, Renderab
     /**
      * Scrolls the body area to the node given, if it is part of the current
      * document.
-     * <p>
+     *
+     *
      * This method should be called from the GUI thread.
      *
      * @param node A DOM node.
      */
-    public void scrollTo(final Node node) {
-        final Rectangle bounds = this.getNodeBounds(node, true);
+    fun scrollTo(node: Node?) {
+        val bounds = this.getNodeBounds(node, true)
         if (bounds == null) {
-            return;
+            return
         }
-        this.scrollTo(bounds, true, false);
+        this.scrollTo(bounds, true, false)
     }
 
     /**
      * Gets the rectangular bounds of the given node.
-     * <p>
+     *
+     *
      * This method should be called from the GUI thread.
      *
      * @param node                 A node in the current document.
      * @param relativeToScrollable Whether the bounds should be relative to the scrollable body area.
-     *                             Otherwise, they are relative to the root block (which is the
-     *                             essentially the same as being relative to this
-     *                             <code>HtmlBlockPanel</code> minus Swing borders).
+     * Otherwise, they are relative to the root block (which is the
+     * essentially the same as being relative to this
+     * `HtmlBlockPanel` minus Swing borders).
      */
-    public Rectangle getNodeBounds(final Node node, final boolean relativeToScrollable) {
-        final RBlock block = this.rblock;
+    fun getNodeBounds(node: Node?, relativeToScrollable: Boolean): Rectangle? {
+        val block = this.rblock
         if (block == null) {
-            return null;
+            return null
         }
         // Find UINode first
-        Node currentNode = node;
-        UINode uiNode = null;
+        var currentNode = node
+        var uiNode: UINode? = null
         while (currentNode != null) {
-            if (currentNode instanceof HTMLElementImpl element) {
-                uiNode = element.getUINode();
+            if (currentNode is HTMLElementImpl) {
+                uiNode = currentNode.uINode
                 if (uiNode != null) {
-                    break;
+                    break
                 }
             }
-            currentNode = currentNode.getParentNode();
+            currentNode = currentNode.parentNode
         }
         if (uiNode == null) {
-            return null;
+            return null
         }
-        final RCollection relativeTo = relativeToScrollable ? block.getRBlockViewport() : block;
-        if (node == currentNode) {
-            final BoundableRenderable br = (BoundableRenderable) uiNode;
-            final Point guiPoint = br.getOriginRelativeTo(relativeTo);
-            final Dimension size = br.getSize();
-            return new Rectangle(guiPoint, size);
+        val relativeTo: RCollection? =
+            if (relativeToScrollable) block.getRBlockViewport() else block
+        if (node === currentNode) {
+            val br = uiNode as BoundableRenderable
+            val guiPoint = br.getOriginRelativeTo(relativeTo)
+            val size = br.size
+            return Rectangle(guiPoint, size)
         } else {
-            return this.scanNodeBounds((RCollection) uiNode, node, relativeTo);
+            return this.scanNodeBounds(uiNode as RCollection, node, relativeTo)
         }
     }
 
     /**
      * Gets an aggregate of the bounds of renderer leaf nodes.
      */
-    private Rectangle scanNodeBounds(final RCollection root, final Node node, final RCollection relativeTo) {
-        final Iterator<? extends Renderable> i = root.getRenderables(false);
-        Rectangle resultBounds = null;
-        BoundableRenderable prevBoundable = null;
+    private fun scanNodeBounds(
+        root: RCollection,
+        node: Node?,
+        relativeTo: RCollection?
+    ): Rectangle? {
+        val i = root.getRenderables(false)
+        var resultBounds: Rectangle? = null
+        var prevBoundable: BoundableRenderable? = null
         if (i != null) {
             while (i.hasNext()) {
-                final Renderable rn = i.next();
-                final Renderable r = rn instanceof PositionedRenderable ? (((PositionedRenderable) rn).renderable) : rn;
-                Rectangle subBounds = null;
-                if (r instanceof RCollection rc) {
-                    prevBoundable = rc;
-                    subBounds = this.scanNodeBounds(rc, node, relativeTo);
-                } else if (r instanceof BoundableRenderable br) {
-                    prevBoundable = br;
-                    if (Nodes.isSameOrAncestorOf(node, (Node) r.getModelNode())) {
-                        final Point origin = br.getOriginRelativeTo(relativeTo);
-                        final Dimension size = br.getSize();
-                        subBounds = new Rectangle(origin, size);
+                val rn = i.next()
+                val r: Renderable =
+                    (if (rn is PositionedRenderable) ((rn as PositionedRenderable).renderable) else rn)!!
+                var subBounds: Rectangle? = null
+                if (r is RCollection) {
+                    prevBoundable = r
+                    subBounds = this.scanNodeBounds(r, node, relativeTo)
+                } else if (r is BoundableRenderable) {
+                    prevBoundable = r
+                    if (Nodes.isSameOrAncestorOf(node, r.getModelNode() as Node?)) {
+                        val origin = r.getOriginRelativeTo(relativeTo)
+                        val size = r.size
+                        subBounds = Rectangle(origin, size)
                     }
                 } else {
                     // This would have to be a RStyleChanger. We rely on these
                     // when the target node has blank content.
-                    if (Nodes.isSameOrAncestorOf(node, (Node) r.getModelNode())) {
-                        final int xInRoot = prevBoundable == null ? 0 : prevBoundable.getVisualX() + prevBoundable.getVisualWidth();
-                        final Point rootOrigin = root.getOriginRelativeTo(relativeTo);
-                        subBounds = new Rectangle(rootOrigin.x + xInRoot, rootOrigin.y, 0, root.getVisualHeight());
+                    if (Nodes.isSameOrAncestorOf(node, r.modelNode as Node?)) {
+                        val xInRoot =
+                            if (prevBoundable == null) 0 else prevBoundable.visualX + prevBoundable.visualWidth
+                        val rootOrigin = root.getOriginRelativeTo(relativeTo)
+                        subBounds = Rectangle(
+                            rootOrigin.x + xInRoot,
+                            rootOrigin.y,
+                            0,
+                            root.visualHeight
+                        )
                     }
                 }
                 if (subBounds != null) {
                     if (resultBounds == null) {
-                        resultBounds = subBounds;
+                        resultBounds = subBounds
                     } else {
-                        resultBounds = subBounds.union(resultBounds);
+                        resultBounds = subBounds.union(resultBounds)
                     }
                 }
             }
         }
-        return resultBounds;
+        return resultBounds
     }
 
-    public BoundableRenderable getRootRenderable() {
-        return this.rblock;
-    }
+    val rootRenderable: BoundableRenderable?
+        get() = this.rblock
 
     /**
-     * Allows {@link #getPreferredSize()} to render the HTML block in order to
+     * Allows [.getPreferredSize] to render the HTML block in order to
      * determine the preferred size of this component. Note that
-     * <code>getPreferredSize()<code> is a potentially time-consuming
+     * `getPreferredSize()` is a potentially time-consuming
      * operation if the preferred width is set.
      *
-     * @param width The preferred blocked width. Use <code>-1</code> to unset.
-     */
-    public void setPreferredWidth(final int width) {
-        this.preferredWidth = width;
+     * @param width The preferred blocked width. Use `-1` to unset.
+    `` */
+    fun setPreferredWidth(width: Int) {
+        this.preferredWidth = width
     }
 
     /**
      * If the preferred size has been set with
-     * {@link #setPreferredSize(Dimension)}, then that size is returned. Otherwise
+     * [.setPreferredSize], then that size is returned. Otherwise
      * a preferred size is calculated by rendering the HTML DOM, provided one is
-     * available and a preferred width other than <code>-1</code> has been set
-     * with {@link #setPreferredWidth(int)}. An arbitrary preferred size is
+     * available and a preferred width other than `-1` has been set
+     * with [.setPreferredWidth]. An arbitrary preferred size is
      * returned in other scenarios.
      */
-    @Override
-    public Dimension getPreferredSize() {
+    override fun getPreferredSize(): Dimension? {
         // Expected to be invoked in the GUI thread.
-        if (this.isPreferredSizeSet()) {
-            return super.getPreferredSize();
+        if (this.isPreferredSizeSet) {
+            return super.getPreferredSize()
         }
-        final int pw = this.preferredWidth;
+        val pw = this.preferredWidth
         if (pw != -1) {
-            final RBlock block = this.rblock;
+            val block = this.rblock
             if (block != null) {
                 // Layout should always be done in the GUI thread.
                 if (SwingUtilities.isEventDispatchThread()) {
-                    block.layout(pw, 0, false, false, RenderState.OVERFLOW_VISIBLE, RenderState.OVERFLOW_VISIBLE, true);
+                    block.layout(
+                        pw,
+                        0,
+                        false,
+                        false,
+                        RenderState.OVERFLOW_VISIBLE,
+                        RenderState.OVERFLOW_VISIBLE,
+                        true
+                    )
                 } else {
                     try {
-                        SwingUtilities.invokeAndWait(new Runnable() {
-                            public void run() {
-                                block.layout(pw, 0, false, false, RenderState.OVERFLOW_VISIBLE, RenderState.OVERFLOW_VISIBLE, true);
+                        SwingUtilities.invokeAndWait(object : Runnable {
+                            override fun run() {
+                                block.layout(
+                                    pw,
+                                    0,
+                                    false,
+                                    false,
+                                    RenderState.OVERFLOW_VISIBLE,
+                                    RenderState.OVERFLOW_VISIBLE,
+                                    true
+                                )
                             }
-                        });
-                    } catch (final Exception err) {
-                        logger.log(Level.SEVERE, "Unable to do preferred size layout.", err);
+                        })
+                    } catch (err: Exception) {
+                        logger.log(Level.SEVERE, "Unable to do preferred size layout.", err)
                     }
                 }
                 // Adjust for permanent vertical scrollbar.
-                final int newPw = Math.max(block.width + block.getVScrollBarWidth(), pw);
-                return new Dimension(newPw, block.height);
+                val newPw = max(block.width + block.getVScrollBarWidth(), pw)
+                return Dimension(newPw, block.height)
             }
         }
-        return new Dimension(600, 400);
+        return Dimension(600, 400)
     }
 
 
-    public boolean copy() {
-        final String selection = HtmlBlockPanel.this.getSelectionText();
+    fun copy(): Boolean {
+        val selection = this@HtmlBlockPanel.selectionText
         if (selection != null) {
-            final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-            clipboard.setContents(new StringSelection(selection), HtmlBlockPanel.this);
-            return true;
+            val clipboard = Toolkit.getDefaultToolkit().systemClipboard
+            clipboard.setContents(StringSelection(selection), this@HtmlBlockPanel)
+            return true
         } else {
-            return false;
+            return false
         }
     }
 
-    public int getFirstLineHeight() {
-        final RBlock block = this.rblock;
-        return block == null ? 0 : block.getFirstLineHeight();
-    }
-
-    public void setSelectionEnd(final RenderableSpot rpoint) {
-        this.endSelection = rpoint;
-    }
-
-    public void setSelectionStart(final RenderableSpot rpoint) {
-        this.startSelection = rpoint;
-    }
-
-    public boolean isSelectionAvailable() {
-        final RenderableSpot start = this.startSelection;
-        final RenderableSpot end = this.endSelection;
-        return (start != null) && (end != null) && !start.equals(end);
-    }
-
-    public Node getSelectionNode() {
-        final RenderableSpot start = this.startSelection;
-        final RenderableSpot end = this.endSelection;
-        if ((start != null) && (end != null)) {
-            return Nodes.getCommonAncestor((Node) start.renderable.getModelNode(), (Node) end.renderable.getModelNode());
-        } else {
-            return null;
+    val firstLineHeight: Int
+        get() {
+            val block = this.rblock
+            return if (block == null) 0 else block.getFirstLineHeight()
         }
+
+    fun setSelectionEnd(rpoint: RenderableSpot?) {
+        this.endSelection = rpoint
     }
 
-    protected void validateAll() {
-        Component toValidate = this;
-        for (; ; ) {
-            final Container parent = toValidate.getParent();
-            if ((parent == null) || parent.isValid()) {
-                break;
+    fun setSelectionStart(rpoint: RenderableSpot?) {
+        this.startSelection = rpoint
+    }
+
+    val isSelectionAvailable: Boolean
+        get() {
+            val start = this.startSelection
+            val end = this.endSelection
+            return (start != null) && (end != null) && (start != end)
+        }
+
+    val selectionNode: Node?
+        get() {
+            val start = this.startSelection
+            val end = this.endSelection
+            if ((start != null) && (end != null)) {
+                return Nodes.getCommonAncestor(
+                    start.renderable.getModelNode() as Node?,
+                    end.renderable.getModelNode() as Node?
+                )
+            } else {
+                return null
             }
-            toValidate = parent;
         }
-        toValidate.validate();
+
+    protected fun validateAll() {
+        var toValidate: Component? = this
+        while (true) {
+            val parent = toValidate!!.getParent()
+            if ((parent == null) || parent.isValid) {
+                break
+            }
+            toValidate = parent
+        }
+        toValidate.validate()
     }
 
-    protected void revalidatePanel() {
+    protected fun revalidatePanel() {
         // Called in the GUI thread.
-        this.invalidate();
-        this.validate();
+        this.invalidate()
+        this.validate()
         // TODO: Could be paintImmediately.
-        this.repaint();
+        this.repaint()
     }
 
-    private @Nullable NodeImpl getRootNode() {
-        final RBlock block = this.rblock;
-        return block == null ? null : (NodeImpl) block.getModelNode();
+    private fun getRootNode(): NodeImpl? {
+        val block = this.rblock
+        return if (block == null) null else block.getModelNode() as NodeImpl?
     }
 
     /**
      * Sets the root node to render. This method should be invoked in the GUI
      * dispatch thread.
      */
-    public void setRootNode(final NodeImpl node) {
-        scrollCompleted = false;
-        layoutCompleted = new CompletableFuture<>();
+    override fun setRootNode(node: NodeImpl?) {
+        scrollCompleted = false
+        layoutCompleted = CompletableFuture<Boolean?>()
         if (node != null) {
-            final RBlock block = new RBlock(node, 0, this.ucontext, this.rcontext, this.frameContext, this);
-            block.setDefaultOverflowX(this.defaultOverflowX);
-            block.setDefaultOverflowY(this.defaultOverflowY);
-            node.setUINode(block);
-            this.rblock = block;
+            val block = RBlock(node, 0, this.ucontext, this.rcontext, this.frameContext, this)
+            block.defaultOverflowX = this.defaultOverflowX
+            block.defaultOverflowY = this.defaultOverflowY
+            node.uINode = block
+            this.rblock = block
         } else {
-            this.rblock = null;
+            this.rblock = null
         }
-        this.invalidate();
-        this.validateAll();
-        this.repaint();
+        this.invalidate()
+        this.validateAll()
+        this.repaint()
     }
 
-    private void onMouseClick(final MouseEvent event) {
+    private fun onMouseClick(event: MouseEvent) {
         // Rely on AWT mouse-click only for double-clicks
-        final RBlock block = this.rblock;
+        val block = this.rblock
         if (block != null) {
-            final int clickCount = event.getClickCount();
+            val clickCount = event.getClickCount()
             if (SwingUtilities.isLeftMouseButton(event) && (clickCount > 1)) {
                 // TODO: Double-click must be revised. It generates
                 // a single click via mouse release.
-                final Point point = event.getPoint();
-                block.onDoubleClick(event, point.x, point.y);
+                val point = event.point
+                block.onDoubleClick(event, point.x, point.y)
             } else if (SwingUtilities.isMiddleMouseButton(event) && (clickCount == 1)) {
-                block.onMiddleClick(event, event.getX(), event.getY());
+                block.onMiddleClick(event, event.getX(), event.getY())
             } else if (SwingUtilities.isRightMouseButton(event) && (clickCount == 1)) {
-                block.onRightClick(event, event.getX(), event.getY());
+                block.onRightClick(event, event.getX(), event.getY())
             }
         }
     }
 
-    private void onMousePressed(final MouseEvent event) {
-        this.requestFocus();
-        final RBlock block = this.rblock;
+    private fun onMousePressed(event: MouseEvent) {
+        this.requestFocus()
+        val block = this.rblock
         if (block != null) {
-            final Point point = event.getPoint();
-            this.mousePressTarget = block;
-            final int rx = point.x;
-            final int ry = point.y;
-            block.onMousePressed(event, rx, ry);
-            final RenderableSpot rp = block.getLowestRenderableSpot(rx, ry);
-            this.frameContext.resetSelection(rp);
+            val point = event.point
+            this.mousePressTarget = block
+            val rx = point.x
+            val ry = point.y
+            block.onMousePressed(event, rx, ry)
+            val rp = block.getLowestRenderableSpot(rx, ry)
+            this.frameContext.resetSelection(rp)
         }
     }
 
-    private void onMouseReleased(final MouseEvent event) {
-        final RBlock block = this.rblock;
+    private fun onMouseReleased(event: MouseEvent) {
+        val block = this.rblock
         if (block != null) {
-            final Point point = event.getPoint();
-            final int rx = point.x;
-            final int ry = point.y;
+            val point = event.point
+            val rx = point.x
+            val ry = point.y
             if (SwingUtilities.isLeftMouseButton(event)) {
                 // TODO: This will be raised twice on a double-click.
-                if (event.isControlDown()) {
-                    block.onMiddleClick(event, rx, ry);
+                if (event.isControlDown) {
+                    block.onMiddleClick(event, rx, ry)
                 } else {
-                    block.onMouseClick(event, rx, ry);
+                    block.onMouseClick(event, rx, ry)
                 }
             } else if (SwingUtilities.isRightMouseButton(event)) {
-                block.onRightClick(event, rx, ry);
+                block.onRightClick(event, rx, ry)
             }
-            block.onMouseReleased(event, rx, ry);
-            final BoundableRenderable oldTarget = this.mousePressTarget;
+            block.onMouseReleased(event, rx, ry)
+            val oldTarget = this.mousePressTarget
             if (oldTarget != null) {
-                this.mousePressTarget = null;
-                if (oldTarget != block) {
-                    oldTarget.onMouseDisarmed(event);
+                this.mousePressTarget = null
+                if (oldTarget !== block) {
+                    oldTarget.onMouseDisarmed(event)
                 }
             }
         } else {
-            this.mousePressTarget = null;
+            this.mousePressTarget = null
         }
     }
 
-    private void onMouseExited(final MouseEvent event) {
-        final BoundableRenderable oldTarget = this.mousePressTarget;
+    private fun onMouseExited(event: MouseEvent?) {
+        val oldTarget = this.mousePressTarget
         if (oldTarget != null) {
-            this.mousePressTarget = null;
-            oldTarget.onMouseDisarmed(event);
+            this.mousePressTarget = null
+            oldTarget.onMouseDisarmed(event)
         }
     }
 
-    private Renderable getInnerMostRenderable(final int x, final int y) {
-        final RBlock block = this.rblock;
-        BoundableRenderable r = block.getRenderable(x - block.getVisualX(), y - block.getVisualY());
+    private fun getInnerMostRenderable(x: Int, y: Int): Renderable? {
+        val block = this.rblock
+        var r = block!!.getRenderable(x - block.getVisualX(), y - block.getVisualY())
 
-        int xi = x, yi = y;
-        BoundableRenderable inner = null;
-        BoundableRenderable prevR = null;
+        var xi = x
+        var yi = y
+        var inner: BoundableRenderable? = null
+        var prevR: BoundableRenderable? = null
         do {
-            if (r instanceof RCollection rc) {
-
+            if (r is RCollection) {
                 if (prevR != null) {
-                    final Point oi = prevR.getOriginRelativeTo(rc);
-                    xi -= oi.x;
-                    yi -= oi.y;
+                    val oi = prevR.getOriginRelativeTo(r)
+                    xi -= oi.x
+                    yi -= oi.y
                 }
 
                 // xi -= rc.getVisualX();
                 // yi -= rc.getVisualY();
-
-                inner = rc.getRenderable(xi, yi);
+                inner = r.getRenderable(xi, yi)
                 if (inner != null) {
-                    prevR = r;
-                    r = inner;
+                    prevR = r
+                    r = inner
                 }
             } else {
-                inner = null;
+                inner = null
             }
-        } while (inner != null);
+        } while (inner != null)
 
-        return r;
+        return r
     }
 
-    private RBlock getContainingBlock(final Renderable r) {
-        if (r instanceof RBlock) {
-            return (RBlock) r;
-        } else if (r instanceof TranslatedRenderable) {
-            return getContainingBlock(((TranslatedRenderable) r).getChild());
+    private fun getContainingBlock(r: Renderable?): RBlock? {
+        if (r is RBlock) {
+            return r
+        } else if (r is TranslatedRenderable) {
+            return getContainingBlock(r.getChild())
         } else if (r == null) {
-            return null;
-        } else if (r instanceof BoundableRenderable) {
-            return getContainingBlock(((BoundableRenderable) r).getParent());
+            return null
+        } else if (r is BoundableRenderable) {
+            return getContainingBlock(r.parent)
         } else {
-            return null;
+            return null
         }
     }
 
-    private void onMouseWheelMoved(final MouseWheelEvent mwe) {
-        final RBlock block = this.rblock;
+    private fun onMouseWheelMoved(mwe: MouseWheelEvent) {
+        val block = this.rblock
         if (block != null) {
-            switch (mwe.getScrollType()) {
-                case MouseWheelEvent.WHEEL_UNIT_SCROLL:
-                    final int factor = mwe.isShiftDown() ? 2 : 1;
-                    final int units = mwe.getWheelRotation() * mwe.getScrollAmount() * factor;
-                    final Renderable innerMostRenderable = getInnerMostRenderable(mwe.getX(), mwe.getY());
-                    boolean consumed = false;
-                    RBlock innerBlock = getContainingBlock(innerMostRenderable);
+            when (mwe.getScrollType()) {
+                MouseWheelEvent.WHEEL_UNIT_SCROLL -> {
+                    val factor = if (mwe.isShiftDown) 2 else 1
+                    val units = mwe.getWheelRotation() * mwe.getScrollAmount() * factor
+                    val innerMostRenderable = getInnerMostRenderable(mwe.getX(), mwe.getY())
+                    val consumed = false
+                    val innerBlock = getContainingBlock(innerMostRenderable)
                     do {
                         if (innerBlock != null) {
-                            consumed = innerBlock.scrollByUnits(Adjustable.VERTICAL, units);
-                            innerBlock = getContainingBlock(innerBlock.getParent());
+                            consumed = innerBlock.scrollByUnits(Adjustable.VERTICAL, units)
+                            innerBlock = getContainingBlock(innerBlock.getParent())
                         }
-                    } while ((!consumed) && (innerBlock != null));
-                    break;
+                    } while ((!consumed) && (innerBlock != null))
+                }
             }
         }
     }
 
-    private void onMouseDragged(final MouseEvent event) {
-        final RBlock block = this.rblock;
+    private fun onMouseDragged(event: MouseEvent) {
+        val block = this.rblock
         if (block != null) {
-            final Point point = event.getPoint();
-            final RenderableSpot rp = block.getLowestRenderableSpot(point.x, point.y);
+            val point = event.point
+            val rp = block.getLowestRenderableSpot(point.x, point.y)
             if (rp != null) {
-                this.frameContext.expandSelection(rp);
+                this.frameContext.expandSelection(rp)
             }
-            block.ensureVisible(point);
+            block.ensureVisible(point)
         }
     }
 
-    private void onMouseMoved(final MouseEvent event) {
-        final RBlock block = this.rblock;
+    private fun onMouseMoved(event: MouseEvent) {
+        val block = this.rblock
         if (block != null) {
-            final Point point = event.getPoint();
-            block.onMouseMoved(event, point.x, point.y, false, null);
+            val point = event.point
+            block.onMouseMoved(event, point.x, point.y, false, null)
         }
     }
 
-    void disableRenderHints() {
-        this.applyRenderHints = false;
+    fun disableRenderHints() {
+        this.applyRenderHints = false
     }
 
     /*
@@ -646,44 +681,49 @@ public class HtmlBlockPanel extends JComponent implements NodeRenderer, Renderab
      * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
      */
     // protected void paintComponent(Graphics g) {
-    @Override
-    public void paint(final Graphics g) {
+    override fun paint(g: Graphics) {
         // We go against Sun's advice and override
         // paint() instead of paintComponent(). Scrollbars
         // do not repaint correctly if we use
         // paintComponent.
-        if (this.isOpaque()) {
+        if (this.isOpaque) {
             // Background not painted by default in JComponent.
-            final Rectangle clipBounds = g.getClipBounds();
-            g.setColor(this.getBackground());
-            g.fillRect(clipBounds.x, clipBounds.y, clipBounds.width, clipBounds.height);
+            val clipBounds = g.clipBounds
+            g.color = this.getBackground()
+            g.fillRect(clipBounds.x, clipBounds.y, clipBounds.width, clipBounds.height)
         }
-        if (applyRenderHints && g instanceof Graphics2D g2) {
+        if (applyRenderHints && g is Graphics2D) {
             if (desktopHints == null) {
-                desktopHints = (Map<?, ?>) (Toolkit.getDefaultToolkit().getDesktopProperty("awt.font.desktophints"));
+                desktopHints = (Toolkit.getDefaultToolkit()
+                    .getDesktopProperty("awt.font.desktophints")) as MutableMap<*, *>?
             }
             if (desktopHints != null) {
-                g2.addRenderingHints(desktopHints);
+                g.addRenderingHints(desktopHints)
             } else {
                 try {
-                    g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
-                } catch (final NoSuchFieldError e) {
-                    g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                    g.setRenderingHint(
+                        RenderingHints.KEY_TEXT_ANTIALIASING,
+                        RenderingHints.VALUE_TEXT_ANTIALIAS_GASP
+                    )
+                } catch (e: NoSuchFieldError) {
+                    g.setRenderingHint(
+                        RenderingHints.KEY_TEXT_ANTIALIASING,
+                        RenderingHints.VALUE_TEXT_ANTIALIAS_ON
+                    )
                 }
             }
 
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
         }
-        final RBlock block = this.rblock;
+        val block = this.rblock
         if (block != null) {
-            block.paint(g);
+            block.paint(g)
 
             // Paint FrameContext selection
-
-            final RenderableSpot start = this.startSelection;
-            final RenderableSpot end = this.endSelection;
-            if ((start != null) && (end != null) && !start.equals(end)) {
-                block.paintSelection(g, false, start, end);
+            val start = this.startSelection
+            val end = this.endSelection
+            if ((start != null) && (end != null) && (start != end)) {
+                block.paintSelection(g, false, start, end)
             }
         }
 
@@ -691,101 +731,107 @@ public class HtmlBlockPanel extends JComponent implements NodeRenderer, Renderab
         // drawGrid(g);
     }
 
-    private void drawGrid(final Graphics g) {
-        final int GRID_SIZE = 50;
-        final int OFFSET_X = 0;
-        final int OFFSET_Y = 0;
+    private fun drawGrid(g: Graphics) {
+        val GRID_SIZE = 50
+        val OFFSET_X = 0
+        val OFFSET_Y = 0
         // Draw grid for debug
-        final Rectangle clipBounds = g.getClipBounds();
-        g.setColor(new Color(0, 0, 0, 30));
-        for (int i = 0; i < clipBounds.width; i += GRID_SIZE) {
-            g.drawLine(i + OFFSET_X, 0, i + OFFSET_X, clipBounds.height);
+        val clipBounds = g.clipBounds
+        g.color = Color(0, 0, 0, 30)
+        var i = 0
+        while (i < clipBounds.width) {
+            g.drawLine(i + OFFSET_X, 0, i + OFFSET_X, clipBounds.height)
+            i += GRID_SIZE
         }
-        for (int j = 0; j < clipBounds.height; j += GRID_SIZE) {
-            g.drawLine(0, j + OFFSET_Y, clipBounds.width, j + OFFSET_Y);
+        var j = 0
+        while (j < clipBounds.height) {
+            g.drawLine(0, j + OFFSET_Y, clipBounds.width, j + OFFSET_Y)
+            j += GRID_SIZE
         }
     }
 
-    @Override
-    public void doLayout() {
-        final NodeImpl rootNode = getRootNode();
-        if (rootNode instanceof HTMLDocumentImpl doc) {
-            final boolean layoutBlocked = doc.layoutBlocked.get();
+    override fun doLayout() {
+        val rootNode = getRootNode()
+        if (rootNode is HTMLDocumentImpl) {
+            val layoutBlocked = rootNode.layoutBlocked.get()
             if (layoutBlocked) {
-                return;
+                return
             }
 
             // Note: There were issues with this previously. See GH #147
-            doc.primeNodeData();
-
+            rootNode.primeNodeData()
         }
 
         try {
-            final Dimension size = this.getSize();
-            this.clearComponents();
-            final RBlock block = this.rblock;
+            val size = this.size
+            this.clearComponents()
+            val block = this.rblock
             if (block != null) {
-                block.layout(size.width, size.height, true, true, null, false);
+                block.layout(size.width, size.height, true, true, null, false)
                 // Only set origin
-                block.setOrigin(0, 0);
-                block.updateWidgetBounds(0, 0);
-                this.updateGUIComponents();
+                block.setOrigin(0, 0)
+                block.updateWidgetBounds(0, 0)
+                this.updateGUIComponents()
                 // dumpRndTree(block);
                 if (!scrollCompleted) {
-                    scrollCompleted = true;
-                    if (rootNode instanceof HTMLDocumentImpl doc) {
-                        final String ref = doc.getDocumentURL().getRef();
-                        if (ref != null && ref.length() > 0) {
-                            scrollTo(doc.getElementById(ref));
+                    scrollCompleted = true
+                    if (rootNode is HTMLDocumentImpl) {
+                        val ref = rootNode.getDocumentURL()!!.ref
+                        if (ref != null && ref.length > 0) {
+                            scrollTo(rootNode.getElementById(ref))
                         }
                     }
                 }
-                layoutCompleted.complete(true);
+                layoutCompleted.complete(true)
             } else {
-                if (this.getComponentCount() > 0) {
-                    this.removeAll();
+                if (this.componentCount > 0) {
+                    this.removeAll()
                 }
             }
-        } catch (final Exception thrown) {
-            logger.log(Level.SEVERE, "Unexpected error in layout engine. Document is " + this.getRootNode(), thrown);
+        } catch (thrown: Exception) {
+            logger.log(
+                Level.SEVERE,
+                "Unexpected error in layout engine. Document is " + this.getRootNode(),
+                thrown
+            )
         }
     }
 
     /**
      * Implementation of UINode.repaint().
      */
-    public void repaint(final ModelNode modelNode) {
+    fun repaint(modelNode: ModelNode?) {
         // this.rblock.invalidateRenderStyle();
-        this.repaint();
+        this.repaint()
     }
 
-    public String getSelectionText() {
-        final RenderableSpot start = this.startSelection;
-        final RenderableSpot end = this.endSelection;
-        if ((start != null) && (end != null)) {
-            final StringBuffer buffer = new StringBuffer();
-            this.rblock.extractSelectionText(buffer, false, start, end);
-            return buffer.toString();
-        } else {
-            return null;
+    val selectionText: String?
+        get() {
+            val start = this.startSelection
+            val end = this.endSelection
+            if ((start != null) && (end != null)) {
+                val buffer = StringBuffer()
+                this.rblock!!.extractSelectionText(buffer, false, start, end)
+                return buffer.toString()
+            } else {
+                return null
+            }
         }
+
+    fun hasSelection(): Boolean {
+        val start = this.startSelection
+        val end = this.endSelection
+        return (start != null) && (end != null) && (start != end)
     }
 
-    public boolean hasSelection() {
-        final RenderableSpot start = this.startSelection;
-        final RenderableSpot end = this.endSelection;
-        return (start != null) && (end != null) && !start.equals(end);
-    }
-
-    @Override
-    protected void paintChildren(final Graphics g) {
+    override fun paintChildren(g: Graphics?) {
         // Overridding with NOP. For various reasons,
         // the regular mechanism for painting children
         // needs to be handled by Cobra.
     }
 
-    public Color getPaintedBackgroundColor() {
-        return this.isOpaque() ? this.getBackground() : null;
+    override fun getPaintedBackgroundColor(): Color? {
+        return if (this.isOpaque) this.getBackground() else null
     }
 
     /*
@@ -795,284 +841,285 @@ public class HtmlBlockPanel extends JComponent implements NodeRenderer, Renderab
      * java.awt.datatransfer.ClipboardOwner#lostOwnership(java.awt.datatransfer
      * .Clipboard, java.awt.datatransfer.Transferable)
      */
-    public void lostOwnership(final Clipboard arg0, final Transferable arg1) {
+    override fun lostOwnership(arg0: Clipboard?, arg1: Transferable?) {
     }
 
-    public void relayout() {
+    override fun relayout() {
         // Expected to be called in the GUI thread.
         // Renderable branch should be invalidated at this
         // point, but this GUI component not necessarily.
-        this.revalidatePanel();
+        this.revalidatePanel()
     }
 
-    public void invalidateLayoutUpTree() {
+    override fun invalidateLayoutUpTree() {
         // Called when renderable branch is invalidated.
         // We shouldn't do anything here. Changes in renderer
         // tree do not have any bearing on validity of GUI
         // component.
     }
 
-    public void updateAllWidgetBounds() {
-        this.rblock.updateWidgetBounds(0, 0);
+    override fun updateAllWidgetBounds() {
+        this.rblock!!.updateWidgetBounds(0, 0)
     }
 
-    public Point getGUIPoint(final int clientX, final int clientY) {
+    override fun getGUIPoint(clientX: Int, clientY: Int): Point {
         // This is the GUI!
-        return new Point(clientX, clientY);
+        return Point(clientX, clientY)
     }
 
-    public void focus() {
-        this.grabFocus();
+    override fun focus() {
+        this.grabFocus()
     }
 
-    void processDocumentNotifications(final DocumentNotification[] notifications) {
+    fun processDocumentNotifications(notifications: Array<DocumentNotification>) {
         // Called in the GUI thread.
-        if (this.processingDocumentNotification) {
-            // This should not be possible. Even if
-            // Javascript modifies the DOM during
-            // parsing, this should be executed in
-            // the GUI thread, not the parser thread.
-            throw new IllegalStateException("Recursive");
-        }
-        this.processingDocumentNotification = true;
+        check(!this.processingDocumentNotification) { "Recursive" }
+        this.processingDocumentNotification = true
         try {
             // Note: It may be assumed that usually only generic
             // notifications come in batches. Other types
             // of noitifications probably come one by one.
-            boolean topLayout = false;
-            ArrayList<RElement> repainters = null;
-            final int length = notifications.length;
-            for (int i = 0; i < length; i++) {
-                final DocumentNotification dn = notifications[i];
-                final int type = dn.type;
-                switch (type) {
-                    case DocumentNotification.GENERIC:
-                    case DocumentNotification.SIZE: {
-                        final NodeImpl node = dn.node;
+            var topLayout = false
+            var repainters: ArrayList<RElement?>? = null
+            val length = notifications.size
+            for (i in 0..<length) {
+                val dn = notifications[i]
+                val type = dn.type
+                when (type) {
+                    DocumentNotification.Companion.GENERIC, DocumentNotification.Companion.SIZE -> {
+                        val node = dn.node
                         if (node == null) {
                             // This is all-invalidate (new style sheet)
                             if (loggableInfo) {
-                                logger.info("processDocumentNotifications(): Calling invalidateLayoutDeep().");
+                                logger.info("processDocumentNotifications(): Calling invalidateLayoutDeep().")
                             }
-                            this.rblock.invalidateLayoutDeep();
+                            this.rblock!!.invalidateLayoutDeep()
                             // this.rblock.invalidateRenderStyle();
                         } else {
-                            final UINode uiNode = node.findUINode();
+                            val uiNode = node.findUINode()
                             if (uiNode != null) {
-                                final RElement relement = (RElement) uiNode;
-                                relement.invalidateLayoutUpTree();
-                                relement.invalidateLayoutDeep();
+                                val relement = uiNode as RElement
+                                relement.invalidateLayoutUpTree()
+                                relement.invalidateLayoutDeep()
                                 // if(type == DocumentNotification.GENERIC) {
                                 // relement.invalidateRenderStyle();
                                 // }
                             } else {
                                 if (loggableInfo) {
-                                    logger.info("processDocumentNotifications(): Unable to find UINode for " + node);
+                                    logger.info("processDocumentNotifications(): Unable to find UINode for " + node)
                                 }
                             }
                         }
-                        topLayout = true;
-                        break;
+                        topLayout = true
                     }
-                    case DocumentNotification.POSITION: {
+
+                    DocumentNotification.Companion.POSITION -> {
                         // TODO: Could be more efficient.
-                        final NodeImpl node = dn.node;
-                        final NodeImpl parent = (NodeImpl) node.getParentNode();
+                        val node = dn.node
+                        val parent = node.getParentNode() as NodeImpl?
                         if (parent != null) {
-                            final UINode uiNode = parent.findUINode();
+                            val uiNode = parent.findUINode()
                             if (uiNode != null) {
-                                final RElement relement = (RElement) uiNode;
-                                relement.invalidateLayoutUpTree();
+                                val relement = uiNode as RElement
+                                relement.invalidateLayoutUpTree()
                             }
                         }
-                        topLayout = true;
-                        break;
+                        topLayout = true
                     }
-                    case DocumentNotification.LOOK: {
-                        final NodeImpl node = dn.node;
-                        final UINode uiNode = node.findUINode();
+
+                    DocumentNotification.Companion.LOOK -> {
+                        val node = dn.node
+                        val uiNode = node.findUINode()
                         if (uiNode != null) {
                             if (repainters == null) {
-                                repainters = new ArrayList<>(1);
+                                repainters = ArrayList<RElement?>(1)
                             }
-                            final RElement relement = (RElement) uiNode;
-                            relement.invalidateRenderStyle();
-                            repainters.add(relement);
+                            val relement = uiNode as RElement
+                            relement.invalidateRenderStyle()
+                            repainters.add(relement)
                         }
-                        break;
                     }
-                    default:
-                        break;
+
+                    else -> {}
                 }
             }
             if (topLayout) {
-                this.revalidatePanel();
+                this.revalidatePanel()
             } else {
                 if (repainters != null) {
-                    final Iterator<RElement> i = repainters.iterator();
+                    val i: MutableIterator<RElement> = repainters.iterator()
                     while (i.hasNext()) {
-                        final RElement element = i.next();
-                        element.repaint();
+                        val element = i.next()
+                        element.repaint()
                     }
                 }
             }
         } finally {
-            this.processingDocumentNotification = false;
+            this.processingDocumentNotification = false
         }
     }
 
-    public RenderableContainer getParentContainer() {
-        return null;
+    override fun getParentContainer(): RenderableContainer? {
+        return null
     }
 
-    public void addDelayedPair(final DelayedPair pair) {
-        throw new UnsupportedOperationException("Delayed pairs are not being handled at this level.");
+    override fun addDelayedPair(pair: DelayedPair?) {
+        throw UnsupportedOperationException("Delayed pairs are not being handled at this level.")
     }
 
-    public Collection<DelayedPair> getDelayedPairs() {
-        throw new UnsupportedOperationException("Delayed pairs are not being handled at this level.");
+    override fun getDelayedPairs(): MutableCollection<DelayedPair?>? {
+        throw UnsupportedOperationException("Delayed pairs are not being handled at this level.")
     }
 
-    public void clearDelayedPairs() {
-        throw new UnsupportedOperationException("Delayed pairs are not being handled at this level.");
+    override fun clearDelayedPairs() {
+        throw UnsupportedOperationException("Delayed pairs are not being handled at this level.")
     }
 
-    private void clearComponents() {
-        final Set<Component> c = this.components;
+    private fun clearComponents() {
+        val c: MutableSet<Component?>? = this.components
         if (c != null) {
-            c.clear();
+            c.clear()
         }
     }
 
-    public Component addComponent(final Component component) {
-        Set<Component> c = this.components;
+    override fun addComponent(component: Component?): Component? {
+        var c: MutableSet<Component?>? = this.components
         if (c == null) {
-            c = new HashSet<>();
-            this.components = c;
+            c = HashSet<Component?>()
+            this.components = c
         }
         if (c.add(component)) {
-            return component;
+            return component
         } else {
-            return null;
+            return null
         }
     }
 
-    private void updateGUIComponents() {
+    private fun updateGUIComponents() {
         // We use this method, instead of removing all components and
         // adding them back, because removal of components can cause
         // them to lose focus.
 
-        final Set<Component> c = this.components;
+        val c: MutableSet<Component?>? = this.components
         if (c == null) {
-            if (this.getComponentCount() != 0) {
-                this.removeAll();
+            if (this.componentCount != 0) {
+                this.removeAll()
             }
         } else {
             // Remove children not in the set.
-            final Set<Component> workingSet = new HashSet<>();
-            workingSet.addAll(c);
-            int count = this.getComponentCount();
-            for (int i = 0; i < count; ) {
-                final Component component = this.getComponent(i);
+            val workingSet: MutableSet<Component?> = HashSet<Component?>()
+            workingSet.addAll(c)
+            var count = this.componentCount
+            var i = 0
+            while (i < count) {
+                val component = this.getComponent(i)
                 if (!c.contains(component)) {
-                    this.remove(i);
-                    count = this.getComponentCount();
+                    this.remove(i)
+                    count = this.componentCount
                 } else {
-                    i++;
-                    workingSet.remove(component);
+                    i++
+                    workingSet.remove(component)
                 }
             }
             // Add components in set that were not previously children.
-            final Iterator<Component> wsi = workingSet.iterator();
+            val wsi = workingSet.iterator()
             while (wsi.hasNext()) {
-                final Component component = wsi.next();
-                this.add(component);
+                val component = wsi.next()
+                this.add(component)
             }
         }
     }
 
-    public int getDefaultOverflowX() {
-        return defaultOverflowX;
+    fun getDefaultOverflowX(): Int {
+        return defaultOverflowX
     }
 
-    public void setDefaultOverflowX(final int defaultOverflowX) {
+    fun setDefaultOverflowX(defaultOverflowX: Int) {
         if (defaultOverflowX != this.defaultOverflowX) {
-            this.defaultOverflowX = defaultOverflowX;
-            final RBlock block = this.rblock;
+            this.defaultOverflowX = defaultOverflowX
+            val block = this.rblock
             if (block != null) {
-                block.setDefaultOverflowX(defaultOverflowX);
-                block.relayoutIfValid();
+                block.defaultOverflowX = defaultOverflowX
+                block.relayoutIfValid()
             }
         }
     }
 
-    public int getDefaultOverflowY() {
-        return defaultOverflowY;
+    fun getDefaultOverflowY(): Int {
+        return defaultOverflowY
     }
 
-    public void setDefaultOverflowY(final int defaultOverflowY) {
+    fun setDefaultOverflowY(defaultOverflowY: Int) {
         if (this.defaultOverflowY != defaultOverflowY) {
-            this.defaultOverflowY = defaultOverflowY;
-            final RBlock block = this.rblock;
+            this.defaultOverflowY = defaultOverflowY
+            val block = this.rblock
             if (block != null) {
-                block.setDefaultOverflowY(defaultOverflowY);
-                block.relayoutIfValid();
+                block.defaultOverflowY = defaultOverflowY
+                block.relayoutIfValid()
             }
         }
     }
 
-    @Override
-    public Insets getInsets(final boolean hscroll, final boolean vscroll) {
-        throw new UnsupportedOperationException(
-                "Method added while implementing absolute positioned elements inside relative elements. But not implemented yet.");
+    override fun getInsets(hscroll: Boolean, vscroll: Boolean): Insets? {
+        throw UnsupportedOperationException(
+            "Method added while implementing absolute positioned elements inside relative elements. But not implemented yet."
+        )
     }
 
-    @Override
-    public Insets getInsetsMarginBorder(final boolean hscroll, final boolean vscroll) {
-        throw new UnsupportedOperationException("Method added while fixing #32. Not implemented yet.");
+    override fun getInsetsMarginBorder(hscroll: Boolean, vscroll: Boolean): Insets? {
+        throw UnsupportedOperationException("Method added while fixing #32. Not implemented yet.")
     }
 
-    @Override
-    public int getVisualHeight() {
-        return rblock.getVisualHeight();
+    override fun getVisualHeight(): Int {
+        return rblock!!.getVisualHeight()
     }
 
-    @Override
-    public int getVisualWidth() {
-        return rblock.getVisualWidth();
+    override fun getVisualWidth(): Int {
+        return rblock!!.getVisualWidth()
     }
 
-    @Override
-    public Rectangle getVisualBounds() {
-        return new Rectangle(getX(), getY(), getVisualWidth(), getVisualHeight());
+    override fun getVisualBounds(): Rectangle {
+        return Rectangle(x, y, getVisualWidth(), getVisualHeight())
     }
 
-    public Point translateDescendentPoint(BoundableRenderable descendent, int x, int y) {
-        return rblock.translateDescendentPoint(descendent, x, y);
+    override fun translateDescendentPoint(descendent: BoundableRenderable, x: Int, y: Int): Point? {
+        return rblock!!.translateDescendentPoint(descendent, x, y)
     }
 
-    @Override
-    public Point getOriginRelativeTo(RCollection bodyLayout) {
+    override fun getOriginRelativeTo(bodyLayout: RCollection?): Point? {
         // TODO Auto-generated method stub
-        return null;
+        return null
     }
 
-    @Override
-    public Point getOriginRelativeToAbs(RCollection bodyLayout) {
+    override fun getOriginRelativeToAbs(bodyLayout: RCollection?): Point? {
         // TODO Auto-generated method stub
-        return null;
+        return null
     }
 
-    public Future<Boolean> layoutCompletion() {
-        return layoutCompleted;
+    fun layoutCompletion(): Future<Boolean?> {
+        return layoutCompleted
     }
 
-    public boolean isReadyToPaint() {
-        final RBlock block = this.rblock;
-        if (block != null) {
-            final HTMLDocumentImpl doc = (HTMLDocumentImpl) block.getModelNode();
-            return (!doc.getWindow().hasPendingTasks()) && block.isReadyToPaint();
+    val isReadyToPaint: Boolean
+        get() {
+            val block = this.rblock
+            if (block != null) {
+                val doc = block.getModelNode() as HTMLDocumentImpl
+                return (!doc.window.hasPendingTasks()) && block.isReadyToPaint()
+            }
+            return false
         }
-        return false;
+
+    companion object {
+        private const val serialVersionUID = 7851587340938903001L
+        private val logger: Logger = Logger.getLogger(HtmlBlockPanel::class.java.name)
+        private val loggableInfo: Boolean = logger.isLoggable(Level.INFO)
+
+        @Suppress("unused")
+        private fun dumpRndTree(root: Renderable?) {
+            println("------------------------------")
+            RBlock.dumpRndTree("", true, root, true)
+            println("------------------------------")
+        }
     }
 }

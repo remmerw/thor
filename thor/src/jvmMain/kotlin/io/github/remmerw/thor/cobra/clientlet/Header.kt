@@ -20,19 +20,19 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.github.remmerw.thor.cobra.clientlet;
+package io.github.remmerw.thor.cobra.clientlet
 
 /**
  * Represents a HTTP header.
  */
-public interface Header {
+interface Header {
     /**
      * Gets the header name.
      */
-    String getName();
+    val name: String?
 
     /**
      * Gets the header value.
      */
-    String getValue();
+    val value: String?
 }

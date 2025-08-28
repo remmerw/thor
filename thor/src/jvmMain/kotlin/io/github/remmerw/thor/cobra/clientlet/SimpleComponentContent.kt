@@ -20,50 +20,44 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.github.remmerw.thor.cobra.clientlet;
+package io.github.remmerw.thor.cobra.clientlet
 
-import java.awt.Component;
+import java.awt.Component
 
-public abstract class SimpleComponentContent extends AbstractComponentContent {
-    private final Component component;
-    private final String title;
-    private final String sourceCode;
+abstract class SimpleComponentContent : AbstractComponentContent {
+    private val component: Component?
+    private val title: String?
+    private val sourceCode: String?
 
-    public SimpleComponentContent(final Component component, final String title, final String sourceCode) {
-        this.component = component;
-        this.title = title;
-        this.sourceCode = sourceCode;
+    constructor(component: Component?, title: String?, sourceCode: String?) {
+        this.component = component
+        this.title = title
+        this.sourceCode = sourceCode
     }
 
-    public SimpleComponentContent(final Component component) {
-        this.component = component;
-        this.title = component.toString();
-        this.sourceCode = null;
+    constructor(component: Component) {
+        this.component = component
+        this.title = component.toString()
+        this.sourceCode = null
     }
 
-    @Override
-    public boolean canCopy() {
-        return false;
+    override fun canCopy(): Boolean {
+        return false
     }
 
-    @Override
-    public boolean copy() {
-        return false;
+    override fun copy(): Boolean {
+        return false
     }
 
-    @Override
-    public Component getComponent() {
-        return this.component;
+    override fun getComponent(): Component? {
+        return this.component
     }
 
-    @Override
-    public String getSourceCode() {
-        return this.sourceCode;
+    override fun getSourceCode(): String? {
+        return this.sourceCode
     }
 
-    @Override
-    public String getTitle() {
-        return this.title;
+    override fun getTitle(): String? {
+        return this.title
     }
-
 }

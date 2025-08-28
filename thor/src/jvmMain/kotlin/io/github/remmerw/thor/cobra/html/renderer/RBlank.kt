@@ -21,77 +21,73 @@
 /*
  * Created on May 21, 2005
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import java.awt.Color;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.event.MouseEvent;
+import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
+import io.github.remmerw.thor.cobra.html.style.RenderState
+import java.awt.FontMetrics
+import java.awt.Graphics
+import java.awt.event.MouseEvent
 
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode;
-import io.github.remmerw.thor.cobra.html.style.RenderState;
-
-final class RBlank extends BaseBoundableRenderable {
-    // TODO: Is there a need for RBlank's at all?
-    public final int ascentPlusLeading;
-    private final FontMetrics fontMetrics;
-
-    public RBlank(final ModelNode me, final FontMetrics fm, final RenderableContainer container, final int ascentPlusLeading,
-                  final int width, final int height) {
-        super(container, me);
-        this.fontMetrics = fm;
-        this.ascentPlusLeading = ascentPlusLeading;
+internal class RBlank(
+    me: ModelNode?,
+    private val fontMetrics: FontMetrics,
+    container: RenderableContainer?, // TODO: Is there a need for RBlank's at all?
+    val ascentPlusLeading: Int,
+    width: Int,
+    height: Int
+) : BaseBoundableRenderable(container, me) {
+    init {
         // Dimensions set when constructed.
-        this.width = width;
-        this.height = height;
+        this.width = width
+        this.height = height
     }
 
-    @Override
-    protected void invalidateLayoutLocal() {
+    override fun invalidateLayoutLocal() {
     }
 
-    public boolean onMouseClick(final MouseEvent event, final int x, final int y) {
-        final ModelNode me = this.modelNode;
+    override fun onMouseClick(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val me = this.modelNode
         if (me != null) {
-            return HtmlController.getInstance().onMouseClick(me, event, x, y);
+            return HtmlController.Companion.getInstance().onMouseClick(me, event, x, y)
         } else {
-            return true;
+            return true
         }
     }
 
-    public boolean onDoubleClick(final MouseEvent event, final int x, final int y) {
-        final ModelNode me = this.modelNode;
+    override fun onDoubleClick(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val me = this.modelNode
         if (me != null) {
-            return HtmlController.getInstance().onDoubleClick(me, event, x, y);
+            return HtmlController.Companion.getInstance().onDoubleClick(me, event, x, y)
         } else {
-            return true;
+            return true
         }
     }
 
-    public boolean onMousePressed(final MouseEvent event, final int x, final int y) {
-        final ModelNode me = this.modelNode;
+    override fun onMousePressed(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val me = this.modelNode
         if (me != null) {
-            return HtmlController.getInstance().onMouseDown(me, event, x, y);
+            return HtmlController.Companion.getInstance().onMouseDown(me, event, x, y)
         } else {
-            return true;
+            return true
         }
     }
 
-    public boolean onMouseReleased(final MouseEvent event, final int x, final int y) {
-        final ModelNode me = this.modelNode;
+    override fun onMouseReleased(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val me = this.modelNode
         if (me != null) {
-            return HtmlController.getInstance().onMouseUp(me, event, x, y);
+            return HtmlController.Companion.getInstance().onMouseUp(me, event, x, y)
         } else {
-            return true;
+            return true
         }
     }
 
-    public boolean onMouseDisarmed(final MouseEvent event) {
-        final ModelNode me = this.modelNode;
+    override fun onMouseDisarmed(event: MouseEvent?): Boolean {
+        val me = this.modelNode
         if (me != null) {
-            return HtmlController.getInstance().onMouseDisarmed(me, event);
+            return HtmlController.Companion.getInstance().onMouseDisarmed(me, event)
         } else {
-            return true;
+            return true
         }
     }
 
@@ -101,51 +97,51 @@ final class RBlank extends BaseBoundableRenderable {
      * @see
      * net.sourceforge.xamj.domimpl.markup.Renderable#paint(java.awt.Graphics)
      */
-    public void paint(final Graphics g) {
-        final RenderState rs = this.modelNode.getRenderState();
+    override fun paint(g: Graphics) {
+        val rs: RenderState = this.modelNode.renderState!!
 
-        if (rs.getVisibility() != RenderState.VISIBILITY_VISIBLE) {
+        if (rs.visibility != RenderState.VISIBILITY_VISIBLE) {
             // Just don't paint it.
-            return;
+            return
         }
 
-        final Color bkg = rs.getTextBackgroundColor();
+        val bkg = rs.textBackgroundColor
         if (bkg != null) {
-            final Color oldColor = g.getColor();
+            val oldColor = g.color
             try {
-                g.setColor(bkg);
-                g.fillRect(0, 0, this.width, this.height);
+                g.setColor(bkg)
+                g.fillRect(0, 0, this.width, this.height)
             } finally {
-                g.setColor(oldColor);
+                g.color = oldColor
             }
         }
-        final int td = rs.getTextDecorationMask();
+        val td = rs.textDecorationMask
         if (td != 0) {
-            if ((td & RenderState.MASK_TEXTDECORATION_UNDERLINE) != 0) {
-                final int lineOffset = this.ascentPlusLeading + 2;
-                g.drawLine(0, lineOffset, this.width, lineOffset);
+            if ((td and RenderState.MASK_TEXTDECORATION_UNDERLINE) != 0) {
+                val lineOffset = this.ascentPlusLeading + 2
+                g.drawLine(0, lineOffset, this.width, lineOffset)
             }
-            if ((td & RenderState.MASK_TEXTDECORATION_LINE_THROUGH) != 0) {
-                final FontMetrics fm = this.fontMetrics;
-                final int lineOffset = fm.getLeading() + ((fm.getAscent() + fm.getDescent()) / 2);
-                g.drawLine(0, lineOffset, this.width, lineOffset);
+            if ((td and RenderState.MASK_TEXTDECORATION_LINE_THROUGH) != 0) {
+                val fm = this.fontMetrics
+                val lineOffset = fm.leading + ((fm.ascent + fm.descent) / 2)
+                g.drawLine(0, lineOffset, this.width, lineOffset)
             }
-            if ((td & RenderState.MASK_TEXTDECORATION_OVERLINE) != 0) {
-                final int lineOffset = this.fontMetrics.getLeading();
-                g.drawLine(0, lineOffset, this.width, lineOffset);
+            if ((td and RenderState.MASK_TEXTDECORATION_OVERLINE) != 0) {
+                val lineOffset = this.fontMetrics.leading
+                g.drawLine(0, lineOffset, this.width, lineOffset)
             }
-            if ((td & RenderState.MASK_TEXTDECORATION_BLINK) != 0) {
+            if ((td and RenderState.MASK_TEXTDECORATION_BLINK) != 0) {
                 // TODO
             }
         }
-        final Color over = rs.getOverlayColor();
+        val over = rs.overlayColor
         if (over != null) {
-            final Color oldColor = g.getColor();
+            val oldColor = g.color
             try {
-                g.setColor(over);
-                g.fillRect(0, 0, width, height);
+                g.setColor(over)
+                g.fillRect(0, 0, width, height)
             } finally {
-                g.setColor(oldColor);
+                g.color = oldColor
             }
         }
     }
@@ -158,32 +154,39 @@ final class RBlank extends BaseBoundableRenderable {
      * , boolean, org.xamjwg.html.renderer.RenderablePoint,
      * org.xamjwg.html.renderer.RenderablePoint)
      */
-    public boolean paintSelection(final Graphics g, final boolean inSelection, final RenderableSpot startPoint, final RenderableSpot endPoint) {
+    override fun paintSelection(
+        g: Graphics,
+        inSelection: Boolean,
+        startPoint: RenderableSpot,
+        endPoint: RenderableSpot
+    ): Boolean {
         if ((this == startPoint.renderable) || (this == endPoint.renderable)) {
             if (inSelection) {
-                return false;
+                return false
             }
         } else if (!inSelection) {
-            return false;
+            return false
         }
-        g.setColor(SELECTION_COLOR);
-        g.setXORMode(SELECTION_XOR);
-        g.fillRect(0, 0, this.width, this.height);
-        g.setPaintMode();
-        return true;
+        g.color = SELECTION_COLOR
+        g.setXORMode(SELECTION_XOR)
+        g.fillRect(0, 0, this.width, this.height)
+        g.setPaintMode()
+        return true
     }
 
-    public boolean extractSelectionText(final StringBuffer buffer, final boolean inSelection, final RenderableSpot startPoint,
-                                        final RenderableSpot endPoint) {
+    override fun extractSelectionText(
+        buffer: StringBuffer, inSelection: Boolean, startPoint: RenderableSpot,
+        endPoint: RenderableSpot
+    ): Boolean {
         if ((this == startPoint.renderable) || (this == endPoint.renderable)) {
             if (inSelection) {
-                return false;
+                return false
             }
         } else if (!inSelection) {
-            return false;
+            return false
         }
-        buffer.append(' ');
-        return true;
+        buffer.append(' ')
+        return true
     }
 
     /*
@@ -191,20 +194,20 @@ final class RBlank extends BaseBoundableRenderable {
      *
      * @see org.xamjwg.html.renderer.BoundableRenderable#getRenderable(int, int)
      */
-    public RenderableSpot getLowestRenderableSpot(final int x, final int y) {
-        return new RenderableSpot(this, x, y);
+    override fun getLowestRenderableSpot(x: Int, y: Int): RenderableSpot {
+        return RenderableSpot(this, x, y)
     }
 
-    public boolean isContainedByNode() {
-        return true;
+    override fun isContainedByNode(): Boolean {
+        return true
     }
 
-    public boolean onRightClick(final MouseEvent event, final int x, final int y) {
-        final ModelNode me = this.modelNode;
+    override fun onRightClick(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val me = this.modelNode
         if (me != null) {
-            return HtmlController.getInstance().onContextMenu(me, event, x, y);
+            return HtmlController.Companion.getInstance().onContextMenu(me, event, x, y)
         } else {
-            return true;
+            return true
         }
     }
 }

@@ -21,110 +21,100 @@
 /*
  * Created on Oct 8, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.mozilla.javascript.Function;
-import org.w3c.dom.Document;
-import org.w3c.dom.html.HTMLBodyElement;
-import org.w3c.dom.html.HTMLDocument;
+import io.github.remmerw.thor.cobra.html.style.BodyRenderState
+import io.github.remmerw.thor.cobra.html.style.RenderState
+import org.w3c.dom.Document
+import org.w3c.dom.html.HTMLBodyElement
+import org.w3c.dom.html.HTMLDocument
 
-import io.github.remmerw.thor.cobra.html.style.BodyRenderState;
-import io.github.remmerw.thor.cobra.html.style.RenderState;
-
-public class HTMLBodyElementImpl extends HTMLAbstractUIElement implements HTMLBodyElement {
-    public HTMLBodyElementImpl(final String name) {
-        super(name);
-    }
-
-    @Override
-    void setOwnerDocument(final Document value, final boolean deep) {
-        super.setOwnerDocument(value, deep);
-        if (value instanceof HTMLDocument) {
-            ((HTMLDocument) value).setBody(this);
+class HTMLBodyElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLBodyElement {
+    override fun setOwnerDocument(value: Document?, deep: Boolean) {
+        super.setOwnerDocument(value, deep)
+        if (value is HTMLDocument) {
+            value.body = this
         }
     }
 
-    @Override
-    void setOwnerDocument(final Document value) {
-        super.setOwnerDocument(value);
-        if (value instanceof HTMLDocument) {
-            ((HTMLDocument) value).setBody(this);
+    override fun setOwnerDocument(value: Document?) {
+        super.setOwnerDocument(value)
+        if (value is HTMLDocument) {
+            value.body = this
         }
     }
 
-    public String getALink() {
-        return this.getAttribute("alink");
+    override fun getALink(): String? {
+        return this.getAttribute("alink")
     }
 
-    public void setALink(final String aLink) {
-        this.setAttribute("alink", aLink);
+    override fun setALink(aLink: String?) {
+        this.setAttribute("alink", aLink)
     }
 
-    public String getBackground() {
-        return this.getAttribute("background");
+    override fun getBackground(): String? {
+        return this.getAttribute("background")
     }
 
-    public void setBackground(final String background) {
-        this.setAttribute("background", background);
+    override fun setBackground(background: String?) {
+        this.setAttribute("background", background)
     }
 
-    public String getBgColor() {
-        return this.getAttribute("bgcolor");
+    override fun getBgColor(): String? {
+        return this.getAttribute("bgcolor")
     }
 
-    public void setBgColor(final String bgColor) {
-        this.setAttribute("bgcolor", bgColor);
+    override fun setBgColor(bgColor: String?) {
+        this.setAttribute("bgcolor", bgColor)
     }
 
-    public String getLink() {
-        return this.getAttribute("link");
+    override fun getLink(): String? {
+        return this.getAttribute("link")
     }
 
-    public void setLink(final String link) {
-        this.setAttribute("link", link);
+    override fun setLink(link: String?) {
+        this.setAttribute("link", link)
     }
 
-    public String getText() {
-        return this.getAttribute("text");
+    override fun getText(): String? {
+        return this.getAttribute("text")
     }
 
-    public void setText(final String text) {
-        this.setAttribute("text", text);
+    override fun setText(text: String?) {
+        this.setAttribute("text", text)
     }
 
-    public String getVLink() {
-        return this.getAttribute("vlink");
+    override fun getVLink(): String? {
+        return this.getAttribute("vlink")
     }
 
-    public void setVLink(final String vLink) {
-        this.setAttribute("vlink", vLink);
+    override fun setVLink(vLink: String?) {
+        this.setAttribute("vlink", vLink)
     }
 
-    @Override
-    protected @NonNull RenderState createRenderState(final RenderState prevRenderState) {
-        return new BodyRenderState(prevRenderState, this);
+    override fun createRenderState(prevRenderState: RenderState?): RenderState {
+        return BodyRenderState(prevRenderState, this)
     }
 
-    public Function getOnload() {
-        final Object document = this.document;
-        if (document instanceof HTMLDocumentImpl) {
-            return ((HTMLDocumentImpl) document).getOnloadHandler();
-        } else {
-            return null;
+    var onload: Function?
+        get() {
+            val document: Any? = this.document
+            if (document is HTMLDocumentImpl) {
+                return document.getOnloadHandler()
+            } else {
+                return null
+            }
         }
-    }
-
-    public void setOnload(final Function onload) {
-        final Object document = this.document;
-        if (document instanceof HTMLDocumentImpl) {
-            // Note that body.onload overrides
-            // Window.onload.
-            ((HTMLDocumentImpl) document).setOnloadHandler(onload);
+        set(onload) {
+            val document: Any? = this.document
+            if (document is HTMLDocumentImpl) {
+                // Note that body.onload overrides
+                // Window.onload.
+                document.setOnloadHandler(onload)
+            }
         }
-    }
 
-  /*
+    /*
   @Override
   protected void assignAttributeField(final String normalName, final String value) {
     if ("onload".equals(normalName)) {
@@ -136,14 +126,12 @@ public class HTMLBodyElementImpl extends HTMLAbstractUIElement implements HTMLBo
       super.assignAttributeField(normalName, value);
     }
   }*/
-
-    @Override
-    protected void handleAttributeChanged(String name, String oldValue, String newValue) {
-        super.handleAttributeChanged(name, oldValue, newValue);
-        if ("onload".equals(name)) {
-            final Function onload = this.getEventFunction(null, name);
+    override fun handleAttributeChanged(name: String?, oldValue: String?, newValue: String?) {
+        super.handleAttributeChanged(name, oldValue, newValue)
+        if ("onload" == name) {
+            val onload = this.getEventFunction(null, name)
             if (onload != null) {
-                this.setOnload(onload);
+                this.onload = onload
             }
         }
     }

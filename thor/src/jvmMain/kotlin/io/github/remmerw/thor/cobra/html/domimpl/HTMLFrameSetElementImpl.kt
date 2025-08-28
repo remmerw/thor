@@ -21,33 +21,28 @@
 /*
  * Created on Jan 28, 2006
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.html.HTMLFrameSetElement;
+import org.w3c.dom.html.HTMLFrameSetElement
 
-public class HTMLFrameSetElementImpl extends HTMLElementImpl implements HTMLFrameSetElement {
+class HTMLFrameSetElementImpl : HTMLElementImpl, HTMLFrameSetElement {
+    constructor(name: String?, noStyleSheet: Boolean) : super(name, noStyleSheet)
 
-    public HTMLFrameSetElementImpl(final String name, final boolean noStyleSheet) {
-        super(name, noStyleSheet);
+    constructor(name: String?) : super(name)
+
+    override fun getCols(): String? {
+        return this.getAttribute("cols")
     }
 
-    public HTMLFrameSetElementImpl(final String name) {
-        super(name);
+    override fun setCols(cols: String?) {
+        this.setAttribute("cols", cols)
     }
 
-    public String getCols() {
-        return this.getAttribute("cols");
+    override fun getRows(): String? {
+        return this.getAttribute("rows")
     }
 
-    public void setCols(final String cols) {
-        this.setAttribute("cols", cols);
-    }
-
-    public String getRows() {
-        return this.getAttribute("rows");
-    }
-
-    public void setRows(final String rows) {
-        this.setAttribute("rows", rows);
+    override fun setRows(rows: String?) {
+        this.setAttribute("rows", rows)
     }
 }

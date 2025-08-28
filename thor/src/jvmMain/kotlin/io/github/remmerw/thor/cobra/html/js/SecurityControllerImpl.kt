@@ -18,78 +18,72 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.js;
+package io.github.remmerw.thor.cobra.html.js
 
-import org.mozilla.javascript.Callable;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.GeneratedClassLoader;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.SecurityController;
+import org.mozilla.javascript.Callable
+import org.mozilla.javascript.Context
+import org.mozilla.javascript.GeneratedClassLoader
+import org.mozilla.javascript.Scriptable
+import org.mozilla.javascript.SecurityController
+import java.net.URL
+import java.security.AccessControlContext
+import java.security.AccessController
+import java.security.CodeSource
+import java.security.Policy
+import java.security.PrivilegedAction
+import java.security.ProtectionDomain
+import java.security.SecureClassLoader
+import java.security.cert.Certificate
 
-import java.security.AccessControlContext;
-import java.security.AccessController;
-import java.security.CodeSource;
-import java.security.PermissionCollection;
-import java.security.Policy;
-import java.security.PrivilegedAction;
-import java.security.ProtectionDomain;
-import java.security.SecureClassLoader;
+class SecurityControllerImpl(private val url: URL?, private val policy: Policy) :
+    SecurityController() {
+    private val codesource: CodeSource
 
-public class SecurityControllerImpl extends SecurityController {
-    private final java.net.URL url;
-    private final Policy policy;
-    private final CodeSource codesource;
-
-    public SecurityControllerImpl(final java.net.URL url, final Policy policy) {
-        this.url = url;
-        this.policy = policy;
-        this.codesource = new CodeSource(this.url, (java.security.cert.Certificate[]) null);
+    init {
+        this.codesource = CodeSource(this.url, null as Array<Certificate?>?)
     }
 
-    @Override
-    public Object callWithDomain(final Object securityDomain, final Context ctx, final Callable callable, final Scriptable scope,
-                                 final Scriptable thisObj, final Object[] args) {
+    override fun callWithDomain(
+        securityDomain: Any?, ctx: Context?, callable: Callable, scope: Scriptable?,
+        thisObj: Scriptable?, args: Array<Any?>?
+    ): Any? {
         if (securityDomain == null) {
             // TODO: Investigate
-            return callable.call(ctx, scope, thisObj, args);
+            return callable.call(ctx, scope, thisObj, args)
         } else {
-            final PrivilegedAction<?> action = () -> callable.call(ctx, scope, thisObj, args);
-            final ProtectionDomain protectionDomain = (ProtectionDomain) securityDomain;
-            final AccessControlContext acctx = new AccessControlContext(new ProtectionDomain[]{protectionDomain});
-            return AccessController.doPrivileged(action, acctx);
+            val action: PrivilegedAction<*> =
+                PrivilegedAction { callable.call(ctx, scope, thisObj, args) }
+            val protectionDomain = securityDomain as ProtectionDomain
+            val acctx = AccessControlContext(arrayOf<ProtectionDomain>(protectionDomain))
+            return AccessController.doPrivileged(action, acctx)
         }
     }
 
-    @Override
-    public GeneratedClassLoader createClassLoader(final ClassLoader parent, final Object staticDomain) {
-        return new LocalSecureClassLoader(parent);
+    override fun createClassLoader(parent: ClassLoader?, staticDomain: Any?): GeneratedClassLoader {
+        return LocalSecureClassLoader(parent)
     }
 
-    @Override
-    public Object getDynamicSecurityDomain(final Object securityDomain) {
-        final Policy policy = this.policy;
+    override fun getDynamicSecurityDomain(securityDomain: Any?): Any {
+        val policy = this.policy
         if (policy == null) {
             // TODO: The check for null may not be required anymore.
-            throw new RuntimeException("No policy has been set in a security controller!");
+            throw RuntimeException("No policy has been set in a security controller!")
             // return Policy.getPolicy();
             // return null;
         } else {
-            final PermissionCollection permissions = this.policy.getPermissions(codesource);
-            return new ProtectionDomain(codesource, permissions);
+            val permissions = this.policy.getPermissions(codesource)
+            return ProtectionDomain(codesource, permissions)
         }
     }
 
-    private class LocalSecureClassLoader extends SecureClassLoader implements GeneratedClassLoader {
-        public LocalSecureClassLoader(final ClassLoader parent) {
-            super(parent);
+    private inner class LocalSecureClassLoader(parent: ClassLoader?) : SecureClassLoader(parent),
+        GeneratedClassLoader {
+        override fun defineClass(name: String?, b: ByteArray): Class<*>? {
+            return this.defineClass(name, b, 0, b.size, codesource)
         }
 
-        public Class<?> defineClass(final String name, final byte[] b) {
-            return this.defineClass(name, b, 0, b.length, codesource);
-        }
-
-        public void linkClass(final Class<?> clazz) {
-            super.resolveClass(clazz);
+        override fun linkClass(clazz: Class<*>?) {
+            super.resolveClass(clazz)
         }
     }
 }

@@ -18,46 +18,46 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.js;
+package io.github.remmerw.thor.cobra.js
 
-import java.lang.ref.WeakReference;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.lang.ref.WeakReference
+import java.util.WeakHashMap
 
-public class JavaClassWrapperFactory {
-    private static JavaClassWrapperFactory instance;
-    private final Map<Class<?>, WeakReference<JavaClassWrapper>> classWrappers = new WeakHashMap<>();
+class JavaClassWrapperFactory private constructor() {
+    private val classWrappers: MutableMap<Class<*>?, WeakReference<JavaClassWrapper?>?> =
+        WeakHashMap<Class<*>?, WeakReference<JavaClassWrapper?>?>()
 
-    private JavaClassWrapperFactory() {
-    }
-
-    public static JavaClassWrapperFactory getInstance() {
-        if (instance == null) {
-            synchronized (JavaClassWrapperFactory.class) {
-                if (instance == null) {
-                    instance = new JavaClassWrapperFactory();
-                }
-            }
-        }
-        return instance;
-    }
-
-    public JavaClassWrapper getClassWrapper(final Class<?> clazz) {
-        synchronized (this) {
+    fun getClassWrapper(clazz: Class<*>?): JavaClassWrapper {
+        synchronized(this) {
             // WeakHashMaps where the value refers to
             // the key will retain keys. Must make it
             // refer to the value weakly too.
-            final WeakReference<?> jcwr = this.classWrappers.get(clazz);
-            JavaClassWrapper jcw = null;
+            val jcwr: WeakReference<*>? = this.classWrappers.get(clazz)
+            var jcw: JavaClassWrapper? = null
             if (jcwr != null) {
-                jcw = (JavaClassWrapper) jcwr.get();
+                jcw = jcwr.get() as JavaClassWrapper?
             }
             if (jcw == null) {
                 // TODO: need to check with the class shutter here. GH #136
-                jcw = new JavaClassWrapper(clazz);
-                this.classWrappers.put(clazz, new WeakReference<>(jcw));
+                jcw = JavaClassWrapper(clazz)
+                this.classWrappers.put(clazz, WeakReference<JavaClassWrapper?>(jcw))
             }
-            return jcw;
+            return jcw
         }
+    }
+
+    companion object {
+        var instance: JavaClassWrapperFactory? = null
+            get() {
+                if (field == null) {
+                    synchronized(JavaClassWrapperFactory::class.java) {
+                        if (field == null) {
+                            field = JavaClassWrapperFactory()
+                        }
+                    }
+                }
+                return field
+            }
+            private set
     }
 }

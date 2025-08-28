@@ -1,12 +1,7 @@
-package io.github.remmerw.thor.cobra.js;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+package io.github.remmerw.thor.cobra.js
 
 /**
  * Ensures that a function or property is hidden from JS
  */
-@Retention(RetentionPolicy.RUNTIME)
-public @interface HideFromJS {
-
-}
+@Retention(AnnotationRetention.RUNTIME)
+annotation class HideFromJS 

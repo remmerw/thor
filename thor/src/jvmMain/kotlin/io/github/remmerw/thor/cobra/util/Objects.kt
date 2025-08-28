@@ -21,97 +21,92 @@
 /*
  * Created on Apr 10, 2005
  */
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
 
 /**
  * @author J. H. S.
  */
-public final class Objects {
-    /**
-     *
-     */
-    private Objects() {
-    }
-
-    public static boolean isBoxClass(final Class<?> clazz) {
-        return (clazz == Integer.class) || (clazz == Boolean.class) || (clazz == Double.class) || (clazz == Float.class)
-                || (clazz == Long.class)
-                || (clazz == Byte.class) || (clazz == Short.class) || (clazz == Character.class);
+object Objects {
+    fun isBoxClass(clazz: Class<*>?): Boolean {
+        return (clazz == Int::class.java) || (clazz == Boolean::class.java) || (clazz == Double::class.java) || (clazz == Float::class.java)
+                || (clazz == Long::class.java)
+                || (clazz == Byte::class.java) || (clazz == Short::class.java) || (clazz == Char::class.java)
     }
 
     /* Checks whether the arguments are an exact match to the parameter types */
-    public static boolean areSameTo(final Object[] objects, final Class<?>[] types) {
-        final int length = objects.length;
-        if (length != types.length) {
-            return false;
+    fun areSameTo(objects: Array<Any?>, types: Array<Class<*>?>): Boolean {
+        val length = objects.size
+        if (length != types.size) {
+            return false
         }
-        for (int i = 0; i < length; i++) {
-            if (!isSameOrBox(objects[i], types[i])) {
-                return false;
+        for (i in 0..<length) {
+            if (!isSameOrBox(objects[i], types[i]!!)) {
+                return false
             }
         }
-        return true;
+        return true
     }
 
     /* Checks whether a value is an exact match to the clazz */
-    public static boolean isSameOrBox(final Object value, final Class<? extends Object> clazz) {
+    fun isSameOrBox(value: Any?, clazz: Class<out Any?>): Boolean {
         if (clazz.isInstance(value)) {
-            return true;
+            return true
         }
-        if (clazz.isPrimitive()) {
-            return ((clazz == double.class) && (value instanceof Double)) || ((clazz == int.class) && (value instanceof Integer))
-                    || ((clazz == long.class) && (value instanceof Long)) || ((clazz == boolean.class) && (value instanceof Boolean))
-                    || ((clazz == byte.class) && (value instanceof Byte)) || ((clazz == char.class) && (value instanceof Character))
-                    || ((clazz == short.class) && (value instanceof Short)) || ((clazz == float.class) && (value instanceof Float));
+        if (clazz.isPrimitive) {
+            return ((clazz == Double::class.javaPrimitiveType) && (value is Double)) || ((clazz == Int::class.javaPrimitiveType) && (value is Int))
+                    || ((clazz == Long::class.javaPrimitiveType) && (value is Long)) || ((clazz == Boolean::class.javaPrimitiveType) && (value is Boolean))
+                    || ((clazz == Byte::class.javaPrimitiveType) && (value is Byte)) || ((clazz == Char::class.javaPrimitiveType) && (value is Char))
+                    || ((clazz == Short::class.javaPrimitiveType) && (value is Short)) || ((clazz == Float::class.javaPrimitiveType) && (value is Float))
         }
 
-        return false;
+        return false
     }
 
-    public static boolean areAssignableTo(final Object[] objects, final Class<?>[] types) {
-        final int length = objects.length;
-        if (length != types.length) {
-            return false;
+    fun areAssignableTo(objects: Array<Any?>, types: Array<Class<*>?>): Boolean {
+        val length = objects.size
+        if (length != types.size) {
+            return false
         }
-        for (int i = 0; i < length; i++) {
-            if (!isAssignableOrBox(objects[i], types[i])) {
-                return false;
+        for (i in 0..<length) {
+            if (!isAssignableOrBox(objects[i], types[i]!!)) {
+                return false
             }
         }
-        return true;
+        return true
     }
 
-    public static boolean isAssignableOrBox(final Object value, final Class<? extends Object> clazz) {
+    fun isAssignableOrBox(value: Any?, clazz: Class<out Any?>): Boolean {
         if (clazz.isInstance(value)) {
-            return true;
+            return true
         }
-        if (clazz.isPrimitive()) {
-            if (((clazz == double.class) && (value instanceof Double)) || ((clazz == int.class) && (value instanceof Integer))
-                    || ((clazz == long.class) && (value instanceof Long)) || ((clazz == boolean.class) && (value instanceof Boolean))
-                    || ((clazz == byte.class) && (value instanceof Byte)) || ((clazz == char.class) && (value instanceof Character))
-                    || ((clazz == short.class) && (value instanceof Short)) || ((clazz == float.class) && (value instanceof Float))) {
-                return true;
+        if (clazz.isPrimitive) {
+            if (((clazz == Double::class.javaPrimitiveType) && (value is Double)) || ((clazz == Int::class.javaPrimitiveType) && (value is Int))
+                || ((clazz == Long::class.javaPrimitiveType) && (value is Long)) || ((clazz == Boolean::class.javaPrimitiveType) && (value is Boolean))
+                || ((clazz == Byte::class.javaPrimitiveType) && (value is Byte)) || ((clazz == Char::class.javaPrimitiveType) && (value is Char))
+                || ((clazz == Short::class.javaPrimitiveType) && (value is Short)) || ((clazz == Float::class.javaPrimitiveType) && (value is Float))
+            ) {
+                return true
             }
         }
-        if (isNumeric(clazz) && isNumeric(value)) {
-            return true;
+        if (Objects.isNumeric(clazz) && isNumeric(value)) {
+            return true
         }
-        if (clazz.isAssignableFrom(String.class)) {
-            return (value == null) || !value.getClass().isPrimitive();
+        if (clazz.isAssignableFrom(String::class.java)) {
+            return (value == null) || !value.javaClass.isPrimitive
         }
-        return false;
+        return false
     }
 
-    private static boolean isNumeric(final Class<? extends Object> clazz) {
-        return Number.class.isAssignableFrom(clazz)
-                || (clazz.isPrimitive() && ((clazz == int.class) || (clazz == double.class) || (clazz == byte.class) || (clazz == short.class)
-                || (clazz == float.class) || (clazz == long.class)));
+    private fun isNumeric(clazz: Class<out Any?>): Boolean {
+        return Number::class.java.isAssignableFrom(clazz)
+                || (clazz.isPrimitive && ((clazz == Int::class.javaPrimitiveType) || (clazz == Double::class.javaPrimitiveType) || (clazz == Byte::class.javaPrimitiveType) || (clazz == Short::class.javaPrimitiveType)
+                || (clazz == Float::class.javaPrimitiveType) || (clazz == Long::class.javaPrimitiveType)))
     }
 
-    private static boolean isNumeric(final Object value) {
+    private fun isNumeric(value: Any?): Boolean {
         if (value == null) {
-            return false;
+            return false
         }
-        return isNumeric(value.getClass());
+        return Objects.isNumeric(value.javaClass)
     }
 }

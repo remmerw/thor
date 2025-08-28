@@ -18,12 +18,16 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-public interface ImageListener extends java.util.EventListener {
-    ImageListener[] EMPTY_ARRAY = new ImageListener[0];
+import java.util.EventListener
 
-    void imageLoaded(ImageEvent event);
+interface ImageListener : EventListener {
+    fun imageLoaded(event: ImageEvent?)
 
-    void imageAborted();
+    fun imageAborted()
+
+    companion object {
+        val EMPTY_ARRAY: Array<ImageListener?> = arrayOfNulls<ImageListener>(0)
+    }
 }

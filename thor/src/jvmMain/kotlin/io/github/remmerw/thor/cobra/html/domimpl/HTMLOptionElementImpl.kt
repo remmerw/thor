@@ -1,99 +1,94 @@
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.html.HTMLFormElement;
-import org.w3c.dom.html.HTMLOptionElement;
-import org.w3c.dom.html.HTMLSelectElement;
+import org.w3c.dom.html.HTMLFormElement
+import org.w3c.dom.html.HTMLOptionElement
+import org.w3c.dom.html.HTMLSelectElement
 
-public class HTMLOptionElementImpl extends HTMLElementImpl implements HTMLOptionElement {
-    private boolean selected;
+class HTMLOptionElementImpl(name: String?) : HTMLElementImpl(name, true), HTMLOptionElement {
+    private var selected = false
 
-    public HTMLOptionElementImpl(final String name) {
-        super(name, true);
+    override fun getDefaultSelected(): Boolean {
+        return this.getAttributeAsBoolean("selected")
     }
 
-    public boolean getDefaultSelected() {
-        return this.getAttributeAsBoolean("selected");
+    override fun setDefaultSelected(defaultSelected: Boolean) {
+        this.setAttribute("selected", if (defaultSelected) "selected" else null)
     }
 
-    public void setDefaultSelected(final boolean defaultSelected) {
-        this.setAttribute("selected", defaultSelected ? "selected" : null);
+    override fun getDisabled(): Boolean {
+        return false
     }
 
-    public boolean getDisabled() {
-        return false;
-    }
-
-    public void setDisabled(final boolean disabled) {
+    override fun setDisabled(disabled: Boolean) {
         // TODO Unsupported
     }
 
-    public HTMLFormElement getForm() {
-        return this.getForm();
+    override fun getForm(): HTMLFormElement? {
+        return this.form
     }
 
-    public int getIndex() {
-        final Object parent = this.getParentNode();
-        if (parent instanceof HTMLSelectElement) {
-            final HTMLOptionsCollectionImpl options = (HTMLOptionsCollectionImpl) ((HTMLSelectElement) parent).getOptions();
-            return options.indexOf(this);
+    override fun getIndex(): Int {
+        val parent: Any? = this.parentNode
+        if (parent is HTMLSelectElement) {
+            val options = parent.options as HTMLOptionsCollectionImpl
+            return options.indexOf(this)
         } else {
-            return -1;
+            return -1
         }
     }
 
-    public String getLabel() {
-        return this.getAttribute("label");
+    override fun getLabel(): String? {
+        return this.getAttribute("label")
     }
 
-    public void setLabel(final String label) {
-        this.setAttribute("label", label);
+    override fun setLabel(label: String?) {
+        this.setAttribute("label", label)
     }
 
-    public boolean getSelected() {
-        return this.selected;
+    override fun getSelected(): Boolean {
+        return this.selected
     }
 
-    public void setSelected(final boolean selected) {
-        final boolean changed = selected != this.selected;
-        this.selected = selected;
+    override fun setSelected(selected: Boolean) {
+        val changed = selected != this.selected
+        this.selected = selected
         // Changing the option state changes the selected index.
-        final Object parent = this.getParentNode();
-        if (parent instanceof HTMLSelectElementImpl parentSelect) {
-            if (changed || (parentSelect.getSelectedIndex() == -1)) {
+        val parent: Any? = this.parentNode
+        if (parent is HTMLSelectElementImpl) {
+            if (changed || (parent.getSelectedIndex() == -1)) {
                 if (selected) {
-                    parentSelect.setSelectedIndexImpl(this.getIndex());
+                    parent.setSelectedIndexImpl(this.getIndex())
                 } else {
-                    final int currentIndex = parentSelect.getSelectedIndex();
+                    val currentIndex = parent.getSelectedIndex()
                     if ((currentIndex != -1) && (currentIndex == this.getIndex())) {
-                        parentSelect.setSelectedIndexImpl(-1);
+                        parent.setSelectedIndexImpl(-1)
                     }
                 }
             }
         }
     }
 
-    public String getText() {
-        return this.getRawInnerText(false);
+    override fun getText(): String {
+        return this.getRawInnerText(false)
     }
 
-    public void setText(final String value) {
-        this.setTextContent(value);
+    fun setText(value: String?) {
+        this.setTextContent(value)
     }
 
-    public String getValue() {
-        return this.getAttribute("value");
+    override fun getValue(): String? {
+        return this.getAttribute("value")
     }
 
-    public void setValue(final String value) {
-        this.setAttribute("value", value);
+    override fun setValue(value: String?) {
+        this.setAttribute("value", value)
     }
 
-    void setSelectedImpl(final boolean selected) {
-        this.selected = selected;
+    fun setSelectedImpl(selected: Boolean) {
+        this.selected = selected
     }
 
-    @Override
-    public String toString() {
-        return "HTMLOptionElementImpl[text=" + this.getText() + ",selected=" + this.getSelected() + "]";
+    override fun toString(): String {
+        return "HTMLOptionElementImpl[text=" + this.text + ",selected=" + this.selected + "]"
     }
 }

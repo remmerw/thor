@@ -21,24 +21,18 @@
 /*
  * Created on Aug 6, 2005
  */
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
 
-public class WrapperException extends RuntimeException {
-    private static final long serialVersionUID = -1873416786560593951L;
+class WrapperException : RuntimeException {
+    constructor() : super()
 
-    public WrapperException() {
-        super();
-    }
+    constructor(message: String?) : super(message)
 
-    public WrapperException(final String message) {
-        super(message);
-    }
+    constructor(message: String?, cause: Throwable?) : super(message, cause)
 
-    public WrapperException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
+    constructor(cause: Throwable?) : super(cause)
 
-    public WrapperException(final Throwable cause) {
-        super(cause);
+    companion object {
+        private val serialVersionUID = -1873416786560593951L
     }
 }

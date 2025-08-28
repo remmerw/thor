@@ -20,31 +20,33 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.github.remmerw.thor.cobra.io;
+package io.github.remmerw.thor.cobra.io
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
 
 /**
  * Represents a file location in a managed store.
  *
  * @author J. H. S.
  */
-public interface ManagedFile {
-    String getPath();
+interface ManagedFile {
+    val path: String?
 
-    boolean isDirectory();
+    val isDirectory: Boolean
 
-    boolean exists();
+    fun exists(): Boolean
 
-    boolean mkdir();
+    fun mkdir(): Boolean
 
-    boolean mkdirs();
+    fun mkdirs(): Boolean
 
-    ManagedFile[] listFiles() throws IOException;
+    @Throws(IOException::class)
+    fun listFiles(): Array<ManagedFile?>?
 
-    ManagedFile[] listFiles(ManagedFileFilter filter) throws IOException;
+    @Throws(IOException::class)
+    fun listFiles(filter: ManagedFileFilter?): Array<ManagedFile?>?
 
     /**
      * Atomically creates a new file.
@@ -53,27 +55,33 @@ public interface ManagedFile {
      * successfully created.
      * @throws IOException
      */
-    boolean createNewFile() throws IOException;
+    @Throws(IOException::class)
+    fun createNewFile(): Boolean
 
-    ManagedFile getParent() throws IOException;
+    @get:Throws(IOException::class)
+    val parent: ManagedFile?
 
     /**
      * Creates an output stream for the managed file. If the managed file already
      * exists, it is overwritten.
-     * <p>
+     *
+     *
      * The number of bytes that can be written to the stream may be restricted by
      * a quota.
      *
      * @see QuotaExceededException
      */
-    OutputStream openOutputStream() throws IOException;
+    @Throws(IOException::class)
+    fun openOutputStream(): OutputStream?
 
     /**
      * Creates an input stream for reading from the managed file.
      *
      * @throws java.io.FileNotFoundException If the file does not exist.
      */
-    InputStream openInputStream() throws IOException;
+    @Throws(IOException::class)
+    fun openInputStream(): InputStream?
 
-    boolean delete() throws IOException;
+    @Throws(IOException::class)
+    fun delete(): Boolean
 }

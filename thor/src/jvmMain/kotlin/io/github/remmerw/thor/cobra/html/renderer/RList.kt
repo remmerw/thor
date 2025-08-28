@@ -18,70 +18,84 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import io.github.remmerw.thor.cobra.html.HtmlRendererContext;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl;
-import io.github.remmerw.thor.cobra.html.style.ListStyle;
-import io.github.remmerw.thor.cobra.html.style.RenderState;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext;
+import io.github.remmerw.thor.cobra.html.HtmlRendererContext
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
+import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
+import io.github.remmerw.thor.cobra.html.style.ListStyle
+import io.github.remmerw.thor.cobra.html.style.RenderState
+import io.github.remmerw.thor.cobra.ua.UserAgentContext
 
-class RList extends BaseRListElement {
-    public RList(final NodeImpl modelNode, final int listNesting, final UserAgentContext pcontext, final HtmlRendererContext rcontext,
-                 final FrameContext frameContext,
-                 final RenderableContainer parentContainer, final RCollection parent) {
-        super(modelNode, listNesting, pcontext, rcontext, frameContext, parentContainer);
-        // this.defaultMarginInsets = new java.awt.Insets(5, 0, 5, 0);
-    }
-
-    @Override
-    protected void applyStyle(final int availWidth, final int availHeight, final boolean updateLayout) {
-        super.applyStyle(availWidth, availHeight, updateLayout);
-        ListStyle listStyle = this.listStyle;
+internal class RList(
+    modelNode: NodeImpl?,
+    listNesting: Int,
+    pcontext: UserAgentContext?,
+    rcontext: HtmlRendererContext?,
+    frameContext: FrameContext?,
+    parentContainer: RenderableContainer?,
+    parent: RCollection?
+) : BaseRListElement(modelNode, listNesting, pcontext, rcontext, frameContext, parentContainer) {
+    override fun applyStyle(availWidth: Int, availHeight: Int, updateLayout: Boolean) {
+        super.applyStyle(availWidth, availHeight, updateLayout)
+        var listStyle = this.listStyle
         if ((listStyle == null) || (listStyle.type == ListStyle.TYPE_UNSET)) {
-            final Object rootNode = this.modelNode;
-            if (!(rootNode instanceof HTMLElementImpl rootElement)) {
-                return;
+            val rootNode: Any? = this.modelNode
+            if (rootNode !is HTMLElementImpl) {
+                return
             }
             if (listStyle == null) {
-                listStyle = new ListStyle();
-                this.listStyle = listStyle;
+                listStyle = ListStyle()
+                this.listStyle = listStyle
             }
-            if ("ul".equalsIgnoreCase(rootElement.getTagName())) {
-                final int listNesting = this.listNesting;
+            if ("ul".equals(rootNode.tagName, ignoreCase = true)) {
+                val listNesting = this.listNesting
                 if (listNesting == 0) {
-                    listStyle.type = ListStyle.TYPE_DISC;
+                    listStyle.type = ListStyle.TYPE_DISC
                 } else if (listNesting == 1) {
-                    listStyle.type = ListStyle.TYPE_CIRCLE;
+                    listStyle.type = ListStyle.TYPE_CIRCLE
                 } else {
-                    listStyle.type = ListStyle.TYPE_SQUARE;
+                    listStyle.type = ListStyle.TYPE_SQUARE
                 }
             } else {
-                listStyle.type = ListStyle.TYPE_DECIMAL;
+                listStyle.type = ListStyle.TYPE_DECIMAL
             }
         }
     }
 
-    @Override
-    public void doLayout(final int availWidth, final int availHeight, final boolean expandWidth, final boolean expandHeight,
-                         final FloatingBoundsSource floatBoundsSource,
-                         final int defaultOverflowX, final int defaultOverflowY, final boolean sizeOnly) {
-        final RenderState renderState = this.modelNode.getRenderState();
-        int counterStart = 1;
-        final Object rootNode = this.modelNode;
-        if (!(rootNode instanceof HTMLElementImpl rootElement)) {
-            return;
+    override fun doLayout(
+        availWidth: Int, availHeight: Int, expandWidth: Boolean, expandHeight: Boolean,
+        floatBoundsSource: FloatingBoundsSource?,
+        defaultOverflowX: Int, defaultOverflowY: Int, sizeOnly: Boolean
+    ) {
+        val renderState: RenderState = this.modelNode.renderState!!
+        var counterStart = 1
+        val rootNode: Any = this.modelNode
+        if (rootNode !is HTMLElementImpl) {
+            return
         }
-        final String startText = rootElement.getAttribute("start");
+        val startText = rootNode.getAttribute("start")
         if (startText != null) {
             try {
-                counterStart = Integer.parseInt(startText);
-            } catch (final NumberFormatException nfe) {
+                counterStart = startText.toInt()
+            } catch (nfe: NumberFormatException) {
                 // ignore
             }
         }
-        renderState.resetCount(DEFAULT_COUNTER_NAME, this.listNesting, counterStart);
-        super.doLayout(availWidth, availHeight, expandWidth, expandHeight, floatBoundsSource, defaultOverflowX, defaultOverflowY, sizeOnly);
+        renderState.resetCount(
+            DEFAULT_COUNTER_NAME,
+            this.listNesting,
+            counterStart
+        )
+        super.doLayout(
+            availWidth,
+            availHeight,
+            expandWidth,
+            expandHeight,
+            floatBoundsSource,
+            defaultOverflowX,
+            defaultOverflowY,
+            sizeOnly
+        )
     }
 }

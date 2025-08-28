@@ -21,16 +21,18 @@
 /*
  * Created on Mar 19, 2005
  */
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
 
-import java.util.EventListener;
-import java.util.EventObject;
+import java.util.EventListener
+import java.util.EventObject
 
 /**
  * @author J. H. S.
  */
-public interface GenericEventListener extends EventListener {
-    GenericEventListener[] EMPTY_ARRAY = new GenericEventListener[0];
+interface GenericEventListener : EventListener {
+    fun processEvent(event: EventObject?)
 
-    void processEvent(EventObject event);
+    companion object {
+        val EMPTY_ARRAY: Array<GenericEventListener?> = arrayOfNulls<GenericEventListener>(0)
+    }
 }

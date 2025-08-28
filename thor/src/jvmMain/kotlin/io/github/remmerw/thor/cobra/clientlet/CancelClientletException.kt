@@ -20,49 +20,44 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.github.remmerw.thor.cobra.clientlet;
+package io.github.remmerw.thor.cobra.clientlet
 
 /**
  * This exception may be thrown from the
- * {@link Clientlet#process(ClientletContext)} method of a clientlet to cancel
+ * [Clientlet.process] method of a clientlet to cancel
  * the request. Doing so will not result in an error page if the clientlet is
  * still processing the web response. Preferably, it should be thrown before
  * reading any input.
- * <p>
+ *
+ *
  * This exception may be thrown right after navigation is redirected to another
  * document.
  *
  * @author J. H. S.
  */
-public class CancelClientletException extends ClientletException {
-    private static final long serialVersionUID = -2733027023927994062L;
-
+class CancelClientletException : ClientletException {
     /**
      * @param message
      */
-    public CancelClientletException(final String message) {
-        super(message);
-    }
+    constructor(message: String?) : super(message)
 
     /**
      *
      */
-    public CancelClientletException() {
-        super("");
-    }
+    constructor() : super("")
 
     /**
      * @param message
      * @param rootCause
      */
-    public CancelClientletException(final String message, final Throwable rootCause) {
-        super(message, rootCause);
-    }
+    constructor(message: String?, rootCause: Throwable?) : super(message, rootCause)
 
     /**
      * @param rootCause
      */
-    public CancelClientletException(final Throwable rootCause) {
-        super(rootCause);
+    constructor(rootCause: Throwable?) : super(rootCause)
+
+    companion object {
+        private val serialVersionUID = -2733027023927994062L
     }
 }

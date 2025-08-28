@@ -21,58 +21,50 @@
 /*
  * Created on Oct 9, 2005
  */
-package io.github.remmerw.thor.cobra.html.js;
+package io.github.remmerw.thor.cobra.html.js
 
-import java.util.Collection;
-import java.util.Iterator;
-
-import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate;
+import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate
 
 // TODO: Remove if not used
-public class FilteredObjectList extends AbstractScriptableDelegate {
-    private final Collection<Object> sourceNodeList;
-    private final ObjectFilter filter;
-    private final Object lock;
-
-    /**
-     * @param filter
-     * @param list
-     */
-    public FilteredObjectList(final ObjectFilter filter, final Collection<Object> list, final Object lock) {
-        super();
-        this.filter = filter;
-        sourceNodeList = list;
-        this.lock = lock;
-    }
-
-    public Object item(final int index) {
-        synchronized (this.lock) {
-            int count = 0;
-            final Iterator<Object> i = this.sourceNodeList.iterator();
+class FilteredObjectList
+/**
+ * @param filter
+ * @param sourceNodeList
+ */(
+    private val filter: ObjectFilter,
+    private val sourceNodeList: MutableCollection<Any?>,
+    private val lock: Any
+) : AbstractScriptableDelegate() {
+    fun item(index: Int): Any? {
+        synchronized(this.lock) {
+            var count = 0
+            val i = this.sourceNodeList.iterator()
             while (i.hasNext()) {
-                final Object node = i.next();
+                val node = i.next()
                 if (this.filter.accept(node)) {
                     if (count == index) {
-                        return node;
+                        return node
                     }
-                    count++;
+                    count++
                 }
             }
-            return null;
+            return null
         }
     }
 
-    public int getLength() {
-        synchronized (this.lock) {
-            int count = 0;
-            final Iterator<Object> i = this.sourceNodeList.iterator();
-            while (i.hasNext()) {
-                final Object node = i.next();
-                if (this.filter.accept(node)) {
-                    count++;
+    val length: Int
+        get() {
+            synchronized(this.lock) {
+                var count = 0
+                val i =
+                    this.sourceNodeList.iterator()
+                while (i.hasNext()) {
+                    val node = i.next()
+                    if (this.filter.accept(node)) {
+                        count++
+                    }
                 }
+                return count
             }
-            return count;
         }
-    }
 }

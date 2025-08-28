@@ -21,139 +21,128 @@
 /*
  * Created on Dec 3, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.Node;
-import org.w3c.dom.html.HTMLCollection;
+import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate
+import io.github.remmerw.thor.cobra.js.JavaScript
+import io.github.remmerw.thor.cobra.util.Nodes
+import io.github.remmerw.thor.cobra.util.Objects
+import org.w3c.dom.Node
+import org.w3c.dom.html.HTMLCollection
+import java.lang.ref.WeakReference
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate;
-import io.github.remmerw.thor.cobra.js.JavaScript;
-import io.github.remmerw.thor.cobra.util.Nodes;
-import io.github.remmerw.thor.cobra.util.Objects;
-
-public class DescendentHTMLCollection extends AbstractScriptableDelegate implements HTMLCollection {
-    private final NodeImpl rootNode;
-    private final NodeFilter nodeFilter;
-    private final Object treeLock;
-    private final boolean nestIntoMatchingNodes;
-    private Map<String, ElementImpl> itemsByName = null;
-    private List<NodeImpl> itemsByIndex = null;
-
-    public DescendentHTMLCollection(final NodeImpl node, final NodeFilter filter, final Object treeLock) {
-        this(node, filter, treeLock, true);
-    }
+open class DescendentHTMLCollection @JvmOverloads constructor(
+    private val rootNode: NodeImpl,
+    private val nodeFilter: NodeFilter?,
+    private val treeLock: Any,
+    private val nestIntoMatchingNodes: Boolean = true
+) : AbstractScriptableDelegate(), HTMLCollection {
+    private var itemsByName: MutableMap<String?, ElementImpl?>? = null
+    private var itemsByIndex: MutableList<NodeImpl?>? = null
 
     /**
-     * @param node
-     * @param filter
+     * @param rootNode
+     * @param nodeFilter
      */
-    public DescendentHTMLCollection(final NodeImpl node, final NodeFilter filter, final Object treeLock, final boolean nestMatchingNodes) {
-        rootNode = node;
-        nodeFilter = filter;
-        this.treeLock = treeLock;
-        this.nestIntoMatchingNodes = nestMatchingNodes;
-        final HTMLDocumentImpl document = (HTMLDocumentImpl) node.getOwnerDocument();
-        document.addDocumentNotificationListener(new LocalNotificationListener(document, this));
+    init {
+        val document = rootNode.ownerDocument as HTMLDocumentImpl
+        document.addDocumentNotificationListener(LocalNotificationListener(document, this))
     }
 
-    private void ensurePopulatedImpl() {
+    private fun ensurePopulatedImpl() {
         if (this.itemsByName == null) {
-            final ArrayList<NodeImpl> descendents = this.rootNode.getDescendents(this.nodeFilter, this.nestIntoMatchingNodes);
-            this.itemsByIndex = descendents == null ? Collections.emptyList() : descendents;
-            final int size = descendents == null ? 0 : descendents.size();
-            final Map<String, ElementImpl> itemsByName = new HashMap<>((size * 3) / 2);
-            this.itemsByName = itemsByName;
-            for (int i = 0; i < size; i++) {
-                final NodeImpl descNode = descendents.get(i);
-                if (descNode instanceof ElementImpl element) {
-                    final String id = element.getId();
-                    if ((id != null) && (id.length() != 0)) {
-                        itemsByName.put(id, element);
+            val descendents =
+                this.rootNode.getDescendents(this.nodeFilter, this.nestIntoMatchingNodes)
+            this.itemsByIndex = if (descendents == null) mutableListOf<NodeImpl?>() else descendents
+            val size = if (descendents == null) 0 else descendents.size
+            val itemsByName: MutableMap<String?, ElementImpl?> =
+                HashMap<String?, ElementImpl?>((size * 3) / 2)
+            this.itemsByName = itemsByName
+            for (i in 0..<size) {
+                val descNode = descendents!!.get(i)
+                if (descNode is ElementImpl) {
+                    val id = descNode.getId()
+                    if ((id != null) && (id.length != 0)) {
+                        itemsByName.put(id, descNode)
                     }
-                    final String name = element.getAttribute("name");
-                    if ((name != null) && (name.length() != 0) && !name.equals(id)) {
-                        itemsByName.put(name, element);
+                    val name = descNode.getAttribute("name")
+                    if ((name != null) && (name.length != 0) && (name != id)) {
+                        itemsByName.put(name, descNode)
                     }
                 }
             }
         }
     }
 
-    private void invalidate() {
-        synchronized (this.treeLock) {
-            this.itemsByName = null;
-            this.itemsByIndex = null;
+    private fun invalidate() {
+        synchronized(this.treeLock) {
+            this.itemsByName = null
+            this.itemsByIndex = null
         }
     }
 
-    private boolean isValid() {
-        synchronized (this.treeLock) {
-            return (this.itemsByName != null) && (this.itemsByIndex != null);
+    private val isValid: Boolean
+        get() {
+            synchronized(this.treeLock) {
+                return (this.itemsByName != null) && (this.itemsByIndex != null)
+            }
+        }
+
+    override fun getLength(): Int {
+        synchronized(this.treeLock) {
+            this.ensurePopulatedImpl()
+            return this.itemsByIndex!!.size
         }
     }
 
-    public int getLength() {
-        synchronized (this.treeLock) {
-            this.ensurePopulatedImpl();
-            return this.itemsByIndex.size();
-        }
-    }
-
-    public Node item(final int index) {
-        synchronized (this.treeLock) {
-            this.ensurePopulatedImpl();
+    override fun item(index: Int): Node? {
+        synchronized(this.treeLock) {
+            this.ensurePopulatedImpl()
             try {
-                return this.itemsByIndex.get(index);
-            } catch (final IndexOutOfBoundsException iob) {
-                return null;
+                return this.itemsByIndex!!.get(index)
+            } catch (iob: IndexOutOfBoundsException) {
+                return null
             }
         }
     }
 
     // TODO: This is a quick hack. Need to support WEB-IDL Semantics. GH #67
-    public Node item(final Object obj) {
-        if (obj instanceof Integer index) {
-            return item((int) index);
+    fun item(obj: Any?): Node? {
+        if (obj is Int) {
+            return item(obj)
         }
-        return item(0);
+        return item(0)
     }
 
     // TODO: This needs to be handled in a general fashion. GH #123
-    public boolean hasOwnProperty(final Object obj) {
+    fun hasOwnProperty(obj: Any?): Boolean {
         if (Objects.isAssignableOrBox(obj, Integer.TYPE)) {
-            final Integer i = (Integer) JavaScript.getInstance().getJavaObject(obj, Integer.TYPE);
-            return i < getLength();
-        } else if (Objects.isAssignableOrBox(obj, String.class)) {
+            val i = JavaScript.instance.getJavaObject(obj, Integer.TYPE) as Int
+            return i < length
+        } else if (Objects.isAssignableOrBox(obj, String::class.java)) {
             // This seems to be related to GH #67
-            final String s = (String) JavaScript.getInstance().getJavaObject(obj, String.class);
+            val s = JavaScript.instance.getJavaObject(obj, String::class.java) as String
             try {
-                return Integer.parseInt(s) < getLength();
-            } catch (NumberFormatException nfe) {
-                return false;
+                return s.toInt() < length
+            } catch (nfe: NumberFormatException) {
+                return false
             }
         } else {
-            return false;
+            return false
         }
     }
 
-    public Node namedItem(final String name) {
-        synchronized (this.treeLock) {
-            this.ensurePopulatedImpl();
-            return this.itemsByName.get(name);
+    override fun namedItem(name: String?): Node? {
+        synchronized(this.treeLock) {
+            this.ensurePopulatedImpl()
+            return this.itemsByName!!.get(name)
         }
     }
 
-    public int indexOf(final Node node) {
-        synchronized (this.treeLock) {
-            this.ensurePopulatedImpl();
-            return this.itemsByIndex.indexOf(node);
+    fun indexOf(node: Node?): Int {
+        synchronized(this.treeLock) {
+            this.ensurePopulatedImpl()
+            return this.itemsByIndex!!.indexOf(node)
         }
     }
 
@@ -221,38 +210,32 @@ public class DescendentHTMLCollection extends AbstractScriptableDelegate impleme
     // return this.foundIndex;
     // }
     // }
-
-    private static class LocalNotificationListener extends DocumentNotificationAdapter {
-        // Needs to be a static class with a weak reference to
+    private class LocalNotificationListener(// Needs to be a static class with a weak reference to
         // the collection object.
-        private final HTMLDocumentImpl document;
-        private final WeakReference<DescendentHTMLCollection> collectionRef;
+        private val document: HTMLDocumentImpl, collection: DescendentHTMLCollection?
+    ) : DocumentNotificationAdapter() {
+        private val collectionRef: WeakReference<DescendentHTMLCollection?>
 
-        public LocalNotificationListener(final HTMLDocumentImpl document, final DescendentHTMLCollection collection) {
-            super();
-            this.document = document;
-            this.collectionRef = new WeakReference<>(collection);
+        init {
+            this.collectionRef = WeakReference<DescendentHTMLCollection?>(collection)
         }
 
-        @Override
-        public void structureInvalidated(final NodeImpl node) {
-            final DescendentHTMLCollection collection = this.collectionRef.get();
+        override fun structureInvalidated(node: NodeImpl) {
+            val collection = this.collectionRef.get()
             if (collection == null) {
                 // Gone!
-                this.document.removeDocumentNotificationListener(this);
-                return;
+                this.document.removeDocumentNotificationListener(this)
+                return
             }
-            if (collection.isValid()) {
+            if (collection.isValid) {
                 if (Nodes.isSameOrAncestorOf(collection.rootNode, node)) {
-                    collection.invalidate();
+                    collection.invalidate()
                 }
             }
         }
 
-        @Override
-        public void nodeLoaded(final NodeImpl node) {
-            this.structureInvalidated(node);
+        override fun nodeLoaded(node: NodeImpl) {
+            this.structureInvalidated(node)
         }
     }
-
 }

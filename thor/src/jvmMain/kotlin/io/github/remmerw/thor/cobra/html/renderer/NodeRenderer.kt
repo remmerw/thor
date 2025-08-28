@@ -21,10 +21,10 @@
 /*
  * Created on Jan 29, 2006
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl;
+import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
 
-public interface NodeRenderer {
-    void setRootNode(NodeImpl node);
+interface NodeRenderer {
+    fun setRootNode(node: NodeImpl?)
 }

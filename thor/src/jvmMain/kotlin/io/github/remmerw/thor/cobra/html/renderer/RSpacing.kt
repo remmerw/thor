@@ -21,70 +21,68 @@
 /*
  * Created on May 21, 2005
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import java.awt.Graphics;
-import java.awt.event.MouseEvent;
-
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode;
+import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
+import java.awt.Graphics
+import java.awt.event.MouseEvent
 
 /**
  * This is used when there's padding or margins in inline elements.
  */
-final class RSpacing extends BaseBoundableRenderable {
-    public RSpacing(final ModelNode me, final RenderableContainer container, final int width, final int height) {
-        super(container, me);
+internal class RSpacing(me: ModelNode?, container: RenderableContainer?, width: Int, height: Int) :
+    BaseBoundableRenderable(container, me) {
+    init {
         // Dimensions set when constructed.
-        this.width = width;
-        this.height = height;
+        this.width = width
+        this.height = height
     }
 
-    @Override
-    protected void invalidateLayoutLocal() {
+    override fun invalidateLayoutLocal() {
     }
 
-    public boolean onMouseClick(final MouseEvent event, final int x, final int y) {
-        final ModelNode me = this.modelNode;
+    override fun onMouseClick(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val me = this.modelNode
         if (me != null) {
-            return HtmlController.getInstance().onMouseClick(me, event, x, y);
+            return HtmlController.Companion.getInstance().onMouseClick(me, event, x, y)
         } else {
-            return true;
+            return true
         }
     }
 
-    public boolean onDoubleClick(final MouseEvent event, final int x, final int y) {
-        final ModelNode me = this.modelNode;
+    override fun onDoubleClick(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val me = this.modelNode
         if (me != null) {
-            return HtmlController.getInstance().onDoubleClick(me, event, x, y);
+            return HtmlController.Companion.getInstance().onDoubleClick(me, event, x, y)
         } else {
-            return true;
+            return true
         }
     }
 
-    public boolean onMousePressed(final MouseEvent event, final int x, final int y) {
-        final ModelNode me = this.modelNode;
+    override fun onMousePressed(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val me = this.modelNode
         if (me != null) {
-            return HtmlController.getInstance().onMouseDown(me, event, x, y);
+            return HtmlController.Companion.getInstance().onMouseDown(me, event, x, y)
         } else {
-            return true;
+            return true
         }
     }
 
-    public boolean onMouseReleased(final MouseEvent event, final int x, final int y) {
-        final ModelNode me = this.modelNode;
+    override fun onMouseReleased(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val me = this.modelNode
         if (me != null) {
-            return HtmlController.getInstance().onMouseUp(me, event, x, y);
+            return HtmlController.Companion.getInstance().onMouseUp(me, event, x, y)
         } else {
-            return true;
+            return true
         }
     }
 
-    public boolean onMouseDisarmed(final MouseEvent event) {
-        final ModelNode me = this.modelNode;
+    override fun onMouseDisarmed(event: MouseEvent?): Boolean {
+        val me = this.modelNode
         if (me != null) {
-            return HtmlController.getInstance().onMouseDisarmed(me, event);
+            return HtmlController.Companion.getInstance().onMouseDisarmed(me, event)
         } else {
-            return true;
+            return true
         }
     }
 
@@ -94,7 +92,7 @@ final class RSpacing extends BaseBoundableRenderable {
      * @see
      * net.sourceforge.xamj.domimpl.markup.Renderable#paint(java.awt.Graphics)
      */
-    public void paint(final Graphics g) {
+    override fun paint(g: Graphics?) {
         // Nothing to paint in spacing.
     }
 
@@ -106,26 +104,33 @@ final class RSpacing extends BaseBoundableRenderable {
      * , boolean, org.xamjwg.html.renderer.RenderablePoint,
      * org.xamjwg.html.renderer.RenderablePoint)
      */
-    public boolean paintSelection(final Graphics g, final boolean inSelection, final RenderableSpot startPoint, final RenderableSpot endPoint) {
+    override fun paintSelection(
+        g: Graphics,
+        inSelection: Boolean,
+        startPoint: RenderableSpot,
+        endPoint: RenderableSpot
+    ): Boolean {
         if ((this == startPoint.renderable) || (this == endPoint.renderable)) {
             if (inSelection) {
-                return false;
+                return false
             }
         } else if (!inSelection) {
-            return false;
+            return false
         }
-        g.setColor(SELECTION_COLOR);
-        g.setXORMode(SELECTION_XOR);
-        g.fillRect(0, 0, this.width, this.height);
-        g.setPaintMode();
-        return true;
+        g.color = SELECTION_COLOR
+        g.setXORMode(SELECTION_XOR)
+        g.fillRect(0, 0, this.width, this.height)
+        g.setPaintMode()
+        return true
     }
 
-    public boolean extractSelectionText(final StringBuffer buffer, final boolean inSelection, final RenderableSpot startPoint,
-                                        final RenderableSpot endPoint) {
+    override fun extractSelectionText(
+        buffer: StringBuffer?, inSelection: Boolean, startPoint: RenderableSpot,
+        endPoint: RenderableSpot
+    ): Boolean {
         if ((this == startPoint.renderable) || (this == endPoint.renderable)) {
-            return !inSelection;
-        } else return inSelection;
+            return !inSelection
+        } else return inSelection
     }
 
     /*
@@ -133,20 +138,20 @@ final class RSpacing extends BaseBoundableRenderable {
      *
      * @see org.xamjwg.html.renderer.BoundableRenderable#getRenderable(int, int)
      */
-    public RenderableSpot getLowestRenderableSpot(final int x, final int y) {
-        return new RenderableSpot(this, x, y);
+    override fun getLowestRenderableSpot(x: Int, y: Int): RenderableSpot {
+        return RenderableSpot(this, x, y)
     }
 
-    public boolean isContainedByNode() {
-        return true;
+    override fun isContainedByNode(): Boolean {
+        return true
     }
 
-    public boolean onRightClick(final MouseEvent event, final int x, final int y) {
-        final ModelNode me = this.modelNode;
+    override fun onRightClick(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val me = this.modelNode
         if (me != null) {
-            return HtmlController.getInstance().onContextMenu(me, event, x, y);
+            return HtmlController.Companion.getInstance().onContextMenu(me, event, x, y)
         } else {
-            return true;
+            return true
         }
     }
 }

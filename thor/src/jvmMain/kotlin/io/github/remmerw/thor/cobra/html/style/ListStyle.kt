@@ -18,37 +18,37 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.style;
+package io.github.remmerw.thor.cobra.html.style
 
-import java.awt.Image;
+import java.awt.Image
 
-public class ListStyle {
-    public static final int TYPE_UNSET = 256;
-    public static final int TYPE_NONE = 0;
-    public static final int TYPE_DISC = 1;
-    public static final int TYPE_CIRCLE = 2;
-    public static final int TYPE_SQUARE = 3;
-    public static final int TYPE_DECIMAL = 4;
-    public static final int TYPE_LOWER_ALPHA = 5;
-    public static final int TYPE_UPPER_ALPHA = 6;
-    public static final int TYPE_LOWER_LATIN = 7;
-    public static final int TYPE_UPPER_LATIN = 8;
+class ListStyle {
+    var type: Int = 0
+    var image: Image? = null
+    var position: Int = 0
 
-    public static final int POSITION_UNSET = 0;
-    public static final int POSITION_INSIDE = 0;
-    public static final int POSITION_OUTSIDE = 0;
-
-    public int type;
-    public Image image;
-    public int position;
-
-    public ListStyle(final int type, final Image image, final int position) {
-        super();
-        this.type = type;
-        this.image = image;
-        this.position = position;
+    constructor(type: Int, image: Image?, position: Int) : super() {
+        this.type = type
+        this.image = image
+        this.position = position
     }
 
-    public ListStyle() {
+    constructor()
+
+    companion object {
+        const val TYPE_UNSET: Int = 256
+        const val TYPE_NONE: Int = 0
+        const val TYPE_DISC: Int = 1
+        const val TYPE_CIRCLE: Int = 2
+        const val TYPE_SQUARE: Int = 3
+        const val TYPE_DECIMAL: Int = 4
+        const val TYPE_LOWER_ALPHA: Int = 5
+        const val TYPE_UPPER_ALPHA: Int = 6
+        const val TYPE_LOWER_LATIN: Int = 7
+        const val TYPE_UPPER_LATIN: Int = 8
+
+        const val POSITION_UNSET: Int = 0
+        const val POSITION_INSIDE: Int = 0
+        const val POSITION_OUTSIDE: Int = 0
     }
 }

@@ -20,39 +20,38 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.github.remmerw.thor.cobra.clientlet;
+package io.github.remmerw.thor.cobra.clientlet
 
 /**
  * Thrown when a clientlet requires a newer navigator version than the one
  * running.
  */
-public class NavigatorVersionException extends ClientletException {
-    private static final long serialVersionUID = 155948070269263523L;
-    private final String expectingVersion;
+class NavigatorVersionException : ClientletException {
+    val expectingVersion: String?
 
-    public NavigatorVersionException(final String message, final String expectingVersion) {
-        super(message);
-        this.expectingVersion = expectingVersion;
+    constructor(message: String?, expectingVersion: String?) : super(message) {
+        this.expectingVersion = expectingVersion
     }
 
     /**
      * @param message
      * @param rootCause
      */
-    public NavigatorVersionException(final String message, final String expectingVersion, final Throwable rootCause) {
-        super(message, rootCause);
-        this.expectingVersion = expectingVersion;
+    constructor(message: String?, expectingVersion: String?, rootCause: Throwable?) : super(
+        message,
+        rootCause
+    ) {
+        this.expectingVersion = expectingVersion
     }
 
     /**
      * @param rootCause
      */
-    public NavigatorVersionException(final String expectingVersion, final Throwable rootCause) {
-        super(rootCause);
-        this.expectingVersion = expectingVersion;
+    constructor(expectingVersion: String?, rootCause: Throwable?) : super(rootCause) {
+        this.expectingVersion = expectingVersion
     }
 
-    public String getExpectingVersion() {
-        return expectingVersion;
+    companion object {
+        private const val serialVersionUID = 155948070269263523L
     }
 }

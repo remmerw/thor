@@ -18,24 +18,15 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
+package io.github.remmerw.thor.cobra.html.gui
 
-package io.github.remmerw.thor.cobra.html.gui;
-
-import java.util.EventObject;
+import java.util.EventObject
 
 /**
- * Event associated with {@link SelectionChangeListener}.
+ * Event associated with [SelectionChangeListener].
  */
-public class SelectionChangeEvent extends EventObject {
-    private static final long serialVersionUID = -8905790265416738277L;
-    private final boolean hasSelection;
-
-    public SelectionChangeEvent(final Object source, final boolean hasSelection) {
-        super(source);
-        this.hasSelection = hasSelection;
-    }
-
-    public boolean isSelectionAvailable() {
-        return this.hasSelection;
+class SelectionChangeEvent(source: Any, val isSelectionAvailable: Boolean) : EventObject(source) {
+    companion object {
+        private val serialVersionUID = -8905790265416738277L
     }
 }

@@ -18,71 +18,62 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.style;
+package io.github.remmerw.thor.cobra.html.style
 
-import java.awt.Color;
-import java.net.MalformedURLException;
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLTableElementImpl
+import io.github.remmerw.thor.cobra.util.gui.ColorFactory
+import java.net.MalformedURLException
 
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLTableElementImpl;
-import io.github.remmerw.thor.cobra.util.gui.ColorFactory;
+class TableRenderState(prevRenderState: RenderState?, element: HTMLElementImpl) :
+    StyleSheetRenderState(prevRenderState, element) {
+    private var backgroundInfo: BackgroundInfo? =
+        INVALID_BACKGROUND_INFO
 
-public class TableRenderState extends StyleSheetRenderState {
-    private BackgroundInfo backgroundInfo = INVALID_BACKGROUND_INFO;
-
-    public TableRenderState(final RenderState prevRenderState, final HTMLElementImpl element) {
-        super(prevRenderState, element);
+    override fun getDefaultDisplay(): Int {
+        return RenderState.Companion.DISPLAY_TABLE
     }
 
-    @Override
-    protected int getDefaultDisplay() {
-        return DISPLAY_TABLE;
-    }
-
-    @Override
-    public void invalidate() {
-        super.invalidate();
-        this.backgroundInfo = INVALID_BACKGROUND_INFO;
+    override fun invalidate() {
+        super.invalidate()
+        this.backgroundInfo = INVALID_BACKGROUND_INFO
     }
 
     // TODO: This could be removed after #158 is implemented
-    @Override
-    public BackgroundInfo getBackgroundInfo() {
-        BackgroundInfo binfo = this.backgroundInfo;
-        if (binfo != INVALID_BACKGROUND_INFO) {
-            return binfo;
+    override fun getBackgroundInfo(): BackgroundInfo? {
+        var binfo = this.backgroundInfo
+        if (binfo !== INVALID_BACKGROUND_INFO) {
+            return binfo
         }
         // Apply style based on deprecated attributes.
-        binfo = super.getBackgroundInfo();
-        final HTMLTableElementImpl element = (HTMLTableElementImpl) this.element;
+        binfo = super.getBackgroundInfo()
+        val element = this.element as HTMLTableElementImpl
         if ((binfo == null) || (binfo.backgroundColor == null)) {
-            final String bgColor = element.getBgColor();
-            if ((bgColor != null) && !"".equals(bgColor)) {
-                final Color bgc = ColorFactory.getInstance().getColor(bgColor);
+            val bgColor = element.bgColor
+            if ((bgColor != null) && "" != bgColor) {
+                val bgc = ColorFactory.getInstance().getColor(bgColor)
                 if (binfo == null) {
-                    binfo = new BackgroundInfo();
+                    binfo = BackgroundInfo()
                 }
-                binfo.backgroundColor = bgc;
+                binfo.backgroundColor = bgc
             }
         }
         if ((binfo == null) || (binfo.backgroundImage == null)) {
-            final String background = element.getAttribute("background");
-            if ((background != null) && !"".equals(background)) {
+            val background = element.getAttribute("background")
+            if ((background != null) && "" != background) {
                 if (binfo == null) {
-                    binfo = new BackgroundInfo();
+                    binfo = BackgroundInfo()
                 }
                 try {
-                    binfo.backgroundImage = this.document.getFullURL(background);
-                } catch (final MalformedURLException mfe) {
-                    throw new IllegalArgumentException(mfe);
+                    binfo.backgroundImage = this.document.getFullURL(background)
+                } catch (mfe: MalformedURLException) {
+                    throw IllegalArgumentException(mfe)
                 }
             }
         }
-        this.backgroundInfo = binfo;
-        return binfo;
-    }
-
-  /* This is being handled by attribute to style mechanism, but keeping the method here for future reference, in case that mechanism is not complete
+        this.backgroundInfo = binfo
+        return binfo
+    } /* This is being handled by attribute to style mechanism, but keeping the method here for future reference, in case that mechanism is not complete
   public BorderInfo getBorderInfo() {
     BorderInfo binfo = this.borderInfo;
     if (binfo != INVALID_BORDER_INFO) {
@@ -142,5 +133,4 @@ public class TableRenderState extends StyleSheetRenderState {
     this.borderInfo = binfo;
     return binfo;
   }*/
-
 }

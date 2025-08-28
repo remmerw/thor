@@ -13,59 +13,46 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+package io.github.remmerw.thor.cobra.css.domimpl
 
-package io.github.remmerw.thor.cobra.css.domimpl;
+import cz.vutbr.web.css.RuleSet
+import org.w3c.dom.DOMException
+import org.w3c.dom.css.CSSStyleDeclaration
+import org.w3c.dom.css.CSSStyleRule
 
-import org.w3c.dom.DOMException;
-import org.w3c.dom.css.CSSRule;
-import org.w3c.dom.css.CSSStyleDeclaration;
-import org.w3c.dom.css.CSSStyleRule;
-
-import java.util.List;
-
-import cz.vutbr.web.css.CombinedSelector;
-import cz.vutbr.web.css.RuleSet;
-
-final class CSSStyleRuleImpl extends AbstractCSSRule implements CSSStyleRule {
-
-    final RuleSet ruleSet;
-
-    CSSStyleRuleImpl(final RuleSet ruleSet, final JStyleSheetWrapper containingStyleSheet) {
-        super(containingStyleSheet);
-        this.ruleSet = ruleSet;
+internal class CSSStyleRuleImpl(val ruleSet: RuleSet, containingStyleSheet: JStyleSheetWrapper?) :
+    AbstractCSSRule(containingStyleSheet), CSSStyleRule {
+    override fun getType(): Short {
+        return STYLE_RULE
     }
 
-    public short getType() {
-        return CSSRule.STYLE_RULE;
+    override fun getCssText(): String {
+        return ruleSet.toString()
     }
 
-    public String getCssText() {
-        return ruleSet.toString();
-    }
-
-    public void setCssText(final String cssText) throws DOMException {
+    @Throws(DOMException::class)
+    override fun setCssText(cssText: String?) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
 
-    public String getSelectorText() {
-        final String selector = ruleSet.getSelectors().toString();
-        return CSSUtils.removeBrackets(selector);
+    override fun getSelectorText(): String {
+        val selector = ruleSet.selectors.toString()
+        return CSSUtils.removeBrackets(selector)
     }
 
-    public void setSelectorText(final String selectorText) throws DOMException {
-        final List<CombinedSelector> combinedSelectors = CSSUtils.createCombinedSelectors(selectorText);
-        this.ruleSet.setSelectors(combinedSelectors);
-        this.containingStyleSheet.informChanged();
+    @Throws(DOMException::class)
+    override fun setSelectorText(selectorText: String?) {
+        val combinedSelectors = CSSUtils.createCombinedSelectors(selectorText)
+        this.ruleSet.setSelectors(combinedSelectors)
+        this.containingStyleSheet.informChanged()
     }
 
-    public CSSStyleDeclaration getStyle() {
-        return new CSSStyleDeclarationImpl(ruleSet.asList(), this);
+    override fun getStyle(): CSSStyleDeclaration {
+        return CSSStyleDeclarationImpl(ruleSet.asList(), this)
     }
 
-    @Override
-    public String toString() {
-        return ruleSet.toString();
+    override fun toString(): String {
+        return ruleSet.toString()
     }
-
 }

@@ -21,29 +21,22 @@
 /*
  * Created on Sep 4, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.CDATASection;
-import org.w3c.dom.Node;
+import org.w3c.dom.CDATASection
 
-public class CDataSectionImpl extends TextImpl implements CDATASection {
+class CDataSectionImpl : TextImpl, CDATASection {
+    constructor() : super()
 
-    public CDataSectionImpl() {
-        super();
-    }
-
-    public CDataSectionImpl(final String text) {
-        super(text);
-    }
+    constructor(text: String?) : super(text)
 
     /*
      * (non-Javadoc)
      *
      * @see org.xamjwg.html.domimpl.NodeImpl#getnodeName()
      */
-    @Override
-    public String getNodeName() {
-        return "#cdata-section";
+    override fun getNodeName(): String {
+        return "#cdata-section"
     }
 
     /*
@@ -51,9 +44,7 @@ public class CDataSectionImpl extends TextImpl implements CDATASection {
      *
      * @see org.xamjwg.html.domimpl.NodeImpl#getnodeType()
      */
-    @Override
-    public short getNodeType() {
-        return Node.CDATA_SECTION_NODE;
+    override fun getNodeType(): Short {
+        return CDATA_SECTION_NODE
     }
-
 }

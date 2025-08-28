@@ -13,30 +13,25 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+package io.github.remmerw.thor.cobra.css.domimpl
 
-package io.github.remmerw.thor.cobra.css.domimpl;
-
-import org.w3c.dom.css.CSSStyleSheet;
-
-import java.util.List;
+import org.w3c.dom.css.CSSStyleSheet
 
 /**
  * Interface for communicating the changes to the caller and getting data
  * dynamically from the caller.
  */
-public interface StyleSheetBridge {
-
+interface StyleSheetBridge {
     /**
      * Notifies the listener that the style sheet has been changed.
      *
      * @param styleSheet The style sheet that has changed
      */
-    void notifyStyleSheetChanged(final CSSStyleSheet styleSheet);
+    fun notifyStyleSheetChanged(styleSheet: CSSStyleSheet?)
 
     /**
      * @return a list of style sheet associated with the document to which this
      * handler is attached.
      */
-    List<JStyleSheetWrapper> getDocStyleSheets();
-
+    val docStyleSheets: MutableList<JStyleSheetWrapper?>?
 }

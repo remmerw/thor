@@ -18,8 +18,8 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-interface FloatingBoundsSource {
-    FloatingBounds getChildBlockFloatingBounds(int apparentBlockWidth);
+internal interface FloatingBoundsSource {
+    fun getChildBlockFloatingBounds(apparentBlockWidth: Int): FloatingBounds?
 }

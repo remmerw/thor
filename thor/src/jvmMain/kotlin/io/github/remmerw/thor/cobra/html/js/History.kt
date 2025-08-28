@@ -18,63 +18,60 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.js;
+package io.github.remmerw.thor.cobra.html.js
 
-import io.github.remmerw.thor.cobra.html.HtmlRendererContext;
-import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate;
+import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate
 
-public class History extends AbstractScriptableDelegate {
-    private final Window window;
+class History internal constructor(private val window: Window) : AbstractScriptableDelegate() {
+    val current: String?
+        get() {
+            val ctx = this.window.getHtmlRendererContext()
+            return if (ctx != null) ctx.getCurrentURL() else null
+        }
 
-    History(final Window window) {
-        this.window = window;
-    }
+    val next: String?
+        get() {
+            val ctx = this.window.getHtmlRendererContext()
+            return if (ctx != null) ctx.getNextURL().orElse(null) else null
+        }
 
-    public String getCurrent() {
-        final HtmlRendererContext ctx = this.window.getHtmlRendererContext();
-        return ctx != null ? ctx.getCurrentURL() : null;
-    }
+    val previous: String?
+        get() {
+            val ctx = this.window.getHtmlRendererContext()
+            return if (ctx != null) ctx.getPreviousURL().orElse(null) else null
+        }
 
-    public String getNext() {
-        final HtmlRendererContext ctx = this.window.getHtmlRendererContext();
-        return ctx != null ? ctx.getNextURL().orElse(null) : null;
-    }
+    val length: Int
+        get() {
+            val ctx = this.window.getHtmlRendererContext()
+            return if (ctx != null) ctx.getHistoryLength() else 0
+        }
 
-    public String getPrevious() {
-        final HtmlRendererContext ctx = this.window.getHtmlRendererContext();
-        return ctx != null ? ctx.getPreviousURL().orElse(null) : null;
-    }
-
-    public int getLength() {
-        final HtmlRendererContext ctx = this.window.getHtmlRendererContext();
-        return ctx != null ? ctx.getHistoryLength() : 0;
-    }
-
-    public void back() {
-        final HtmlRendererContext ctx = this.window.getHtmlRendererContext();
+    fun back() {
+        val ctx = this.window.getHtmlRendererContext()
         if (ctx != null) {
-            ctx.back();
+            ctx.back()
         }
     }
 
-    public void forward() {
-        final HtmlRendererContext ctx = this.window.getHtmlRendererContext();
+    fun forward() {
+        val ctx = this.window.getHtmlRendererContext()
         if (ctx != null) {
-            ctx.forward();
+            ctx.forward()
         }
     }
 
-    public void go(final int offset) {
-        final HtmlRendererContext ctx = this.window.getHtmlRendererContext();
+    fun go(offset: Int) {
+        val ctx = this.window.getHtmlRendererContext()
         if (ctx != null) {
-            ctx.moveInHistory(offset);
+            ctx.moveInHistory(offset)
         }
     }
 
-    public void go(final String url) {
-        final HtmlRendererContext ctx = this.window.getHtmlRendererContext();
+    fun go(url: String?) {
+        val ctx = this.window.getHtmlRendererContext()
         if (ctx != null) {
-            ctx.goToHistoryURL(url);
+            ctx.goToHistoryURL(url)
         }
     }
 }

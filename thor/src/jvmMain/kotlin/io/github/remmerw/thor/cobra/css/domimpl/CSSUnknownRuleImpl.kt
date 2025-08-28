@@ -13,29 +13,23 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+package io.github.remmerw.thor.cobra.css.domimpl
 
-package io.github.remmerw.thor.cobra.css.domimpl;
+import org.w3c.dom.DOMException
+import org.w3c.dom.css.CSSUnknownRule
 
-import org.w3c.dom.DOMException;
-import org.w3c.dom.css.CSSRule;
-import org.w3c.dom.css.CSSUnknownRule;
-
-final class CSSUnknownRuleImpl extends AbstractCSSRule implements CSSUnknownRule {
-
-    CSSUnknownRuleImpl(final JStyleSheetWrapper containingStyleSheet) {
-        super(containingStyleSheet);
+internal class CSSUnknownRuleImpl(containingStyleSheet: JStyleSheetWrapper?) :
+    AbstractCSSRule(containingStyleSheet), CSSUnknownRule {
+    override fun getType(): Short {
+        return UNKNOWN_RULE
     }
 
-    public short getType() {
-        return CSSRule.UNKNOWN_RULE;
+    override fun getCssText(): String? {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "")
     }
 
-    public String getCssText() {
-        throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "");
+    @Throws(DOMException::class)
+    override fun setCssText(cssText: String?) {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "")
     }
-
-    public void setCssText(final String cssText) throws DOMException {
-        throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "");
-    }
-
 }

@@ -21,36 +21,32 @@
 /*
  * Created on Oct 9, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.DOMStringList;
+import org.w3c.dom.DOMStringList
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+class DOMStringListImpl(sourceList: MutableCollection<String?>) : DOMStringList {
+    private val sourceList: MutableList<String?>
 
-public class DOMStringListImpl implements DOMStringList {
-    private final List<String> sourceList;
-
-    public DOMStringListImpl(final Collection<String> sourceList) {
-        final List<String> list = new ArrayList<>();
-        list.addAll(sourceList);
-        this.sourceList = list;
+    init {
+        val list: MutableList<String?> = ArrayList<String?>()
+        list.addAll(sourceList)
+        this.sourceList = list
     }
 
-    public String item(final int index) {
+    override fun item(index: Int): String? {
         try {
-            return this.sourceList.get(index);
-        } catch (final IndexOutOfBoundsException iob) {
-            return null;
+            return this.sourceList.get(index)
+        } catch (iob: IndexOutOfBoundsException) {
+            return null
         }
     }
 
-    public int getLength() {
-        return this.sourceList.size();
+    override fun getLength(): Int {
+        return this.sourceList.size
     }
 
-    public boolean contains(final String str) {
-        return this.sourceList.contains(str);
+    override fun contains(str: String?): Boolean {
+        return this.sourceList.contains(str)
     }
 }

@@ -18,23 +18,22 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
+package io.github.remmerw.thor.cobra.html.gui
 
-package io.github.remmerw.thor.cobra.html.gui;
-
-import java.util.EventListener;
+import java.util.EventListener
 
 /**
  * Receives selection change events.
  *
  * @author J. H. S.
- * @see HtmlPanel#addSelectionChangeListener(SelectionChangeListener)
+ * @see HtmlPanel.addSelectionChangeListener
  */
-public interface SelectionChangeListener extends EventListener {
+interface SelectionChangeListener : EventListener {
     /**
      * Receives a selection change event. This method may be assumed to execute in
      * the GUI thread.
      *
-     * @param event A {@link SelectionChangeEvent} instance.
+     * @param event A [SelectionChangeEvent] instance.
      */
-    void selectionChanged(SelectionChangeEvent event);
+    fun selectionChanged(event: SelectionChangeEvent?)
 }

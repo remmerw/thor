@@ -1,45 +1,24 @@
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import org.eclipse.jdt.annotation.NonNull;
+import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
+import java.awt.Graphics
+import java.awt.Point
+import java.awt.Rectangle
+import java.awt.event.MouseEvent
 
-import java.awt.Graphics;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.event.MouseEvent;
-import java.util.Iterator;
+internal abstract class BaseRCollection(container: RenderableContainer?, modelNode: ModelNode?) :
+    BaseBoundableRenderable(container, modelNode), RCollection {
+    private var renderableWithMouse: BoundableRenderable? = null
 
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode;
-
-abstract class BaseRCollection extends BaseBoundableRenderable implements RCollection {
-    private BoundableRenderable renderableWithMouse = null;
-
-    public BaseRCollection(final RenderableContainer container, final ModelNode modelNode) {
-        super(container, modelNode);
-    }
-
-    private static boolean checkStartSelection(final Rectangle bounds, final Point selectionPoint) {
-        if (bounds.y > selectionPoint.y) {
-            return true;
-        } else
-            return (selectionPoint.y >= bounds.y) && (selectionPoint.y < (bounds.y + bounds.height)) && (bounds.x > selectionPoint.x);
-    }
-
-    private static boolean checkEndSelection(final Rectangle bounds, final Point selectionPoint) {
-        if (bounds.y > selectionPoint.y) {
-            return true;
-        } else
-            return (selectionPoint.y >= bounds.y) && (selectionPoint.y < (bounds.y + bounds.height)) && (selectionPoint.x < bounds.x);
-    }
-
-    public void focus() {
-        this.container.focus();
+    override fun focus() {
+        this.container.focus()
         // TODO: Plus local focus
     }
 
-    public void blur() {
-        final RCollection parent = this.parent;
+    override fun blur() {
+        val parent = this.parent
         if (parent != null) {
-            parent.focus();
+            parent.focus()
         } else {
             // TODO: Remove local focus
         }
@@ -48,20 +27,20 @@ abstract class BaseRCollection extends BaseBoundableRenderable implements RColle
     /**
      * Updates bounds of all descendent's GUI components, based on root bounds.
      */
-    public void updateWidgetBounds(final int guiX, final int guiY) {
-        final Iterator<? extends Renderable> i = this.getRenderables(false);
+    override fun updateWidgetBounds(guiX: Int, guiY: Int) {
+        val i = this.getRenderables(false)
         if (i != null) {
             while (i.hasNext()) {
-                final Renderable rn = i.next();
-                final Renderable r = (rn instanceof PositionedRenderable) ? ((PositionedRenderable) rn).renderable : rn;
-                if (r instanceof RCollection rc) {
+                val rn = i.next()
+                val r = if (rn is PositionedRenderable) rn.renderable else rn
+                if (r is RCollection) {
                     // RUIControl is a RCollection too.
-                    final Point or = rc.getOriginRelativeTo(this);
+                    val or = r.getOriginRelativeTo(this)
                     // rc.updateWidgetBounds(guiX + rc.getX(), guiY + rc.getY());
-                    rc.updateWidgetBounds(guiX + or.x, guiY + or.y);
+                    r.updateWidgetBounds(guiX + or.x, guiY + or.y)
                 }
 
-        /*
+                /*
         int ox = guiX;
         int oy = guiY;
         Renderable r = rn;
@@ -84,291 +63,337 @@ abstract class BaseRCollection extends BaseBoundableRenderable implements RColle
         }
     }
 
-    public boolean paintSelection(final Graphics g, boolean inSelection, final RenderableSpot startPoint, final RenderableSpot endPoint) {
+    override fun paintSelection(
+        g: Graphics,
+        inSelection: Boolean,
+        startPoint: RenderableSpot,
+        endPoint: RenderableSpot
+    ): Boolean {
         // TODO: Does this work with renderables that are absolutely positioned?
-        Point checkPoint1 = null;
-        Point checkPoint2 = null;
+        var inSelection = inSelection
+        var checkPoint1: Point? = null
+        var checkPoint2: Point? = null
         if (!inSelection) {
-            final boolean isStart = startPoint.renderable == this;
-            final boolean isEnd = endPoint.renderable == this;
+            val isStart = startPoint.renderable === this
+            val isEnd = endPoint.renderable === this
             if (isStart && isEnd) {
-                checkPoint1 = startPoint.getPoint();
-                checkPoint2 = endPoint.getPoint();
+                checkPoint1 = startPoint.getPoint()
+                checkPoint2 = endPoint.getPoint()
             } else if (isStart) {
-                checkPoint1 = startPoint.getPoint();
+                checkPoint1 = startPoint.getPoint()
             } else if (isEnd) {
-                checkPoint1 = endPoint.getPoint();
+                checkPoint1 = endPoint.getPoint()
             }
         } else {
-            if (startPoint.renderable == this) {
-                checkPoint1 = startPoint.getPoint();
-            } else if (endPoint.renderable == this) {
-                checkPoint1 = endPoint.getPoint();
+            if (startPoint.renderable === this) {
+                checkPoint1 = startPoint.getPoint()
+            } else if (endPoint.renderable === this) {
+                checkPoint1 = endPoint.getPoint()
             }
         }
-        final Iterator<? extends Renderable> i = this.getRenderables(true);
+        val i = this.getRenderables(true)
         if (i != null) {
             while (i.hasNext()) {
-                final Object robj = i.next();
-                if (robj instanceof BoundableRenderable renderable) {
-                    final Rectangle bounds = renderable.getVisualBounds();
+                val robj: Any? = i.next()
+                if (robj is BoundableRenderable) {
+                    val bounds = robj.getVisualBounds()
                     if (!inSelection) {
                         if ((checkPoint1 != null) && checkStartSelection(bounds, checkPoint1)) {
                             if (checkPoint2 != null) {
-                                checkPoint1 = checkPoint2;
-                                checkPoint2 = null;
+                                checkPoint1 = checkPoint2
+                                checkPoint2 = null
                             } else {
-                                checkPoint1 = null;
+                                checkPoint1 = null
                             }
-                            inSelection = true;
-                        } else if ((checkPoint2 != null) && checkStartSelection(bounds, checkPoint2)) {
-                            checkPoint1 = null;
-                            checkPoint2 = null;
-                            inSelection = true;
+                            inSelection = true
+                        } else if ((checkPoint2 != null) && checkStartSelection(
+                                bounds,
+                                checkPoint2
+                            )
+                        ) {
+                            checkPoint1 = null
+                            checkPoint2 = null
+                            inSelection = true
                         }
-                    } else if (inSelection && (checkPoint1 != null) && checkEndSelection(bounds, checkPoint1)) {
-                        return false;
+                    } else if (inSelection && (checkPoint1 != null) && checkEndSelection(
+                            bounds,
+                            checkPoint1
+                        )
+                    ) {
+                        return false
                     }
-                    final int offsetX = bounds.x;
-                    final int offsetY = bounds.y;
-                    g.translate(offsetX, offsetY);
+                    val offsetX = bounds.x
+                    val offsetY = bounds.y
+                    g.translate(offsetX, offsetY)
                     try {
-                        final boolean newInSelection = renderable.paintSelection(g, inSelection, startPoint, endPoint);
+                        val newInSelection =
+                            robj.paintSelection(g, inSelection, startPoint, endPoint)
                         if (inSelection && !newInSelection) {
-                            return false;
+                            return false
                         }
-                        inSelection = newInSelection;
+                        inSelection = newInSelection
                     } finally {
-                        g.translate(-offsetX, -offsetY);
+                        g.translate(-offsetX, -offsetY)
                     }
                 }
             }
         }
         if (inSelection && (checkPoint1 != null)) {
-            return false;
+            return false
         } else if (!inSelection && ((checkPoint1 != null) || (checkPoint2 != null)) && !((checkPoint1 != null) && (checkPoint2 != null))) {
             // Has to have started not being in selection,
             // but we must start selecting without having
             // selected anything in the block then.
-            return true;
+            return true
         }
-        return inSelection;
+        return inSelection
     }
 
-    public boolean extractSelectionText(final StringBuffer buffer, boolean inSelection, final RenderableSpot startPoint,
-                                        final RenderableSpot endPoint) {
-        Point checkPoint1 = null;
-        Point checkPoint2 = null;
+    override fun extractSelectionText(
+        buffer: StringBuffer?, inSelection: Boolean, startPoint: RenderableSpot,
+        endPoint: RenderableSpot
+    ): Boolean {
+        var inSelection = inSelection
+        var checkPoint1: Point? = null
+        var checkPoint2: Point? = null
         if (!inSelection) {
-            final boolean isStart = startPoint.renderable == this;
-            final boolean isEnd = endPoint.renderable == this;
+            val isStart = startPoint.renderable === this
+            val isEnd = endPoint.renderable === this
             if (isStart && isEnd) {
-                checkPoint1 = startPoint.getPoint();
-                checkPoint2 = endPoint.getPoint();
+                checkPoint1 = startPoint.getPoint()
+                checkPoint2 = endPoint.getPoint()
             } else if (isStart) {
-                checkPoint1 = startPoint.getPoint();
+                checkPoint1 = startPoint.getPoint()
             } else if (isEnd) {
-                checkPoint1 = endPoint.getPoint();
+                checkPoint1 = endPoint.getPoint()
             }
         } else {
-            if (startPoint.renderable == this) {
-                checkPoint1 = startPoint.getPoint();
-            } else if (endPoint.renderable == this) {
-                checkPoint1 = endPoint.getPoint();
+            if (startPoint.renderable === this) {
+                checkPoint1 = startPoint.getPoint()
+            } else if (endPoint.renderable === this) {
+                checkPoint1 = endPoint.getPoint()
             }
         }
-        final Iterator<? extends Renderable> i = this.getRenderables(true);
+        val i = this.getRenderables(true)
         if (i != null) {
             while (i.hasNext()) {
-                final Renderable rn = i.next();
-                final Renderable robj = (rn instanceof PositionedRenderable) ? ((PositionedRenderable) rn).renderable : rn;
-                if (robj instanceof BoundableRenderable renderable) {
+                val rn = i.next()
+                val robj = if (rn is PositionedRenderable) rn.renderable else rn
+                if (robj is BoundableRenderable) {
                     if (!inSelection) {
-                        final Rectangle bounds = renderable.getVisualBounds();
+                        val bounds = robj.getVisualBounds()
                         if ((checkPoint1 != null) && checkStartSelection(bounds, checkPoint1)) {
                             if (checkPoint2 != null) {
-                                checkPoint1 = checkPoint2;
-                                checkPoint2 = null;
+                                checkPoint1 = checkPoint2
+                                checkPoint2 = null
                             } else {
-                                checkPoint1 = null;
+                                checkPoint1 = null
                             }
-                            inSelection = true;
-                        } else if ((checkPoint2 != null) && checkStartSelection(bounds, checkPoint2)) {
-                            checkPoint1 = null;
-                            checkPoint2 = null;
-                            inSelection = true;
+                            inSelection = true
+                        } else if ((checkPoint2 != null) && checkStartSelection(
+                                bounds,
+                                checkPoint2
+                            )
+                        ) {
+                            checkPoint1 = null
+                            checkPoint2 = null
+                            inSelection = true
                         }
-                    } else if (inSelection && (checkPoint1 != null) && checkEndSelection(renderable.getBounds(), checkPoint1)) {
-                        return false;
+                    } else if (inSelection && (checkPoint1 != null) && checkEndSelection(
+                            robj.getBounds(),
+                            checkPoint1
+                        )
+                    ) {
+                        return false
                     }
-                    final boolean newInSelection = renderable.extractSelectionText(buffer, inSelection, startPoint, endPoint);
+                    val newInSelection =
+                        robj.extractSelectionText(buffer, inSelection, startPoint, endPoint)
                     if (inSelection && !newInSelection) {
-                        return false;
+                        return false
                     }
-                    inSelection = newInSelection;
+                    inSelection = newInSelection
                 }
             }
         }
         if (inSelection && (checkPoint1 != null)) {
-            return false;
+            return false
         } else if (!inSelection && ((checkPoint1 != null) || (checkPoint2 != null)) && !((checkPoint1 != null) && (checkPoint2 != null))) {
             // Has to have started not being in selection,
             // but we must start selecting without having
             // selected anything in the block then.
-            return true;
+            return true
         }
-        return inSelection;
+        return inSelection
     }
 
-    public void invalidateLayoutDeep() {
+    override fun invalidateLayoutDeep() {
         // TODO: May be pretty inefficient in RLine's
         // if it's true that non-layable components
         // are not in RLine's anymore.
-        this.invalidateLayoutLocal();
-        final Iterator<? extends Renderable> renderables = this.getRenderables(true);
+        this.invalidateLayoutLocal()
+        val renderables = this.getRenderables(true)
         if (renderables != null) {
             while (renderables.hasNext()) {
-                final Renderable rn = renderables.next();
-                final Renderable r = (rn instanceof PositionedRenderable) ? ((PositionedRenderable) rn).renderable : rn;
-                if (r instanceof RCollection) {
-                    ((RCollection) r).invalidateLayoutDeep();
+                val rn = renderables.next()
+                val r = if (rn is PositionedRenderable) rn.renderable else rn
+                if (r is RCollection) {
+                    r.invalidateLayoutDeep()
                 }
             }
         }
     }
 
-    @Override
-    public void onMouseMoved(final MouseEvent event, final int x, final int y, final boolean triggerEvent, final ModelNode limit) {
-        super.onMouseMoved(event, x, y, triggerEvent, limit);
-        final BoundableRenderable oldRenderable = this.renderableWithMouse;
-        final Renderable r = this.getRenderable(x, y);
-        final BoundableRenderable newRenderable = r instanceof BoundableRenderable ? (BoundableRenderable) r : null;
-        ModelNode newLimit;
+    override fun onMouseMoved(
+        event: MouseEvent?,
+        x: Int,
+        y: Int,
+        triggerEvent: Boolean,
+        limit: ModelNode?
+    ) {
+        super.onMouseMoved(event, x, y, triggerEvent, limit)
+        val oldRenderable = this.renderableWithMouse
+        val r: Renderable? = this.getRenderable(x, y)
+        val newRenderable = if (r is BoundableRenderable) r else null
+        val newLimit: ModelNode?
         if (this.isContainedByNode()) {
-            newLimit = this.modelNode;
+            newLimit = this.modelNode
         } else {
-            newLimit = limit;
+            newLimit = limit
         }
-        final boolean changed = oldRenderable != newRenderable;
+        val changed = oldRenderable !== newRenderable
         if (changed) {
             if (oldRenderable != null) {
-                oldRenderable.onMouseOut(event, x - oldRenderable.getVisualX(), y - oldRenderable.getVisualY(), newLimit);
+                oldRenderable.onMouseOut(
+                    event,
+                    x - oldRenderable.getVisualX(),
+                    y - oldRenderable.getVisualY(),
+                    newLimit
+                )
             }
-            this.renderableWithMouse = newRenderable;
+            this.renderableWithMouse = newRenderable
         }
         // Must recurse always
         if (newRenderable != null) {
             // newRenderable.onMouseMoved(event, x - newRenderable.getVisualX(), y - newRenderable.getVisualY(), changed, newLimit);
-            final Point or = newRenderable.getOriginRelativeTo(this);
-            newRenderable.onMouseMoved(event, x - or.x, y - or.y, changed, newLimit);
+            val or = newRenderable.getOriginRelativeTo(this)
+            newRenderable.onMouseMoved(event, x - or.x, y - or.y, changed, newLimit)
         }
     }
 
-    @Override
-    public boolean onMousePressed(MouseEvent event, int x, int y) {
-        final Renderable r = this.getRenderable(x, y);
-        final RCollection newRenderable = r instanceof RCollection ? (RCollection) r : null;
+    override fun onMousePressed(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val r: Renderable? = this.getRenderable(x, y)
+        val newRenderable = if (r is RCollection) r else null
         if (newRenderable != null) {
-            final Point or = newRenderable.getOriginRelativeTo(this);
+            val or = newRenderable.getOriginRelativeTo(this)
             if (!newRenderable.onMousePressed(event, x - or.x, y - or.y)) {
-                return false;
+                return false
             }
         }
-        return HtmlController.getInstance().onMouseDown(this.modelNode, event, x, y);
+        return HtmlController.Companion.getInstance().onMouseDown(this.modelNode, event, x, y)
     }
 
-    @Override
-    public boolean onMouseClick(MouseEvent event, int x, int y) {
-        final Renderable r = this.getRenderable(x, y);
-        final RCollection newRenderable = r instanceof RCollection ? (RCollection) r : null;
+    override fun onMouseClick(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val r: Renderable? = this.getRenderable(x, y)
+        val newRenderable = if (r is RCollection) r else null
         if (newRenderable != null) {
-            final Point or = newRenderable.getOriginRelativeTo(this);
+            val or = newRenderable.getOriginRelativeTo(this)
             if (!newRenderable.onMouseClick(event, x - or.x, y - or.y)) {
-                return false;
+                return false
             }
         }
-        return HtmlController.getInstance().onMouseClick(this.modelNode, event, x, y);
+        return HtmlController.Companion.getInstance().onMouseClick(this.modelNode, event, x, y)
     }
 
-    @Override
-    public void onMouseOut(final MouseEvent event, final int x, final int y, final ModelNode limit) {
-        super.onMouseOut(event, x, y, limit);
-        final BoundableRenderable oldRenderable = this.renderableWithMouse;
+    override fun onMouseOut(event: MouseEvent?, x: Int, y: Int, limit: ModelNode?) {
+        super.onMouseOut(event, x, y, limit)
+        val oldRenderable = this.renderableWithMouse
         if (oldRenderable != null) {
-            this.renderableWithMouse = null;
-            ModelNode newLimit;
+            this.renderableWithMouse = null
+            val newLimit: ModelNode?
             if (this.isContainedByNode()) {
-                newLimit = this.modelNode;
+                newLimit = this.modelNode
             } else {
-                newLimit = limit;
+                newLimit = limit
             }
-            final Point or = oldRenderable.getOriginRelativeTo(this);
-            oldRenderable.onMouseOut(event, x - or.x, y - or.y, newLimit);
+            val or = oldRenderable.getOriginRelativeTo(this)
+            oldRenderable.onMouseOut(event, x - or.x, y - or.y, newLimit)
         }
     }
 
-    public BoundableRenderable getRenderable(final int x, final int y) {
-        final Iterator<? extends Renderable> i = this.getRenderables(true);
+    override fun getRenderable(x: Int, y: Int): BoundableRenderable? {
+        val i = this.getRenderables(true)
         if (i != null) {
             while (i.hasNext()) {
-                final Renderable rn = i.next();
-                final Renderable r = rn;
-                if (r instanceof BoundableRenderable br) {
+                val rn = i.next()
+                val r = rn
+                if (r is BoundableRenderable) {
                     /*
           if (br instanceof RBlockViewport) {
             return br;
           }*/
-                    if ((!br.isDelegated()) && br.contains(x, y)) {
-                        return br;
+                    if ((!r.isDelegated()) && r.contains(x, y)) {
+                        return r
                     }
-                } else if (r instanceof PositionedRenderable pr) {
-                    if (pr.contains(x, y)) {
-                        return pr.renderable;
+                } else if (r is PositionedRenderable) {
+                    if (r.contains(x, y)) {
+                        return r.renderable
                     }
                 }
             }
         }
-        return null;
+        return null
     }
 
-    public boolean onMiddleClick(final MouseEvent event, final int x, final int y) {
-        final BoundableRenderable br = this.getRenderable(x, y);
+    override fun onMiddleClick(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val br = this.getRenderable(x, y)
         if (br == null) {
-            return HtmlController.getInstance().onMiddleClick(this.modelNode, event, x, y);
+            return HtmlController.Companion.getInstance().onMiddleClick(this.modelNode, event, x, y)
         } else {
-            final Point or = br.getOriginRelativeTo(this);
-            return br.onMiddleClick(event, x - or.x, y - or.y);
+            val or = br.getOriginRelativeTo(this)
+            return br.onMiddleClick(event, x - or.x, y - or.y)
         }
     }
 
-    public boolean onRightClick(final MouseEvent event, final int x, final int y) {
-        final BoundableRenderable br = this.getRenderable(x, y);
+    override fun onRightClick(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val br = this.getRenderable(x, y)
         if (br == null) {
-            return HtmlController.getInstance().onContextMenu(this.modelNode, event, x, y);
+            return HtmlController.Companion.getInstance().onContextMenu(this.modelNode, event, x, y)
         } else {
-            final Point or = br.getOriginRelativeTo(this);
-            return br.onRightClick(event, x - or.x, y - or.y);
+            val or = br.getOriginRelativeTo(this)
+            return br.onRightClick(event, x - or.x, y - or.y)
         }
     }
 
-    @Override
-    public Rectangle getClipBoundsWithoutInsets() {
+    override fun getClipBoundsWithoutInsets(): Rectangle? {
         // TODO
-        return getClipBounds();
+        return getClipBounds()
     }
 
-    @Override
-    public boolean isReadyToPaint() {
-        final Iterator<@NonNull ? extends Renderable> renderables = getRenderables();
+    override fun isReadyToPaint(): Boolean {
+        val renderables = getRenderables()
         if (renderables == null) {
-            return true;
+            return true
         }
         while (renderables.hasNext()) {
-            final Renderable next = renderables.next();
+            val next = renderables.next()
             if (!next.isReadyToPaint()) {
-                return false;
+                return false
             }
         }
-        return true;
+        return true
+    }
+
+    companion object {
+        private fun checkStartSelection(bounds: Rectangle, selectionPoint: Point): Boolean {
+            if (bounds.y > selectionPoint.y) {
+                return true
+            } else return (selectionPoint.y >= bounds.y) && (selectionPoint.y < (bounds.y + bounds.height)) && (bounds.x > selectionPoint.x)
+        }
+
+        private fun checkEndSelection(bounds: Rectangle, selectionPoint: Point): Boolean {
+            if (bounds.y > selectionPoint.y) {
+                return true
+            } else return (selectionPoint.y >= bounds.y) && (selectionPoint.y < (bounds.y + bounds.height)) && (selectionPoint.x < bounds.x)
+        }
     }
 }

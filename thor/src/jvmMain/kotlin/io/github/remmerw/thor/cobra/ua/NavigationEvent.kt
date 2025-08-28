@@ -18,89 +18,61 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.ua;
+package io.github.remmerw.thor.cobra.ua
 
-import org.eclipse.jdt.annotation.NonNull;
-
-import java.net.URL;
+import java.net.URL
+import java.util.EventObject
 
 /**
  * A navigation event.
  *
  * @see NavigationListener
- * @see NavigatorExtensionContext#addNavigationListener(NavigationListener)
+ *
+ * @see NavigatorExtensionContext.addNavigationListener
  */
-public class NavigationEvent extends java.util.EventObject {
-    private static final long serialVersionUID = -3655001617854084211L;
-    private final @NonNull URL uRL;
-    private final String method;
-    private final ParameterInfo paramInfo;
-    private final TargetType targetType;
-    private final RequestType requestType;
-    private final boolean fromClick;
-    private final Object linkObject;
-    private final NavigatorFrame originatingFrame;
+class NavigationEvent(
+    source: Any, url: URL, method: String?, paramInfo: ParameterInfo?,
+    targetType: TargetType?, requestType: RequestType?,
+    fromClick: Boolean, linkObject: Any?, originatingFrame: NavigatorFrame?
+) : EventObject(source) {
+    val uRL: URL
+    val method: String?
+    val paramInfo: ParameterInfo?
+    val targetType: TargetType?
+    val requestType: RequestType?
+    val isFromClick: Boolean
+    val linkObject: Any?
+    val originatingFrame: NavigatorFrame?
 
-    public NavigationEvent(final Object source, final @NonNull URL url, final String method, final ParameterInfo paramInfo,
-                           final TargetType targetType, final RequestType requestType,
-                           final boolean fromClick, final Object linkObject, final NavigatorFrame originatingFrame) {
-        super(source);
-        this.uRL = url;
-        this.method = method;
-        this.paramInfo = paramInfo;
-        this.targetType = targetType;
-        this.requestType = requestType;
-        this.fromClick = fromClick;
-        this.linkObject = linkObject;
-        this.originatingFrame = originatingFrame;
+    init {
+        this.uRL = url
+        this.method = method
+        this.paramInfo = paramInfo
+        this.targetType = targetType
+        this.requestType = requestType
+        this.isFromClick = fromClick
+        this.linkObject = linkObject
+        this.originatingFrame = originatingFrame
     }
 
-    public NavigationEvent(final Object source, final @NonNull URL url, final String method, final ParameterInfo paramInfo,
-                           final TargetType targetType, final RequestType requestType,
-                           final NavigatorFrame originatingFrame) {
-        this(source, url, method, paramInfo, targetType, requestType, false, null, originatingFrame);
-    }
+    constructor(
+        source: Any, url: URL, method: String?, paramInfo: ParameterInfo?,
+        targetType: TargetType?, requestType: RequestType?,
+        originatingFrame: NavigatorFrame?
+    ) : this(source, url, method, paramInfo, targetType, requestType, false, null, originatingFrame)
 
-    public NavigationEvent(final Object source, final @NonNull URL url, final TargetType targetType, final RequestType requestType,
-                           final Object linkObject,
-                           final NavigatorFrame originatingFrame) {
-        this(source, url, "GET", null, targetType, requestType, true, linkObject, originatingFrame);
-    }
+    constructor(
+        source: Any, url: URL, targetType: TargetType?, requestType: RequestType?,
+        linkObject: Any?,
+        originatingFrame: NavigatorFrame?
+    ) : this(source, url, "GET", null, targetType, requestType, true, linkObject, originatingFrame)
 
-    public NavigationEvent(final Object source, final @NonNull URL url, final String method, final RequestType requestType,
-                           final NavigatorFrame originatingFrame) {
-        this(source, url, method, null, TargetType.SELF, requestType, false, null, originatingFrame);
-    }
+    constructor(
+        source: Any, url: URL, method: String?, requestType: RequestType?,
+        originatingFrame: NavigatorFrame?
+    ) : this(source, url, method, null, TargetType.SELF, requestType, false, null, originatingFrame)
 
-    public @NonNull URL getURL() {
-        return uRL;
-    }
-
-    public String getMethod() {
-        return method;
-    }
-
-    public ParameterInfo getParamInfo() {
-        return paramInfo;
-    }
-
-    public RequestType getRequestType() {
-        return requestType;
-    }
-
-    public boolean isFromClick() {
-        return fromClick;
-    }
-
-    public Object getLinkObject() {
-        return linkObject;
-    }
-
-    public NavigatorFrame getOriginatingFrame() {
-        return originatingFrame;
-    }
-
-    public TargetType getTargetType() {
-        return targetType;
+    companion object {
+        private val serialVersionUID = -3655001617854084211L
     }
 }

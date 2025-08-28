@@ -21,56 +21,46 @@
 /*
  * Created on Oct 23, 2005
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.util.logging.Logger;
+import cz.vutbr.web.css.CSSProperty.VerticalAlign
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
+import java.awt.Color
+import java.awt.Component
+import java.awt.Dimension
+import java.util.logging.Logger
+import javax.swing.JComponent
 
-import javax.swing.JComponent;
+internal abstract class BaseControl
+/**
+ * @param context
+ */(protected val controlElement: HTMLElementImpl?) : JComponent(), UIControl {
+    protected var ruicontrol: RUIControl? = null
 
-import cz.vutbr.web.css.CSSProperty.VerticalAlign;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl;
-
-abstract class BaseControl extends JComponent implements UIControl {
-    protected static final Dimension ZERO_DIMENSION = new Dimension(0, 0);
-    private static final long serialVersionUID = 7061225345785659580L;
-    private static final Logger logger = Logger.getLogger(BaseControl.class.getName());
-    protected final HTMLElementImpl controlElement;
-    protected RUIControl ruicontrol;
-
-    /**
-     * @param context
-     */
-    public BaseControl(final HTMLElementImpl modelNode) {
-        this.controlElement = modelNode;
+    override fun getComponent(): Component {
+        return this
     }
 
-    public Component getComponent() {
-        return this;
+    override fun setRUIControl(ruicontrol: RUIControl?) {
+        this.ruicontrol = ruicontrol
     }
 
-    public void setRUIControl(final RUIControl ruicontrol) {
-        this.ruicontrol = ruicontrol;
-    }
-
-    public VerticalAlign getVAlign() {
-        return VerticalAlign.BASELINE;
+    override fun getVAlign(): VerticalAlign? {
+        return VerticalAlign.BASELINE
     }
 
     /**
      * Method invoked when image changes size. It's expected to be called outside
      * the GUI thread.
      */
-    protected void invalidateAndRepaint() {
-        final RUIControl rc = this.ruicontrol;
+    protected fun invalidateAndRepaint() {
+        val rc = this.ruicontrol
         if (rc == null) {
-            logger.severe("invalidateAndPaint(): RUIControl not set.");
-            return;
+            logger.severe("invalidateAndPaint(): RUIControl not set.")
+            return
         }
         if (rc.isValid()) {
-            rc.relayout();
+            rc.relayout()
         }
     }
 
@@ -79,10 +69,16 @@ abstract class BaseControl extends JComponent implements UIControl {
      *
      * @see org.xamjwg.html.renderer.UIControl#getBackgroundColor()
      */
-    public Color getBackgroundColor() {
-        return this.getBackground();
+    override fun getBackgroundColor(): Color? {
+        return this.getBackground()
     }
 
-    public void reset(final int availWidth, final int availHeight) {
+    override fun reset(availWidth: Int, availHeight: Int) {
+    }
+
+    companion object {
+        protected val ZERO_DIMENSION: Dimension = Dimension(0, 0)
+        private const val serialVersionUID = 7061225345785659580L
+        private val logger: Logger = Logger.getLogger(BaseControl::class.java.name)
     }
 }

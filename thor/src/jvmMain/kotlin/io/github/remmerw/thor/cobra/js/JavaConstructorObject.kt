@@ -18,85 +18,84 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.js;
+package io.github.remmerw.thor.cobra.js
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.EcmaError;
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.WrappedException;
-import org.w3c.dom.DOMException;
+import org.mozilla.javascript.Context
+import org.mozilla.javascript.EcmaError
+import org.mozilla.javascript.Function
+import org.mozilla.javascript.Scriptable
+import org.mozilla.javascript.ScriptableObject
+import org.mozilla.javascript.WrappedException
+import org.w3c.dom.DOMException
 
-public class JavaConstructorObject extends ScriptableObject implements Function {
-    private static final long serialVersionUID = 5536902327235533789L;
-    private final JavaClassWrapper classWrapper;
-    private final JavaInstantiator instantiator;
-    private final String name;
+class JavaConstructorObject : ScriptableObject, Function {
+    private val classWrapper: JavaClassWrapper
+    private val instantiator: JavaInstantiator
+    private val name: String?
 
-    public JavaConstructorObject(final String name, final JavaClassWrapper classWrapper) {
-        this.name = name;
-        this.classWrapper = classWrapper;
-        this.instantiator = new SimpleInstantiator(classWrapper);
+    constructor(name: String?, classWrapper: JavaClassWrapper) {
+        this.name = name
+        this.classWrapper = classWrapper
+        this.instantiator = SimpleInstantiator(classWrapper)
     }
 
-    public JavaConstructorObject(final String name, final JavaClassWrapper classWrapper, final JavaInstantiator instantiator) {
-        this.name = name;
-        this.classWrapper = classWrapper;
-        this.instantiator = instantiator;
+    constructor(name: String?, classWrapper: JavaClassWrapper, instantiator: JavaInstantiator) {
+        this.name = name
+        this.classWrapper = classWrapper
+        this.instantiator = instantiator
     }
 
-    @Override
-    public String getClassName() {
-        return this.name;
+    override fun getClassName(): String? {
+        return this.name
     }
 
-    public Object call(final Context cx, final Scriptable scope, final Scriptable thisObj, final Object[] args) {
+    override fun call(
+        cx: Context?,
+        scope: Scriptable?,
+        thisObj: Scriptable?,
+        args: Array<Any?>?
+    ): Any? {
         // TODO: Implement this, or atleast remove the wrapped exception.
         //       The exception is being wrapped so that web-platform-tests don't timeout; timeouts are slowing down testing.
-        throw new WrappedException(new UnsupportedOperationException());
+        throw WrappedException(UnsupportedOperationException())
     }
 
-    public Scriptable construct(final Context cx, final Scriptable scope, final Object[] args) {
+    override fun construct(cx: Context?, scope: Scriptable?, args: Array<Any?>?): Scriptable {
         try {
-            final Object javaObject = this.instantiator.newInstance(args);
-            final Scriptable newObject = new JavaObjectWrapper(this.classWrapper, javaObject);
-            newObject.setParentScope(scope);
-            return newObject;
-        } catch (final DOMException err) {
-            throw new WrappedException(err);
-        } catch (final EcmaError err) {
-            throw err;
-        } catch (final Exception err) {
-            throw new IllegalStateException(err);
+            val javaObject = this.instantiator.newInstance(args)
+            val newObject: Scriptable = JavaObjectWrapper(this.classWrapper, javaObject)
+            newObject.parentScope = scope
+            return newObject
+        } catch (err: DOMException) {
+            throw WrappedException(err)
+        } catch (err: EcmaError) {
+            throw err
+        } catch (err: Exception) {
+            throw IllegalStateException(err)
         }
     }
 
-    @Override
-    public Object getDefaultValue(final Class<?> hint) {
+    override fun getDefaultValue(hint: Class<*>?): Any? {
         // null is passed as hint when converting to string, hence adding it as an extra condition.
-        if (String.class.equals(hint) || (hint == null)) {
-            return "function " + this.name;
+        if (String::class.java == hint || (hint == null)) {
+            return "function " + this.name
         } else {
-            return super.getDefaultValue(hint);
+            return super.getDefaultValue(hint)
         }
     }
 
-    @Override
-    public boolean hasInstance(final Scriptable instance) {
-        return classWrapper.hasInstance(instance);
+    override fun hasInstance(instance: Scriptable?): Boolean {
+        return classWrapper.hasInstance(instance)
     }
 
-    public static class SimpleInstantiator implements JavaInstantiator {
-        private final JavaClassWrapper classWrapper;
-
-        public SimpleInstantiator(final JavaClassWrapper classWrapper) {
-            super();
-            this.classWrapper = classWrapper;
+    class SimpleInstantiator(private val classWrapper: JavaClassWrapper) : JavaInstantiator {
+        @Throws(InstantiationException::class, IllegalAccessException::class)
+        override fun newInstance(args: Array<Any?>?): Any? {
+            return this.classWrapper.newInstance()
         }
+    }
 
-        public Object newInstance(final Object[] args) throws InstantiationException, IllegalAccessException {
-            return this.classWrapper.newInstance();
-        }
+    companion object {
+        private const val serialVersionUID = 5536902327235533789L
     }
 }

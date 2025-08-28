@@ -21,149 +21,143 @@
 /*
  * Created on Apr 16, 2005
  */
-package io.github.remmerw.thor.cobra.html.style;
+package io.github.remmerw.thor.cobra.html.style
 
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.util.Optional;
-
-import cz.vutbr.web.css.CSSProperty;
+import cz.vutbr.web.css.CSSProperty.VerticalAlign
 
 /**
  * @author J. H. S.
  */
-public interface RenderState {
-    int MASK_TEXTDECORATION_UNDERLINE = 1;
-    int MASK_TEXTDECORATION_OVERLINE = 2;
-    int MASK_TEXTDECORATION_LINE_THROUGH = 4;
-    int MASK_TEXTDECORATION_BLINK = 8;
+interface RenderState {
+    val position: Int
 
-    int TEXTTRANSFORM_NONE = 0;
-    int TEXTTRANSFORM_CAPITALIZE = 1;
-    int TEXTTRANSFORM_UPPERCASE = 2;
-    int TEXTTRANSFORM_LOWERCASE = 4;
-    // TODO how to handle style cascading?
-    // public static final int TEXTTRANSFORM_INHERIT = 8;
+    val float: Int
 
-    int DISPLAY_NONE = 0;
-    int DISPLAY_INLINE = 1;
-    int DISPLAY_BLOCK = 2;
-    int DISPLAY_LIST_ITEM = 3;
-    int DISPLAY_TABLE_ROW = 4;
-    int DISPLAY_TABLE_CELL = 5;
-    int DISPLAY_TABLE = 6;
-    int DISPLAY_INLINE_BLOCK = 7;
-    int DISPLAY_TABLE_ROW_GROUP = 8;
-    int DISPLAY_TABLE_HEADER_GROUP = 9;
-    int DISPLAY_TABLE_FOOTER_GROUP = 10;
-    int DISPLAY_TABLE_COLUMN = 11;
-    int DISPLAY_TABLE_COLUMN_GROUP = 12;
-    int DISPLAY_TABLE_CAPTION = 13;
-    int DISPLAY_INLINE_TABLE = 14;
+    val clear: Int
 
-    int WS_NORMAL = 0;
-    int WS_PRE = 1;
-    int WS_NOWRAP = 2;
+    val visibility: Int
 
-    int VISIBILITY_VISIBLE = 0;
-    int VISIBILITY_HIDDEN = 1;
-    int VISIBILITY_COLLAPSE = 2;
+    val font: Font?
 
-    int POSITION_STATIC = 0;
-    int POSITION_ABSOLUTE = 1;
-    int POSITION_RELATIVE = 2;
-    int POSITION_FIXED = 3;
+    val fontBase: Int
 
-    int FLOAT_NONE = 0;
-    int FLOAT_LEFT = 1;
-    int FLOAT_RIGHT = 2;
+    fun getWordInfo(word: String?): WordInfo?
 
-    int OVERFLOW_NONE = 0;
-    int OVERFLOW_SCROLL = 1;
-    int OVERFLOW_AUTO = 2;
-    int OVERFLOW_HIDDEN = 3;
-    int OVERFLOW_VISIBLE = 4;
+    val color: Color?
 
-    int getPosition();
+    val backgroundColor: Color?
 
-    int getFloat();
+    val textBackgroundColor: Color?
 
-    int getClear();
+    val backgroundInfo: BackgroundInfo?
 
-    int getVisibility();
+    val overlayColor: Color?
 
-    Font getFont();
+    val textTransform: Int
 
-    int getFontBase();
+    val textDecorationMask: Int
 
-    WordInfo getWordInfo(String word);
+    val fontMetrics: FontMetrics?
 
-    Color getColor();
+    val fontXHeight: Double
 
-    Color getBackgroundColor();
+    val blankWidth: Int
 
-    Color getTextBackgroundColor();
+    var isHighlight: Boolean
 
-    BackgroundInfo getBackgroundInfo();
+    val alignXPercent: Int
 
-    Color getOverlayColor();
+    val alignYPercent: Int
 
-    int getTextTransform();
+    fun getCount(counter: String?, nesting: Int): Int
 
-    int getTextDecorationMask();
+    val display: Int
 
-    FontMetrics getFontMetrics();
+    fun resetCount(counter: String?, nesting: Int, value: Int)
 
-    double getFontXHeight();
+    fun incrementCount(counter: String?, nesting: Int): Int
 
-    int getBlankWidth();
+    fun getTextIndent(availWidth: Int): Int
 
-    boolean isHighlight();
+    val textIndentText: String?
 
-    void setHighlight(boolean highlight);
+    val whiteSpace: Int
 
-    int getAlignXPercent();
+    val marginInsets: HtmlInsets?
 
-    int getAlignYPercent();
+    val paddingInsets: HtmlInsets?
 
-    int getCount(String counter, int nesting);
+    val overflowX: Int
 
-    int getDisplay();
+    val overflowY: Int
 
-    void resetCount(String counter, int nesting, int value);
+    fun invalidate()
 
-    int incrementCount(String counter, int nesting);
+    val borderInfo: BorderInfo?
 
-    int getTextIndent(int availWidth);
+    val cursor: Optional<Cursor?>?
 
-    String getTextIndentText();
+    val left: String?
 
-    int getWhiteSpace();
+    val top: String?
 
-    HtmlInsets getMarginInsets();
+    val right: String?
 
-    HtmlInsets getPaddingInsets();
-
-    int getOverflowX();
-
-    int getOverflowY();
-
-    void invalidate();
-
-    BorderInfo getBorderInfo();
-
-    Optional<Cursor> getCursor();
-
-    String getLeft();
-
-    String getTop();
-
-    String getRight();
-
-    String getBottom();
+    val bottom: String?
 
     // TODO: This should return a more abstract type that can represent values like length and percentage
-    CSSProperty.VerticalAlign getVerticalAlign();
+    val verticalAlign: VerticalAlign?
+
+    companion object {
+        const val MASK_TEXTDECORATION_UNDERLINE: Int = 1
+        const val MASK_TEXTDECORATION_OVERLINE: Int = 2
+        const val MASK_TEXTDECORATION_LINE_THROUGH: Int = 4
+        const val MASK_TEXTDECORATION_BLINK: Int = 8
+
+        const val TEXTTRANSFORM_NONE: Int = 0
+        const val TEXTTRANSFORM_CAPITALIZE: Int = 1
+        const val TEXTTRANSFORM_UPPERCASE: Int = 2
+        const val TEXTTRANSFORM_LOWERCASE: Int = 4
+
+        // TODO how to handle style cascading?
+        // public static final int TEXTTRANSFORM_INHERIT = 8;
+        const val DISPLAY_NONE: Int = 0
+        const val DISPLAY_INLINE: Int = 1
+        const val DISPLAY_BLOCK: Int = 2
+        const val DISPLAY_LIST_ITEM: Int = 3
+        const val DISPLAY_TABLE_ROW: Int = 4
+        const val DISPLAY_TABLE_CELL: Int = 5
+        const val DISPLAY_TABLE: Int = 6
+        const val DISPLAY_INLINE_BLOCK: Int = 7
+        const val DISPLAY_TABLE_ROW_GROUP: Int = 8
+        const val DISPLAY_TABLE_HEADER_GROUP: Int = 9
+        const val DISPLAY_TABLE_FOOTER_GROUP: Int = 10
+        const val DISPLAY_TABLE_COLUMN: Int = 11
+        const val DISPLAY_TABLE_COLUMN_GROUP: Int = 12
+        const val DISPLAY_TABLE_CAPTION: Int = 13
+        const val DISPLAY_INLINE_TABLE: Int = 14
+
+        const val WS_NORMAL: Int = 0
+        const val WS_PRE: Int = 1
+        const val WS_NOWRAP: Int = 2
+
+        const val VISIBILITY_VISIBLE: Int = 0
+        const val VISIBILITY_HIDDEN: Int = 1
+        const val VISIBILITY_COLLAPSE: Int = 2
+
+        const val POSITION_STATIC: Int = 0
+        const val POSITION_ABSOLUTE: Int = 1
+        const val POSITION_RELATIVE: Int = 2
+        const val POSITION_FIXED: Int = 3
+
+        const val FLOAT_NONE: Int = 0
+        const val FLOAT_LEFT: Int = 1
+        const val FLOAT_RIGHT: Int = 2
+
+        const val OVERFLOW_NONE: Int = 0
+        const val OVERFLOW_SCROLL: Int = 1
+        const val OVERFLOW_AUTO: Int = 2
+        const val OVERFLOW_HIDDEN: Int = 3
+        const val OVERFLOW_VISIBLE: Int = 4
+    }
 }

@@ -21,43 +21,35 @@
 /*
  * Created on Oct 16, 2005
  */
-package io.github.remmerw.thor.cobra.html.parser;
+package io.github.remmerw.thor.cobra.html.parser
 
-import org.xml.sax.Locator;
+import org.xml.sax.Locator
 
-class LocatorImpl implements Locator {
-    private final String publicId;
-    private final String systemId;
-    private final int lineNumber;
-    private final int columnNumber;
-
-    /**
-     * @param pid
-     * @param sid
-     * @param lnumber
-     * @param cnumber
-     */
-    public LocatorImpl(final String pid, final String sid, final int lnumber, final int cnumber) {
-        super();
-        publicId = pid;
-        systemId = sid;
-        lineNumber = lnumber;
-        columnNumber = cnumber;
+internal class LocatorImpl
+/**
+ * @param publicId
+ * @param systemId
+ * @param lineNumber
+ * @param columnNumber
+ */(
+    private val publicId: String?,
+    private val systemId: String?,
+    private val lineNumber: Int,
+    private val columnNumber: Int
+) : Locator {
+    override fun getPublicId(): String? {
+        return this.publicId
     }
 
-    public String getPublicId() {
-        return this.publicId;
+    override fun getSystemId(): String? {
+        return this.systemId
     }
 
-    public String getSystemId() {
-        return this.systemId;
+    override fun getLineNumber(): Int {
+        return this.lineNumber
     }
 
-    public int getLineNumber() {
-        return this.lineNumber;
-    }
-
-    public int getColumnNumber() {
-        return this.columnNumber;
+    override fun getColumnNumber(): Int {
+        return this.columnNumber
     }
 }

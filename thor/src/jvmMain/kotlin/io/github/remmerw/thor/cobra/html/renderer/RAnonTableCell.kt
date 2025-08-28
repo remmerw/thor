@@ -21,33 +21,29 @@
 /*
  * Created on Dec 3, 2005
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import org.eclipse.jdt.annotation.NonNull;
+import io.github.remmerw.thor.cobra.html.HtmlRendererContext
+import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
+import io.github.remmerw.thor.cobra.html.renderer.TableMatrix.ColSizeInfo
+import io.github.remmerw.thor.cobra.html.renderer.TableMatrix.RowSizeInfo
+import io.github.remmerw.thor.cobra.html.style.RenderState
+import io.github.remmerw.thor.cobra.ua.UserAgentContext
+import java.awt.Dimension
 
-import java.awt.Dimension;
-
-import io.github.remmerw.thor.cobra.html.HtmlRendererContext;
-import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl;
-import io.github.remmerw.thor.cobra.html.style.RenderState;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext;
-
-class RAnonTableCell extends RAbstractCell {
-    private final NodeImpl cellNode;
-
-    /**
-     * @param element
-     */
-    public RAnonTableCell(final NodeImpl element, final UserAgentContext pcontext, final HtmlRendererContext rcontext,
-                          final FrameContext frameContext,
-                          final RenderableContainer tableAsContainer) {
-        super(element, 0, pcontext, rcontext, frameContext, tableAsContainer);
-        this.cellNode = element;
-    }
-
-    protected Dimension doCellLayout(final int width, final int height, final boolean expandWidth, final boolean expandHeight,
-                                     final boolean sizeOnly) {
-        return this.doCellLayout(width, height, expandWidth, expandHeight, sizeOnly, true);
+internal class RAnonTableCell
+/**
+ * @param cellNode
+ */(
+    private val cellNode: NodeImpl, pcontext: UserAgentContext?, rcontext: HtmlRendererContext?,
+    frameContext: FrameContext?,
+    tableAsContainer: RenderableContainer?
+) : RAbstractCell(cellNode, 0, pcontext, rcontext, frameContext, tableAsContainer) {
+    protected override fun doCellLayout(
+        width: Int, height: Int, expandWidth: Boolean, expandHeight: Boolean,
+        sizeOnly: Boolean
+    ): Dimension {
+        return this.doCellLayout(width, height, expandWidth, expandHeight, sizeOnly, true)
     }
 
     /**
@@ -55,22 +51,24 @@ class RAnonTableCell extends RAbstractCell {
      * @param height   The height available, including insets.
      * @param useCache Testing parameter. Should always be true.
      */
-    protected Dimension doCellLayout(final int width, final int height, final boolean expandWidth, final boolean expandHeight,
-                                     final boolean sizeOnly, final boolean useCache) {
+    protected fun doCellLayout(
+        width: Int, height: Int, expandWidth: Boolean, expandHeight: Boolean,
+        sizeOnly: Boolean, useCache: Boolean
+    ): Dimension {
         try {
-      /* TODO: This was being called along with the layout call. Investigate if the repeat calls serve some purpose.
+            /* TODO: This was being called along with the layout call. Investigate if the repeat calls serve some purpose.
       this.doLayout(width, height, expandWidth, expandHeight, null, RenderState.OVERFLOW_NONE, RenderState.OVERFLOW_NONE, sizeOnly, useCache);
       */
-            this.layout(width, height, expandWidth, expandHeight, null, sizeOnly);
+            this.layout(width, height, expandWidth, expandHeight, null, sizeOnly)
 
-            return new Dimension(this.width, this.height);
+            return Dimension(this.width, this.height)
         } finally {
-            this.layoutUpTreeCanBeInvalidated = true;
-            this.layoutDeepCanBeInvalidated = true;
+            this.layoutUpTreeCanBeInvalidated = true
+            this.layoutDeepCanBeInvalidated = true
         }
     }
 
-    void clearLayoutCache() {
+    fun clearLayoutCache() {
         // test method
         // this.cachedLayout.clear();
     }
@@ -78,88 +76,84 @@ class RAnonTableCell extends RAbstractCell {
     // public void setCellPadding(int value) {
     // this.cellPadding = value;
     // }
-
-    @Override
-    protected Integer getDeclaredHeight(final RenderState renderState, final int availHeight) {
+    override fun getDeclaredHeight(renderState: RenderState?, availHeight: Int): Int? {
         // Overridden since height declaration is handled by table.
-        return null;
+        return null
     }
 
-    @Override
-    protected Integer getDeclaredWidth(final RenderState renderState, final int availWidth) {
+    override fun getDeclaredWidth(renderState: RenderState?, availWidth: Int): Int? {
         // Overridden since width declaration is handled by table.
-        return null;
+        return null
     }
 
 
-    public int getColSpan() {
-        return 1;
+    override fun getColSpan(): Int {
+        return 1
     }
 
-    public int getRowSpan() {
-        return 1;
+    override fun getRowSpan(): Int {
+        return 1
     }
 
-    public void setRowSpan(final int rowSpan) {
-        throw new IllegalStateException();
+    override fun setRowSpan(rowSpan: Int) {
+        throw IllegalStateException()
     }
 
-    public String getHeightText() {
-        return null;
+    override fun getHeightText(): String? {
+        return null
     }
 
-    public String getWidthText() {
-        return null;
+    override fun getWidthText(): String? {
+        return null
     }
 
-    public void setCellBounds(final TableMatrix.ColSizeInfo[] colSizes, final TableMatrix.RowSizeInfo[] rowSizes, final int hasBorder,
-                              final int cellSpacingX,
-                              final int cellSpacingY) {
-        final int vcol = this.getVirtualColumn();
-        final int vrow = this.getVirtualRow();
-        final TableMatrix.ColSizeInfo colSize = colSizes[vcol];
-        final TableMatrix.RowSizeInfo rowSize = rowSizes[vrow];
-        final int x = colSize.offsetX + rowSize.offsetX;
-        final int y = rowSize.offsetY;
-        int width;
-        int height;
-        final int colSpan = this.getColSpan();
+    override fun setCellBounds(
+        colSizes: Array<ColSizeInfo>, rowSizes: Array<RowSizeInfo>, hasBorder: Int,
+        cellSpacingX: Int,
+        cellSpacingY: Int
+    ) {
+        val vcol = this.getVirtualColumn()
+        val vrow = this.getVirtualRow()
+        val colSize = colSizes[vcol]
+        val rowSize = rowSizes[vrow]
+        val x = colSize.offsetX + rowSize.offsetX
+        val y = rowSize.offsetY
+        var width: Int
+        var height: Int
+        val colSpan = this.getColSpan()
         if (colSpan > 1) {
-            width = 0;
-            for (int i = 0; i < colSpan; i++) {
-                final int vc = vcol + i;
-                width += colSizes[vc].actualSize;
+            width = 0
+            for (i in 0..<colSpan) {
+                val vc = vcol + i
+                width += colSizes[vc].actualSize
                 if ((i + 1) < colSpan) {
-                    width += cellSpacingX + (hasBorder * 2);
+                    width += cellSpacingX + (hasBorder * 2)
                 }
             }
         } else {
-            width = colSizes[vcol].actualSize;
+            width = colSizes[vcol].actualSize
         }
-        final int rowSpan = this.getRowSpan();
+        val rowSpan = this.getRowSpan()
         if (rowSpan > 1) {
-            height = 0;
-            for (int i = 0; i < rowSpan; i++) {
-                final int vr = vrow + i;
-                height += rowSizes[vr].actualSize;
+            height = 0
+            for (i in 0..<rowSpan) {
+                val vr = vrow + i
+                height += rowSizes[vr].actualSize
                 if ((i + 1) < rowSpan) {
-                    height += cellSpacingY + (hasBorder * 2);
+                    height += cellSpacingY + (hasBorder * 2)
                 }
             }
         } else {
-            height = rowSizes[vrow].actualSize;
+            height = rowSizes[vrow].actualSize
         }
-        this.setBounds(x, y, width, height);
+        this.setBounds(x, y, width, height)
     }
 
-    @Override
-    protected boolean isMarginBoundary() {
-        return true;
+    override fun isMarginBoundary(): Boolean {
+        return true
     }
 
-    @NonNull
-    RenderState getRenderState() {
-        return cellNode.getRenderState();
+    override fun getRenderState(): RenderState {
+        return cellNode.getRenderState()
     }
-
 }

@@ -18,44 +18,23 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.js;
+package io.github.remmerw.thor.cobra.js
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.Scriptable;
+import io.github.remmerw.thor.cobra.util.Objects
+import org.mozilla.javascript.Context
+import org.mozilla.javascript.ContextFactory
+import org.mozilla.javascript.ScriptRuntime
+import org.mozilla.javascript.Scriptable
+import java.lang.ref.WeakReference
+import java.util.WeakHashMap
 
-import java.lang.ref.WeakReference;
-import java.util.WeakHashMap;
-
-import io.github.remmerw.thor.cobra.util.Objects;
-
-public class JavaScript {
-    // TODO: Should the instance be specific to thread? GH #122
-    private static final JavaScript instance = new JavaScript();
+class JavaScript {
     // objectMap must be a map that uses weak keys
     // and refers to values using weak references.
     // Keys are java objects other than ScriptableDelegate instances.
-    private final WeakHashMap<Object, WeakReference<JavaObjectWrapper>> javaObjectToWrapper = new WeakHashMap<>();
+    private val javaObjectToWrapper = WeakHashMap<Any?, WeakReference<JavaObjectWrapper?>?>()
 
-    public static JavaScript getInstance() {
-        return instance;
-    }
-
-    public static void init() {
-        ContextFactory.initGlobal(new ContextFactory() {
-            @Override
-            protected Context makeContext() {
-                throw new UnsupportedOperationException("Internal error. Global context factory should not be used.");
-            }
-        });
-    }
-
-    // Convenience method; useful when debugging
-    public static String getStackTrace() {
-        return org.mozilla.javascript.ScriptRuntime.constructError("", "").getScriptStackTrace();
-    }
-
-  /*
+    /*
   private static String getStringValue(final Object object) {
     if (object instanceof Undefined) {
       return "undefined";
@@ -66,65 +45,68 @@ public class JavaScript {
     }
   }
   */
-
     /**
      * Returns an object that may be used by the Javascript engine.
      *
      * @param raw
      * @return
      */
-    public Object getJavascriptObject(final Object raw, final Scriptable scope) {
-        if ((raw instanceof String) || (raw instanceof Scriptable)) {
-            return raw;
+    fun getJavascriptObject(raw: Any?, scope: Scriptable?): Any? {
+        if ((raw is String) || (raw is Scriptable)) {
+            return raw
         } else if (raw == null) {
-            return null;
-        } else if (raw.getClass().isPrimitive()) {
-            return raw;
-        } else if (raw.getClass().isArray()) {
-            return raw;
-        } else if (raw instanceof ScriptableDelegate delegate) {
+            return null
+        } else if (raw.javaClass.isPrimitive) {
+            return raw
+        } else if (raw.javaClass.isArray) {
+            return raw
+        } else if (raw is ScriptableDelegate) {
             // Classes that implement ScriptableDelegate retain
             // the JavaScript object. Reciprocal linking cannot
             // be done with weak hash maps and without leaking.
-            synchronized (this) {
-                Scriptable javascriptObject = delegate.getScriptable();
+            synchronized(this) {
+                var javascriptObject = raw.getScriptable()
                 if (javascriptObject == null) {
-                    final JavaObjectWrapper jow = new JavaObjectWrapper(JavaClassWrapperFactory.getInstance().getClassWrapper(raw.getClass()), raw);
-                    javascriptObject = jow;
-                    jow.setParentScope(scope);
-                    delegate.setScriptable(jow);
+                    val jow = JavaObjectWrapper(
+                        JavaClassWrapperFactory.Companion.getInstance()
+                            .getClassWrapper(raw.javaClass), raw
+                    )
+                    javascriptObject = jow
+                    jow.setParentScope(scope)
+                    raw.setScriptable(jow)
                 } else {
-                    javascriptObject.setParentScope(scope);
+                    javascriptObject.setParentScope(scope)
                 }
-                return javascriptObject;
+                return javascriptObject
             }
-        } else if (Objects.isBoxClass(raw.getClass())) {
-            return raw;
+        } else if (Objects.isBoxClass(raw.javaClass)) {
+            return raw
         } else {
-            synchronized (this.javaObjectToWrapper) {
+            synchronized(this.javaObjectToWrapper) {
                 // WeakHashMaps will retain keys if the value refers to the key.
                 // That's why we need to refer to the value weakly too.
                 // TODO: The above comment should probably be moved to the context of the code further below
                 //       where the value is being inserted into the map.
                 //       This part of the code is simply querying an existing value.
-                final WeakReference<?> valueRef = this.javaObjectToWrapper.get(raw);
-                JavaObjectWrapper jow = null;
+                val valueRef: WeakReference<*>? = this.javaObjectToWrapper.get(raw)
+                var jow: JavaObjectWrapper? = null
                 if (valueRef != null) {
-                    jow = (JavaObjectWrapper) valueRef.get();
+                    jow = valueRef.get() as JavaObjectWrapper?
                 }
                 if (jow == null) {
-                    final Class<? extends Object> javaClass = raw.getClass();
-                    final JavaClassWrapper wrapper = JavaClassWrapperFactory.getInstance().getClassWrapper(javaClass);
-                    jow = new JavaObjectWrapper(wrapper, raw);
-                    this.javaObjectToWrapper.put(raw, new WeakReference<>(jow));
+                    val javaClass: Class<out Any?> = raw.javaClass
+                    val wrapper: JavaClassWrapper? =
+                        JavaClassWrapperFactory.Companion.getInstance().getClassWrapper(javaClass)
+                    jow = JavaObjectWrapper(wrapper, raw)
+                    this.javaObjectToWrapper.put(raw, WeakReference<JavaObjectWrapper?>(jow))
                 }
-                jow.setParentScope(scope);
-                return jow;
+                jow.setParentScope(scope)
+                return jow
             }
         }
     }
 
-  /*
+    /*
   public Object getJavaObject(final Object javascriptObject, final Class<?> type) {
     if (type == Boolean.TYPE) {
       if ((javascriptObject == null) || (javascriptObject == Undefined.instance)) {
@@ -174,18 +156,35 @@ public class JavaScript {
     }
   }
   */
-
-    public Object getJavaObject(final Object javascriptObject, final Class<?> type) {
-        if (javascriptObject instanceof JavaObjectWrapper) {
-            final Object rawJavaObject = ((JavaObjectWrapper) javascriptObject).getJavaObject();
-            if (String.class == type) {
-                return String.valueOf(rawJavaObject);
+    fun getJavaObject(javascriptObject: Any?, type: Class<*>?): Any? {
+        if (javascriptObject is JavaObjectWrapper) {
+            val rawJavaObject = javascriptObject.getJavaObject()
+            if (String::class.java == type) {
+                return rawJavaObject.toString()
             } else {
-                return rawJavaObject;
+                return rawJavaObject
             }
         }
         // Relying on Rhino to do the right thing.
         // TODO: Remove the older implementation archived below.
-        return Context.jsToJava(javascriptObject, type);
+        return Context.jsToJava(javascriptObject, type)
+    }
+
+    companion object {
+        // TODO: Should the instance be specific to thread? GH #122
+        val instance: JavaScript = JavaScript()
+
+        fun init() {
+            ContextFactory.initGlobal(object : ContextFactory() {
+                override fun makeContext(): Context? {
+                    throw UnsupportedOperationException("Internal error. Global context factory should not be used.")
+                }
+            })
+        }
+
+        val stackTrace: String?
+            // Convenience method; useful when debugging
+            get() = ScriptRuntime.constructError("", "")
+                .scriptStackTrace
     }
 }

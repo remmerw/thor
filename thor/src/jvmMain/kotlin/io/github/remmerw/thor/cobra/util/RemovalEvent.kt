@@ -18,16 +18,12 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
 
-import java.util.EventObject;
+import java.util.EventObject
 
-public class RemovalEvent extends EventObject {
-    private static final long serialVersionUID = -5119617932860542348L;
-    public final Object valueRemoved;
-
-    public RemovalEvent(final Object source, final Object valueRemoved) {
-        super(source);
-        this.valueRemoved = valueRemoved;
+class RemovalEvent(source: Any, val valueRemoved: Any?) : EventObject(source) {
+    companion object {
+        private val serialVersionUID = -5119617932860542348L
     }
 }

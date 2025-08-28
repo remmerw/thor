@@ -21,172 +21,186 @@
 /*
  * Created on Nov 27, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
-import org.w3c.dom.css.CSSStyleSheet;
-import org.w3c.dom.html.HTMLStyleElement;
-import org.w3c.dom.stylesheets.LinkStyle;
+import io.github.remmerw.thor.cobra.css.domimpl.JStyleSheetWrapper
+import io.github.remmerw.thor.cobra.html.style.CSSUtilities
+import org.w3c.dom.DOMException
+import org.w3c.dom.Text
+import org.w3c.dom.css.CSSStyleSheet
+import org.w3c.dom.html.HTMLStyleElement
+import org.w3c.dom.stylesheets.LinkStyle
+import java.util.Locale
 
-import cz.vutbr.web.css.StyleSheet;
-import io.github.remmerw.thor.cobra.css.domimpl.JStyleSheetWrapper;
-import io.github.remmerw.thor.cobra.html.style.CSSUtilities;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext;
+class HTMLStyleElementImpl : HTMLElementImpl, HTMLStyleElement, LinkStyle {
+    private var styleSheet: JStyleSheetWrapper? = null
+    private var disabled = false
 
-public class HTMLStyleElementImpl extends HTMLElementImpl implements HTMLStyleElement, LinkStyle {
-    private JStyleSheetWrapper styleSheet;
-    private boolean disabled;
+    constructor() : super("STYLE", true)
 
-    public HTMLStyleElementImpl() {
-        super("STYLE", true);
+    constructor(name: String?) : super(name, true)
+
+    override fun getDisabled(): Boolean {
+        return this.disabled
     }
 
-    public HTMLStyleElementImpl(final String name) {
-        super(name, true);
-    }
-
-    public boolean getDisabled() {
-        return this.disabled;
-    }
-
-    public void setDisabled(final boolean disabled) {
-        this.disabled = disabled;
-        final CSSStyleSheet sheet = this.styleSheet;
+    override fun setDisabled(disabled: Boolean) {
+        this.disabled = disabled
+        val sheet: CSSStyleSheet? = this.styleSheet
         if (sheet != null) {
-            sheet.setDisabled(disabled);
+            sheet.disabled = disabled
         }
     }
 
     //TODO hide from JS
-    public void setDisabledImpl(final boolean disabled) {
-        this.disabled = disabled;
+    fun setDisabledImpl(disabled: Boolean) {
+        this.disabled = disabled
     }
 
-    public String getMedia() {
-        return this.getAttribute("media");
+    override fun getMedia(): String? {
+        return this.getAttribute("media")
     }
 
-    public void setMedia(final String media) {
-        this.setAttribute("media", media);
+    override fun setMedia(media: String?) {
+        this.setAttribute("media", media)
     }
 
-    public String getType() {
-        return this.getAttribute("type");
+    override fun getType(): String? {
+        return this.getAttribute("type")
     }
 
-    public void setType(final String type) {
-        this.setAttribute("type", type);
+    override fun setType(type: String?) {
+        this.setAttribute("type", type)
     }
 
     // TODO: This should probably not be a nop. We should probably be handling changes to inner text.
-    @Override
-    protected void appendInnerTextImpl(final StringBuffer buffer) {
+    override fun appendInnerTextImpl(buffer: StringBuffer?) {
         // nop
     }
 
-    @Override
-    public void setAttribute(final String name, final String value) throws DOMException {
-        super.setAttribute(name, value);
+    @Throws(DOMException::class)
+    override fun setAttribute(name: String, value: String?) {
+        super.setAttribute(name, value)
         if (isAttachedToDocument()) {
-            final String nameLowerCase = name.toLowerCase();
-            if ("type".equals(nameLowerCase) || "media".equals(nameLowerCase) || "title".equals(nameLowerCase)) {
-                this.disabled = false;
-                this.processStyle();
+            val nameLowerCase = name.lowercase(Locale.getDefault())
+            if ("type" == nameLowerCase || "media" == nameLowerCase || "title" == nameLowerCase) {
+                this.disabled = false
+                this.processStyle()
             }
         }
     }
 
-    private String getOnlyText() {
-        final NodeList nl = this.getChildNodes();
-        final StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < nl.getLength(); i++) {
-            final Node n = nl.item(i);
-            if (n.getNodeType() == Node.TEXT_NODE) {
-                final Text textNode = (Text) n;
-                sb.append(textNode.getTextContent());
+    private val onlyText: String
+        get() {
+            val nl = this.childNodes
+            val sb = StringBuilder()
+            for (i in 0..<nl.length) {
+                val n = nl.item(i)
+                if (n.nodeType == TEXT_NODE) {
+                    val textNode = n as Text
+                    sb.append(textNode.textContent)
+                }
             }
+            return sb.toString()
         }
-        return sb.toString();
-    }
 
-    private boolean isAllowedType() {
-        final String type = this.getType();
-        return ((type == null) || (type.trim().length() == 0) || (type.equalsIgnoreCase("text/css")));
-    }
+    private val isAllowedType: Boolean
+        get() {
+            val type = this.type
+            return ((type == null) || (type.trim { it <= ' ' }.length == 0) || (type.equals(
+                "text/css",
+                ignoreCase = true
+            )))
+        }
 
     // TODO: check if this method can be made private
-    protected void processStyle() {
+    protected fun processStyle() {
         if (isAttachedToDocument()) {
-      /* check if type == "text/css" or no, empty value is also allowed as well.
+            /* check if type == "text/css" or no, empty value is also allowed as well.
        if it is something other than empty or "text/css" set the style sheet to null
        we need not check for the media type here, jStyle parser should take care of this.
        */
-            if (isAllowedType()) {
-                final UserAgentContext uacontext = this.getUserAgentContext();
+            if (this.isAllowedType) {
+                val uacontext = this.getUserAgentContext()
                 if (uacontext.isInternalCSSEnabled()) {
-                    final HTMLDocumentImpl doc = (HTMLDocumentImpl) this.getOwnerDocument();
-                    final JStyleSheetWrapper newStyleSheet = processStyleHelper();
-                    newStyleSheet.setDisabled(this.disabled);
-                    this.styleSheet = newStyleSheet;
-                    doc.styleSheetManager.invalidateStyles();
+                    val doc = this.ownerDocument as HTMLDocumentImpl
+                    val newStyleSheet = processStyleHelper()
+                    newStyleSheet.setDisabled(this.disabled)
+                    this.styleSheet = newStyleSheet
+                    doc.styleSheetManager.invalidateStyles()
                 }
             } else {
-                this.detachStyleSheet();
+                this.detachStyleSheet()
             }
         }
     }
 
-    private JStyleSheetWrapper processStyleHelper() {
-        final HTMLDocumentImpl doc = (HTMLDocumentImpl) this.getOwnerDocument();
+    private fun processStyleHelper(): JStyleSheetWrapper {
+        val doc = this.ownerDocument as HTMLDocumentImpl
         // TODO a sanity check can be done for the media type while setting it to the style sheet
         // as in is it a valid media type or not
         try {
-            final String text = this.getOnlyText();
-            final String processedText = CSSUtilities.preProcessCss(text);
-            final String baseURI = doc.getBaseURI();
+            val text = this.onlyText
+            val processedText = CSSUtilities.preProcessCss(text)
+            val baseURI = doc.getBaseURI()
             // TODO if the new StyleSheet contains any @import rules, then we should queue them for further processing. GH #137
-            final StyleSheet jSheet = CSSUtilities.jParseStyleSheet(this, baseURI, processedText, doc.getUserAgentContext());
-            return new JStyleSheetWrapper(jSheet, this.getMedia(), null, this.getType(), this.getTitle(), this, doc.styleSheetManager.bridge);
-        } catch (final Exception err) {
-            this.warn("Unable to parse style sheet", err);
+            val jSheet = CSSUtilities.jParseStyleSheet(
+                this,
+                baseURI,
+                processedText,
+                doc.getUserAgentContext()
+            )
+            return JStyleSheetWrapper(
+                jSheet,
+                this.media,
+                null,
+                this.type,
+                this.title,
+                this,
+                doc.styleSheetManager.bridge
+            )
+        } catch (err: Exception) {
+            this.warn("Unable to parse style sheet", err)
         }
-        return this.getEmptyStyleSheet();
+        return this.emptyStyleSheet
     }
 
-    private JStyleSheetWrapper getEmptyStyleSheet() {
-        final HTMLDocumentImpl doc = (HTMLDocumentImpl) this.getOwnerDocument();
-        return new JStyleSheetWrapper(CSSUtilities.getEmptyStyleSheet(), this.getMedia(), null, this.getType(), this.getTitle(), this,
-                doc.styleSheetManager.bridge);
-    }
+    private val emptyStyleSheet: JStyleSheetWrapper
+        get() {
+            val doc = this.ownerDocument as HTMLDocumentImpl
+            return JStyleSheetWrapper(
+                CSSUtilities.getEmptyStyleSheet(),
+                this.media,
+                null,
+                this.type,
+                this.title,
+                this,
+                doc.styleSheetManager.bridge
+            )
+        }
 
-    private void detachStyleSheet() {
+    private fun detachStyleSheet() {
         if (this.styleSheet != null) {
-            this.styleSheet.setOwnerNode(null);
-            this.styleSheet = null;
-            final HTMLDocumentImpl doc = (HTMLDocumentImpl) this.getOwnerDocument();
-            doc.styleSheetManager.invalidateStyles();
+            this.styleSheet!!.setOwnerNode(null)
+            this.styleSheet = null
+            val doc = this.ownerDocument as HTMLDocumentImpl
+            doc.styleSheetManager.invalidateStyles()
         }
     }
 
-    public CSSStyleSheet getSheet() {
-        return this.styleSheet;
+    override fun getSheet(): CSSStyleSheet? {
+        return this.styleSheet
     }
 
-    @Override
-    protected void handleChildListChanged() {
-        this.processStyle();
+    override fun handleChildListChanged() {
+        this.processStyle()
     }
 
-    @Override
-    protected void handleDocumentAttachmentChanged() {
+    override fun handleDocumentAttachmentChanged() {
         if (isAttachedToDocument()) {
-            this.processStyle();
+            this.processStyle()
         } else {
-            this.detachStyleSheet();
+            this.detachStyleSheet()
         }
     }
-
 }

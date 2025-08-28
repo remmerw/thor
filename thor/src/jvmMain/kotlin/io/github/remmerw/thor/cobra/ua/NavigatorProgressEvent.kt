@@ -20,58 +20,39 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.github.remmerw.thor.cobra.ua;
+package io.github.remmerw.thor.cobra.ua
 
-import org.eclipse.jdt.annotation.NonNull;
-
-import java.net.URL;
+import java.net.URL
 
 /**
  * An event containing response progress information.
  *
- * @see NavigatorWindowListener#progressUpdated(NavigatorProgressEvent)
+ * @see NavigatorWindowListener.progressUpdated
  */
-public class NavigatorProgressEvent extends NavigatorEvent {
-    private static final long serialVersionUID = 1808435207463060420L;
-    private final ProgressType progressType;
-    private final @NonNull URL url;
-    private final String method;
-    private final int currentValue;
-    private final int maxValue;
+class NavigatorProgressEvent(
+    source: Any?, clientletFrame: NavigatorFrame?, progressType: ProgressType?,
+    url: URL, method: String?,
+    value: Int, max: Int
+) : NavigatorEvent(source, NavigatorEventType.PROGRESS_UPDATED, clientletFrame) {
+    val progressType: ProgressType?
+    val url: URL
+    val method: String?
+    val currentValue: Int
+    val maxValue: Int
 
-    public NavigatorProgressEvent(final Object source, final NavigatorFrame clientletFrame, final ProgressType progressType,
-                                  final @NonNull URL url, final String method,
-                                  final int value, final int max) {
-        super(source, NavigatorEventType.PROGRESS_UPDATED, clientletFrame);
-        this.progressType = progressType;
-        this.url = url;
-        this.method = method;
-        this.currentValue = value;
-        this.maxValue = max;
+    init {
+        this.progressType = progressType
+        this.url = url
+        this.method = method
+        this.currentValue = value
+        this.maxValue = max
     }
 
-    public String getMethod() {
-        return method;
+    override fun toString(): String {
+        return "NavigatorProgressEvent[type=" + this.getEventType() + ", " + this.progressType + "]"
     }
 
-    public ProgressType getProgressType() {
-        return progressType;
-    }
-
-    public @NonNull URL getUrl() {
-        return url;
-    }
-
-    public int getCurrentValue() {
-        return currentValue;
-    }
-
-    public int getMaxValue() {
-        return maxValue;
-    }
-
-    @Override
-    public String toString() {
-        return "NavigatorProgressEvent[type=" + this.getEventType() + ", " + this.progressType + "]";
+    companion object {
+        private const val serialVersionUID = 1808435207463060420L
     }
 }

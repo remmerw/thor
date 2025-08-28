@@ -3,11 +3,11 @@
  * Selima Prague FBI Project
  * 5th-March-2008
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Node;
-import org.w3c.dom.ProcessingInstruction;
+import org.w3c.dom.DOMException
+import org.w3c.dom.Node
+import org.w3c.dom.ProcessingInstruction
 
 /**
  * HTML DOM object representing processing instruction as per HTML 4.0
@@ -15,68 +15,56 @@ import org.w3c.dom.ProcessingInstruction;
  *
  * @author vitek
  */
-public class HTMLProcessingInstruction extends NodeImpl implements ProcessingInstruction, Cloneable {
-    String target;
-    String data;
-
-    public HTMLProcessingInstruction(final String target, final String data) {
-        this.target = target;
-        this.data = data;
+class HTMLProcessingInstruction(var target: String, var data: String?) : NodeImpl(),
+    ProcessingInstruction, Cloneable {
+    override fun createSimilarNode(): Node? {
+        return clone() as Node?
     }
 
-    @Override
-    protected Node createSimilarNode() {
-        return (Node) clone();
+    override fun getLocalName(): String {
+        return target
     }
 
-    @Override
-    public String getLocalName() {
-        return target;
+    override fun getNodeName(): String {
+        return target
     }
 
-    @Override
-    public String getNodeName() {
-        return target;
+    override fun getNodeType(): Short {
+        return PROCESSING_INSTRUCTION_NODE
     }
 
-    @Override
-    public short getNodeType() {
-        return Node.PROCESSING_INSTRUCTION_NODE;
+    @Throws(DOMException::class)
+    override fun getNodeValue(): String? {
+        return data
     }
 
-    @Override
-    public String getNodeValue() throws DOMException {
-        return data;
+    @Throws(DOMException::class)
+    override fun setNodeValue(nodeValue: String?) {
+        this.data = nodeValue
     }
 
-    @Override
-    public void setNodeValue(final String nodeValue) throws DOMException {
-        this.data = nodeValue;
+    override fun getData(): String? {
+        return data
     }
 
-    public String getData() {
-        return data;
+    @Throws(DOMException::class)
+    override fun setData(data: String?) {
+        this.data = data
     }
 
-    public void setData(final String data) throws DOMException {
-        this.data = data;
+    override fun getTarget(): String {
+        return target
     }
 
-    public String getTarget() {
-        return target;
-    }
-
-    @Override
-    public Object clone() {
+    public override fun clone(): Any {
         try {
-            return super.clone();
-        } catch (final CloneNotSupportedException e) {
-            throw new IllegalStateException(e);
+            return super.clone()
+        } catch (e: CloneNotSupportedException) {
+            throw IllegalStateException(e)
         }
     }
 
-    @Override
-    public String toString() {
-        return "<?" + target + " " + data + ">";
+    override fun toString(): String {
+        return "<?" + target + " " + data + ">"
     }
 }

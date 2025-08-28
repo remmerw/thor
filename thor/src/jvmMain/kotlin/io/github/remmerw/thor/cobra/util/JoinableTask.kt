@@ -1,41 +1,42 @@
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
 
 /**
  * A task that can be used in a thread or thread pool. The caller can wait for
  * the task to finish by joining it.
  */
-public abstract class JoinableTask implements SimpleThreadPoolTask {
-    private boolean done = false;
+abstract class JoinableTask : SimpleThreadPoolTask {
+    private var done = false
 
-    public final void run() {
+    override fun run() {
         try {
-            this.execute();
+            this.execute()
         } finally {
-            synchronized (this) {
-                this.done = true;
-                this.notifyAll();
+            synchronized(this) {
+                this.done = true
+                (this as Object).notifyAll()
             }
         }
     }
 
-    public final void forceDone() {
-        synchronized (this) {
-            this.done = true;
-            this.notifyAll();
+    fun forceDone() {
+        synchronized(this) {
+            this.done = true
+            (this as Object).notifyAll()
         }
     }
 
-    public void join() throws InterruptedException {
-        synchronized (this) {
+    @Throws(InterruptedException::class)
+    fun join() {
+        synchronized(this) {
             while (!this.done) {
-                this.wait();
+                (this as Object).wait()
             }
         }
     }
 
-    public void cancel() {
-        this.forceDone();
+    override fun cancel() {
+        this.forceDone()
     }
 
-    protected abstract void execute();
+    protected abstract fun execute()
 }

@@ -21,24 +21,20 @@
 /*
  * Created on Oct 8, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.html.HTMLHtmlElement;
+import org.w3c.dom.html.HTMLHtmlElement
 
-public class HTMLHtmlElementImpl extends HTMLElementImpl implements HTMLHtmlElement {
-    public HTMLHtmlElementImpl() {
-        super("HTML", true);
+class HTMLHtmlElementImpl : HTMLElementImpl, HTMLHtmlElement {
+    constructor() : super("HTML", true)
+
+    constructor(name: String?) : super(name, true)
+
+    override fun getVersion(): String? {
+        return this.getAttribute("version")
     }
 
-    public HTMLHtmlElementImpl(final String name) {
-        super(name, true);
-    }
-
-    public String getVersion() {
-        return this.getAttribute("version");
-    }
-
-    public void setVersion(final String version) {
-        this.setAttribute("version", version);
+    override fun setVersion(version: String?) {
+        this.setAttribute("version", version)
     }
 }

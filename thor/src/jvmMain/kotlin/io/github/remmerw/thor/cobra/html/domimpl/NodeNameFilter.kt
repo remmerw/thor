@@ -21,22 +21,15 @@
 /*
  * Created on Dec 3, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.Node;
+import org.w3c.dom.Node
 
-public final class NodeNameFilter implements NodeFilter {
-    private final String elementName;
-
-    /**
-     * @param name
-     */
-    public NodeNameFilter(final String name) {
-        super();
-        elementName = name;
-    }
-
-    public boolean accept(final Node node) {
-        return this.elementName.equalsIgnoreCase(node.getNodeName());
+class NodeNameFilter
+/**
+ * @param elementName
+ */(private val elementName: String) : NodeFilter {
+    override fun accept(node: Node): Boolean {
+        return this.elementName.equals(node.nodeName, ignoreCase = true)
     }
 }

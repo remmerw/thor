@@ -1,67 +1,69 @@
-package io.github.remmerw.thor.cobra.html.js;
+package io.github.remmerw.thor.cobra.html.js
 
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
+import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate
+import java.awt.GraphicsDevice
+import java.awt.GraphicsEnvironment
 
-import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate;
-
-public class Screen extends AbstractScriptableDelegate {
-    private final GraphicsEnvironment graphicsEnvironment;
-    private final GraphicsDevice graphicsDevice;
+class Screen internal constructor() : AbstractScriptableDelegate() {
+    private val graphicsEnvironment: GraphicsEnvironment?
+    private val graphicsDevice: GraphicsDevice?
 
     /**
      * @param context
      */
-    Screen() {
-        super();
+    init {
         if (GraphicsEnvironment.isHeadless()) {
-            this.graphicsEnvironment = null;
-            this.graphicsDevice = null;
+            this.graphicsEnvironment = null
+            this.graphicsDevice = null
         } else {
-            this.graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
-            this.graphicsDevice = this.graphicsEnvironment.getDefaultScreenDevice();
+            this.graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment()
+            this.graphicsDevice = this.graphicsEnvironment.defaultScreenDevice
         }
     }
 
-    public int getHeight() {
-        final GraphicsDevice gd = this.graphicsDevice;
-        return gd == null ? 0 : gd.getDisplayMode().getHeight();
-    }
-
-    public int getPixelDepth() {
-        return this.getColorDepth();
-    }
-
-    public int getWidth() {
-        final GraphicsEnvironment ge = this.graphicsEnvironment;
-        if (ge == null) {
-            return 0;
+    val height: Int
+        get() {
+            val gd = this.graphicsDevice
+            return if (gd == null) 0 else gd.displayMode.height
         }
-        final GraphicsDevice gd = ge.getDefaultScreenDevice();
-        return gd.getDisplayMode().getWidth();
-    }
 
-    public int getAvailHeight() {
-        final GraphicsEnvironment ge = this.graphicsEnvironment;
-        if (ge == null) {
-            return 0;
-        }
-        return ge.getMaximumWindowBounds().height;
-    }
+    val pixelDepth: Int
+        get() = this.colorDepth
 
-    public int getAvailWidth() {
-        final GraphicsEnvironment ge = this.graphicsEnvironment;
-        if (ge == null) {
-            return 0;
+    val width: Int
+        get() {
+            val ge = this.graphicsEnvironment
+            if (ge == null) {
+                return 0
+            }
+            val gd = ge.defaultScreenDevice
+            return gd.displayMode.width
         }
-        return ge.getMaximumWindowBounds().width;
-    }
 
-    public int getColorDepth() {
-        final GraphicsDevice gd = this.graphicsDevice;
-        if (gd == null) {
-            return 0;
+    val availHeight: Int
+        get() {
+            val ge = this.graphicsEnvironment
+            if (ge == null) {
+                return 0
+            }
+            return ge.maximumWindowBounds.height
         }
-        return gd.getDisplayMode().getBitDepth();
-    }
+
+    val availWidth: Int
+        get() {
+            val ge = this.graphicsEnvironment
+            if (ge == null) {
+                return 0
+            }
+            return ge.maximumWindowBounds.width
+        }
+
+    val colorDepth: Int
+        get() {
+            val gd = this.graphicsDevice
+            if (gd == null) {
+                return 0
+            }
+            return gd.displayMode.bitDepth
+        }
 }

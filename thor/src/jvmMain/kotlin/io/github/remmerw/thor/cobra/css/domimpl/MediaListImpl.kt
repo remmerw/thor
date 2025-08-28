@@ -13,81 +13,77 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+package io.github.remmerw.thor.cobra.css.domimpl
 
-package io.github.remmerw.thor.cobra.css.domimpl;
+import cz.vutbr.web.css.MediaQuery
+import org.w3c.dom.DOMException
+import org.w3c.dom.stylesheets.MediaList
+import java.util.Collections
 
-import org.w3c.dom.DOMException;
-import org.w3c.dom.stylesheets.MediaList;
+internal class MediaListImpl : MediaList {
+    private val containingStyleSheet: JStyleSheetWrapper
+    private val mediaList: MutableList<String?>
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import cz.vutbr.web.css.MediaQuery;
-
-final class MediaListImpl implements MediaList {
-
-    final private JStyleSheetWrapper containingStyleSheet;
-    final private List<String> mediaList;
-
-    MediaListImpl(final String mediaListStr, final JStyleSheetWrapper containingStyleSheet) {
-        this.mediaList = splitMediaList(mediaListStr);
-        this.containingStyleSheet = containingStyleSheet;
+    constructor(mediaListStr: String?, containingStyleSheet: JStyleSheetWrapper) {
+        this.mediaList = splitMediaList(mediaListStr)
+        this.containingStyleSheet = containingStyleSheet
     }
 
-    MediaListImpl(final List<MediaQuery> mediaQueries, final JStyleSheetWrapper containingStyleSheet) {
-        final List<String> mediaList = new ArrayList<String>();
-        for (final MediaQuery mediaQuery : mediaQueries) {
-            mediaList.add(mediaQuery.getType());
+    constructor(mediaQueries: MutableList<MediaQuery>, containingStyleSheet: JStyleSheetWrapper) {
+        val mediaList: MutableList<String?> = ArrayList<String?>()
+        for (mediaQuery in mediaQueries) {
+            mediaList.add(mediaQuery.type)
         }
-        this.mediaList = mediaList;
-        this.containingStyleSheet = containingStyleSheet;
+        this.mediaList = mediaList
+        this.containingStyleSheet = containingStyleSheet
     }
 
-    public String getMediaText() {
-        return this.mediaList.toString();
+    override fun getMediaText(): String? {
+        return this.mediaList.toString()
     }
 
-    public void setMediaText(final String mediaText) throws DOMException {
+    @Throws(DOMException::class)
+    override fun setMediaText(mediaText: String?) {
         //TODO send a notification about the change
-    /*
+        /*
     this.mediaList.clear();
     this.mediaList.addAll(splitMediaList(mediaText));
      */
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
 
-    public int getLength() {
-        return this.mediaList.size();
+    override fun getLength(): Int {
+        return this.mediaList.size
     }
 
-    public String item(final int index) {
-        return this.mediaList.get(index);
+    override fun item(index: Int): String? {
+        return this.mediaList.get(index)
     }
 
-    public void deleteMedium(final String oldMedium) throws DOMException {
-        this.mediaList.remove(oldMedium);
-        this.containingStyleSheet.informChanged();
+    @Throws(DOMException::class)
+    override fun deleteMedium(oldMedium: String?) {
+        this.mediaList.remove(oldMedium)
+        this.containingStyleSheet.informChanged()
     }
 
-    public void appendMedium(final String newMedium) throws DOMException {
-        this.mediaList.add(newMedium);
-        this.containingStyleSheet.informChanged();
+    @Throws(DOMException::class)
+    override fun appendMedium(newMedium: String?) {
+        this.mediaList.add(newMedium)
+        this.containingStyleSheet.informChanged()
     }
 
-    private List<String> splitMediaList(final String mediaListStr) {
-        if ((mediaListStr != null) && (mediaListStr.length() > 0)) {
-            final String[] mediaArray = mediaListStr.split(",");
-            final List<String> mediaList = new ArrayList<String>();
-            Collections.addAll(mediaList, mediaArray);
-            return mediaList;
+    private fun splitMediaList(mediaListStr: String?): MutableList<String?> {
+        if ((mediaListStr != null) && (mediaListStr.length > 0)) {
+            val mediaArray: Array<String?> =
+                mediaListStr.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+            val mediaList: MutableList<String?> = ArrayList<String?>()
+            Collections.addAll<String?>(mediaList, *mediaArray)
+            return mediaList
         }
-        return new ArrayList<String>();
+        return ArrayList<String?>()
     }
 
-    @Override
-    public String toString() {
-        return mediaList.toString();
+    override fun toString(): String {
+        return mediaList.toString()
     }
-
 }

@@ -20,18 +20,18 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.github.remmerw.thor.cobra.io;
+package io.github.remmerw.thor.cobra.io
 
 /**
  * A filter of managed files.
  *
  * @author J. H. S.
- * @see ManagedFile#listFiles(ManagedFileFilter)
+ * @see ManagedFile.listFiles
  */
-public interface ManagedFileFilter {
+interface ManagedFileFilter {
     /**
      * @param file A managed file.
      * @return True if the file is accepted by the filter, false otherwise.
      */
-    boolean accept(ManagedFile file);
+    fun accept(file: ManagedFile?): Boolean
 }

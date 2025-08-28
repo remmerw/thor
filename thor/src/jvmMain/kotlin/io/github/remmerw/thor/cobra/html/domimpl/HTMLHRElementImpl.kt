@@ -1,41 +1,37 @@
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.html.HTMLHRElement;
+import org.w3c.dom.html.HTMLHRElement
 
-public class HTMLHRElementImpl extends HTMLAbstractUIElement implements HTMLHRElement {
-    public HTMLHRElementImpl(final String name) {
-        super(name);
+class HTMLHRElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLHRElement {
+    override fun getAlign(): String? {
+        return this.getAttribute("align")
     }
 
-    public String getAlign() {
-        return this.getAttribute("align");
+    override fun setAlign(align: String?) {
+        this.setAttribute("align", align)
     }
 
-    public void setAlign(final String align) {
-        this.setAttribute("align", align);
+    override fun getNoShade(): Boolean {
+        return "noshade".equals(this.getAttribute("noshade"), ignoreCase = true)
     }
 
-    public boolean getNoShade() {
-        return "noshade".equalsIgnoreCase(this.getAttribute("noshade"));
+    override fun setNoShade(noShade: Boolean) {
+        this.setAttribute("noshade", if (noShade) "noshade" else null)
     }
 
-    public void setNoShade(final boolean noShade) {
-        this.setAttribute("noshade", noShade ? "noshade" : null);
+    override fun getSize(): String? {
+        return this.getAttribute("size")
     }
 
-    public String getSize() {
-        return this.getAttribute("size");
+    override fun setSize(size: String?) {
+        this.setAttribute("size", size)
     }
 
-    public void setSize(final String size) {
-        this.setAttribute("size", size);
+    override fun getWidth(): String? {
+        return this.getAttribute("width")
     }
 
-    public String getWidth() {
-        return this.getAttribute("width");
-    }
-
-    public void setWidth(final String width) {
-        this.setAttribute("width", width);
+    override fun setWidth(width: String?) {
+        this.setAttribute("width", width)
     }
 }

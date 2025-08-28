@@ -21,80 +21,81 @@
 /*
  * Created on Sep 3, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.Attr;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
+import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate
+import org.w3c.dom.Attr
+import org.w3c.dom.DOMException
+import org.w3c.dom.Element
+import org.w3c.dom.NamedNodeMap
+import org.w3c.dom.Node
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate;
-
-public class NamedNodeMapImpl extends AbstractScriptableDelegate implements NamedNodeMap {
+class NamedNodeMapImpl(owner: Element?, attribs: MutableMap<String?, String?>) :
+    AbstractScriptableDelegate(), NamedNodeMap {
     // Note: class must be public for reflection to work.
-    private final Map<String, Node> attributes = new HashMap<>();
-    private final ArrayList<Node> attributeList = new ArrayList<>();
+    private val attributes: MutableMap<String?, Node?> = HashMap<String?, Node?>()
+    private val attributeList = ArrayList<Node?>()
 
-    public NamedNodeMapImpl(final Element owner, final Map<String, String> attribs) {
-        attribs.forEach((name, value) -> {
+    init {
+        attribs.forEach { (name: String?, value: String?) ->
             // TODO: "specified" attributes
-            final Attr attr = new AttrImpl(name, value, true, owner, "ID".equals(name));
-            this.attributes.put(name, attr);
-            this.attributeList.add(attr);
-        });
+            val attr: Attr = AttrImpl(name, value, true, owner, "ID" == name)
+            this.attributes.put(name, attr)
+            this.attributeList.add(attr)
+        }
     }
 
-    public int getLength() {
-        return this.attributeList.size();
+    override fun getLength(): Int {
+        return this.attributeList.size
     }
 
-    public Node getNamedItem(final String name) {
-        return this.attributes.get(name);
+    override fun getNamedItem(name: String?): Node? {
+        return this.attributes.get(name)
     }
 
     /**
      * @param name
      */
-    public Node namedItem(final String name) {
+    fun namedItem(name: String?): Node? {
         // Method needed for Javascript indexing.
-        return this.getNamedItem(name);
+        return this.getNamedItem(name)
     }
 
-    public Node getNamedItemNS(final String namespaceURI, final String localName) throws DOMException {
-        throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "No namespace support");
+    @Throws(DOMException::class)
+    override fun getNamedItemNS(namespaceURI: String?, localName: String?): Node? {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "No namespace support")
     }
 
-    public Node item(final int index) {
+    override fun item(index: Int): Node? {
         try {
-            return this.attributeList.get(index);
-        } catch (final IndexOutOfBoundsException iob) {
-            return null;
+            return this.attributeList.get(index)
+        } catch (iob: IndexOutOfBoundsException) {
+            return null
         }
     }
 
-    public Node removeNamedItem(final String name) throws DOMException {
-        return this.attributes.remove(name);
+    @Throws(DOMException::class)
+    override fun removeNamedItem(name: String?): Node? {
+        return this.attributes.remove(name)
     }
 
-    public Node removeNamedItemNS(final String namespaceURI, final String localName) throws DOMException {
-        throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "No namespace support");
+    @Throws(DOMException::class)
+    override fun removeNamedItemNS(namespaceURI: String?, localName: String?): Node? {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "No namespace support")
     }
 
-    public Node setNamedItem(final Node arg) throws DOMException {
-        final Object prevValue = this.attributes.put(arg.getNodeName(), arg);
+    @Throws(DOMException::class)
+    override fun setNamedItem(arg: Node): Node {
+        val prevValue: Any? = this.attributes.put(arg.nodeName, arg)
         if (prevValue != null) {
-            this.attributeList.remove(prevValue);
+            this.attributeList.remove(prevValue)
         }
-        this.attributeList.add(arg);
-        return arg;
+        this.attributeList.add(arg)
+        return arg
     }
 
-    public Node setNamedItemNS(final Node arg) throws DOMException {
-        throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "No namespace support");
+    @Throws(DOMException::class)
+    override fun setNamedItemNS(arg: Node?): Node? {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "No namespace support")
     }
 }

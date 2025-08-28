@@ -21,387 +21,365 @@
 /*
  * Created on Apr 16, 2005
  */
-package io.github.remmerw.thor.cobra.html.style;
+package io.github.remmerw.thor.cobra.html.style
 
-import org.w3c.dom.css.CSS2Properties;
-import org.w3c.dom.html.HTMLElement;
-
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Toolkit;
-import java.awt.font.GlyphVector;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.StringTokenizer;
-
-import cz.vutbr.web.css.CSSProperty;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLDocumentImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl;
-import io.github.remmerw.thor.cobra.html.renderer.LineBreak;
-import io.github.remmerw.thor.cobra.util.gui.ColorFactory;
-import io.github.remmerw.thor.cobra.util.gui.FontFactory;
+import cz.vutbr.web.css.CSSProperty.VerticalAlign
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLDocumentImpl
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
+import io.github.remmerw.thor.cobra.html.renderer.LineBreak
+import io.github.remmerw.thor.cobra.util.gui.ColorFactory
+import io.github.remmerw.thor.cobra.util.gui.FontFactory
+import org.w3c.dom.css.CSS2Properties
+import org.w3c.dom.html.HTMLElement
+import java.awt.Color
+import java.awt.Cursor
+import java.awt.Font
+import java.awt.FontMetrics
+import java.awt.Toolkit
+import java.util.Locale
+import java.util.Optional
+import java.util.StringTokenizer
 
 /**
  * @author J. H. S.
  */
-public class StyleSheetRenderState implements RenderState {
-    protected static final HtmlInsets INVALID_INSETS = new HtmlInsets();
-    protected static final BackgroundInfo INVALID_BACKGROUND_INFO = new BackgroundInfo();
-    protected static final BorderInfo INVALID_BORDER_INFO = new BorderInfo();
-    protected static final Color INVALID_COLOR = new Color(100, 0, 100);
-    private static final FontFactory FONT_FACTORY = FontFactory.getInstance();
-    // Default font needs to be something that displays in all languages.
-    // Serif, SansSerif, Monospaced.
-    private static final String DEFAULT_FONT_FAMILY = "SansSerif";
-    private static final Font DEFAULT_FONT = FONT_FACTORY.getFont(DEFAULT_FONT_FAMILY, null, null, null, HtmlValues.DEFAULT_FONT_SIZE, null,
-            null);
-    protected final HTMLElementImpl element;
-    protected final HTMLDocumentImpl document;
-    protected final RenderState prevRenderState;
-    protected BackgroundInfo iBackgroundInfo = INVALID_BACKGROUND_INFO;
-    protected Integer iWhiteSpace;
-    protected HtmlInsets marginInsets = INVALID_INSETS;
-    protected HtmlInsets paddingInsets = INVALID_INSETS;
-    protected int overflowX = -1;
-    protected int overflowY = -1;
-    protected BorderInfo borderInfo = INVALID_BORDER_INFO;
-    Map<String, WordInfo> iWordInfoMap = null;
-    private Font iFont;
-    private FontMetrics iFontMetrics;
-    private Color iColor;
-    private Color iBackgroundColor = INVALID_COLOR;
-    private Color iTextBackgroundColor = INVALID_COLOR;
+open class StyleSheetRenderState : RenderState {
+    protected val element: HTMLElementImpl?
+    protected val document: HTMLDocumentImpl?
+    protected val prevRenderState: RenderState?
+    protected var iBackgroundInfo: BackgroundInfo? = INVALID_BACKGROUND_INFO
+    protected var iWhiteSpace: Int? = null
+    protected var marginInsets: HtmlInsets? = INVALID_INSETS
+    protected var paddingInsets: HtmlInsets? = INVALID_INSETS
+    protected var overflowX: Int = -1
+    protected var overflowY: Int = -1
+    protected var borderInfo: BorderInfo? = INVALID_BORDER_INFO
+    var iWordInfoMap: MutableMap<String?, WordInfo?>? = null
+    private var iFont: Font? = null
+    private var iFontMetrics: FontMetrics? = null
+    private var iColor: Color? = null
+    private var iBackgroundColor: Color? = INVALID_COLOR
+    private var iTextBackgroundColor: Color? = INVALID_COLOR
 
     // public TextRenderState(RenderState prevRenderState) {
     // this.css2properties = new CSS2PropertiesImpl(this);
     // this.prevRenderState = prevRenderState;
     // }
-    private Color iOverlayColor = INVALID_COLOR;
-    private int iTextDecoration = -1;
-    private int iTextTransform = -1;
-    private int iBlankWidth = -1;
-    private boolean iHighlight;
-    private Integer iDisplay;
-    private int alignXPercent = -1;
-    private Map<String, ArrayList<Integer>> counters = null;
-    private String iTextIndentText = null;
-    private Integer cachedVisibility;
-    private Integer cachedPosition;
-    private Integer cachedFloat;
-    private Integer cachedClear = null;
+    private var iOverlayColor: Color? = INVALID_COLOR
+    private var iTextDecoration = -1
+    private var iTextTransform = -1
+    private var iBlankWidth = -1
+    private var iHighlight = false
+    private var iDisplay: Int? = null
+    private var alignXPercent = -1
+    private var counters: MutableMap<String?, ArrayList<Int?>>? = null
+    private var iTextIndentText: String? = null
+    private var cachedVisibility: Int? = null
+    private var cachedPosition: Int? = null
+    private var cachedFloat: Int? = null
+    private var cachedClear: Int? = null
 
-    public StyleSheetRenderState(final RenderState prevRenderState, final HTMLElementImpl element) {
-        this.prevRenderState = prevRenderState;
-        this.element = element;
-        this.document = (HTMLDocumentImpl) element.getOwnerDocument();
+    constructor(prevRenderState: RenderState?, element: HTMLElementImpl) {
+        this.prevRenderState = prevRenderState
+        this.element = element
+        this.document = element.ownerDocument as HTMLDocumentImpl?
     }
 
-    public StyleSheetRenderState(final HTMLDocumentImpl document) {
-        this.prevRenderState = null;
-        this.element = null;
-        this.document = document;
+    constructor(document: HTMLDocumentImpl?) {
+        this.prevRenderState = null
+        this.element = null
+        this.document = document
     }
 
-    private static void applyBackgroundRepeat(final BackgroundInfo binfo, final String backgroundRepeatText) {
-        final String brtl = backgroundRepeatText.toLowerCase();
-        if ("repeat".equals(brtl)) {
-            binfo.backgroundRepeat = BackgroundInfo.BR_REPEAT;
-        } else if ("repeat-x".equals(brtl)) {
-            binfo.backgroundRepeat = BackgroundInfo.BR_REPEAT_X;
-        } else if ("repeat-y".equals(brtl)) {
-            binfo.backgroundRepeat = BackgroundInfo.BR_REPEAT_Y;
-        } else if ("no-repeat".equals(brtl)) {
-            binfo.backgroundRepeat = BackgroundInfo.BR_NO_REPEAT;
-        }
-    }
+    protected open val defaultDisplay: Int
+        get() = RenderState.Companion.DISPLAY_INLINE
 
-    protected int getDefaultDisplay() {
-        return DISPLAY_INLINE;
-    }
-
-    public int getDisplay() {
-        final Integer d = this.iDisplay;
+    override fun getDisplay(): Int {
+        val d = this.iDisplay
         if (d != null) {
-            return d.intValue();
+            return d
         }
-        final CSS2Properties props = this.getCssProperties();
-        final String displayText = props == null ? null : props.getDisplay();
-        int displayInt;
+        val props: CSS2Properties? = this.cssProperties
+        val displayText = if (props == null) null else props.display
+        val displayInt: Int
         if (displayText != null) {
-            final String displayTextTL = displayText.toLowerCase();
-            if ("block".equals(displayTextTL)) {
-                displayInt = DISPLAY_BLOCK;
-            } else if ("inline".equals(displayTextTL)) {
-                displayInt = DISPLAY_INLINE;
-            } else if ("none".equals(displayTextTL)) {
-                displayInt = DISPLAY_NONE;
-            } else if ("list-item".equals(displayTextTL)) {
-                displayInt = DISPLAY_LIST_ITEM;
-            } else if ("table-row-group".equals(displayTextTL)) {
-                displayInt = DISPLAY_TABLE_ROW_GROUP;
-            } else if ("table-header-group".equals(displayTextTL)) {
-                displayInt = DISPLAY_TABLE_HEADER_GROUP;
-            } else if ("table-footer-group".equals(displayTextTL)) {
-                displayInt = DISPLAY_TABLE_FOOTER_GROUP;
-            } else if ("table".equals(displayTextTL)) {
-                displayInt = DISPLAY_TABLE;
-            } else if ("inline-table".equals(displayTextTL)) {
-                displayInt = DISPLAY_INLINE_TABLE;
-            } else if ("table-cell".equals(displayTextTL)) {
-                displayInt = DISPLAY_TABLE_CELL;
-            } else if ("table-row".equals(displayTextTL)) {
-                displayInt = DISPLAY_TABLE_ROW;
-            } else if ("inline-block".equals(displayTextTL)) {
-                displayInt = DISPLAY_INLINE_BLOCK;
-            } else if ("table-column".equals(displayTextTL)) {
-                displayInt = DISPLAY_TABLE_COLUMN;
-            } else if ("table-column-group".equals(displayTextTL)) {
-                displayInt = DISPLAY_TABLE_COLUMN_GROUP;
-            } else if ("table-caption".equals(displayTextTL)) {
-                displayInt = DISPLAY_TABLE_CAPTION;
+            val displayTextTL = displayText.lowercase(Locale.getDefault())
+            if ("block" == displayTextTL) {
+                displayInt = RenderState.Companion.DISPLAY_BLOCK
+            } else if ("inline" == displayTextTL) {
+                displayInt = RenderState.Companion.DISPLAY_INLINE
+            } else if ("none" == displayTextTL) {
+                displayInt = RenderState.Companion.DISPLAY_NONE
+            } else if ("list-item" == displayTextTL) {
+                displayInt = RenderState.Companion.DISPLAY_LIST_ITEM
+            } else if ("table-row-group" == displayTextTL) {
+                displayInt = RenderState.Companion.DISPLAY_TABLE_ROW_GROUP
+            } else if ("table-header-group" == displayTextTL) {
+                displayInt = RenderState.Companion.DISPLAY_TABLE_HEADER_GROUP
+            } else if ("table-footer-group" == displayTextTL) {
+                displayInt = RenderState.Companion.DISPLAY_TABLE_FOOTER_GROUP
+            } else if ("table" == displayTextTL) {
+                displayInt = RenderState.Companion.DISPLAY_TABLE
+            } else if ("inline-table" == displayTextTL) {
+                displayInt = RenderState.Companion.DISPLAY_INLINE_TABLE
+            } else if ("table-cell" == displayTextTL) {
+                displayInt = RenderState.Companion.DISPLAY_TABLE_CELL
+            } else if ("table-row" == displayTextTL) {
+                displayInt = RenderState.Companion.DISPLAY_TABLE_ROW
+            } else if ("inline-block" == displayTextTL) {
+                displayInt = RenderState.Companion.DISPLAY_INLINE_BLOCK
+            } else if ("table-column" == displayTextTL) {
+                displayInt = RenderState.Companion.DISPLAY_TABLE_COLUMN
+            } else if ("table-column-group" == displayTextTL) {
+                displayInt = RenderState.Companion.DISPLAY_TABLE_COLUMN_GROUP
+            } else if ("table-caption" == displayTextTL) {
+                displayInt = RenderState.Companion.DISPLAY_TABLE_CAPTION
             } else {
-                displayInt = this.getDefaultDisplay();
+                displayInt = this.defaultDisplay
             }
         } else {
-            displayInt = this.getDefaultDisplay();
+            displayInt = this.defaultDisplay
         }
-        this.iDisplay = (displayInt);
-        return displayInt;
+        this.iDisplay = (displayInt)
+        return displayInt
     }
 
-    public int getFontBase() {
-        return 3;
+    override fun getFontBase(): Int {
+        return 3
     }
 
-    public void repaint() {
+    fun repaint() {
         // Dummy implementation
     }
 
-    protected final JStyleProperties getCssProperties() {
-        final HTMLElementImpl element = this.element;
-        return element == null ? null : element.getCurrentStyle();
-    }
-
-    public void invalidate() {
-        final Map<String, WordInfo> map = this.iWordInfoMap;
-        if (map != null) {
-            map.clear();
+    protected val cssProperties: JStyleProperties?
+        get() {
+            val element = this.element
+            return if (element == null) null else element.getCurrentStyle()
         }
-        this.iFont = null;
-        this.iFontMetrics = null;
-        this.iColor = null;
-        this.iTextDecoration = -1;
-        this.iBlankWidth = -1;
-        this.alignXPercent = -1;
-        this.iBackgroundColor = INVALID_COLOR;
-        this.iTextBackgroundColor = INVALID_COLOR;
-        this.iOverlayColor = INVALID_COLOR;
-        this.iBackgroundInfo = INVALID_BACKGROUND_INFO;
-        this.iDisplay = null;
-        this.iTextIndentText = null;
-        this.iWhiteSpace = null;
-        this.marginInsets = INVALID_INSETS;
-        this.paddingInsets = INVALID_INSETS;
-        this.overflowX = -1;
-        this.overflowY = -1;
-        this.borderInfo = INVALID_BORDER_INFO;
+
+    override fun invalidate() {
+        val map = this.iWordInfoMap
+        if (map != null) {
+            map.clear()
+        }
+        this.iFont = null
+        this.iFontMetrics = null
+        this.iColor = null
+        this.iTextDecoration = -1
+        this.iBlankWidth = -1
+        this.alignXPercent = -1
+        this.iBackgroundColor = INVALID_COLOR
+        this.iTextBackgroundColor = INVALID_COLOR
+        this.iOverlayColor = INVALID_COLOR
+        this.iBackgroundInfo = INVALID_BACKGROUND_INFO
+        this.iDisplay = null
+        this.iTextIndentText = null
+        this.iWhiteSpace = null
+        this.marginInsets = INVALID_INSETS
+        this.paddingInsets = INVALID_INSETS
+        this.overflowX = -1
+        this.overflowY = -1
+        this.borderInfo = INVALID_BORDER_INFO
         // Should NOT invalidate parent render state.
     }
 
-    public Font getFont() {
-        Font f = this.iFont;
+    override fun getFont(): Font? {
+        var f = this.iFont
         if (f != null) {
-            return f;
+            return f
         }
-        final JStyleProperties style = this.getCssProperties();
-        final RenderState prs = this.prevRenderState;
+        val style = this.cssProperties
+        val prs = this.prevRenderState
         if (style == null) {
             if (prs != null) {
-                final Font font = prs.getFont();
-                return font;
+                val font = prs.getFont()
+                return font
             }
-            f = DEFAULT_FONT;
-            this.iFont = f;
-            return f;
+            f = DEFAULT_FONT
+            this.iFont = f
+            return f
         }
-        Float fontSize = null;
-        String fontStyle = null;
-        String fontVariant = null;
-        String fontWeight = null;
-        String fontFamily = null;
+        var fontSize: Float? = null
+        var fontStyle: String? = null
+        var fontVariant: String? = null
+        var fontWeight: String? = null
+        var fontFamily: String? = null
 
-        final String newFontSize = style.getFontSize();
-        final String newFontFamily = style.getFontFamily();
-        final String newFontStyle = style.getFontStyle();
-        final String newFontVariant = style.getFontVariant();
-        final String newFontWeight = style.getFontWeight();
-        final String verticalAlign = style.getVerticalAlign();
-        final boolean isSuper = (verticalAlign != null) && verticalAlign.equalsIgnoreCase("super");
-        final boolean isSub = (verticalAlign != null) && verticalAlign.equalsIgnoreCase("sub");
+        val newFontSize = style.fontSize
+        val newFontFamily = style.fontFamily
+        val newFontStyle = style.fontStyle
+        val newFontVariant = style.fontVariant
+        val newFontWeight = style.fontWeight
+        val verticalAlign = style.verticalAlign
+        val isSuper = (verticalAlign != null) && verticalAlign.equals("super", ignoreCase = true)
+        val isSub = (verticalAlign != null) && verticalAlign.equals("sub", ignoreCase = true)
         if ((newFontSize == null) && (newFontWeight == null) && (newFontStyle == null) && (newFontFamily == null) && (newFontVariant == null)) {
             if (!isSuper && !isSub) {
                 if (prs != null) {
-                    return prs.getFont();
+                    return prs.getFont()
                 } else {
-                    f = DEFAULT_FONT;
-                    this.iFont = f;
-                    return f;
+                    f = DEFAULT_FONT
+                    this.iFont = f
+                    return f
                 }
             }
         }
         if (newFontSize != null) {
             try {
-                fontSize = (HtmlValues.getFontSize(newFontSize, prs));
-            } catch (final Exception err) {
-                fontSize = HtmlValues.DEFAULT_FONT_SIZE_BOX;
+                fontSize = (HtmlValues.getFontSize(newFontSize, prs))
+            } catch (err: Exception) {
+                fontSize = HtmlValues.DEFAULT_FONT_SIZE_BOX
             }
         } else {
             if (prs != null) {
-                fontSize = (float) (prs.getFont().getSize());
+                fontSize = (prs.getFont().getSize()).toFloat()
             } else {
-                fontSize = HtmlValues.DEFAULT_FONT_SIZE_BOX;
+                fontSize = HtmlValues.DEFAULT_FONT_SIZE_BOX
             }
         }
         if (newFontFamily != null) {
-            fontFamily = newFontFamily;
+            fontFamily = newFontFamily
         }
         if (fontFamily == null) {
-            fontFamily = DEFAULT_FONT_FAMILY;
+            fontFamily = DEFAULT_FONT_FAMILY
         }
         if (newFontStyle != null) {
-            fontStyle = newFontStyle;
+            fontStyle = newFontStyle
         }
         if (newFontVariant != null) {
-            fontVariant = newFontVariant;
+            fontVariant = newFontVariant
         }
         if (newFontWeight != null) {
-            fontWeight = newFontWeight;
+            fontWeight = newFontWeight
         }
-        final HTMLDocumentImpl document = this.document;
-        final Set<Locale> locales = document == null ? null : document.getLocales();
+        val document = this.document
+        val locales = if (document == null) null else document.locales
 
-        Integer superscript = null;
+        var superscript: Int? = null
         if (isSuper) {
-            superscript = (1);
+            superscript = (1)
         } else if (isSub) {
-            superscript = (-1);
+            superscript = (-1)
         }
-        f = FONT_FACTORY.getFont(fontFamily, fontStyle, fontVariant, fontWeight, fontSize.floatValue(), locales, superscript);
-        this.iFont = f;
-        return f;
+        f = FONT_FACTORY.getFont(
+            fontFamily,
+            fontStyle,
+            fontVariant,
+            fontWeight,
+            fontSize,
+            locales,
+            superscript
+        )
+        this.iFont = f
+        return f
     }
 
-    public Color getColor() {
-        Color c = this.iColor;
+    override fun getColor(): Color? {
+        var c = this.iColor
         if (c != null) {
-            return c;
+            return c
         }
-        final JStyleProperties props = this.getCssProperties();
-        String colorValue = props == null ? null : props.getColor();
-        if ((colorValue == null) || "".equals(colorValue)) {
-            colorValue = "black";
+        val props = this.cssProperties
+        var colorValue = if (props == null) null else props.color
+        if ((colorValue == null) || "" == colorValue) {
+            colorValue = "black"
         }
-        c = ColorFactory.getInstance().getColor(colorValue);
-        this.iColor = c;
-        return c;
+        c = ColorFactory.getInstance().getColor(colorValue)
+        this.iColor = c
+        return c
     }
 
-    public Color getBackgroundColor() {
-        final Color c = this.iBackgroundColor;
-        if (c != INVALID_COLOR) {
-            return c;
+    override fun getBackgroundColor(): Color? {
+        val c = this.iBackgroundColor
+        if (c !== INVALID_COLOR) {
+            return c
         }
-        Color localColor;
-        final BackgroundInfo binfo = this.getBackgroundInfo();
-        localColor = binfo == null ? null : binfo.backgroundColor;
-        this.iBackgroundColor = localColor;
-        return localColor;
+        val localColor: Color?
+        val binfo = this.getBackgroundInfo()
+        localColor = if (binfo == null) null else binfo.backgroundColor
+        this.iBackgroundColor = localColor
+        return localColor
     }
 
-    public Color getTextBackgroundColor() {
-        final Color c = this.iTextBackgroundColor;
-        if (c != INVALID_COLOR) {
-            return c;
+    override fun getTextBackgroundColor(): Color? {
+        val c = this.iTextBackgroundColor
+        if (c !== INVALID_COLOR) {
+            return c
         }
-        Color localColor;
-        if (this.getDisplay() != DISPLAY_INLINE) {
+        val localColor: Color?
+        if (this.getDisplay() != RenderState.Companion.DISPLAY_INLINE) {
             // Background painted by block.
-            localColor = null;
+            localColor = null
         } else {
-            final BackgroundInfo binfo = this.getBackgroundInfo();
-            localColor = binfo == null ? null : binfo.backgroundColor;
+            val binfo = this.getBackgroundInfo()
+            localColor = if (binfo == null) null else binfo.backgroundColor
         }
-        this.iTextBackgroundColor = localColor;
-        return localColor;
+        this.iTextBackgroundColor = localColor
+        return localColor
     }
 
-    public Color getOverlayColor() {
-        Color c = this.iOverlayColor;
-        if (c != INVALID_COLOR) {
-            return c;
+    override fun getOverlayColor(): Color? {
+        var c = this.iOverlayColor
+        if (c !== INVALID_COLOR) {
+            return c
         }
-        final JStyleProperties props = this.getCssProperties();
-        String colorValue = props == null ? null : props.getOverlayColor();
-        if ((colorValue == null) || (colorValue.length() == 0)) {
-            colorValue = null;
+        val props = this.cssProperties
+        var colorValue = if (props == null) null else props.getOverlayColor()
+        if ((colorValue == null) || (colorValue.length == 0)) {
+            colorValue = null
         }
-        c = colorValue == null ? null : ColorFactory.getInstance().getColor(colorValue);
-        this.iOverlayColor = c;
-        return c;
+        c = if (colorValue == null) null else ColorFactory.getInstance().getColor(colorValue)
+        this.iOverlayColor = c
+        return c
     }
 
-    public int getTextDecorationMask() {
-        int td = this.iTextDecoration;
+    override fun getTextDecorationMask(): Int {
+        var td = this.iTextDecoration
         if (td != -1) {
-            return td;
+            return td
         }
-        final JStyleProperties props = this.getCssProperties();
-        final String tdText = props == null ? null : props.getTextDecoration();
-        td = 0;
+        val props = this.cssProperties
+        val tdText = if (props == null) null else props.textDecoration
+        td = 0
         if (tdText != null) {
-            final StringTokenizer tok = new StringTokenizer(tdText.toLowerCase(), ", \t\n\r");
+            val tok = StringTokenizer(tdText.lowercase(Locale.getDefault()), ", \t\n\r")
             while (tok.hasMoreTokens()) {
-                final String token = tok.nextToken();
-                if ("none".equals(token)) {
+                val token = tok.nextToken()
+                if ("none" == token) {
                     // continue
-                } else if ("underline".equals(token)) {
-                    td |= RenderState.MASK_TEXTDECORATION_UNDERLINE;
-                } else if ("line-through".equals(token)) {
-                    td |= RenderState.MASK_TEXTDECORATION_LINE_THROUGH;
-                } else if ("blink".equals(token)) {
-                    td |= RenderState.MASK_TEXTDECORATION_BLINK;
-                } else if ("overline".equals(token)) {
-                    td |= RenderState.MASK_TEXTDECORATION_OVERLINE;
+                } else if ("underline" == token) {
+                    td = td or RenderState.Companion.MASK_TEXTDECORATION_UNDERLINE
+                } else if ("line-through" == token) {
+                    td = td or RenderState.Companion.MASK_TEXTDECORATION_LINE_THROUGH
+                } else if ("blink" == token) {
+                    td = td or RenderState.Companion.MASK_TEXTDECORATION_BLINK
+                } else if ("overline" == token) {
+                    td = td or RenderState.Companion.MASK_TEXTDECORATION_OVERLINE
                 }
             }
         }
-        this.iTextDecoration = td;
-        return td;
+        this.iTextDecoration = td
+        return td
     }
 
-    public int getTextTransform() {
-        int tt = this.iTextTransform;
+    override fun getTextTransform(): Int {
+        var tt = this.iTextTransform
         if (tt != -1) {
-            return tt;
+            return tt
         }
-        final JStyleProperties props = this.getCssProperties();
-        final String tdText = props == null ? null : props.getTextTransform();
-        tt = 0;
+        val props = this.cssProperties
+        val tdText = if (props == null) null else props.textTransform
+        tt = 0
         if (tdText != null) {
-            if ("none".equals(tdText)) {
+            if ("none" == tdText) {
                 // continue
-            } else if ("capitalize".equals(tdText)) {
-                tt = TEXTTRANSFORM_CAPITALIZE;
-            } else if ("uppercase".equals(tdText)) {
-                tt = TEXTTRANSFORM_UPPERCASE;
-            } else if ("lowercase".equals(tdText)) {
-                tt = TEXTTRANSFORM_LOWERCASE;
+            } else if ("capitalize" == tdText) {
+                tt = RenderState.Companion.TEXTTRANSFORM_CAPITALIZE
+            } else if ("uppercase" == tdText) {
+                tt = RenderState.Companion.TEXTTRANSFORM_UPPERCASE
+            } else if ("lowercase" == tdText) {
+                tt = RenderState.Companion.TEXTTRANSFORM_LOWERCASE
             }
             // TODO how the explicit "inherit" value is to be handled?
             // Who is responsible for CSS cascading?
@@ -411,207 +389,207 @@ public class StyleSheetRenderState implements RenderState {
             // tt = TEXTTRANSFORM_INHERIT;
             // }
         }
-        this.iTextTransform = tt;
-        return tt;
+        this.iTextTransform = tt
+        return tt
     }
 
-    public final FontMetrics getFontMetrics() {
-        FontMetrics fm = this.iFontMetrics;
+    override fun getFontMetrics(): FontMetrics {
+        var fm = this.iFontMetrics
         if (fm == null) {
             // TODO getFontMetrics deprecated. How to get text width?
-            fm = Toolkit.getDefaultToolkit().getFontMetrics(this.getFont());
-            this.iFontMetrics = fm;
+            fm = Toolkit.getDefaultToolkit().getFontMetrics(this.getFont())
+            this.iFontMetrics = fm
         }
-        return fm;
+        return fm
     }
 
-    public int getBlankWidth() {
-        int bw = this.iBlankWidth;
+    override fun getBlankWidth(): Int {
+        var bw = this.iBlankWidth
         if (bw == -1) {
-            bw = this.getFontMetrics().charWidth(' ');
-            this.iBlankWidth = bw;
+            bw = this.getFontMetrics().charWidth(' ')
+            this.iBlankWidth = bw
         }
-        return bw;
+        return bw
     }
 
     /**
      * @return Returns the iHighlight.
      */
-    public boolean isHighlight() {
-        return this.iHighlight;
+    override fun isHighlight(): Boolean {
+        return this.iHighlight
     }
 
     /**
      * @param highlight The iHighlight to set.
      */
-    public void setHighlight(final boolean highlight) {
-        this.iHighlight = highlight;
+    override fun setHighlight(highlight: Boolean) {
+        this.iHighlight = highlight
     }
 
-    public final WordInfo getWordInfo(final String word) {
+    override fun getWordInfo(word: String): WordInfo {
         // Expected to be called only in the GUI (rendering) thread.
         // No synchronization necessary.
-        Map<String, WordInfo> map = this.iWordInfoMap;
+        var map = this.iWordInfoMap
         if (map == null) {
-            map = new HashMap<>(1);
-            this.iWordInfoMap = map;
+            map = HashMap<String?, WordInfo?>(1)
+            this.iWordInfoMap = map
         }
-        WordInfo wi = map.get(word);
+        var wi = map.get(word)
         if (wi != null) {
-            return wi;
+            return wi
         }
-        wi = new WordInfo();
-        final FontMetrics fm = this.getFontMetrics();
-        wi.fontMetrics = fm;
-        wi.ascentPlusLeading = fm.getAscent() + fm.getLeading();
-        wi.descent = fm.getDescent();
-        wi.height = fm.getHeight();
-        wi.width = fm.stringWidth(word);
-        map.put(word, wi);
-        return wi;
+        wi = WordInfo()
+        val fm = this.getFontMetrics()
+        wi.fontMetrics = fm
+        wi.ascentPlusLeading = fm.ascent + fm.leading
+        wi.descent = fm.descent
+        wi.height = fm.height
+        wi.width = fm.stringWidth(word)
+        map.put(word, wi)
+        return wi
     }
 
-    public int getAlignXPercent() {
-        int axp = this.alignXPercent;
+    override fun getAlignXPercent(): Int {
+        var axp = this.alignXPercent
         if (axp != -1) {
-            return axp;
+            return axp
         }
-        final CSS2Properties props = this.getCssProperties();
-        String textAlign = props == null ? null : props.getTextAlign();
-        if ((textAlign == null) || (textAlign.length() == 0)) {
+        val props: CSS2Properties? = this.cssProperties
+        var textAlign = if (props == null) null else props.textAlign
+        if ((textAlign == null) || (textAlign.length == 0)) {
             // Fall back to align attribute.
-            final HTMLElement element = this.element;
+            val element: HTMLElement? = this.element
             if (element != null) {
-                textAlign = element.getAttribute("align");
-                if ((textAlign == null) || (textAlign.length() == 0)) {
-                    textAlign = null;
+                textAlign = element.getAttribute("align")
+                if ((textAlign == null) || (textAlign.length == 0)) {
+                    textAlign = null
                 }
             }
         }
         if (textAlign == null) {
-            axp = 0;
-        } else if ("center".equalsIgnoreCase(textAlign)) {
-            axp = 50;
-        } else if ("right".equalsIgnoreCase(textAlign)) {
-            axp = 100;
+            axp = 0
+        } else if ("center".equals(textAlign, ignoreCase = true)) {
+            axp = 50
+        } else if ("right".equals(textAlign, ignoreCase = true)) {
+            axp = 100
         } else {
             // TODO: justify, <string>
-            axp = 0;
+            axp = 0
         }
-        this.alignXPercent = axp;
-        return axp;
+        this.alignXPercent = axp
+        return axp
     }
 
-    public int getAlignYPercent() {
+    override fun getAlignYPercent(): Int {
         // This is only settable in table cells.
         // TODO: Does it work with display: table-cell?
-        return 0;
+        return 0
     }
 
-    public int getCount(final String counter, final int nesting) {
+    override fun getCount(counter: String?, nesting: Int): Int {
         // Expected to be called only in GUI thread.
-        final RenderState prs = this.prevRenderState;
+        val prs = this.prevRenderState
         if (prs != null) {
-            return prs.getCount(counter, nesting);
+            return prs.getCount(counter, nesting)
         }
-        final Map<String, ArrayList<Integer>> counters = this.counters;
+        val counters = this.counters
         if (counters == null) {
-            return 0;
+            return 0
         }
-        final ArrayList<Integer> counterArray = counters.get(counter);
-        if ((nesting < 0) || (nesting >= counterArray.size())) {
-            return 0;
+        val counterArray: ArrayList<Int?> = counters.get(counter)!!
+        if ((nesting < 0) || (nesting >= counterArray.size)) {
+            return 0
         }
-        final Integer integer = counterArray.get(nesting);
-        return integer == null ? 0 : integer.intValue();
+        val integer = counterArray.get(nesting)
+        return if (integer == null) 0 else integer
     }
 
-    public void resetCount(final String counter, final int nesting, final int value) {
+    override fun resetCount(counter: String?, nesting: Int, value: Int) {
         // Expected to be called only in the GUI thread.
-        final RenderState prs = this.prevRenderState;
+        val prs = this.prevRenderState
         if (prs != null) {
-            prs.resetCount(counter, nesting, value);
+            prs.resetCount(counter, nesting, value)
         } else {
-            Map<String, ArrayList<Integer>> counters = this.counters;
+            var counters = this.counters
             if (counters == null) {
-                counters = new HashMap<>(2);
-                this.counters = counters;
-                counters.put(counter, new ArrayList<Integer>(0));
+                counters = HashMap<String?, ArrayList<Int?>>(2)
+                this.counters = counters
+                counters.put(counter, ArrayList<Int?>(0))
             }
-            final ArrayList<Integer> counterArray = counters.get(counter);
-            while (counterArray.size() <= nesting) {
-                counterArray.add(null);
+            val counterArray: ArrayList<Int?> = counters.get(counter)!!
+            while (counterArray.size <= nesting) {
+                counterArray.add(null)
             }
-            counterArray.set(nesting, (value));
+            counterArray.set(nesting, (value))
         }
     }
 
-    public int incrementCount(final String counter, final int nesting) {
+    override fun incrementCount(counter: String?, nesting: Int): Int {
         // Expected to be called only in the GUI thread.
-        final RenderState prs = this.prevRenderState;
+        val prs = this.prevRenderState
         if (prs != null) {
-            return prs.incrementCount(counter, nesting);
+            return prs.incrementCount(counter, nesting)
         }
-        Map<String, ArrayList<Integer>> counters = this.counters;
+        var counters = this.counters
         if (counters == null) {
-            counters = new HashMap<>(2);
-            this.counters = counters;
-            counters.put(counter, new ArrayList<Integer>(0));
+            counters = HashMap<String?, ArrayList<Int?>>(2)
+            this.counters = counters
+            counters.put(counter, ArrayList<Int?>(0))
         }
-        final ArrayList<Integer> counterArray = counters.get(counter);
-        while (counterArray.size() <= nesting) {
-            counterArray.add(null);
+        val counterArray: ArrayList<Int?> = counters.get(counter)!!
+        while (counterArray.size <= nesting) {
+            counterArray.add(null)
         }
-        final Integer integer = counterArray.get(nesting);
-        final int prevValue = integer == null ? 0 : integer;
-        counterArray.set(nesting, (prevValue + 1));
-        return prevValue;
+        val integer = counterArray.get(nesting)
+        val prevValue = if (integer == null) 0 else integer
+        counterArray.set(nesting, (prevValue + 1))
+        return prevValue
     }
 
-    public BackgroundInfo getBackgroundInfo() {
-        {
-            final BackgroundInfo binfo = this.iBackgroundInfo;
-            if (binfo != INVALID_BACKGROUND_INFO) {
-                return binfo;
+    override fun getBackgroundInfo(): BackgroundInfo? {
+        run {
+            val binfo = this.iBackgroundInfo
+            if (binfo !== INVALID_BACKGROUND_INFO) {
+                return binfo
             }
         }
 
-        BackgroundInfo binfo = null;
+        var binfo: BackgroundInfo? = null
 
-        final JStyleProperties props = this.getCssProperties();
+        val props = this.cssProperties
         if (props != null) {
-            final String backgroundColorText = props.getBackgroundColor();
+            val backgroundColorText = props.backgroundColor
             if (backgroundColorText != null) {
-                binfo = new BackgroundInfo();
-                binfo.backgroundColor = ColorFactory.getInstance().getColor(backgroundColorText);
+                binfo = BackgroundInfo()
+                binfo.backgroundColor = ColorFactory.getInstance().getColor(backgroundColorText)
             }
-            final String backgroundImageText = props.getBackgroundImage();
+            val backgroundImageText = props.getBackgroundImage()
             if ((backgroundImageText != null) && (!backgroundImageText.isEmpty())) {
-                final java.net.URL backgroundImage = HtmlValues.getURIFromStyleValue(backgroundImageText);
+                val backgroundImage = HtmlValues.getURIFromStyleValue(backgroundImageText)
                 if (backgroundImage != null) {
                     if (binfo == null) {
-                        binfo = new BackgroundInfo();
+                        binfo = BackgroundInfo()
                     }
-                    binfo.backgroundImage = backgroundImage;
+                    binfo.backgroundImage = backgroundImage
                 }
             }
-            final String backgroundRepeatText = props.getBackgroundRepeat();
+            val backgroundRepeatText = props.backgroundRepeat
             if (backgroundRepeatText != null) {
                 if (binfo == null) {
-                    binfo = new BackgroundInfo();
+                    binfo = BackgroundInfo()
                 }
-                applyBackgroundRepeat(binfo, backgroundRepeatText);
+                applyBackgroundRepeat(binfo, backgroundRepeatText)
             }
-            final String backgroundPositionText = props.getBackgroundPosition();
+            val backgroundPositionText = props.backgroundPosition
             if (backgroundPositionText != null) {
                 if (binfo == null) {
-                    binfo = new BackgroundInfo();
+                    binfo = BackgroundInfo()
                 }
-                this.applyBackgroundPosition(binfo, backgroundPositionText);
+                this.applyBackgroundPosition(binfo, backgroundPositionText)
             }
         }
-        this.iBackgroundInfo = binfo;
-        return binfo;
+        this.iBackgroundInfo = binfo
+        return binfo
     }
 
     // private void applyBackground(BackgroundInfo binfo, String background,
@@ -641,442 +619,473 @@ public class StyleSheetRenderState implements RenderState {
     // }
     // }
     // }
-
-    public String getTextIndentText() {
-        String tiText = this.iTextIndentText;
+    override fun getTextIndentText(): String {
+        var tiText = this.iTextIndentText
         if (tiText != null) {
-            return tiText;
+            return tiText
         }
-        final JStyleProperties props = this.getCssProperties();
-        tiText = props == null ? null : props.getTextIndent();
+        val props = this.cssProperties
+        tiText = if (props == null) null else props.textIndent
         if (tiText == null) {
-            tiText = "";
+            tiText = ""
         }
-        return tiText;
+        return tiText
     }
 
-    public int getTextIndent(final int availSize) {
+    override fun getTextIndent(availSize: Int): Int {
         // No caching for this one.
-        final String tiText = this.getTextIndentText();
-        if (tiText.length() == 0) {
-            return 0;
+        val tiText = this.getTextIndentText()
+        if (tiText.length == 0) {
+            return 0
         } else {
-            return HtmlValues.getPixelSize(tiText, this, 0, availSize);
+            return HtmlValues.getPixelSize(tiText, this, 0, availSize)
         }
     }
 
-    public int getWhiteSpace() {
-        if (RenderThreadState.getState().overrideNoWrap) {
-            return WS_NOWRAP;
+    override fun getWhiteSpace(): Int {
+        if (RenderThreadState.Companion.getState().overrideNoWrap) {
+            return RenderState.Companion.WS_NOWRAP
         }
-        final Integer ws = this.iWhiteSpace;
+        val ws = this.iWhiteSpace
         if (ws != null) {
-            return ws.intValue();
+            return ws
         }
-        final JStyleProperties props = this.getCssProperties();
-        final String whiteSpaceText = props == null ? null : props.getWhiteSpace();
-        int wsValue;
+        val props = this.cssProperties
+        val whiteSpaceText = if (props == null) null else props.whiteSpace
+        val wsValue: Int
         if (whiteSpaceText == null) {
-            wsValue = WS_NORMAL;
+            wsValue = RenderState.Companion.WS_NORMAL
         } else {
-            final String whiteSpaceTextTL = whiteSpaceText.toLowerCase();
-            if ("nowrap".equals(whiteSpaceTextTL)) {
-                wsValue = WS_NOWRAP;
-            } else if ("pre".equals(whiteSpaceTextTL)) {
-                wsValue = WS_PRE;
+            val whiteSpaceTextTL = whiteSpaceText.lowercase(Locale.getDefault())
+            if ("nowrap" == whiteSpaceTextTL) {
+                wsValue = RenderState.Companion.WS_NOWRAP
+            } else if ("pre" == whiteSpaceTextTL) {
+                wsValue = RenderState.Companion.WS_PRE
             } else {
-                wsValue = WS_NORMAL;
+                wsValue = RenderState.Companion.WS_NORMAL
             }
         }
-        this.iWhiteSpace = (wsValue);
-        return wsValue;
+        this.iWhiteSpace = (wsValue)
+        return wsValue
     }
 
-    public HtmlInsets getMarginInsets() {
-        HtmlInsets mi = this.marginInsets;
-        if (mi != INVALID_INSETS) {
-            return mi;
+    override fun getMarginInsets(): HtmlInsets? {
+        var mi = this.marginInsets
+        if (mi !== INVALID_INSETS) {
+            return mi
         }
-        final JStyleProperties props = this.getCssProperties();
+        val props = this.cssProperties
         if (props == null) {
-            mi = null;
+            mi = null
         } else {
-            mi = HtmlValues.getMarginInsets(props, this);
+            mi = HtmlValues.getMarginInsets(props, this)
         }
-        this.marginInsets = mi;
-        return mi;
+        this.marginInsets = mi
+        return mi
     }
 
-    public HtmlInsets getPaddingInsets() {
-        HtmlInsets mi = this.paddingInsets;
-        if (mi != INVALID_INSETS) {
-            return mi;
+    override fun getPaddingInsets(): HtmlInsets? {
+        var mi = this.paddingInsets
+        if (mi !== INVALID_INSETS) {
+            return mi
         }
-        final JStyleProperties props = this.getCssProperties();
+        val props = this.cssProperties
         if (props == null) {
-            mi = null;
+            mi = null
         } else {
-            mi = HtmlValues.getPaddingInsets(props, this);
-            this.paddingInsets = mi;
+            mi = HtmlValues.getPaddingInsets(props, this)
+            this.paddingInsets = mi
         }
-        return mi;
+        return mi
     }
 
-    private void applyBackgroundHorizontalPositon(final BackgroundInfo binfo, final String xposition) {
+    private fun applyBackgroundHorizontalPositon(binfo: BackgroundInfo, xposition: String) {
         if (xposition.endsWith("%")) {
-            binfo.backgroundXPositionAbsolute = false;
+            binfo.backgroundXPositionAbsolute = false
             try {
-                binfo.backgroundXPosition = (int) Double.parseDouble(xposition.substring(0, xposition.length() - 1).trim());
-            } catch (final NumberFormatException nfe) {
-                binfo.backgroundXPosition = 0;
+                binfo.backgroundXPosition =
+                    xposition.substring(0, xposition.length - 1).trim { it <= ' ' }.toDouble()
+                        .toInt()
+            } catch (nfe: NumberFormatException) {
+                binfo.backgroundXPosition = 0
             }
-        } else if ("center".equalsIgnoreCase(xposition)) {
-            binfo.backgroundXPositionAbsolute = false;
-            binfo.backgroundXPosition = 50;
-        } else if ("right".equalsIgnoreCase(xposition)) {
-            binfo.backgroundXPositionAbsolute = false;
-            binfo.backgroundXPosition = 100;
-        } else if ("left".equalsIgnoreCase(xposition)) {
-            binfo.backgroundXPositionAbsolute = false;
-            binfo.backgroundXPosition = 0;
-        } else if ("bottom".equalsIgnoreCase(xposition)) {
+        } else if ("center".equals(xposition, ignoreCase = true)) {
+            binfo.backgroundXPositionAbsolute = false
+            binfo.backgroundXPosition = 50
+        } else if ("right".equals(xposition, ignoreCase = true)) {
+            binfo.backgroundXPositionAbsolute = false
+            binfo.backgroundXPosition = 100
+        } else if ("left".equals(xposition, ignoreCase = true)) {
+            binfo.backgroundXPositionAbsolute = false
+            binfo.backgroundXPosition = 0
+        } else if ("bottom".equals(xposition, ignoreCase = true)) {
             // Can happen
-            binfo.backgroundYPositionAbsolute = false;
-            binfo.backgroundYPosition = 100;
-        } else if ("top".equalsIgnoreCase(xposition)) {
+            binfo.backgroundYPositionAbsolute = false
+            binfo.backgroundYPosition = 100
+        } else if ("top".equals(xposition, ignoreCase = true)) {
             // Can happen
-            binfo.backgroundYPositionAbsolute = false;
-            binfo.backgroundYPosition = 0;
+            binfo.backgroundYPositionAbsolute = false
+            binfo.backgroundYPosition = 0
         } else {
-            binfo.backgroundXPositionAbsolute = true;
-            binfo.backgroundXPosition = HtmlValues.getPixelSize(xposition, this, 0);
+            binfo.backgroundXPositionAbsolute = true
+            binfo.backgroundXPosition = HtmlValues.getPixelSize(xposition, this, 0)
         }
     }
 
-    private void applyBackgroundVerticalPosition(final BackgroundInfo binfo, final String yposition) {
+    private fun applyBackgroundVerticalPosition(binfo: BackgroundInfo, yposition: String) {
         if (yposition.endsWith("%")) {
-            binfo.backgroundYPositionAbsolute = false;
+            binfo.backgroundYPositionAbsolute = false
             try {
-                binfo.backgroundYPosition = (int) Double.parseDouble(yposition.substring(0, yposition.length() - 1).trim());
-            } catch (final NumberFormatException nfe) {
-                binfo.backgroundYPosition = 0;
+                binfo.backgroundYPosition =
+                    yposition.substring(0, yposition.length - 1).trim { it <= ' ' }.toDouble()
+                        .toInt()
+            } catch (nfe: NumberFormatException) {
+                binfo.backgroundYPosition = 0
             }
-        } else if ("center".equalsIgnoreCase(yposition)) {
-            binfo.backgroundYPositionAbsolute = false;
-            binfo.backgroundYPosition = 50;
-        } else if ("bottom".equalsIgnoreCase(yposition)) {
-            binfo.backgroundYPositionAbsolute = false;
-            binfo.backgroundYPosition = 100;
-        } else if ("top".equalsIgnoreCase(yposition)) {
-            binfo.backgroundYPositionAbsolute = false;
-            binfo.backgroundYPosition = 0;
-        } else if ("right".equalsIgnoreCase(yposition)) {
+        } else if ("center".equals(yposition, ignoreCase = true)) {
+            binfo.backgroundYPositionAbsolute = false
+            binfo.backgroundYPosition = 50
+        } else if ("bottom".equals(yposition, ignoreCase = true)) {
+            binfo.backgroundYPositionAbsolute = false
+            binfo.backgroundYPosition = 100
+        } else if ("top".equals(yposition, ignoreCase = true)) {
+            binfo.backgroundYPositionAbsolute = false
+            binfo.backgroundYPosition = 0
+        } else if ("right".equals(yposition, ignoreCase = true)) {
             // Can happen
-            binfo.backgroundXPositionAbsolute = false;
-            binfo.backgroundXPosition = 100;
-        } else if ("left".equalsIgnoreCase(yposition)) {
+            binfo.backgroundXPositionAbsolute = false
+            binfo.backgroundXPosition = 100
+        } else if ("left".equals(yposition, ignoreCase = true)) {
             // Can happen
-            binfo.backgroundXPositionAbsolute = false;
-            binfo.backgroundXPosition = 0;
+            binfo.backgroundXPositionAbsolute = false
+            binfo.backgroundXPosition = 0
         } else {
-            binfo.backgroundYPositionAbsolute = true;
-            binfo.backgroundYPosition = HtmlValues.getPixelSize(yposition, this, 0);
+            binfo.backgroundYPositionAbsolute = true
+            binfo.backgroundYPosition = HtmlValues.getPixelSize(yposition, this, 0)
         }
     }
 
-    private void applyBackgroundPosition(final BackgroundInfo binfo, final String position) {
-        binfo.backgroundXPositionAbsolute = false;
-        binfo.backgroundYPositionAbsolute = false;
-        binfo.backgroundXPosition = 50;
-        binfo.backgroundYPosition = 50;
-        final StringTokenizer tok = new StringTokenizer(position, " \t\r\n");
+    private fun applyBackgroundPosition(binfo: BackgroundInfo, position: String) {
+        binfo.backgroundXPositionAbsolute = false
+        binfo.backgroundYPositionAbsolute = false
+        binfo.backgroundXPosition = 50
+        binfo.backgroundYPosition = 50
+        val tok = StringTokenizer(position, " \t\r\n")
         if (tok.hasMoreTokens()) {
-            final String xposition = tok.nextToken();
-            this.applyBackgroundHorizontalPositon(binfo, xposition);
+            val xposition = tok.nextToken()
+            this.applyBackgroundHorizontalPositon(binfo, xposition)
             if (tok.hasMoreTokens()) {
-                final String yposition = tok.nextToken();
-                this.applyBackgroundVerticalPosition(binfo, yposition);
+                val yposition = tok.nextToken()
+                this.applyBackgroundVerticalPosition(binfo, yposition)
             }
         }
     }
 
-    public int getVisibility() {
-        final Integer v = this.cachedVisibility;
+    override fun getVisibility(): Int {
+        val v = this.cachedVisibility
         if (v != null) {
-            return v.intValue();
+            return v
         }
-        final JStyleProperties props = this.getCssProperties();
-        int visibility;
+        val props = this.cssProperties
+        val visibility: Int
         if (props == null) {
-            visibility = VISIBILITY_VISIBLE;
+            visibility = RenderState.Companion.VISIBILITY_VISIBLE
         } else {
-            final String visibText = props.getVisibility();
-            if ((visibText == null) || (visibText.length() == 0)) {
-                visibility = VISIBILITY_VISIBLE;
+            val visibText = props.visibility
+            if ((visibText == null) || (visibText.length == 0)) {
+                visibility = RenderState.Companion.VISIBILITY_VISIBLE
             } else {
-                final String visibTextTL = visibText.toLowerCase();
-                if (visibTextTL.equals("hidden")) {
-                    visibility = VISIBILITY_HIDDEN;
-                } else if (visibTextTL.equals("visible")) {
-                    visibility = VISIBILITY_VISIBLE;
-                } else if (visibTextTL.equals("collapse")) {
-                    visibility = VISIBILITY_COLLAPSE;
+                val visibTextTL = visibText.lowercase(Locale.getDefault())
+                if (visibTextTL == "hidden") {
+                    visibility = RenderState.Companion.VISIBILITY_HIDDEN
+                } else if (visibTextTL == "visible") {
+                    visibility = RenderState.Companion.VISIBILITY_VISIBLE
+                } else if (visibTextTL == "collapse") {
+                    visibility = RenderState.Companion.VISIBILITY_COLLAPSE
                 } else {
-                    visibility = VISIBILITY_VISIBLE;
+                    visibility = RenderState.Companion.VISIBILITY_VISIBLE
                 }
             }
         }
-        this.cachedVisibility = (visibility);
-        return visibility;
+        this.cachedVisibility = (visibility)
+        return visibility
     }
 
-    public int getPosition() {
-        final Integer p = this.cachedPosition;
+    override fun getPosition(): Int {
+        val p = this.cachedPosition
         if (p != null) {
-            return p.intValue();
+            return p
         }
-        final JStyleProperties props = this.getCssProperties();
-        int position;
+        val props = this.cssProperties
+        val position: Int
         if (props == null) {
-            position = POSITION_STATIC;
+            position = RenderState.Companion.POSITION_STATIC
         } else {
-            final String positionText = props.getPosition();
+            val positionText = props.position
             if ((positionText == null) || (positionText.isEmpty())) {
-                position = POSITION_STATIC;
+                position = RenderState.Companion.POSITION_STATIC
             } else {
-                final String positionTextTL = positionText.toLowerCase();
-                if (positionTextTL.equals("absolute")) {
-                    position = POSITION_ABSOLUTE;
-                } else if (positionTextTL.equals("static")) {
-                    position = POSITION_STATIC;
-                } else if (positionTextTL.equals("relative")) {
-                    position = POSITION_RELATIVE;
-                } else if (positionTextTL.equals("fixed")) {
-                    position = POSITION_FIXED;
+                val positionTextTL = positionText.lowercase(Locale.getDefault())
+                if (positionTextTL == "absolute") {
+                    position = RenderState.Companion.POSITION_ABSOLUTE
+                } else if (positionTextTL == "static") {
+                    position = RenderState.Companion.POSITION_STATIC
+                } else if (positionTextTL == "relative") {
+                    position = RenderState.Companion.POSITION_RELATIVE
+                } else if (positionTextTL == "fixed") {
+                    position = RenderState.Companion.POSITION_FIXED
                 } else {
-                    position = POSITION_STATIC;
+                    position = RenderState.Companion.POSITION_STATIC
                 }
             }
         }
-        this.cachedPosition = (position);
-        return position;
+        this.cachedPosition = (position)
+        return position
     }
 
-    public int getFloat() {
-        final Integer p = this.cachedFloat;
+    override fun getFloat(): Int {
+        val p = this.cachedFloat
         if (p != null) {
-            return p;
+            return p
         }
-        final JStyleProperties props = this.getCssProperties();
-        int floatValue;
+        val props = this.cssProperties
+        val floatValue: Int
         if (props == null) {
-            floatValue = FLOAT_NONE;
+            floatValue = RenderState.Companion.FLOAT_NONE
         } else {
-            final String floatText = props.getFloat();
+            val floatText = props.getFloat()
             if ((floatText == null) || (floatText.isEmpty())) {
-                floatValue = FLOAT_NONE;
+                floatValue = RenderState.Companion.FLOAT_NONE
             } else {
-                final String floatTextTL = floatText.toLowerCase();
-                if (floatTextTL.equals("left")) {
-                    floatValue = FLOAT_LEFT;
-                } else if (floatTextTL.equals("right")) {
-                    floatValue = FLOAT_RIGHT;
+                val floatTextTL = floatText.lowercase(Locale.getDefault())
+                if (floatTextTL == "left") {
+                    floatValue = RenderState.Companion.FLOAT_LEFT
+                } else if (floatTextTL == "right") {
+                    floatValue = RenderState.Companion.FLOAT_RIGHT
                 } else {
-                    floatValue = FLOAT_NONE;
+                    floatValue = RenderState.Companion.FLOAT_NONE
                 }
             }
         }
-        this.cachedFloat = (floatValue);
-        return floatValue;
+        this.cachedFloat = (floatValue)
+        return floatValue
     }
 
-    public int getClear() {
+    override fun getClear(): Int {
         if (cachedClear == null) {
-            final JStyleProperties props = this.getCssProperties();
+            val props = this.cssProperties
             if (props == null) {
-                cachedClear = (LineBreak.NONE);
+                cachedClear = (LineBreak.NONE)
             } else {
-                final String clearStr = getCssProperties().getClear();
-                if ("both".equals(clearStr)) {
-                    cachedClear = (LineBreak.ALL);
-                } else if ("left".equals(clearStr)) {
-                    cachedClear = (LineBreak.LEFT);
-                } else if ("right".equals(clearStr)) {
-                    cachedClear = (LineBreak.RIGHT);
+                val clearStr = this.cssProperties!!.clear
+                if ("both" == clearStr) {
+                    cachedClear = (LineBreak.ALL)
+                } else if ("left" == clearStr) {
+                    cachedClear = (LineBreak.LEFT)
+                } else if ("right" == clearStr) {
+                    cachedClear = (LineBreak.RIGHT)
                 } else {
-                    cachedClear = (LineBreak.NONE);
+                    cachedClear = (LineBreak.NONE)
                 }
             }
         }
-        return cachedClear;
+        return cachedClear!!
     }
 
-    @Override
-    public String toString() {
-        return "StyleSheetRenderState[font=" + this.getFont() + ",textDecoration=" + this.getTextDecorationMask() + "]";
+    override fun toString(): String {
+        return "StyleSheetRenderState[font=" + this.getFont() + ",textDecoration=" + this.getTextDecorationMask() + "]"
     }
 
-    public int getOverflowX() {
-        int overflow = this.overflowX;
+    override fun getOverflowX(): Int {
+        var overflow = this.overflowX
         if (overflow != -1) {
-            return overflow;
+            return overflow
         }
-        final JStyleProperties props = this.getCssProperties();
+        val props = this.cssProperties
         if (props == null) {
-            overflow = OVERFLOW_NONE;
+            overflow = RenderState.Companion.OVERFLOW_NONE
         } else {
             // TODO need to implement specific method for this instead of using getPropertyValue.
-            String overflowText = props.getPropertyValue("overflow-x");
+            var overflowText = props.getPropertyValue("overflow-x")
             if (overflowText == null) {
-                overflowText = props.getOverflow();
+                overflowText = props.overflow
             }
             if (overflowText == null) {
-                overflow = OVERFLOW_NONE;
+                overflow = RenderState.Companion.OVERFLOW_NONE
             } else {
-                final String overflowTextTL = overflowText.toLowerCase();
-                if ("scroll".equals(overflowTextTL)) {
-                    overflow = OVERFLOW_SCROLL;
-                } else if ("auto".equals(overflowTextTL)) {
-                    overflow = OVERFLOW_AUTO;
-                } else if ("hidden".equals(overflowTextTL)) {
-                    overflow = OVERFLOW_HIDDEN;
-                } else if ("visible".equals(overflowTextTL)) {
-                    overflow = OVERFLOW_VISIBLE;
+                val overflowTextTL = overflowText.lowercase(Locale.getDefault())
+                if ("scroll" == overflowTextTL) {
+                    overflow = RenderState.Companion.OVERFLOW_SCROLL
+                } else if ("auto" == overflowTextTL) {
+                    overflow = RenderState.Companion.OVERFLOW_AUTO
+                } else if ("hidden" == overflowTextTL) {
+                    overflow = RenderState.Companion.OVERFLOW_HIDDEN
+                } else if ("visible" == overflowTextTL) {
+                    overflow = RenderState.Companion.OVERFLOW_VISIBLE
                 } else {
-                    overflow = OVERFLOW_NONE;
+                    overflow = RenderState.Companion.OVERFLOW_NONE
                 }
             }
         }
-        this.overflowX = overflow;
-        return overflow;
+        this.overflowX = overflow
+        return overflow
     }
 
-    public int getOverflowY() {
-        int overflow = this.overflowY;
+    override fun getOverflowY(): Int {
+        var overflow = this.overflowY
         if (overflow != -1) {
-            return overflow;
+            return overflow
         }
-        final JStyleProperties props = this.getCssProperties();
+        val props = this.cssProperties
         if (props == null) {
-            overflow = OVERFLOW_NONE;
+            overflow = RenderState.Companion.OVERFLOW_NONE
         } else {
             // TODO need to implement specific method for this instead of using getPropertyValue.
-            String overflowText = props.getPropertyValue("overflow-y");
+            var overflowText = props.getPropertyValue("overflow-y")
             if (overflowText == null) {
-                overflowText = props.getOverflow();
+                overflowText = props.overflow
             }
             if (overflowText == null) {
-                overflow = OVERFLOW_NONE;
+                overflow = RenderState.Companion.OVERFLOW_NONE
             } else {
-                final String overflowTextTL = overflowText.toLowerCase();
-                if ("scroll".equals(overflowTextTL)) {
-                    overflow = OVERFLOW_SCROLL;
-                } else if ("auto".equals(overflowTextTL)) {
-                    overflow = OVERFLOW_AUTO;
-                } else if ("hidden".equals(overflowTextTL)) {
-                    overflow = OVERFLOW_HIDDEN;
-                } else if ("visible".equals(overflowTextTL)) {
-                    overflow = OVERFLOW_VISIBLE;
+                val overflowTextTL = overflowText.lowercase(Locale.getDefault())
+                if ("scroll" == overflowTextTL) {
+                    overflow = RenderState.Companion.OVERFLOW_SCROLL
+                } else if ("auto" == overflowTextTL) {
+                    overflow = RenderState.Companion.OVERFLOW_AUTO
+                } else if ("hidden" == overflowTextTL) {
+                    overflow = RenderState.Companion.OVERFLOW_HIDDEN
+                } else if ("visible" == overflowTextTL) {
+                    overflow = RenderState.Companion.OVERFLOW_VISIBLE
                 } else {
-                    overflow = OVERFLOW_NONE;
+                    overflow = RenderState.Companion.OVERFLOW_NONE
                 }
             }
         }
-        this.overflowY = overflow;
-        return overflow;
+        this.overflowY = overflow
+        return overflow
     }
 
-    public BorderInfo getBorderInfo() {
-        BorderInfo binfo = this.borderInfo;
-        if (binfo != INVALID_BORDER_INFO) {
-            return binfo;
+    override fun getBorderInfo(): BorderInfo? {
+        var binfo = this.borderInfo
+        if (binfo !== INVALID_BORDER_INFO) {
+            return binfo
         }
-        final JStyleProperties props = this.getCssProperties();
+        val props = this.cssProperties
         if (props != null) {
-            binfo = HtmlValues.getBorderInfo(props, this);
+            binfo = HtmlValues.getBorderInfo(props, this)
         } else {
-            binfo = null;
+            binfo = null
         }
-        this.borderInfo = binfo;
-        return binfo;
+        this.borderInfo = binfo
+        return binfo
     }
 
-    public Optional<Cursor> getCursor() {
-        final Optional<Cursor> prevCursorOpt = Optional.empty();
-        final JStyleProperties props = this.getCssProperties();
+    override fun getCursor(): Optional<Cursor?> {
+        val prevCursorOpt: Optional<Cursor?> = Optional.empty<Cursor?>()
+        val props = this.cssProperties
         if (props == null) {
-            return prevCursorOpt;
+            return prevCursorOpt
         } else {
             // TODO need to implement specific method for this instead of using getPropertyValue.
-            final String cursor = props.getPropertyValue("cursor");
+            val cursor = props.getPropertyValue("cursor")
             if (cursor == null) {
-                return prevCursorOpt;
+                return prevCursorOpt
             } else {
-                final String cursorTL = cursor.toLowerCase();
+                val cursorTL = cursor.lowercase(Locale.getDefault())
                 // TODO: Handle more cursor types, defined here:
-                if ("default".equals(cursorTL)) {
-                    return Optional.of(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-                } else if ("pointer".equals(cursorTL)) {
-                    return Optional.of(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                } else if ("crosshair".equals(cursorTL)) {
-                    return Optional.of(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
-                } else if ("move".equals(cursorTL)) {
-                    return Optional.of(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-                } else if ("text".equals(cursorTL)) {
-                    return Optional.of(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
-                } else if ("wait".equals(cursorTL)) {
-                    return Optional.of(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                if ("default" == cursorTL) {
+                    return Optional.of<Cursor?>(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR))
+                } else if ("pointer" == cursorTL) {
+                    return Optional.of<Cursor?>(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR))
+                } else if ("crosshair" == cursorTL) {
+                    return Optional.of<Cursor?>(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR))
+                } else if ("move" == cursorTL) {
+                    return Optional.of<Cursor?>(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR))
+                } else if ("text" == cursorTL) {
+                    return Optional.of<Cursor?>(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR))
+                } else if ("wait" == cursorTL) {
+                    return Optional.of<Cursor?>(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR))
                 } else {
-                    return prevCursorOpt;
+                    return prevCursorOpt
                 }
             }
         }
     }
 
-    public String getLeft() {
-        final JStyleProperties props = this.getCssProperties();
-        return props == null ? null : props.getLeft();
+    override fun getLeft(): String? {
+        val props = this.cssProperties
+        return if (props == null) null else props.left
     }
 
-    public String getTop() {
-        final JStyleProperties props = this.getCssProperties();
-        return props == null ? null : props.getTop();
+    override fun getTop(): String? {
+        val props = this.cssProperties
+        return if (props == null) null else props.top
     }
 
-    public String getRight() {
-        final JStyleProperties props = this.getCssProperties();
-        return props == null ? null : props.getRight();
+    override fun getRight(): String? {
+        val props = this.cssProperties
+        return if (props == null) null else props.right
     }
 
-    public String getBottom() {
-        final JStyleProperties props = this.getCssProperties();
-        return props == null ? null : props.getBottom();
+    override fun getBottom(): String? {
+        val props = this.cssProperties
+        return if (props == null) null else props.bottom
     }
 
-    public double getFontXHeight() {
+    override fun getFontXHeight(): Double {
         // TODO: Cache this
-        final FontMetrics fm = getFontMetrics();
-        final Font font = fm.getFont();
-        if (font.getFamily().contains("Ahem")) {
+        val fm = getFontMetrics()
+        val font = fm.getFont()
+        if (font.family.contains("Ahem")) {
             // This kludge is for https://github.com/UprootLabs/gngr/issues/195
-            return 0.8 * font.getSize2D();
+            return 0.8 * font.size2D
         } else {
-      /*
+            /*
       if (font instanceof OpenType) {
         final OpenType openType = (OpenType) font;
         final ByteBuffer bbOs2 = ByteBuffer.wrap(openType.getFontTable(OpenType.TAG_OS2));
         final short version = bbOs2.getShort();
         System.out.println("Version:" + version);
       }*/
-            final GlyphVector glyphVector = font.createGlyphVector(fm.getFontRenderContext(), "xuwz");
-            return glyphVector.getVisualBounds().getHeight();
+            val glyphVector = font.createGlyphVector(fm.fontRenderContext, "xuwz")
+            return glyphVector.visualBounds.height
         }
     }
 
     // TODO: This should return a more abstract type that can represent values like length and percentage
-    public CSSProperty.VerticalAlign getVerticalAlign() {
-        final JStyleProperties props = this.getCssProperties();
-        final CSSProperty.VerticalAlign valignProperty = props.getNodeData().getProperty("vertical-align");
-        return valignProperty;
+    override fun getVerticalAlign(): VerticalAlign? {
+        val props = this.cssProperties
+        val valignProperty = props!!.getNodeData().getProperty<VerticalAlign?>("vertical-align")
+        return valignProperty
+    }
+
+    companion object {
+        protected val INVALID_INSETS: HtmlInsets = HtmlInsets()
+        protected val INVALID_BACKGROUND_INFO: BackgroundInfo = BackgroundInfo()
+        protected val INVALID_BORDER_INFO: BorderInfo = BorderInfo()
+        protected val INVALID_COLOR: Color = Color(100, 0, 100)
+        private val FONT_FACTORY: FontFactory = FontFactory.instance
+
+        // Default font needs to be something that displays in all languages.
+        // Serif, SansSerif, Monospaced.
+        private const val DEFAULT_FONT_FAMILY = "SansSerif"
+        private val DEFAULT_FONT: Font? = FONT_FACTORY.getFont(
+            DEFAULT_FONT_FAMILY, null, null, null, HtmlValues.DEFAULT_FONT_SIZE, null,
+            null
+        )
+
+        private fun applyBackgroundRepeat(binfo: BackgroundInfo, backgroundRepeatText: String) {
+            val brtl = backgroundRepeatText.lowercase(Locale.getDefault())
+            if ("repeat" == brtl) {
+                binfo.backgroundRepeat = BackgroundInfo.Companion.BR_REPEAT
+            } else if ("repeat-x" == brtl) {
+                binfo.backgroundRepeat = BackgroundInfo.Companion.BR_REPEAT_X
+            } else if ("repeat-y" == brtl) {
+                binfo.backgroundRepeat = BackgroundInfo.Companion.BR_REPEAT_Y
+            } else if ("no-repeat" == brtl) {
+                binfo.backgroundRepeat = BackgroundInfo.Companion.BR_NO_REPEAT
+            }
+        }
     }
 }

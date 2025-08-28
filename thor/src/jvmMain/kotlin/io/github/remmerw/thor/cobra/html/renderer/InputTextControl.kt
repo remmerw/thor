@@ -21,27 +21,23 @@
 /*
  * Created on Jan 15, 2006
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement
+import java.awt.event.ActionEvent
+import java.awt.event.ActionListener
+import javax.swing.JTextField
+import javax.swing.text.JTextComponent
 
-import javax.swing.JTextField;
-import javax.swing.text.JTextComponent;
-
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement;
-
-class InputTextControl extends BaseInputTextControl {
-    private static final long serialVersionUID = 5851737733843879185L;
-
-    public InputTextControl(final HTMLBaseInputElement modelNode) {
-        super(modelNode);
-        final JTextField w = (JTextField) this.widget;
-        w.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent event) {
-                HtmlController.getInstance().onEnterPressed(modelNode, null);
+internal open class InputTextControl(modelNode: HTMLBaseInputElement?) :
+    BaseInputTextControl(modelNode) {
+    init {
+        val w = this.widget as JTextField
+        w.addActionListener(object : ActionListener {
+            override fun actionPerformed(event: ActionEvent?) {
+                HtmlController.Companion.getInstance().onEnterPressed(modelNode, null)
             }
-        });
+        })
     }
 
     /*
@@ -51,8 +47,11 @@ class InputTextControl extends BaseInputTextControl {
      * org.xamjwg.html.renderer.BaseInputTextControl#createTextField(java.lang
      * .String)
      */
-    @Override
-    protected JTextComponent createTextField() {
-        return new JTextField();
+    override fun createTextField(): JTextComponent? {
+        return JTextField()
+    }
+
+    companion object {
+        private const val serialVersionUID = 5851737733843879185L
     }
 }

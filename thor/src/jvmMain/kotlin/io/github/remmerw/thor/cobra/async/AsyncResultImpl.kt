@@ -21,23 +21,21 @@
 /*
  * Created on Mar 31, 2005
  */
-package io.github.remmerw.thor.cobra.async;
+package io.github.remmerw.thor.cobra.async
 
-import java.util.EventObject;
-
-import javax.swing.SwingUtilities;
-
-import io.github.remmerw.thor.cobra.util.EventDispatch;
-import io.github.remmerw.thor.cobra.util.GenericEventListener;
+import io.github.remmerw.thor.cobra.util.EventDispatch
+import io.github.remmerw.thor.cobra.util.GenericEventListener
+import java.util.EventObject
+import javax.swing.SwingUtilities
 
 /**
  * @author J. H. S.
  */
-public class AsyncResultImpl<TResult> implements AsyncResult<TResult> {
-    private final EventDispatch evtResult = new EventDispatch();
-    private TResult result;
-    private Throwable exception;
-    private boolean hasResult = false;
+class AsyncResultImpl<TResult> : AsyncResult<TResult?> {
+    private val evtResult = EventDispatch()
+    private var result: TResult? = null
+    private var exception: Throwable? = null
+    private var hasResult = false
 
     /*
      * (non-Javadoc)
@@ -46,27 +44,26 @@ public class AsyncResultImpl<TResult> implements AsyncResult<TResult> {
      * org.xamjwg.dom.AsyncResult#addResultListener(org.xamjwg.dom.AsyncResultListener
      * )
      */
-    public void addResultListener(final AsyncResultListener<TResult> listener) {
-        synchronized (this) {
+    override fun addResultListener(listener: AsyncResultListener<TResult?>) {
+        synchronized(this) {
             if (this.hasResult) {
                 if (this.exception != null) {
-                    final Throwable exception = this.exception;
-                    SwingUtilities.invokeLater(() -> {
+                    val exception = this.exception
+                    SwingUtilities.invokeLater(Runnable {
                         // Invoke holding no locks
-                        final AsyncResultEvent<Throwable> are = new AsyncResultEvent<>(AsyncResultImpl.this, exception);
-                        listener.exceptionReceived(are);
-                    });
-
+                        val are = AsyncResultEvent<Throwable?>(this@AsyncResultImpl, exception)
+                        listener.exceptionReceived(are)
+                    })
                 } else {
-                    final TResult result = this.result;
-                    SwingUtilities.invokeLater(() -> {
+                    val result = this.result
+                    SwingUtilities.invokeLater(Runnable {
                         // Invoke holding no locks
-                        final AsyncResultEvent<TResult> are = new AsyncResultEvent<>(AsyncResultImpl.this, result);
-                        listener.resultReceived(are);
-                    });
+                        val are = AsyncResultEvent<TResult?>(this@AsyncResultImpl, result)
+                        listener.resultReceived(are)
+                    })
                 }
             }
-            evtResult.addListener(new EventListenerWrapper<>(listener));
+            evtResult.addListener(EventListenerWrapper<TResult?>(listener))
         }
     }
 
@@ -77,8 +74,8 @@ public class AsyncResultImpl<TResult> implements AsyncResult<TResult> {
      * org.xamjwg.clientlet.AsyncResult#removeResultListener(org.xamjwg.clientlet
      * .AsyncResultListener)
      */
-    public void removeResultListener(final AsyncResultListener<TResult> listener) {
-        this.evtResult.removeListener(new EventListenerWrapper<>(listener));
+    override fun removeResultListener(listener: AsyncResultListener<TResult?>) {
+        this.evtResult.removeListener(EventListenerWrapper<TResult?>(listener))
     }
 
     /*
@@ -86,79 +83,83 @@ public class AsyncResultImpl<TResult> implements AsyncResult<TResult> {
      *
      * @see org.xamjwg.clientlet.AsyncResult#signal()
      */
-    public void signal() {
-        synchronized (this) {
+    override fun signal() {
+        synchronized(this) {
             if (this.hasResult) {
                 if (this.exception != null) {
-                    final Throwable exception = this.exception;
-                    SwingUtilities.invokeLater(() -> {
+                    val exception = this.exception
+                    SwingUtilities.invokeLater(Runnable {
                         // Invoke holding no locks
-                        final AsyncResultEvent<Throwable> are = new AsyncResultEvent<>(AsyncResultImpl.this, exception);
-                        evtResult.fireEvent(are);
-                    });
-
+                        val are = AsyncResultEvent<Throwable?>(this@AsyncResultImpl, exception)
+                        evtResult.fireEvent(are)
+                    })
                 } else {
-                    final TResult result = this.result;
-                    SwingUtilities.invokeLater(() -> {
+                    val result = this.result
+                    SwingUtilities.invokeLater(Runnable {
                         // Invoke holding no locks
-                        final AsyncResultEvent<TResult> are = new AsyncResultEvent<>(AsyncResultImpl.this, result);
-                        evtResult.fireEvent(are);
-                    });
+                        val are = AsyncResultEvent<TResult?>(this@AsyncResultImpl, result)
+                        evtResult.fireEvent(are)
+                    })
                 }
             }
         }
     }
 
-    public void setResult(final TResult result) {
-        synchronized (this) {
-            this.result = result;
-            this.hasResult = true;
-            SwingUtilities.invokeLater(() -> evtResult.fireEvent(new AsyncResultEvent<>(AsyncResultImpl.this, result)));
+    fun setResult(result: TResult?) {
+        synchronized(this) {
+            this.result = result
+            this.hasResult = true
+            SwingUtilities.invokeLater(Runnable {
+                evtResult.fireEvent(
+                    AsyncResultEvent<TResult?>(
+                        this@AsyncResultImpl,
+                        result
+                    )
+                )
+            })
         }
     }
 
-    public void setException(final Throwable exception) {
-        synchronized (this) {
-            this.exception = exception;
-            this.hasResult = true;
-            SwingUtilities.invokeLater(() -> evtResult.fireEvent(new AsyncResultEvent<>(AsyncResultImpl.this, exception)));
+    fun setException(exception: Throwable?) {
+        synchronized(this) {
+            this.exception = exception
+            this.hasResult = true
+            SwingUtilities.invokeLater(Runnable {
+                evtResult.fireEvent(
+                    AsyncResultEvent<Throwable?>(
+                        this@AsyncResultImpl,
+                        exception
+                    )
+                )
+            })
         }
     }
 
-    private static class EventListenerWrapper<TR> implements GenericEventListener {
-        private final AsyncResultListener<TR> listener;
-
-        /**
-         * @param listener
-         */
-        public EventListenerWrapper(final AsyncResultListener<TR> listener) {
-            super();
-            this.listener = listener;
-        }
-
-        public void processEvent(final EventObject event) {
+    private class EventListenerWrapper<TR>
+    /**
+     * @param listener
+     */(private val listener: AsyncResultListener<TR?>) : GenericEventListener {
+        override fun processEvent(event: EventObject?) {
             // Invoke holding no locks
-            final AsyncResultEvent<?> are = (AsyncResultEvent<?>) event;
-            if (are.getResult() instanceof Exception) {
-                @SuppressWarnings("unchecked") final AsyncResultEvent<Throwable> areException = (AsyncResultEvent<Throwable>) are;
-                this.listener.exceptionReceived(areException);
+            val are = event as AsyncResultEvent<*>
+            if (are.getResult() is Exception) {
+                val areException = are as AsyncResultEvent<Throwable?>
+                this.listener.exceptionReceived(areException)
             } else {
-                @SuppressWarnings("unchecked") final AsyncResultEvent<TR> areResult = (AsyncResultEvent<TR>) are;
-                this.listener.resultReceived(areResult);
+                val areResult = are as AsyncResultEvent<TR?>
+                this.listener.resultReceived(areResult)
             }
         }
 
-        @Override
-        public boolean equals(final Object other) {
-            if (!(other instanceof EventListenerWrapper<?> elw)) {
-                return false;
+        override fun equals(other: Any?): Boolean {
+            if (other !is EventListenerWrapper<*>) {
+                return false
             }
-            return java.util.Objects.equals(elw.listener, this.listener);
+            return other.listener == this.listener
         }
 
-        @Override
-        public int hashCode() {
-            return this.listener.hashCode();
+        override fun hashCode(): Int {
+            return this.listener.hashCode()
         }
     }
 }

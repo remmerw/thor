@@ -21,225 +21,212 @@
 /*
  * Created on Jun 9, 2005
  */
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
-
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.NoSuchElementException;
+import org.eclipse.jdt.annotation.NonNull
+import java.util.Enumeration
+import java.util.LinkedList
 
 /**
  * @author J. H. S.
  */
-public class CollectionUtilities {
-    private static final Iterator<Object> emptyIterator = new Iterator<Object>() {
-        public boolean hasNext() {
-            return false;
+object CollectionUtilities {
+    private val emptyIterator: MutableIterator<Any?> = object : MutableIterator<Any?> {
+        override fun hasNext(): Boolean {
+            return false
         }
 
-        public Object next() {
-            throw new NoSuchElementException();
+        override fun next(): Any? {
+            throw NoSuchElementException()
         }
 
-        public void remove() {
-            throw new NoSuchElementException();
+        override fun remove() {
+            throw NoSuchElementException()
         }
-    };
-
-    /**
-     *
-     */
-    private CollectionUtilities() {
-        super();
     }
 
-    public static <T> Enumeration<T> getIteratorEnumeration(final Iterator<T> i) {
-        return new Enumeration<T>() {
-            public boolean hasMoreElements() {
-                return i.hasNext();
+    fun <T> getIteratorEnumeration(i: MutableIterator<T?>): Enumeration<T?> {
+        return object : Enumeration<T?> {
+            override fun hasMoreElements(): Boolean {
+                return i.hasNext()
             }
 
-            public T nextElement() {
-                return i.next();
+            override fun nextElement(): T? {
+                return i.next()
             }
-        };
+        }
     }
 
-    public static <T> Enumeration<T> getEmptyEnumeration() {
-        return new Enumeration<T>() {
-            public boolean hasMoreElements() {
-                return false;
+    fun <T> getEmptyEnumeration(): Enumeration<T?> {
+        return object : Enumeration<T?> {
+            override fun hasMoreElements(): Boolean {
+                return false
             }
 
-            public T nextElement() {
-                throw new NoSuchElementException("Trying to get element of an empty enumeration");
+            override fun nextElement(): T? {
+                throw NoSuchElementException("Trying to get element of an empty enumeration")
             }
-        };
+        }
     }
 
-    public static <T> Iterator<T> iteratorUnion(final Iterator<T>[] iterators) {
-        return new Iterator<T>() {
-            private int iteratorIndex = 0;
-            private Iterator<T> current = iterators.length > 0 ? iterators[0] : null;
+    fun <T> iteratorUnion(iterators: Array<MutableIterator<T?>?>): MutableIterator<T?> {
+        return object : MutableIterator<T?> {
+            private var iteratorIndex = 0
+            private var current = if (iterators.size > 0) iterators[0] else null
 
-            public boolean hasNext() {
-                for (; ; ) {
+            override fun hasNext(): Boolean {
+                while (true) {
                     if (current == null) {
-                        return false;
+                        return false
                     }
-                    if (current.hasNext()) {
-                        return true;
+                    if (current!!.hasNext()) {
+                        return true
                     }
-                    iteratorIndex++;
-                    current = iteratorIndex >= iterators.length ? null : iterators[iteratorIndex];
+                    iteratorIndex++
+                    current =
+                        if (iteratorIndex >= iterators.size) null else iterators[iteratorIndex]
                 }
             }
 
-            public T next() {
-                for (; ; ) {
+            override fun next(): T? {
+                while (true) {
                     if (this.current == null) {
-                        throw new NoSuchElementException();
+                        throw NoSuchElementException()
                     }
                     try {
-                        return this.current.next();
-                    } catch (final NoSuchElementException nse) {
-                        this.iteratorIndex++;
-                        this.current = this.iteratorIndex >= iterators.length ? null : iterators[this.iteratorIndex];
+                        return this.current!!.next()
+                    } catch (nse: NoSuchElementException) {
+                        this.iteratorIndex++
+                        this.current =
+                            if (this.iteratorIndex >= iterators.size) null else iterators[this.iteratorIndex]
                     }
                 }
             }
 
-            public void remove() {
+            override fun remove() {
                 if (this.current == null) {
-                    throw new NoSuchElementException();
+                    throw NoSuchElementException()
                 }
-                this.current.remove();
+                this.current!!.remove()
             }
-        };
-    }
-
-    public static <T> Collection<T> reverse(final Collection<T> collection) {
-        final LinkedList<T> newCollection = new LinkedList<>();
-        final Iterator<T> i = collection.iterator();
-        while (i.hasNext()) {
-            newCollection.addFirst(i.next());
         }
-        return newCollection;
     }
 
-    public static <T> Iterator<T> singletonIterator(final T item) {
-        return new Iterator<T>() {
-            private boolean gotItem = false;
+    fun <T> reverse(collection: MutableCollection<T?>): MutableCollection<T?> {
+        val newCollection = LinkedList<T?>()
+        val i = collection.iterator()
+        while (i.hasNext()) {
+            newCollection.addFirst(i.next())
+        }
+        return newCollection
+    }
 
-            public boolean hasNext() {
-                return !this.gotItem;
+    fun <T> singletonIterator(item: T?): MutableIterator<T?> {
+        return object : MutableIterator<T?> {
+            private var gotItem = false
+
+            override fun hasNext(): Boolean {
+                return !this.gotItem
             }
 
-            public T next() {
+            override fun next(): T? {
                 if (this.gotItem) {
-                    throw new NoSuchElementException();
+                    throw NoSuchElementException()
                 }
-                this.gotItem = true;
-                return item;
+                this.gotItem = true
+                return item
             }
 
-            public void remove() {
+            override fun remove() {
                 if (!this.gotItem) {
-                    this.gotItem = true;
+                    this.gotItem = true
                 } else {
-                    throw new NoSuchElementException();
+                    throw NoSuchElementException()
                 }
             }
-        };
+        }
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T> Iterator<T> emptyIterator() {
-        return (Iterator<T>) emptyIterator;
+    fun <T> emptyIterator(): MutableIterator<T?> {
+        return emptyIterator as MutableIterator<T?>
     }
 
-    public static <T> Iterator<T> reverseIterator(final List<T> sr) {
-        return new ListReverser<>(sr).iterator();
+    fun <T> reverseIterator(sr: MutableList<T?>): MutableIterator<T?> {
+        return ListReverser<T?>(sr).iterator()
     }
 
     // Filter iterator adapted from an implementation found in http://erikras.com/2008/01/18/the-filter-pattern-java-conditional-abstraction-with-iterables/
-    public static <@NonNull T> Iterator<T> filter(final Iterator<T> iterator, final FilterFunction<T> filterFunction) {
-        return new FilterIterator<>(iterator, filterFunction);
+    fun <@NonNull T> filter(
+        iterator: MutableIterator<T?>,
+        filterFunction: FilterFunction<T?>
+    ): MutableIterator<T?> {
+        return CollectionUtilities.FilterIterator<T?>(iterator, filterFunction)
     }
 
-    public interface FilterFunction<T> {
-        boolean passes(T object);
+    interface FilterFunction<T> {
+        fun passes(`object`: T?): Boolean
     }
 
-    public static class ListReverser<T> implements Iterable<T> {
-        private final ListIterator<T> listIterator;
+    class ListReverser<T>(wrappedList: MutableList<T?>) : Iterable<T?> {
+        private val listIterator: MutableListIterator<T?>
 
-        public ListReverser(final List<T> wrappedList) {
-            this.listIterator = wrappedList.listIterator(wrappedList.size());
+        init {
+            this.listIterator = wrappedList.listIterator(wrappedList.size)
         }
 
-        public Iterator<T> iterator() {
-            return new Iterator<T>() {
-
-                public boolean hasNext() {
-                    return listIterator.hasPrevious();
+        override fun iterator(): MutableIterator<T?> {
+            return object : MutableIterator<T?> {
+                override fun hasNext(): Boolean {
+                    return listIterator.hasPrevious()
                 }
 
-                public T next() {
-                    return listIterator.previous();
+                override fun next(): T? {
+                    return listIterator.previous()
                 }
 
-                public void remove() {
-                    listIterator.remove();
+                override fun remove() {
+                    listIterator.remove()
                 }
-
-            };
+            }
         }
     }
 
-    public static class FilterIterator<@NonNull T> implements Iterator<@NonNull T> {
-        private final Iterator<@NonNull T> iterator;
-        private final FilterFunction<T> filterFunction;
-        private @Nullable T next;
+    class FilterIterator<@NonNull T> private constructor(
+        private val iterator: MutableIterator<T?>,
+        private val filterFunction: FilterFunction<T?>
+    ) : MutableIterator<T?> {
+        private var next: T? = null
 
-        private FilterIterator(final Iterator<T> iterator, final FilterFunction<T> filterFunction) {
-            this.iterator = iterator;
-            this.filterFunction = filterFunction;
-            toNext();
+        init {
+            toNext()
         }
 
-        public boolean hasNext() {
-            return next != null;
+        override fun hasNext(): Boolean {
+            return next != null
         }
 
-        public T next() {
-            final @Nullable T lNext = this.next;
+        override fun next(): T? {
+            val lNext = this.next
             if (lNext != null) {
-                final @NonNull T returnValue = lNext;
-                toNext();
-                return returnValue;
+                val returnValue: T = lNext
+                toNext()
+                return returnValue
             } else {
-                throw new NoSuchElementException();
+                throw NoSuchElementException()
             }
         }
 
-        public void remove() {
-            throw new UnsupportedOperationException();
+        override fun remove() {
+            throw UnsupportedOperationException()
         }
 
-        private void toNext() {
-            next = null;
+        private fun toNext() {
+            next = null
             while (iterator.hasNext()) {
-                final T item = iterator.next();
+                val item: T? = iterator.next()
                 if (filterFunction.passes(item)) {
-                    next = item;
-                    break;
+                    next = item
+                    break
                 }
             }
         }

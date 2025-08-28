@@ -20,28 +20,28 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.github.remmerw.thor.cobra.ua;
+package io.github.remmerw.thor.cobra.ua
 
 /**
  * Represents a URL parameter. It may be a GET or POST parameter.
  */
-public interface Parameter {
+interface Parameter {
     /**
      * Gets the parameter name.
      */
-    String getName();
+    val name: String?
 
     /**
      * Determines if the parameter value is best represented as text.
      */
-    boolean isText();
+    val isText: Boolean
 
     /**
      * Gets the value as text.
      */
-    String getTextValue();
+    val textValue: String?
 
-    boolean isFile();
+    val isFile: Boolean
 
-    java.io.File getFileValue();
+    val fileValue: File?
 }

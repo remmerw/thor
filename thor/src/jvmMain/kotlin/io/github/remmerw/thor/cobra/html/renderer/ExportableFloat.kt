@@ -18,22 +18,17 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-public class ExportableFloat {
-    public static final ExportableFloat[] EMPTY_ARRAY = new ExportableFloat[0];
-    public final RElement element;
-    public final boolean leftFloat;
-    public final int origX, origY;
+class ExportableFloat(
+    val element: RElement?,
+    val leftFloat: Boolean,
+    val origX: Int,
+    val origY: Int
+) {
+    var pendingPlacement: Boolean = true
 
-    public boolean pendingPlacement = true;
-
-    public ExportableFloat(final RElement element, final boolean leftFloat, final int origX, final int origY) {
-        super();
-        this.element = element;
-        this.leftFloat = leftFloat;
-        this.origX = origX;
-        this.origY = origY;
+    companion object {
+        val EMPTY_ARRAY: Array<ExportableFloat?> = arrayOfNulls<ExportableFloat>(0)
     }
-
 }

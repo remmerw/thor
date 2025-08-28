@@ -1,24 +1,25 @@
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Node;
-import org.w3c.dom.html.HTMLCollection;
-import org.w3c.dom.html.HTMLOptionElement;
+import org.w3c.dom.DOMException
+import org.w3c.dom.Node
+import org.w3c.dom.html.HTMLCollection
+import org.w3c.dom.html.HTMLOptionElement
 
-public class HTMLOptionsCollectionImpl extends DescendentHTMLCollection implements HTMLCollection {
-    public static final NodeFilter OPTION_FILTER = new OptionFilter();
-
-    public HTMLOptionsCollectionImpl(final HTMLElementImpl selectElement) {
-        super(selectElement, OPTION_FILTER, selectElement.treeLock, false);
+class HTMLOptionsCollectionImpl(selectElement: HTMLElementImpl) :
+    DescendentHTMLCollection(selectElement, OPTION_FILTER, selectElement.treeLock, false),
+    HTMLCollection {
+    @Throws(DOMException::class)
+    fun setLength(length: Int) {
+        throw UnsupportedOperationException()
     }
 
-    public void setLength(final int length) throws DOMException {
-        throw new UnsupportedOperationException();
-    }
-
-    private static class OptionFilter implements NodeFilter {
-        public boolean accept(final Node node) {
-            return node instanceof HTMLOptionElement;
+    private class OptionFilter : NodeFilter {
+        override fun accept(node: Node?): Boolean {
+            return node is HTMLOptionElement
         }
+    }
+
+    companion object {
+        val OPTION_FILTER: NodeFilter = OptionFilter()
     }
 }

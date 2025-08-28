@@ -18,27 +18,30 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.style;
+package io.github.remmerw.thor.cobra.html.style
 
-import java.awt.Color;
+import java.awt.Color
+import java.net.URL
 
-public class BackgroundInfo {
-    public static final int BR_REPEAT = 0;
-    public static final int BR_NO_REPEAT = 1;
-    public static final int BR_REPEAT_X = 2;
-    public static final int BR_REPEAT_Y = 3;
-    public Color backgroundColor;
-    public java.net.URL backgroundImage;
-    public boolean backgroundXPositionAbsolute;
-    public int backgroundXPosition;
-    public boolean backgroundYPositionAbsolute;
-    public int backgroundYPosition;
-    public int backgroundRepeat = BR_REPEAT;
+class BackgroundInfo {
+    var backgroundColor: Color? = null
+    var backgroundImage: URL? = null
+    var backgroundXPositionAbsolute: Boolean = false
+    var backgroundXPosition: Int = 0
+    var backgroundYPositionAbsolute: Boolean = false
+    var backgroundYPosition: Int = 0
+    var backgroundRepeat: Int = BR_REPEAT
 
-    @Override
-    public String toString() {
-        return "BackgroundInfo [color=" + backgroundColor + ", img=" + backgroundImage + ", xposAbs="
+    override fun toString(): String {
+        return ("BackgroundInfo [color=" + backgroundColor + ", img=" + backgroundImage + ", xposAbs="
                 + backgroundXPositionAbsolute + ", xpos=" + backgroundXPosition + ", yposAbs="
-                + backgroundYPositionAbsolute + ", ypos=" + backgroundYPosition + ", repeat=" + backgroundRepeat + "]";
+                + backgroundYPositionAbsolute + ", ypos=" + backgroundYPosition + ", repeat=" + backgroundRepeat + "]")
+    }
+
+    companion object {
+        const val BR_REPEAT: Int = 0
+        const val BR_NO_REPEAT: Int = 1
+        const val BR_REPEAT_X: Int = 2
+        const val BR_REPEAT_Y: Int = 3
     }
 }

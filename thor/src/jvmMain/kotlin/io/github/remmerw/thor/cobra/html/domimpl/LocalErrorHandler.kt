@@ -21,33 +21,35 @@
 /*
  * Created on Oct 22, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
+import org.xml.sax.ErrorHandler
+import org.xml.sax.SAXException
+import org.xml.sax.SAXParseException
+import java.util.logging.Level
+import java.util.logging.Logger
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-class LocalErrorHandler implements ErrorHandler {
-    private static final Logger logger = Logger.getLogger(LocalErrorHandler.class.getName());
-
-    /**
-     * @param context
-     */
-    public LocalErrorHandler() {
+internal class LocalErrorHandler
+/**
+ * @param context
+ */
+    : ErrorHandler {
+    @Throws(SAXException::class)
+    override fun warning(exception: SAXParseException) {
+        logger.log(Level.WARNING, exception.message, exception.cause)
     }
 
-    public void warning(final SAXParseException exception) throws SAXException {
-        logger.log(Level.WARNING, exception.getMessage(), exception.getCause());
+    @Throws(SAXException::class)
+    override fun error(exception: SAXParseException) {
+        logger.log(Level.SEVERE, exception.message, exception.cause)
     }
 
-    public void error(final SAXParseException exception) throws SAXException {
-        logger.log(Level.SEVERE, exception.getMessage(), exception.getCause());
+    @Throws(SAXException::class)
+    override fun fatalError(exception: SAXParseException) {
+        logger.log(Level.SEVERE, exception.message, exception.cause)
     }
 
-    public void fatalError(final SAXParseException exception) throws SAXException {
-        logger.log(Level.SEVERE, exception.getMessage(), exception.getCause());
+    companion object {
+        private val logger: Logger = Logger.getLogger(LocalErrorHandler::class.java.name)
     }
 }

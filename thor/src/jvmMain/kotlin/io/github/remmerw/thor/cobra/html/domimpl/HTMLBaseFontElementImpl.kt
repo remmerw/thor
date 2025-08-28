@@ -18,54 +18,47 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.w3c.dom.html.HTMLBaseFontElement;
+import io.github.remmerw.thor.cobra.html.style.BaseFontRenderState
+import io.github.remmerw.thor.cobra.html.style.HtmlValues
+import io.github.remmerw.thor.cobra.html.style.RenderState
+import org.w3c.dom.html.HTMLBaseFontElement
 
-import io.github.remmerw.thor.cobra.html.style.BaseFontRenderState;
-import io.github.remmerw.thor.cobra.html.style.HtmlValues;
-import io.github.remmerw.thor.cobra.html.style.RenderState;
-
-public class HTMLBaseFontElementImpl extends HTMLAbstractUIElement implements HTMLBaseFontElement {
-    public HTMLBaseFontElementImpl(final String name) {
-        super(name);
+class HTMLBaseFontElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLBaseFontElement {
+    override fun getColor(): String? {
+        return this.getAttribute("color")
     }
 
-    public String getColor() {
-        return this.getAttribute("color");
+    override fun setColor(color: String?) {
+        this.setAttribute("color", color)
     }
 
-    public void setColor(final String color) {
-        this.setAttribute("color", color);
+    override fun getFace(): String? {
+        return this.getAttribute("face")
     }
 
-    public String getFace() {
-        return this.getAttribute("face");
+    override fun setFace(face: String?) {
+        this.setAttribute("face", face)
     }
 
-    public void setFace(final String face) {
-        this.setAttribute("face", face);
+    override fun getSize(): String? {
+        return this.getAttribute("size")
     }
 
-    public String getSize() {
-        return this.getAttribute("size");
+    override fun setSize(size: String?) {
+        this.setAttribute("size", size)
     }
 
-    public void setSize(final String size) {
-        this.setAttribute("size", size);
-    }
-
-    @Override
-    protected @NonNull RenderState createRenderState(RenderState prevRenderState) {
-        final String size = this.getAttribute("size");
+    override fun createRenderState(prevRenderState: RenderState?): RenderState {
+        var prevRenderState = prevRenderState
+        val size = this.getAttribute("size")
         if (size != null) {
-            final int fontNumber = HtmlValues.getFontNumberOldStyle(size, prevRenderState);
+            val fontNumber = HtmlValues.getFontNumberOldStyle(size, prevRenderState)
             // TODO: Check why the following call is not used.
             // final float fontSize = HtmlValues.getFontSize(fontNumber);
-            prevRenderState = new BaseFontRenderState(prevRenderState, fontNumber);
+            prevRenderState = BaseFontRenderState(prevRenderState, fontNumber)
         }
-        return super.createRenderState(prevRenderState);
+        return super.createRenderState(prevRenderState)
     }
-
 }

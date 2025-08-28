@@ -18,248 +18,182 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.js;
+package io.github.remmerw.thor.cobra.html.js
 
-import org.w3c.dom.Node;
-import org.w3c.dom.events.EventTarget;
-import org.w3c.dom.html.HTMLElement;
+import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate
+import io.github.remmerw.thor.cobra.js.HideFromJS
+import org.w3c.dom.Node
+import org.w3c.dom.events.Event
+import org.w3c.dom.events.EventTarget
+import org.w3c.dom.html.HTMLElement
+import java.awt.event.InputEvent
+import java.awt.event.KeyEvent
+import java.awt.event.MouseEvent
 
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-
-import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate;
-import io.github.remmerw.thor.cobra.js.HideFromJS;
-
-public class Event extends AbstractScriptableDelegate implements org.w3c.dom.events.Event {
-    private final InputEvent inputEvent;
-    private boolean cancelBubble;
-    private HTMLElement fromElement, toElement;
-    private int leafX, leafY;
-    private boolean returnValue;
-    private Node srcElement;
-    private String type;
-    private boolean propagationStopped = false;
-    private short currentPhase = 0;
-
-    public Event(final String type, final Node srcElement, final InputEvent mouseEvent, final int leafX, final int leafY) {
-        this.type = type;
-        this.srcElement = srcElement;
-        this.leafX = leafX;
-        this.leafY = leafY;
-        this.inputEvent = mouseEvent;
-    }
-
-    public Event(final String type, final Node srcElement, final KeyEvent keyEvent) {
-        this.type = type;
-        this.srcElement = srcElement;
-        this.inputEvent = keyEvent;
-    }
-
-    public Event(final String type, final Node srcElement) {
-        this.type = type;
-        this.srcElement = srcElement;
-        this.inputEvent = null;
-    }
-
-    public boolean getAltKey() {
-        final InputEvent ie = this.inputEvent;
-        return ie != null && ie.isAltDown();
-    }
-
-    public boolean getShiftKey() {
-        final InputEvent ie = this.inputEvent;
-        return ie != null && ie.isShiftDown();
-    }
-
-    public boolean getCtrlKey() {
-        final InputEvent ie = this.inputEvent;
-        return ie != null && ie.isControlDown();
-    }
-
-    public int getButton() {
-        final InputEvent ie = this.inputEvent;
-        if (ie instanceof MouseEvent) {
-            // return ((MouseEvent) ie).getButton();
-            // range of button is 0 to N in DOM spec, but 1 to N in AWT
-            return ((MouseEvent) ie).getButton() - 1;
-        } else {
-            return 0;
+class Event : AbstractScriptableDelegate, Event {
+    private val inputEvent: InputEvent?
+    var isCancelBubble: Boolean = false
+        set(cancelBubble) {
+            println("Event.setCancelBubble()")
+            field = cancelBubble
         }
+    var fromElement: HTMLElement? = null
+    var toElement: HTMLElement? = null
+    var leafX: Int = 0
+    var leafY: Int = 0
+    var isReturnValue: Boolean = false
+    var srcElement: Node?
+        private set
+    private var type: String?
+
+    // TODO: Hide from JS
+    var isPropagationStopped: Boolean = false
+        private set
+    private var currentPhase: Short = 0
+
+    constructor(type: String?, srcElement: Node?, mouseEvent: InputEvent?, leafX: Int, leafY: Int) {
+        this.type = type
+        this.srcElement = srcElement
+        this.leafX = leafX
+        this.leafY = leafY
+        this.inputEvent = mouseEvent
     }
 
-    public boolean isCancelBubble() {
-        return cancelBubble;
+    constructor(type: String?, srcElement: Node?, keyEvent: KeyEvent?) {
+        this.type = type
+        this.srcElement = srcElement
+        this.inputEvent = keyEvent
     }
 
-    public void setCancelBubble(final boolean cancelBubble) {
-        System.out.println("Event.setCancelBubble()");
-        this.cancelBubble = cancelBubble;
+    constructor(type: String?, srcElement: Node?) {
+        this.type = type
+        this.srcElement = srcElement
+        this.inputEvent = null
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(final String type) {
-        this.type = type;
-    }
-
-    public int getClientX() {
-        final InputEvent ie = this.inputEvent;
-        if (ie instanceof MouseEvent) {
-            return ((MouseEvent) ie).getX();
-        } else {
-            return 0;
+    val altKey: Boolean
+        get() {
+            val ie = this.inputEvent
+            return ie != null && ie.isAltDown
         }
-    }
 
-    public int getClientY() {
-        final InputEvent ie = this.inputEvent;
-        if (ie instanceof MouseEvent) {
-            return ((MouseEvent) ie).getY();
-        } else {
-            return 0;
+    val shiftKey: Boolean
+        get() {
+            val ie = this.inputEvent
+            return ie != null && ie.isShiftDown
         }
-    }
 
-    // public int getOffsetX() {
-    // // Despite advertising that it returns an element-relative offset,
-    // // IE doesn't do this.
-    // //TODO: Must be relative to top viewport.
-    // return this.getClientX() - 2;
-    // }
-    //
-    // public int getOffsetY() {
-    // // Despite advertising that it returns an element-relative offset,
-    // // IE doesn't do this.
-    // //TODO: Must be relative to top viewport.
-    // return this.getClientY() - 2;
-    // }
-
-    public int getKeyCode() {
-        final InputEvent ie = this.inputEvent;
-        if (ie instanceof KeyEvent) {
-            return ((KeyEvent) ie).getKeyCode();
-        } else {
-            return 0;
+    val ctrlKey: Boolean
+        get() {
+            val ie = this.inputEvent
+            return ie != null && ie.isControlDown
         }
+
+    val button: Int
+        get() {
+            val ie = this.inputEvent
+            if (ie is MouseEvent) {
+                // return ((MouseEvent) ie).getButton();
+                // range of button is 0 to N in DOM spec, but 1 to N in AWT
+                return ie.getButton() - 1
+            } else {
+                return 0
+            }
+        }
+
+    override fun getType(): String? {
+        return type
     }
 
-    public boolean isReturnValue() {
-        return returnValue;
+    fun setType(type: String?) {
+        this.type = type
     }
 
-    public void setReturnValue(final boolean returnValue) {
-        this.returnValue = returnValue;
+    val clientX: Int
+        get() {
+            val ie = this.inputEvent
+            if (ie is MouseEvent) {
+                return ie.getX()
+            } else {
+                return 0
+            }
+        }
+
+    val clientY: Int
+        get() {
+            val ie = this.inputEvent
+            if (ie is MouseEvent) {
+                return ie.getY()
+            } else {
+                return 0
+            }
+        }
+
+    val keyCode: Int
+        // public int getOffsetX() {
+        get() {
+            val ie = this.inputEvent
+            if (ie is KeyEvent) {
+                return ie.getKeyCode()
+            } else {
+                return 0
+            }
+        }
+
+    fun setSrcElement(srcElement: HTMLElement?) {
+        this.srcElement = srcElement
     }
 
-    public Node getSrcElement() {
-        return srcElement;
-    }
-
-    public void setSrcElement(final HTMLElement srcElement) {
-        this.srcElement = srcElement;
-    }
-
-    public HTMLElement getFromElement() {
-        return fromElement;
-    }
-
-    public void setFromElement(final HTMLElement fromElement) {
-        this.fromElement = fromElement;
-    }
-
-    public HTMLElement getToElement() {
-        return toElement;
-    }
-
-    public void setToElement(final HTMLElement toElement) {
-        this.toElement = toElement;
-    }
-
-    public int getLeafX() {
-        return leafX;
-    }
-
-    public void setLeafX(final int leafX) {
-        this.leafX = leafX;
-    }
-
-    public int getLeafY() {
-        return leafY;
-    }
-
-    public void setLeafY(final int leafY) {
-        this.leafY = leafY;
-    }
-
-    @Override
-    public EventTarget getTarget() {
-        System.out.println("TODO: Event.getTarget()");
+    override fun getTarget(): EventTarget? {
+        println("TODO: Event.getTarget()")
         // TODO: Target and source may not be always same. Need to add a constructor param for target.
-        return (EventTarget) srcElement;
+        return srcElement as EventTarget?
     }
 
-    @Override
-    public EventTarget getCurrentTarget() {
-        System.out.println("TODO: Event.getCurrentTarget()");
-        return null;
+    override fun getCurrentTarget(): EventTarget? {
+        println("TODO: Event.getCurrentTarget()")
+        return null
     }
 
-    @Override
-    public short getEventPhase() {
-        System.out.println("Event.getEventPhase() : " + currentPhase);
-        return currentPhase;
+    override fun getEventPhase(): Short {
+        println("Event.getEventPhase() : " + currentPhase)
+        return currentPhase
     }
 
     @HideFromJS
-    public void setPhase(final short newPhase) {
-        currentPhase = newPhase;
+    fun setPhase(newPhase: Short) {
+        currentPhase = newPhase
     }
 
-    @Override
-    public boolean getBubbles() {
-        System.out.println("TODO: Event.getBubbles()");
-        return false;
+    override fun getBubbles(): Boolean {
+        println("TODO: Event.getBubbles()")
+        return false
     }
 
-    @Override
-    public boolean getCancelable() {
-        System.out.println("TODO: Event.getCancelable()");
-        return false;
+    override fun getCancelable(): Boolean {
+        println("TODO: Event.getCancelable()")
+        return false
     }
 
-    @Override
-    public long getTimeStamp() {
-        System.out.println("Event.getTimeStamp()");
-        return 0;
+    override fun getTimeStamp(): Long {
+        println("Event.getTimeStamp()")
+        return 0
     }
 
-    @Override
-    public void stopPropagation() {
-        propagationStopped = true;
-        System.out.println("Event.stopPropagation()");
+    override fun stopPropagation() {
+        this.isPropagationStopped = true
+        println("Event.stopPropagation()")
     }
 
-    // TODO: Hide from JS
-    public boolean isPropagationStopped() {
-        return propagationStopped;
+    override fun preventDefault() {
+        println("TODO: Event.preventDefault()")
     }
 
-    @Override
-    public void preventDefault() {
-        System.out.println("TODO: Event.preventDefault()");
+    override fun initEvent(eventTypeArg: String?, canBubbleArg: Boolean, cancelableArg: Boolean) {
+        println("TODO: Event.initEvent()")
     }
 
-    @Override
-    public void initEvent(final String eventTypeArg, final boolean canBubbleArg, final boolean cancelableArg) {
-        System.out.println("TODO: Event.initEvent()");
+    override fun toString(): String {
+        return "Event [phase=" + currentPhase + ", type=" + type + ", leafX=" + leafX + ", leafY=" + leafY + ", srcElement=" + srcElement + "]"
     }
-
-    @Override
-    public String toString() {
-        return "Event [phase=" + currentPhase + ", type=" + type + ", leafX=" + leafX + ", leafY=" + leafY + ", srcElement=" + srcElement + "]";
-    }
-
 }

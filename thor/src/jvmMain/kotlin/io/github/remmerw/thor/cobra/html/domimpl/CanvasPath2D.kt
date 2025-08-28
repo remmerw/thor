@@ -17,238 +17,272 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
  */
+package io.github.remmerw.thor.cobra.html.domimpl
 
-package io.github.remmerw.thor.cobra.html.domimpl;
+import java.awt.Shape
+import java.awt.geom.AffineTransform
+import java.awt.geom.Arc2D
+import java.awt.geom.Line2D
+import java.awt.geom.NoninvertibleTransformException
+import java.awt.geom.Path2D
+import java.awt.geom.Point2D
 
-import java.awt.Shape;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Arc2D;
-import java.awt.geom.Line2D;
-import java.awt.geom.NoninvertibleTransformException;
-import java.awt.geom.Path2D;
-import java.awt.geom.PathIterator;
-import java.awt.geom.Point2D;
+class CanvasPath2D {
+    var path2D: Path2D = Path2D.Double()
+    private var needNewSubpath = true
+    private var currPoint: Point2D? = null
 
-public class CanvasPath2D {
-
-    private final static double TWO_PI = 2 * Math.PI;
-    Path2D path2D = new Path2D.Double();
-    private boolean needNewSubpath = true;
-    private Point2D currPoint = null;
-
-    private static double tweakStart(final double start, double value, final double end) {
-        while (value < start) {
-            value += (TWO_PI);
-        }
-        while (value > end) {
-            value -= (TWO_PI);
-        }
-        return value;
+    fun moveTo(x: Double, y: Double) {
+        moveToWithTransform(x, y, null)
     }
 
-    private static double tweakEnd(final double start, double value, final double end) {
-        while (value <= start) {
-            value += (TWO_PI);
-        }
-        while (value > end) {
-            value -= (TWO_PI);
-        }
-        return value;
-    }
-
-    public void moveTo(final double x, final double y) {
-        moveToWithTransform(x, y, null);
-    }
-
-    void moveToWithTransform(final double x, final double y, final AffineTransform aft) {
+    fun moveToWithTransform(x: Double, y: Double, aft: AffineTransform?) {
         if (aft == null) {
-            path2D.moveTo(x, y);
+            path2D.moveTo(x, y)
         } else {
-            final Point2D p1 = aft.transform(new Point2D.Double(x, y), null);
-            path2D.moveTo(p1.getX(), p1.getY());
+            val p1 = aft.transform(Point2D.Double(x, y), null)
+            path2D.moveTo(p1.x, p1.y)
         }
-        currPoint = new Point2D.Double(x, y);
-        needNewSubpath = false;
+        currPoint = Point2D.Double(x, y)
+        needNewSubpath = false
     }
 
-    public void closePath() {
+    fun closePath() {
         if (!needNewSubpath) {
-            path2D.closePath();
+            path2D.closePath()
         }
-        needNewSubpath = currPoint == null;
+        needNewSubpath = currPoint == null
     }
 
-    public void lineTo(final double x, final double y) {
-        lineToWithTransform(x, y, null);
+    fun lineTo(x: Double, y: Double) {
+        lineToWithTransform(x, y, null)
     }
 
-    void lineToWithTransform(final double x, final double y, final AffineTransform aft) {
+    fun lineToWithTransform(x: Double, y: Double, aft: AffineTransform?) {
         if (needNewSubpath) {
-            ensureSubpathWithTransform(x, y, aft);
+            ensureSubpathWithTransform(x, y, aft)
         } else {
             if (aft == null) {
-                path2D.lineTo(x, y);
+                path2D.lineTo(x, y)
             } else {
-                final Point2D p1 = aft.transform(new Point2D.Double(x, y), null);
-                path2D.lineTo(p1.getX(), p1.getY());
+                val p1 = aft.transform(Point2D.Double(x, y), null)
+                path2D.lineTo(p1.x, p1.y)
             }
         }
-        currPoint = new Point2D.Double(x, y);
-        needNewSubpath = false;
+        currPoint = Point2D.Double(x, y)
+        needNewSubpath = false
     }
 
-    public void quadraticCurveTo(final double x1, final double y1, final double x2, final double y2) {
-        quadraticCurveToWithTransform(x1, y1, x2, y2, null);
+    fun quadraticCurveTo(x1: Double, y1: Double, x2: Double, y2: Double) {
+        quadraticCurveToWithTransform(x1, y1, x2, y2, null)
     }
 
-    void quadraticCurveToWithTransform(final double x1, final double y1, final double x2, final double y2, final AffineTransform aft) {
+    fun quadraticCurveToWithTransform(
+        x1: Double,
+        y1: Double,
+        x2: Double,
+        y2: Double,
+        aft: AffineTransform?
+    ) {
         if (aft == null) {
-            path2D.quadTo(x1, y1, x2, y2);
+            path2D.quadTo(x1, y1, x2, y2)
         } else {
-            final Point2D p1 = aft.transform(new Point2D.Double(x1, y1), null);
-            final Point2D p2 = aft.transform(new Point2D.Double(x2, y2), null);
-            path2D.quadTo(p1.getX(), p1.getY(), p2.getX(), p2.getY());
+            val p1 = aft.transform(Point2D.Double(x1, y1), null)
+            val p2 = aft.transform(Point2D.Double(x2, y2), null)
+            path2D.quadTo(p1.x, p1.y, p2.x, p2.y)
         }
-        currPoint = new Point2D.Double(x2, y2);
-        needNewSubpath = false;
+        currPoint = Point2D.Double(x2, y2)
+        needNewSubpath = false
     }
 
-    public void bezierCurveTo(final double x1, final double y1, final double x2, final double y2, final double x3, final double y3) {
-        bezierCurveToWithTransform(x1, y1, x2, y2, x3, y3, null);
+    fun bezierCurveTo(x1: Double, y1: Double, x2: Double, y2: Double, x3: Double, y3: Double) {
+        bezierCurveToWithTransform(x1, y1, x2, y2, x3, y3, null)
     }
 
-    void bezierCurveToWithTransform(final double x1, final double y1, final double x2, final double y2, final double x3, final double y3,
-                                    final AffineTransform aft) {
+    fun bezierCurveToWithTransform(
+        x1: Double, y1: Double, x2: Double, y2: Double, x3: Double, y3: Double,
+        aft: AffineTransform?
+    ) {
         if (aft == null) {
-            path2D.quadTo(x1, y1, x2, y2);
+            path2D.quadTo(x1, y1, x2, y2)
         } else {
-            final Point2D p1 = aft.transform(new Point2D.Double(x1, y1), null);
-            final Point2D p2 = aft.transform(new Point2D.Double(x2, y2), null);
-            final Point2D p3 = aft.transform(new Point2D.Double(x3, y3), null);
-            path2D.curveTo(p1.getX(), p1.getY(), p2.getX(), p2.getY(), p3.getX(), p3.getY());
+            val p1 = aft.transform(Point2D.Double(x1, y1), null)
+            val p2 = aft.transform(Point2D.Double(x2, y2), null)
+            val p3 = aft.transform(Point2D.Double(x3, y3), null)
+            path2D.curveTo(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y)
         }
-        currPoint = new Point2D.Double(x3, y3);
-        needNewSubpath = false;
+        currPoint = Point2D.Double(x3, y3)
+        needNewSubpath = false
     }
 
-    public void arc(final double x, final double y, final double radius, final double startAngle, final double endAngle) {
-        arc(x, y, radius, startAngle, endAngle, false);
+    @JvmOverloads
+    fun arc(
+        x: Double, y: Double, radius: Double, startAngle: Double, endAngle: Double,
+        antiClockwise: Boolean = false
+    ) {
+        arcWithTransform(x, y, radius, startAngle, endAngle, antiClockwise, null)
     }
 
-    public void arc(final double x, final double y, final double radius, final double startAngle, final double endAngle,
-                    final boolean antiClockwise) {
-        arcWithTransform(x, y, radius, startAngle, endAngle, antiClockwise, null);
+    fun arcWithTransform(
+        x: Double, y: Double, radius: Double, startAngle: Double, endAngle: Double,
+        antiClockwise: Boolean, aft: AffineTransform?
+    ) {
+        ellipseWithTransform(x, y, radius, radius, 0.0, startAngle, endAngle, antiClockwise, aft)
     }
 
-    void arcWithTransform(final double x, final double y, final double radius, final double startAngle, final double endAngle,
-                          final boolean antiClockwise, final AffineTransform aft) {
-        ellipseWithTransform(x, y, radius, radius, 0, startAngle, endAngle, antiClockwise, aft);
-    }
-
-    private void appendWithTransform(final Shape shape, final AffineTransform aft, final boolean connect) {
+    private fun appendWithTransform(shape: Shape, aft: AffineTransform?, connect: Boolean) {
         if (aft != null) {
-            final PathIterator pi = shape.getPathIterator(aft);
-            path2D.append(pi, connect);
+            val pi = shape.getPathIterator(aft)
+            path2D.append(pi, connect)
         } else {
-            path2D.append(shape, connect);
+            path2D.append(shape, connect)
         }
     }
 
-    private void setCurrPoint(final AffineTransform aft) {
+    private fun setCurrPoint(aft: AffineTransform?) {
         if (aft != null) {
             try {
-                currPoint = aft.createInverse().transform(path2D.getCurrentPoint(), null);
-            } catch (final NoninvertibleTransformException e) {
-                throw new IllegalArgumentException(e);
+                currPoint = aft.createInverse().transform(path2D.currentPoint, null)
+            } catch (e: NoninvertibleTransformException) {
+                throw IllegalArgumentException(e)
             }
         } else {
-            currPoint = path2D.getCurrentPoint();
+            currPoint = path2D.currentPoint
         }
     }
 
-    public void arcTo(final double x1, final double y1, final double x2, final double y2, final double radius) {
-        arcToWithTransform(x1, y1, x2, y2, radius, null);
+    fun arcTo(x1: Double, y1: Double, x2: Double, y2: Double, radius: Double) {
+        arcToWithTransform(x1, y1, x2, y2, radius, null)
     }
 
-    void arcToWithTransform(final double x1, final double y1, final double x2, final double y2, final double radius, final AffineTransform aft) {
-        final Point2D p0 = ensureSubpathWithTransform(x1, y1, aft);
-        final Point2D p1 = new Point2D.Double(x1, y1);
-        final Point2D p2 = new Point2D.Double(x2, y2);
-        final Line2D l1 = new Line2D.Double(p0, p2);
-        if (p0.equals(p1) || p1.equals(p2)) {
-            lineToWithTransform(x1, y1, aft);
+    fun arcToWithTransform(
+        x1: Double,
+        y1: Double,
+        x2: Double,
+        y2: Double,
+        radius: Double,
+        aft: AffineTransform?
+    ) {
+        val p0 = ensureSubpathWithTransform(x1, y1, aft)
+        val p1: Point2D = Point2D.Double(x1, y1)
+        val p2: Point2D = Point2D.Double(x2, y2)
+        val l1: Line2D = Line2D.Double(p0, p2)
+        if (p0 == p1 || p1 == p2) {
+            lineToWithTransform(x1, y1, aft)
         } else if (l1.contains(p1)) {
-            lineToWithTransform(x1, y1, aft);
+            lineToWithTransform(x1, y1, aft)
         } else {
-            final Arc2D.Double arcTo = new Arc2D.Double();
-            arcTo.setArcByTangent(p0, p1, p2, radius);
-            appendWithTransform(arcTo, aft, true);
+            val arcTo = Arc2D.Double()
+            arcTo.setArcByTangent(p0, p1, p2, radius)
+            appendWithTransform(arcTo, aft, true)
         }
     }
 
-    public void ellipse(final double x, final double y, final double radiusX, final double radiusY, final double rotation,
-                        final double startAngle, final double endAngle) {
-        ellipse(x, y, radiusX, radiusY, rotation, startAngle, endAngle, false);
+    @JvmOverloads
+    fun ellipse(
+        x: Double, y: Double, radiusX: Double, radiusY: Double, rotation: Double,
+        startAngle: Double, endAngle: Double, antiClockwise: Boolean = false
+    ) {
+        ellipseWithTransform(
+            x,
+            y,
+            radiusX,
+            radiusY,
+            rotation,
+            startAngle,
+            endAngle,
+            antiClockwise,
+            null
+        )
     }
 
-    public void ellipse(final double x, final double y, final double radiusX, final double radiusY, final double rotation,
-                        final double startAngle, final double endAngle, final boolean antiClockwise) {
-        ellipseWithTransform(x, y, radiusX, radiusY, rotation, startAngle, endAngle, antiClockwise, null);
-    }
-
-    void ellipseWithTransform(final double x, final double y, final double radiusX, final double radiusY, final double rotation,
-                              final double startAngle, final double endAngle, final boolean antiClockwise, final AffineTransform aft) {
-        final double start;
-        final double end;
-        final double extent;
-        final double diffAngle = antiClockwise ? (startAngle - endAngle) : (endAngle - startAngle);
+    fun ellipseWithTransform(
+        x: Double, y: Double, radiusX: Double, radiusY: Double, rotation: Double,
+        startAngle: Double, endAngle: Double, antiClockwise: Boolean, aft: AffineTransform?
+    ) {
+        val start: Double
+        val end: Double
+        val extent: Double
+        val diffAngle = if (antiClockwise) (startAngle - endAngle) else (endAngle - startAngle)
 
         if (diffAngle >= TWO_PI) {
-            start = 0;
-            end = TWO_PI;
-            extent = TWO_PI;
+            start = 0.0
+            end = TWO_PI
+            extent = TWO_PI
         } else {
-            start = tweakStart(0, -startAngle % TWO_PI, TWO_PI);
-            end = tweakEnd(start, -endAngle % TWO_PI, TWO_PI + start);
-            extent = antiClockwise ? (end - start) : -(TWO_PI + (start - end));
+            start = tweakStart(0.0, -startAngle % TWO_PI, TWO_PI)
+            end = tweakEnd(start, -endAngle % TWO_PI, TWO_PI + start)
+            extent = if (antiClockwise) (end - start) else -(TWO_PI + (start - end))
         }
 
-        final Arc2D.Double ellipse = new Arc2D.Double(x - radiusX, y - radiusY, 2 * radiusX, 2 * radiusY, Math.toDegrees(start),
-                Math.toDegrees(extent), Arc2D.OPEN);
-        AffineTransform rotatedT;
+        val ellipse = Arc2D.Double(
+            x - radiusX, y - radiusY, 2 * radiusX, 2 * radiusY, Math.toDegrees(start),
+            Math.toDegrees(extent), Arc2D.OPEN
+        )
+        val rotatedT: AffineTransform?
         if (aft != null) {
-            rotatedT = new AffineTransform(aft);
-            rotatedT.rotate(rotation, x, y);
+            rotatedT = AffineTransform(aft)
+            rotatedT.rotate(rotation, x, y)
         } else {
-            rotatedT = AffineTransform.getRotateInstance(rotation, x, y);
+            rotatedT = AffineTransform.getRotateInstance(rotation, x, y)
         }
-        appendWithTransform(ellipse, rotatedT, true);
-        setCurrPoint(aft);
-        needNewSubpath = false;
+        appendWithTransform(ellipse, rotatedT, true)
+        setCurrPoint(aft)
+        needNewSubpath = false
     }
 
-    public void rect(final double x, final double y, final double width, final double height) {
-        rectWithTransform(x, y, width, height, null);
+    fun rect(x: Double, y: Double, width: Double, height: Double) {
+        rectWithTransform(x, y, width, height, null)
     }
 
-    void rectWithTransform(final double x, final double y, final double width, final double height, final AffineTransform aft) {
+    fun rectWithTransform(
+        x: Double,
+        y: Double,
+        width: Double,
+        height: Double,
+        aft: AffineTransform?
+    ) {
         // Note: We can't use Rectangle2D because it doesn't support negative width, height, nor can we adjust x, y for negative
         // widths / heights because the clockwise / anti-clockwise nature of the path isn't preserved
-        moveToWithTransform(x, y, aft);
-        lineToWithTransform(x + width, y, aft);
-        lineToWithTransform(x + width, y + height, aft);
-        lineToWithTransform(x, y + height, aft);
-        closePath();
-        moveToWithTransform(x, y, aft);
+        moveToWithTransform(x, y, aft)
+        lineToWithTransform(x + width, y, aft)
+        lineToWithTransform(x + width, y + height, aft)
+        lineToWithTransform(x, y + height, aft)
+        closePath()
+        moveToWithTransform(x, y, aft)
     }
 
-    private Point2D ensureSubpathWithTransform(final double x, final double y, final AffineTransform aft) {
+    private fun ensureSubpathWithTransform(x: Double, y: Double, aft: AffineTransform?): Point2D {
         if (needNewSubpath) {
-            moveToWithTransform(x, y, aft);
-            return new Point2D.Double(x, y);
+            moveToWithTransform(x, y, aft)
+            return Point2D.Double(x, y)
         } else {
-            return currPoint;
+            return currPoint!!
         }
     }
 
+    companion object {
+        private val TWO_PI = 2 * Math.PI
+        private fun tweakStart(start: Double, value: Double, end: Double): Double {
+            var value = value
+            while (value < start) {
+                value += (TWO_PI)
+            }
+            while (value > end) {
+                value -= (TWO_PI)
+            }
+            return value
+        }
+
+        private fun tweakEnd(start: Double, value: Double, end: Double): Double {
+            var value = value
+            while (value <= start) {
+                value += (TWO_PI)
+            }
+            while (value > end) {
+                value -= (TWO_PI)
+            }
+            return value
+        }
+    }
 }

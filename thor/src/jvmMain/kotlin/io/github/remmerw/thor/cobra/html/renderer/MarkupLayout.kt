@@ -21,10 +21,10 @@
 /*
  * Created on Nov 6, 2005
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl;
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
 
-interface MarkupLayout {
-    void layoutMarkup(RBlockViewport bodyLayout, HTMLElementImpl markupElement);
+internal interface MarkupLayout {
+    fun layoutMarkup(bodyLayout: RBlockViewport?, markupElement: HTMLElementImpl?)
 }

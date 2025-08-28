@@ -21,19 +21,15 @@
 /*
  * Created on Oct 9, 2005
  */
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.IOException
+import java.io.InputStream
 
-public class EmptyInputStream extends InputStream {
-    public EmptyInputStream() {
-        super();
-    }
-
-    @Override
-    public int read() throws IOException {
-        return -1;
+class EmptyInputStream : InputStream() {
+    @Throws(IOException::class)
+    override fun read(): Int {
+        return -1
     }
 
     /*
@@ -41,9 +37,9 @@ public class EmptyInputStream extends InputStream {
      *
      * @see java.io.InputStream#available()
      */
-    @Override
-    public int available() throws IOException {
-        return 0;
+    @Throws(IOException::class)
+    override fun available(): Int {
+        return 0
     }
 
     /*
@@ -51,8 +47,8 @@ public class EmptyInputStream extends InputStream {
      *
      * @see java.io.InputStream#close()
      */
-    @Override
-    public void close() throws IOException {
+    @Throws(IOException::class)
+    override fun close() {
     }
 
     /*
@@ -60,8 +56,8 @@ public class EmptyInputStream extends InputStream {
      *
      * @see java.io.InputStream#read(byte[], int, int)
      */
-    @Override
-    public int read(final byte[] b, final int off, final int len) throws IOException {
-        return -1;
+    @Throws(IOException::class)
+    override fun read(b: ByteArray?, off: Int, len: Int): Int {
+        return -1
     }
 }

@@ -21,46 +21,38 @@
 /*
  * Created on Dec 3, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.Node;
-import org.w3c.dom.html.HTMLCollection;
+import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate
+import org.w3c.dom.Node
+import org.w3c.dom.html.HTMLCollection
 
-import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate;
-
-public class ChildHTMLCollection extends AbstractScriptableDelegate implements HTMLCollection {
-    private final NodeImpl rootNode;
-
-    /**
-     * @param node
-     */
-    public ChildHTMLCollection(final NodeImpl node) {
-        super();
-        rootNode = node;
+class ChildHTMLCollection
+/**
+ * @param rootNode
+ */(private val rootNode: NodeImpl) : AbstractScriptableDelegate(), HTMLCollection {
+    override fun getLength(): Int {
+        return this.rootNode.getChildCount()
     }
 
-    public int getLength() {
-        return this.rootNode.getChildCount();
+    override fun item(index: Int): Node? {
+        return this.rootNode.getChildAtIndex(index)
     }
 
-    public Node item(final int index) {
-        return this.rootNode.getChildAtIndex(index);
-    }
-
-    public Node namedItem(final String name) {
-        final org.w3c.dom.Document doc = this.rootNode.getOwnerDocument();
+    override fun namedItem(name: String?): Node? {
+        val doc = this.rootNode.ownerDocument
         if (doc == null) {
-            return null;
+            return null
         }
         // TODO: This might get elements that are not descendents.
-        final Node node = doc.getElementById(name);
-        if ((node != null) && (node.getParentNode() == this.rootNode)) {
-            return node;
+        val node: Node? = doc.getElementById(name)
+        if ((node != null) && (node.parentNode === this.rootNode)) {
+            return node
         }
-        return null;
+        return null
     }
 
-    public int indexOf(final Node node) {
-        return this.rootNode.getChildIndex(node);
+    fun indexOf(node: Node?): Int {
+        return this.rootNode.getChildIndex(node)
     }
 }

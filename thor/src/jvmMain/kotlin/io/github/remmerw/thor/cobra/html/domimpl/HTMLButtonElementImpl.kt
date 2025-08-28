@@ -18,10 +18,6 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-public class HTMLButtonElementImpl extends HTMLBaseInputElement {
-    public HTMLButtonElementImpl(final String name) {
-        super(name);
-    }
-}
+class HTMLButtonElementImpl(name: String?) : HTMLBaseInputElement(name)

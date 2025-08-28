@@ -18,148 +18,172 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import org.w3c.dom.html.HTMLElement;
+import io.github.remmerw.thor.cobra.html.HtmlRendererContext
+import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
+import io.github.remmerw.thor.cobra.html.style.ListStyle
+import io.github.remmerw.thor.cobra.html.style.RenderState
+import io.github.remmerw.thor.cobra.ua.UserAgentContext
+import org.w3c.dom.html.HTMLElement
+import java.awt.Graphics
 
-import java.awt.Color;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Insets;
+internal class RListItem(
+    modelNode: NodeImpl?,
+    listNesting: Int,
+    pcontext: UserAgentContext?,
+    rcontext: HtmlRendererContext?,
+    frameContext: FrameContext?,
+    parentContainer: RenderableContainer?,
+    parent: RCollection?
+) : BaseRListElement(modelNode, listNesting, pcontext, rcontext, frameContext, parentContainer) {
+    private var value: Int? = null
+    private var count = 0
 
-import io.github.remmerw.thor.cobra.html.HtmlRendererContext;
-import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl;
-import io.github.remmerw.thor.cobra.html.style.ListStyle;
-import io.github.remmerw.thor.cobra.html.style.RenderState;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext;
-
-class RListItem extends BaseRListElement {
-    private static final int BULLET_WIDTH = 5;
-    private static final int BULLET_HEIGHT = 5;
-    private static final int BULLET_RMARGIN = 5;
-    private static final int BULLET_SPACE_WIDTH = 36;
-    private static final Integer UNSET = Integer.MIN_VALUE;
-    private Integer value = null;
-    private int count;
-
-    public RListItem(final NodeImpl modelNode, final int listNesting, final UserAgentContext pcontext, final HtmlRendererContext rcontext,
-                     final FrameContext frameContext,
-                     final RenderableContainer parentContainer, final RCollection parent) {
-        super(modelNode, listNesting, pcontext, rcontext, frameContext, parentContainer);
-        // this.defaultMarginInsets = new java.awt.Insets(0, BULLET_SPACE_WIDTH, 0,
-        // 0);
+    override fun getViewportListNesting(blockNesting: Int): Int {
+        return blockNesting + 1
     }
 
-    @Override
-    public int getViewportListNesting(final int blockNesting) {
-        return blockNesting + 1;
+    override fun invalidateLayoutLocal() {
+        super.invalidateLayoutLocal()
+        this.value = null
     }
 
-    @Override
-    public void invalidateLayoutLocal() {
-        super.invalidateLayoutLocal();
-        this.value = null;
-    }
-
-    private Integer getValue() {
-        Integer value = this.value;
+    private fun getValue(): Int {
+        var value = this.value
         if (value == null) {
-            final HTMLElement node = (HTMLElement) this.modelNode;
-            final String valueText = node == null ? null : node.getAttribute("value");
+            val node = this.modelNode as HTMLElement?
+            val valueText = if (node == null) null else node.getAttribute("value")
             if (valueText == null) {
-                value = UNSET;
+                value = UNSET
             } else {
                 try {
-                    value = Integer.valueOf(valueText);
-                } catch (final NumberFormatException nfe) {
-                    value = UNSET;
+                    value = valueText.toInt()
+                } catch (nfe: NumberFormatException) {
+                    value = UNSET
                 }
             }
-            this.value = value;
+            this.value = value
         }
-        return value;
+        return value
     }
 
-    @Override
-    public void doLayout(final int availWidth, final int availHeight, final boolean expandWidth, final boolean expandHeight,
-                         final FloatingBoundsSource floatBoundsSource,
-                         final int defaultOverflowX, final int defaultOverflowY, final boolean sizeOnly) {
-        super.doLayout(availWidth, availHeight, expandWidth, expandHeight, floatBoundsSource, defaultOverflowX, defaultOverflowY, sizeOnly);
+    override fun doLayout(
+        availWidth: Int, availHeight: Int, expandWidth: Boolean, expandHeight: Boolean,
+        floatBoundsSource: FloatingBoundsSource?,
+        defaultOverflowX: Int, defaultOverflowY: Int, sizeOnly: Boolean
+    ) {
+        super.doLayout(
+            availWidth,
+            availHeight,
+            expandWidth,
+            expandHeight,
+            floatBoundsSource,
+            defaultOverflowX,
+            defaultOverflowY,
+            sizeOnly
+        )
         // Note: Count must be calculated even if layout is valid.
-        final RenderState renderState = this.modelNode.getRenderState();
-        final Integer value = this.getValue();
-        if (value == UNSET) {
-            this.count = renderState.incrementCount(DEFAULT_COUNTER_NAME, this.listNesting);
+        val renderState: RenderState = this.modelNode.renderState!!
+        val value = this.getValue()
+        if (value === UNSET) {
+            this.count = renderState.incrementCount(
+                DEFAULT_COUNTER_NAME,
+                this.listNesting
+            )
         } else {
-            final int newCount = value.intValue();
-            this.count = newCount;
-            renderState.resetCount(DEFAULT_COUNTER_NAME, this.listNesting, newCount + 1);
+            val newCount = value
+            this.count = newCount
+            renderState.resetCount(
+                DEFAULT_COUNTER_NAME,
+                this.listNesting,
+                newCount + 1
+            )
         }
     }
 
-    @Override
-    public void paintShifted(final Graphics g) {
-        super.paintShifted(g);
-        final RenderState rs = this.modelNode.getRenderState();
-        final Insets marginInsets = this.marginInsets;
-        final RBlockViewport layout = this.bodyLayout;
-        final ListStyle listStyle = this.listStyle;
-        int bulletType = listStyle == null ? ListStyle.TYPE_UNSET : listStyle.type;
+    override fun paintShifted(g: Graphics) {
+        super.paintShifted(g)
+        val rs: RenderState = this.modelNode.renderState!!
+        val marginInsets = this.marginInsets
+        val layout = this.bodyLayout
+        val listStyle = this.listStyle
+        var bulletType = if (listStyle == null) ListStyle.TYPE_UNSET else listStyle.type
         if (bulletType != ListStyle.TYPE_NONE) {
             if (bulletType == ListStyle.TYPE_UNSET) {
-                RCollection parent = this.getOriginalOrCurrentParent();
-                if (!(parent instanceof RList)) {
-                    parent = parent.getOriginalOrCurrentParent();
+                var parent = this.getOriginalOrCurrentParent()
+                if (parent !is RList) {
+                    parent = parent.getOriginalOrCurrentParent()
                 }
-                if (parent instanceof RList) {
-                    final ListStyle parentListStyle = ((RList) parent).listStyle;
-                    bulletType = parentListStyle == null ? ListStyle.TYPE_DISC : parentListStyle.type;
+                if (parent is RList) {
+                    val parentListStyle = parent.listStyle
+                    bulletType =
+                        if (parentListStyle == null) ListStyle.TYPE_DISC else parentListStyle.type
                 } else {
-                    bulletType = ListStyle.TYPE_DISC;
+                    bulletType = ListStyle.TYPE_DISC
                 }
             }
             // Paint bullets
-            final Color prevColor = g.getColor();
-            g.setColor(rs.getColor());
+            val prevColor = g.color
+            g.color = rs.color
             try {
-                final Insets insets = this.getInsets(this.hasHScrollBar, this.hasVScrollBar);
-                final Insets paddingInsets = this.paddingInsets;
-                final int baselineOffset = layout.getFirstBaselineOffset();
-                final int bulletRight = (marginInsets == null ? 0 : marginInsets.left) - BULLET_RMARGIN;
-                final int bulletBottom = insets.top + baselineOffset + (paddingInsets == null ? 0 : paddingInsets.top);
-                final int bulletTop = bulletBottom - BULLET_HEIGHT;
-                final int bulletLeft = bulletRight - BULLET_WIDTH;
-                final int bulletNumber = this.count;
-                String numberText = null;
-                switch (bulletType) {
-                    case ListStyle.TYPE_DECIMAL:
-                        numberText = bulletNumber + ".";
-                        break;
-                    case ListStyle.TYPE_LOWER_ALPHA:
-                        numberText = ((char) ('a' + bulletNumber)) + ".";
-                        break;
-                    case ListStyle.TYPE_UPPER_ALPHA:
-                        numberText = ((char) ('A' + bulletNumber)) + ".";
-                        break;
-                    case ListStyle.TYPE_DISC:
-                        g.fillOval(bulletLeft, bulletTop, BULLET_WIDTH, BULLET_HEIGHT);
-                        break;
-                    case ListStyle.TYPE_CIRCLE:
-                        g.drawOval(bulletLeft, bulletTop, BULLET_WIDTH, BULLET_HEIGHT);
-                        break;
-                    case ListStyle.TYPE_SQUARE:
-                        g.fillRect(bulletLeft, bulletTop, BULLET_WIDTH, BULLET_HEIGHT);
-                        break;
+                val insets = this.getInsets(this.hasHScrollBar, this.hasVScrollBar)
+                val paddingInsets = this.paddingInsets
+                val baselineOffset = layout.getFirstBaselineOffset()
+                val bulletRight: Int =
+                    (if (marginInsets == null) 0 else marginInsets.left) - BULLET_RMARGIN
+                val bulletBottom =
+                    insets.top + baselineOffset + (if (paddingInsets == null) 0 else paddingInsets.top)
+                val bulletTop: Int = bulletBottom - BULLET_HEIGHT
+                val bulletLeft: Int = bulletRight - BULLET_WIDTH
+                val bulletNumber = this.count
+                var numberText: String? = null
+                when (bulletType) {
+                    ListStyle.TYPE_DECIMAL -> numberText = bulletNumber.toString() + "."
+                    ListStyle.TYPE_LOWER_ALPHA -> numberText =
+                        (('a'.code + bulletNumber).toChar()).toString() + "."
+
+                    ListStyle.TYPE_UPPER_ALPHA -> numberText =
+                        (('A'.code + bulletNumber).toChar()).toString() + "."
+
+                    ListStyle.TYPE_DISC -> g.fillOval(
+                        bulletLeft,
+                        bulletTop,
+                        BULLET_WIDTH,
+                        BULLET_HEIGHT
+                    )
+
+                    ListStyle.TYPE_CIRCLE -> g.drawOval(
+                        bulletLeft,
+                        bulletTop,
+                        BULLET_WIDTH,
+                        BULLET_HEIGHT
+                    )
+
+                    ListStyle.TYPE_SQUARE -> g.fillRect(
+                        bulletLeft,
+                        bulletTop,
+                        BULLET_WIDTH,
+                        BULLET_HEIGHT
+                    )
                 }
                 if (numberText != null) {
-                    final FontMetrics fm = g.getFontMetrics();
-                    final int numberLeft = bulletRight - fm.stringWidth(numberText);
-                    final int numberY = bulletBottom;
-                    g.drawString(numberText, numberLeft, numberY);
+                    val fm = g.fontMetrics
+                    val numberLeft = bulletRight - fm.stringWidth(numberText)
+                    val numberY = bulletBottom
+                    g.drawString(numberText, numberLeft, numberY)
                 }
             } finally {
-                g.setColor(prevColor);
+                g.color = prevColor
             }
         }
+    }
+
+    companion object {
+        private const val BULLET_WIDTH = 5
+        private const val BULLET_HEIGHT = 5
+        private const val BULLET_RMARGIN = 5
+        private const val BULLET_SPACE_WIDTH = 36
+        private val UNSET = Int.Companion.MIN_VALUE
     }
 }

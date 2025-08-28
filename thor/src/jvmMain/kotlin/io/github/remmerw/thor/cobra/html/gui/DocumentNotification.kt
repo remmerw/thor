@@ -1,23 +1,16 @@
-package io.github.remmerw.thor.cobra.html.gui;
+package io.github.remmerw.thor.cobra.html.gui
 
-import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl;
+import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
 
-class DocumentNotification {
-    public static final int LOOK = 0;
-    public static final int POSITION = 1;
-    public static final int SIZE = 2;
-    public static final int GENERIC = 3;
-
-    public final int type;
-    public final NodeImpl node;
-
-    public DocumentNotification(final int type, final NodeImpl node) {
-        this.type = type;
-        this.node = node;
+internal class DocumentNotification(val type: Int, val node: NodeImpl?) {
+    override fun toString(): String {
+        return "DocumentNotification[type=" + this.type + ",node=" + this.node + "]"
     }
 
-    @Override
-    public String toString() {
-        return "DocumentNotification[type=" + this.type + ",node=" + this.node + "]";
+    companion object {
+        const val LOOK: Int = 0
+        const val POSITION: Int = 1
+        const val SIZE: Int = 2
+        const val GENERIC: Int = 3
     }
 }

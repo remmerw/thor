@@ -18,24 +18,26 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.ua;
+package io.github.remmerw.thor.cobra.ua
+
+import java.util.EventListener
 
 /**
  * A listener of navigation events.
  *
  * @see NavigationEvent
- * @see NavigatorExtensionContext#addNavigationListener(NavigationListener)
+ *
+ * @see NavigatorExtensionContext.addNavigationListener
  */
-public interface NavigationListener extends java.util.EventListener {
-    NavigationListener[] EMPTY_ARRAY = new NavigationListener[0];
-
+interface NavigationListener : EventListener {
     /**
      * Called any time a navigation trigger originates in the event frame.
      *
      * @param event Contains navigation information.
      * @throws NavigationVetoException Thrown to cancel navigation.
      */
-    void beforeNavigate(NavigationEvent event) throws NavigationVetoException;
+    @Throws(NavigationVetoException::class)
+    fun beforeNavigate(event: NavigationEvent?)
 
     /**
      * Called any time a navigation trigger needs to be processed in the event
@@ -44,7 +46,8 @@ public interface NavigationListener extends java.util.EventListener {
      * @param event Contains navigation information.
      * @throws NavigationVetoException Thrown to cancel navigation.
      */
-    void beforeLocalNavigate(NavigationEvent event) throws NavigationVetoException;
+    @Throws(NavigationVetoException::class)
+    fun beforeLocalNavigate(event: NavigationEvent?)
 
     /**
      * Called any time a window open trigger originates in the event frame.
@@ -52,5 +55,10 @@ public interface NavigationListener extends java.util.EventListener {
      * @param event Contains navigation information.
      * @throws NavigationVetoException Thrown to cancel navigation.
      */
-    void beforeWindowOpen(NavigationEvent event) throws NavigationVetoException;
+    @Throws(NavigationVetoException::class)
+    fun beforeWindowOpen(event: NavigationEvent?)
+
+    companion object {
+        val EMPTY_ARRAY: Array<NavigationListener?> = arrayOfNulls<NavigationListener>(0)
+    }
 }

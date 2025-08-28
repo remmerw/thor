@@ -18,33 +18,33 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-interface FloatingBounds {
+internal interface FloatingBounds {
     /**
      * The offset from the left at the given Y, not counting insets.
      */
-    int getLeft(int y);
+    fun getLeft(y: Int): Int
 
     /**
      * The offset from the right at the given Y, not counting insets.
      */
-    int getRight(int y);
+    fun getRight(y: Int): Int
 
     /**
      * The Y at which the float clears starting at the given Y.
      */
-    int getClearY(int y);
+    fun getClearY(y: Int): Int
 
     /**
      * The Y at which the first float clears. It does not recurse to check other
      * floats.
      */
-    int getFirstClearY(int y);
+    fun getFirstClearY(y: Int): Int
 
-    int getLeftClearY(int y);
+    fun getLeftClearY(y: Int): Int
 
-    int getRightClearY(int y);
+    fun getRightClearY(y: Int): Int
 
-    int getMaxY();
+    val maxY: Int
 }

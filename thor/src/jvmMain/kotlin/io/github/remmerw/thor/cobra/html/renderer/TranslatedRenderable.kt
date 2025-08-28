@@ -1,207 +1,216 @@
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import org.eclipse.jdt.annotation.NonNull;
+import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
+import io.github.remmerw.thor.cobra.util.CollectionUtilities
+import io.github.remmerw.thor.cobra.util.Threads
+import java.awt.Dimension
+import java.awt.Graphics
+import java.awt.Point
+import java.awt.Rectangle
+import java.awt.event.MouseEvent
 
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.event.MouseEvent;
-import java.util.Iterator;
+class TranslatedRenderable(translatedChild: BoundableRenderable) :
+    BaseBoundableRenderable(null, null), RCollection {
+    private val translatedChild: BoundableRenderable
 
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode;
-import io.github.remmerw.thor.cobra.util.CollectionUtilities;
-import io.github.remmerw.thor.cobra.util.Threads;
-
-public class TranslatedRenderable extends BaseBoundableRenderable implements RCollection {
-
-    private final @NonNull BoundableRenderable translatedChild;
-
-    public TranslatedRenderable(final @NonNull BoundableRenderable translatedChild) {
+    init {
         // TODO
-        super(null, null);
-        this.translatedChild = translatedChild;
+        this.translatedChild = translatedChild
     }
 
-    public void paint(final Graphics g) {
-        translatedChild.paintTranslated(g);
+    override fun paint(g: Graphics?) {
+        translatedChild.paintTranslated(g)
     }
 
-    public boolean isFixed() {
-        return translatedChild.isFixed();
+    override fun isFixed(): Boolean {
+        return translatedChild.isFixed()
     }
 
-    public ModelNode getModelNode() {
-        return translatedChild.getModelNode();
+    override fun getModelNode(): ModelNode? {
+        return translatedChild.getModelNode()
     }
 
-    public Rectangle getBounds() {
-        return translatedChild.getBounds();
+    override fun getBounds(): Rectangle? {
+        return translatedChild.getBounds()
     }
 
-    public Rectangle getVisualBounds() {
-        return translatedChild.getVisualBounds();
+    override fun getVisualBounds(): Rectangle? {
+        return translatedChild.getVisualBounds()
     }
 
-    public boolean contains(final int x, final int y) {
-        return translatedChild.contains(x, y);
+    override fun contains(x: Int, y: Int): Boolean {
+        return translatedChild.contains(x, y)
     }
 
-    public Dimension getSize() {
-        return translatedChild.getSize();
+    override fun getSize(): Dimension? {
+        return translatedChild.getSize()
     }
 
-    public Point getOrigin() {
-        return translatedChild.getOrigin();
+    override fun getOrigin(): Point? {
+        return translatedChild.getOrigin()
     }
 
-    public Point getOriginRelativeTo(final RCollection ancestor) {
-        return translatedChild.getOriginRelativeTo(ancestor);
+    override fun getOriginRelativeTo(ancestor: RCollection?): Point {
+        return translatedChild.getOriginRelativeTo(ancestor)
     }
 
-  /*
+    /*
   public RCollection getParent() {
     return translatedChild.getParent();
   }*/
-
-    public Point getOriginRelativeToAbs(final RCollection ancestor) {
-        return translatedChild.getOriginRelativeToAbs(ancestor);
+    override fun getOriginRelativeToAbs(ancestor: RCollection?): Point? {
+        return translatedChild.getOriginRelativeToAbs(ancestor)
     }
 
-    public Point getOriginRelativeToNoScroll(final RCollection ancestor) {
-        return translatedChild.getOriginRelativeToNoScroll(ancestor);
+    override fun getOriginRelativeToNoScroll(ancestor: RCollection?): Point? {
+        return translatedChild.getOriginRelativeToNoScroll(ancestor)
     }
 
-    public RCollection getOriginalParent() {
-        return translatedChild.getOriginalParent();
+    override fun getOriginalParent(): RCollection? {
+        return translatedChild.getOriginalParent()
     }
 
-    public void setOriginalParent(final RCollection origParent) {
-        translatedChild.setOriginalParent(origParent);
+    override fun setOriginalParent(origParent: RCollection?) {
+        translatedChild.setOriginalParent(origParent)
     }
 
-    public RCollection getOriginalOrCurrentParent() {
-        return translatedChild.getOriginalOrCurrentParent();
+    override fun getOriginalOrCurrentParent(): RCollection? {
+        return translatedChild.getOriginalOrCurrentParent()
     }
 
-    public void setBounds(final int x, final int y, final int with, final int height) {
-        translatedChild.setBounds(x, y, with, height);
+    override fun setBounds(x: Int, y: Int, with: Int, height: Int) {
+        translatedChild.setBounds(x, y, with, height)
     }
 
-    public void setOrigin(final int x, final int y) {
-        translatedChild.setOrigin(x, y);
+    override fun setOrigin(x: Int, y: Int) {
+        translatedChild.setOrigin(x, y)
     }
 
-    public int getX() {
-        return translatedChild.getX();
+    override fun getX(): Int {
+        return translatedChild.getX()
     }
 
-    public void setX(final int x) {
-        translatedChild.setX(x);
+    override fun setX(x: Int) {
+        translatedChild.setX(x)
     }
 
-    public int getY() {
-        return translatedChild.getY();
+    override fun getY(): Int {
+        return translatedChild.getY()
     }
 
-    public void setY(final int y) {
-        translatedChild.setY(y);
+    override fun setY(y: Int) {
+        translatedChild.setY(y)
     }
 
-    public int getVisualX() {
-        return translatedChild.getVisualX();
+    override fun getVisualX(): Int {
+        return translatedChild.getVisualX()
     }
 
-    public int getVisualY() {
-        return translatedChild.getVisualY();
+    override fun getVisualY(): Int {
+        return translatedChild.getVisualY()
     }
 
-    public int getHeight() {
-        return translatedChild.getHeight();
+    override fun getHeight(): Int {
+        return translatedChild.getHeight()
     }
 
-    public void setHeight(final int height) {
-        translatedChild.setHeight(height);
+    override fun setHeight(height: Int) {
+        translatedChild.setHeight(height)
     }
 
-    public int getWidth() {
-        return translatedChild.getWidth();
+    override fun getWidth(): Int {
+        return translatedChild.getWidth()
     }
 
-    public void setWidth(final int width) {
-        translatedChild.setWidth(width);
+    override fun setWidth(width: Int) {
+        translatedChild.setWidth(width)
     }
 
-    public int getVisualHeight() {
-        return translatedChild.getVisualHeight();
+    override fun getVisualHeight(): Int {
+        return translatedChild.getVisualHeight()
     }
 
-    public int getVisualWidth() {
-        return translatedChild.getVisualWidth();
+    override fun getVisualWidth(): Int {
+        return translatedChild.getVisualWidth()
     }
 
-    public RenderableSpot getLowestRenderableSpot(final int x, final int y) {
-        return translatedChild.getLowestRenderableSpot(x, y);
+    override fun getLowestRenderableSpot(x: Int, y: Int): RenderableSpot? {
+        return translatedChild.getLowestRenderableSpot(x, y)
     }
 
-    public void repaint() {
-        translatedChild.repaint();
+    override fun repaint() {
+        translatedChild.repaint()
     }
 
-    public boolean onMousePressed(final MouseEvent event, final int x, final int y) {
-        return translatedChild.onMousePressed(event, x, y);
+    override fun onMousePressed(event: MouseEvent?, x: Int, y: Int): Boolean {
+        return translatedChild.onMousePressed(event, x, y)
     }
 
-    public boolean onMouseReleased(final MouseEvent event, final int x, final int y) {
-        return translatedChild.onMouseReleased(event, x, y);
+    override fun onMouseReleased(event: MouseEvent?, x: Int, y: Int): Boolean {
+        return translatedChild.onMouseReleased(event, x, y)
     }
 
-    public boolean onMouseDisarmed(final MouseEvent event) {
-        return translatedChild.onMouseDisarmed(event);
+    override fun onMouseDisarmed(event: MouseEvent?): Boolean {
+        return translatedChild.onMouseDisarmed(event)
     }
 
-    public boolean onMouseClick(final MouseEvent event, final int x, final int y) {
-        return translatedChild.onMouseClick(event, x, y);
+    override fun onMouseClick(event: MouseEvent?, x: Int, y: Int): Boolean {
+        return translatedChild.onMouseClick(event, x, y)
     }
 
-    public boolean onMiddleClick(final MouseEvent event, final int x, final int y) {
-        return translatedChild.onMiddleClick(event, x, y);
+    override fun onMiddleClick(event: MouseEvent?, x: Int, y: Int): Boolean {
+        return translatedChild.onMiddleClick(event, x, y)
     }
 
-    public boolean onDoubleClick(final MouseEvent event, final int x, final int y) {
-        return translatedChild.onDoubleClick(event, x, y);
+    override fun onDoubleClick(event: MouseEvent?, x: Int, y: Int): Boolean {
+        return translatedChild.onDoubleClick(event, x, y)
     }
 
-    public boolean onRightClick(final MouseEvent event, final int x, final int y) {
-        return translatedChild.onRightClick(event, x, y);
+    override fun onRightClick(event: MouseEvent?, x: Int, y: Int): Boolean {
+        return translatedChild.onRightClick(event, x, y)
     }
 
-    public void onMouseMoved(final MouseEvent event, final int x, final int y, final boolean triggerEvent, final ModelNode limit) {
-        translatedChild.onMouseMoved(event, x, y, triggerEvent, limit);
+    override fun onMouseMoved(
+        event: MouseEvent?,
+        x: Int,
+        y: Int,
+        triggerEvent: Boolean,
+        limit: ModelNode?
+    ) {
+        translatedChild.onMouseMoved(event, x, y, triggerEvent, limit)
     }
 
-    public void onMouseOut(final MouseEvent event, final int x, final int y, final ModelNode limit) {
-        translatedChild.onMouseOut(event, x, y, limit);
+    override fun onMouseOut(event: MouseEvent?, x: Int, y: Int, limit: ModelNode?) {
+        translatedChild.onMouseOut(event, x, y, limit)
     }
 
-    public boolean isContainedByNode() {
-        return translatedChild.isContainedByNode();
+    override fun isContainedByNode(): Boolean {
+        return translatedChild.isContainedByNode()
     }
 
-    public boolean paintSelection(final Graphics g, final boolean inSelection, final RenderableSpot startPoint, final RenderableSpot endPoint) {
-        return translatedChild.paintSelection(g, inSelection, startPoint, endPoint);
+    override fun paintSelection(
+        g: Graphics?,
+        inSelection: Boolean,
+        startPoint: RenderableSpot?,
+        endPoint: RenderableSpot?
+    ): Boolean {
+        return translatedChild.paintSelection(g, inSelection, startPoint, endPoint)
     }
 
-    public boolean extractSelectionText(final StringBuffer buffer, final boolean inSelection, final RenderableSpot startPoint, final RenderableSpot endPoint) {
-        return translatedChild.extractSelectionText(buffer, inSelection, startPoint, endPoint);
+    override fun extractSelectionText(
+        buffer: StringBuffer?,
+        inSelection: Boolean,
+        startPoint: RenderableSpot?,
+        endPoint: RenderableSpot?
+    ): Boolean {
+        return translatedChild.extractSelectionText(buffer, inSelection, startPoint, endPoint)
     }
 
-  /*
+    /*
   public Point getGUIPoint(int clientX, int clientY) {
     return translatedChild.getGUIPoint(clientX, clientY);
   }*/
-
-  /*
+    /*
   public int getOrdinal() {
     return translatedChild.getOrdinal();
   }
@@ -209,102 +218,86 @@ public class TranslatedRenderable extends BaseBoundableRenderable implements RCo
   public void setOrdinal(int ordinal) {
     translatedChild.setOrdinal(ordinal);
   }*/
-
-    public void repaint(final int x, final int y, final int width, final int height) {
+    override fun repaint(x: Int, y: Int, width: Int, height: Int) {
         // translatedChild.repaint(x, y, width, height);
         // getParent().repaint(x, y, width, height);
-        final Point or = translatedChild.getOriginRelativeTo(getParent());
-        {
-            final Rectangle rect = new Rectangle(x, y, width, height);
-            rect.translate(or.x, or.y);
+        val or = translatedChild.getOriginRelativeTo(getParent())
+        run {
+            val rect = Rectangle(x, y, width, height)
+            rect.translate(or.x, or.y)
         }
-        getParent().repaint(x + or.x, y + or.y, width, height);
+        getParent().repaint(x + or.x, y + or.y, width, height)
     }
 
-    public void relayout() {
-        translatedChild.relayout();
+    override fun relayout() {
+        translatedChild.relayout()
     }
 
-    public int getZIndex() {
-        return translatedChild.getZIndex();
+    override fun getZIndex(): Int {
+        return translatedChild.getZIndex()
     }
 
-    @Override
-    protected void invalidateLayoutLocal() {
+    override fun invalidateLayoutLocal() {
         // TODO
     }
 
-    @Override
-    public String toString() {
-        return "TransRndrbl [" + translatedChild + "]";
+    override fun toString(): String {
+        return "TransRndrbl [" + translatedChild + "]"
     }
 
-    public Renderable getChild() {
-        return translatedChild;
+    val child: Renderable
+        get() = translatedChild
+
+    override fun getRenderables(topFirst: Boolean): MutableIterator<out Renderable> {
+        return CollectionUtilities.singletonIterator<BoundableRenderable>(translatedChild)
     }
 
-    @Override
-    public Iterator<@NonNull ? extends Renderable> getRenderables(boolean topFirst) {
-        return CollectionUtilities.singletonIterator(translatedChild);
-    }
-
-    @Override
-    public void updateWidgetBounds(int guiX, int guiY) {
+    override fun updateWidgetBounds(guiX: Int, guiY: Int) {
         // NOP
         // Just checking
-        if (translatedChild instanceof RCollection tc) {
-            tc.updateWidgetBounds(guiX, guiY);
+        if (translatedChild is RCollection) {
+            translatedChild.updateWidgetBounds(guiX, guiY)
         }
-
     }
 
-    @Override
-    public void invalidateLayoutDeep() {
-        if (translatedChild instanceof RCollection tc) {
-            tc.invalidateLayoutDeep();
+    override fun invalidateLayoutDeep() {
+        if (translatedChild is RCollection) {
+            translatedChild.invalidateLayoutDeep()
         }
-
     }
 
-    @Override
-    public void focus() {
+    override fun focus() {
         // TODO Auto-generated method stub
-        Threads.dumpStack(8);
+        Threads.dumpStack(8)
     }
 
-    @Override
-    public void blur() {
+    override fun blur() {
         // TODO Auto-generated method stub
-        Threads.dumpStack(8);
+        Threads.dumpStack(8)
     }
 
-    @Override
-    public BoundableRenderable getRenderable(int x, int y) {
-        if (translatedChild instanceof RCollection tc) {
-            return tc.getRenderable(x, y);
+    override fun getRenderable(x: Int, y: Int): BoundableRenderable? {
+        if (translatedChild is RCollection) {
+            return translatedChild.getRenderable(x, y)
         }
 
-        return null;
+        return null
     }
 
-    @Override
-    public Rectangle getClipBounds() {
-        if (translatedChild instanceof RCollection tc) {
-            return tc.getClipBounds();
+    override fun getClipBounds(): Rectangle? {
+        if (translatedChild is RCollection) {
+            return translatedChild.getClipBounds()
         }
 
-        return null;
+        return null
     }
 
-    @Override
-
-    public Rectangle getClipBoundsWithoutInsets() {
+    override fun getClipBoundsWithoutInsets(): Rectangle? {
         // TODO: Stub
-        return getClipBounds();
+        return getClipBounds()
     }
 
-    @Override
-    public boolean isReadyToPaint() {
-        return translatedChild.isReadyToPaint();
+    override fun isReadyToPaint(): Boolean {
+        return translatedChild.isReadyToPaint()
     }
 }

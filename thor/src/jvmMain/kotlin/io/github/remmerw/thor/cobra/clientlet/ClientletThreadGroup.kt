@@ -20,18 +20,18 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.github.remmerw.thor.cobra.clientlet;
+package io.github.remmerw.thor.cobra.clientlet
 
 /**
- * An interface the platform should have a <code>ThreadGroup</code> extension
+ * An interface the platform should have a `ThreadGroup` extension
  * implement such that threads created during a request belong to an instance of
  * this interface.
  *
- * @see ClientletAccess#getCurrentClientletContext()
+ * @see ClientletAccess.getCurrentClientletContext
  */
-public interface ClientletThreadGroup {
+interface ClientletThreadGroup {
     /**
      * Gets the clientlet context associated with the thread group.
      */
-    ClientletContext getClientletContext();
+    val clientletContext: ClientletContext?
 }

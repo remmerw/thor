@@ -1,21 +1,15 @@
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-class SizeExceededException extends RuntimeException {
-    private static final long serialVersionUID = 5789004695720876706L;
+internal class SizeExceededException : RuntimeException {
+    constructor() : super()
 
-    public SizeExceededException() {
-        super();
-    }
+    constructor(message: String?, cause: Throwable?) : super(message, cause)
 
-    public SizeExceededException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
+    constructor(message: String?) : super(message)
 
-    public SizeExceededException(final String message) {
-        super(message);
-    }
+    constructor(cause: Throwable?) : super(cause)
 
-    public SizeExceededException(final Throwable cause) {
-        super(cause);
+    companion object {
+        private const val serialVersionUID = 5789004695720876706L
     }
 }

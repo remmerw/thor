@@ -21,79 +21,68 @@
 /*
  * Created on Oct 15, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.DOMException;
-import org.w3c.dom.DocumentType;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
+import org.w3c.dom.DOMException
+import org.w3c.dom.DocumentType
+import org.w3c.dom.NamedNodeMap
+import org.w3c.dom.Node
 
-public class DocumentTypeImpl extends NodeImpl implements DocumentType {
-    private final String qualifiedName;
-    private final String publicId;
-    private final String systemId;
-
-    public DocumentTypeImpl(final String qname, final String publicId, final String systemId) {
-        super();
-        this.qualifiedName = qname;
-        this.publicId = publicId;
-        this.systemId = systemId;
+class DocumentTypeImpl(
+    private val qualifiedName: String,
+    private val publicId: String?,
+    private val systemId: String?
+) : NodeImpl(), DocumentType {
+    override fun getLocalName(): String? {
+        return null
     }
 
-    @Override
-    public String getLocalName() {
-        return null;
+    override fun getNodeName(): String {
+        return this.name
     }
 
-    @Override
-    public String getNodeName() {
-        return this.getName();
+    @Throws(DOMException::class)
+    override fun getNodeValue(): String? {
+        return null
     }
 
-    @Override
-    public String getNodeValue() throws DOMException {
-        return null;
-    }
-
-    @Override
-    public void setNodeValue(final String nodeValue) throws DOMException {
+    @Throws(DOMException::class)
+    override fun setNodeValue(nodeValue: String?) {
         // nop
     }
 
-    @Override
-    public short getNodeType() {
-        return Node.DOCUMENT_TYPE_NODE;
+    override fun getNodeType(): Short {
+        return DOCUMENT_TYPE_NODE
     }
 
-    public String getName() {
-        return this.qualifiedName;
+    override fun getName(): String {
+        return this.qualifiedName
     }
 
-    public NamedNodeMap getEntities() {
+    override fun getEntities(): NamedNodeMap? {
         // TODO: DOCTYPE declared entities
-        return null;
+        return null
     }
 
-    public NamedNodeMap getNotations() {
+    override fun getNotations(): NamedNodeMap? {
         // TODO: DOCTYPE notations
-        return null;
+        return null
     }
 
-    public String getPublicId() {
-        return this.publicId;
+    override fun getPublicId(): String? {
+        return this.publicId
     }
 
-    public String getSystemId() {
-        return this.systemId;
+    override fun getSystemId(): String? {
+        return this.systemId
     }
 
-    public String getInternalSubset() {
+    override fun getInternalSubset(): String? {
         // TODO: DOCTYPE internal subset
-        return null;
+        return null
     }
 
-    @Override
-    protected Node createSimilarNode() {
-        return new DocumentTypeImpl(this.qualifiedName, this.publicId, this.systemId);
+    override fun createSimilarNode(): Node {
+        return DocumentTypeImpl(this.qualifiedName, this.publicId, this.systemId)
     }
 }

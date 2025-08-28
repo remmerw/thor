@@ -18,26 +18,17 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.eclipse.jdt.annotation.NonNull;
+import io.github.remmerw.thor.cobra.ua.ImageResponse
+import java.util.EventObject
 
-import java.util.EventObject;
-
-import io.github.remmerw.thor.cobra.ua.ImageResponse;
-
-public class ImageEvent extends EventObject {
-    private static final long serialVersionUID = 6412430882522254948L;
-    public @NonNull
-    final ImageResponse imageResponse;
-
-    public ImageEvent(final Object source, final @NonNull ImageResponse imageResponse) {
-        super(source);
-        this.imageResponse = imageResponse;
+class ImageEvent(source: Any, @JvmField val imageResponse: ImageResponse) : EventObject(source) {
+    override fun toString(): String {
+        return "Image Event: " + source + ", response: " + imageResponse
     }
 
-    @Override
-    public String toString() {
-        return "Image Event: " + source + ", response: " + imageResponse;
+    companion object {
+        private const val serialVersionUID = 6412430882522254948L
     }
 }

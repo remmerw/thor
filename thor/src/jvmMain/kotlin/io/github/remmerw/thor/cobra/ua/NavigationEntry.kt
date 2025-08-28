@@ -20,65 +20,48 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.github.remmerw.thor.cobra.ua;
+package io.github.remmerw.thor.cobra.ua
 
-import org.eclipse.jdt.annotation.NonNull;
-
-import java.net.URL;
-
-import io.github.remmerw.thor.cobra.clientlet.ClientletResponse;
+import io.github.remmerw.thor.cobra.clientlet.ClientletResponse
+import java.net.URL
 
 /**
  * Represents one item in the navigation history.
  */
-public class NavigationEntry {
-    // Note: Do not retain request context here.
-
-    private final @NonNull URL url;
-    private final String method;
-    private final String title;
-    private final String description;
-    private final NavigatorFrame frame;
-
-    public NavigationEntry(final NavigatorFrame frame, final @NonNull URL url, final String method, final String title, final String description) {
-        super();
-        this.frame = frame;
-        this.url = url;
-        this.method = method;
-        this.title = title;
-        this.description = description;
-    }
-
-    public static NavigationEntry fromResponse(final NavigatorFrame frame, final ClientletResponse response, final String title,
-                                               final String description) {
-        return new NavigationEntry(frame, response.getResponseURL(), response.getLastRequestMethod(), title, description);
-    }
-
+class NavigationEntry(
+    val navigatorFrame: NavigatorFrame?, // Note: Do not retain request context here.
+    val url: URL, method: String?, title: String?, description: String?
+) {
     /**
      * Gets the uppercase request method that resulted in this navigation entry.
      */
-    public String getMethod() {
-        return method;
+    val method: String?
+    val title: String?
+    val description: String?
+
+    init {
+        this.url = url
+        this.method = method
+        this.title = title
+        this.description = description
     }
 
-    public String getTitle() {
-        return title;
+    override fun toString(): String {
+        return "NavigationEntry[url=" + this.url + ",method=" + this.method + ",title=" + title + "]"
     }
 
-    public @NonNull URL getUrl() {
-        return url;
-    }
-
-    public NavigatorFrame getNavigatorFrame() {
-        return frame;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    @Override
-    public String toString() {
-        return "NavigationEntry[url=" + this.url + ",method=" + this.method + ",title=" + title + "]";
+    companion object {
+        fun fromResponse(
+            frame: NavigatorFrame?, response: ClientletResponse, title: String?,
+            description: String?
+        ): NavigationEntry {
+            return NavigationEntry(
+                frame,
+                response.responseURL,
+                response.lastRequestMethod,
+                title,
+                description
+            )
+        }
     }
 }

@@ -1,12 +1,7 @@
-package io.github.remmerw.thor.cobra.html.js;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+package io.github.remmerw.thor.cobra.html.js
 
 /**
  * Ensures that a method is not treated as a getter / setter
  */
-@Retention(RetentionPolicy.RUNTIME)
-public @interface NotGetterSetter {
-
-}
+@Retention(AnnotationRetention.RUNTIME)
+annotation class NotGetterSetter 

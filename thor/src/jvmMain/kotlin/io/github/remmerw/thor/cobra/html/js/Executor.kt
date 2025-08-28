@@ -18,130 +18,153 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.js;
+package io.github.remmerw.thor.cobra.html.js
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.RhinoException;
-import org.mozilla.javascript.Scriptable;
-import org.w3c.dom.Document;
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLDocumentImpl
+import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
+import io.github.remmerw.thor.cobra.js.JavaScript
+import io.github.remmerw.thor.cobra.ua.UserAgentContext
+import io.github.remmerw.thor.cobra.ua.UserAgentContext.RequestKind
+import org.mozilla.javascript.Context
+import org.mozilla.javascript.ContextFactory
+import org.mozilla.javascript.Function
+import org.mozilla.javascript.RhinoException
+import org.mozilla.javascript.Scriptable
+import java.net.URL
+import java.util.logging.Level
+import java.util.logging.Logger
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLDocumentImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl;
-import io.github.remmerw.thor.cobra.js.JavaScript;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext.Request;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext.RequestKind;
-
-public class Executor {
-    private static final Logger logger = Logger.getLogger(Executor.class.getName());
+object Executor {
+    private val logger: Logger = Logger.getLogger(Executor::class.java.name)
 
     /**
-     * This method should be invoked instead of <code>Context.enter</code>.
+     * This method should be invoked instead of `Context.enter`.
      *
      * @param codeSource
      * @param ucontext
      */
-    public static Context createContext(final java.net.URL codeSource, final UserAgentContext ucontext, final ContextFactory factory) {
-        final Context prev = Context.getCurrentContext();
+    fun createContext(
+        codeSource: URL?,
+        ucontext: UserAgentContext,
+        factory: ContextFactory
+    ): Context {
+        val prev = Context.getCurrentContext()
 
         // final Context ctx = Context.enter();
-        final Context ctx = factory.enterContext();
+        val ctx = factory.enterContext()
 
-        if (!ctx.isSealed()) {
-            ctx.setOptimizationLevel(ucontext.getScriptingOptimizationLevel());
-            ctx.setLanguageVersion(Context.VERSION_ES6);
+        if (!ctx.isSealed) {
+            ctx.optimizationLevel = ucontext.getScriptingOptimizationLevel()
+            ctx.setLanguageVersion(Context.VERSION_ES6)
 
             if (prev == null) {
                 // If there was a previous context, this one must be nested.
                 // We still need to create a context because of exit() but
                 // we cannot set a new security controller.
-                ctx.setSecurityController(new SecurityControllerImpl(codeSource, ucontext.getSecurityPolicy()));
+                ctx.setSecurityController(
+                    SecurityControllerImpl(
+                        codeSource,
+                        ucontext.getSecurityPolicy()
+                    )
+                )
             }
 
             // Sealing is recommended for untrusted scripts
-            ctx.seal(null);
+            ctx.seal(null)
         }
-        return ctx;
+        return ctx
     }
 
-    public static boolean executeFunction(final NodeImpl element, final Function f, final Object event, final ContextFactory contextFactory) {
-        return Executor.executeFunction(element, element, f, event, contextFactory);
+    @JvmStatic
+    fun executeFunction(
+        element: NodeImpl,
+        f: Function,
+        event: Any?,
+        contextFactory: ContextFactory
+    ): Boolean {
+        return executeFunction(element, element, f, event, contextFactory)
     }
 
-    private static boolean executeFunction(final NodeImpl element, final Object thisObject, final Function f, final Object event,
-                                           final ContextFactory contextFactory) {
-        final Document doc = element.getOwnerDocument();
-        if (doc == null) {
-            throw new IllegalStateException("Element does not belong to a document.");
-        }
+    private fun executeFunction(
+        element: NodeImpl, thisObject: Any?, f: Function, event: Any?,
+        contextFactory: ContextFactory
+    ): Boolean {
+        val doc = element.ownerDocument
+        checkNotNull(doc) { "Element does not belong to a document." }
 
-        final UserAgentContext uaContext = element.getUserAgentContext();
-        if (uaContext.isRequestPermitted(new Request(element.getDocumentURL(), RequestKind.JavaScript))) {
-            final Context ctx = createContext(element.getDocumentURL(), element.getUserAgentContext(), contextFactory);
+        val uaContext = element.userAgentContext
+        if (uaContext!!.isRequestPermitted(
+                UserAgentContext.Request(
+                    element.documentURL,
+                    RequestKind.JavaScript
+                )
+            )
+        ) {
+            val ctx = createContext(
+                element.documentURL,
+                element.userAgentContext!!,
+                contextFactory
+            )
             // ctx.setGenerateObserverCount(true);
             try {
-                final Scriptable scope = ((HTMLDocumentImpl) doc).getWindow().getWindowScope();
-                if (scope == null) {
-                    throw new IllegalStateException("Scriptable (scope) instance is null");
-                }
-                final JavaScript js = JavaScript.getInstance();
-                final Scriptable thisScope = (Scriptable) js.getJavascriptObject(thisObject, scope);
+                val scope = (doc as HTMLDocumentImpl).window.getWindowScope()
+                checkNotNull(scope) { "Scriptable (scope) instance is null" }
+                val js = JavaScript.instance
+                val thisScope = js.getJavascriptObject(thisObject, scope) as Scriptable?
                 try {
                     // final Scriptable eventScriptable = (Scriptable) js.getJavascriptObject(event, thisScope);
-                    final Object eventScriptable = js.getJavascriptObject(event, thisScope);
-                    scope.put("event", thisScope, eventScriptable);
+                    val eventScriptable = js.getJavascriptObject(event, thisScope)
+                    scope.put("event", thisScope, eventScriptable)
                     // ScriptableObject.defineProperty(thisScope, "event",
                     // eventScriptable,
                     // ScriptableObject.READONLY);
-                    final Object result = f.call(ctx, thisScope, thisScope, new Object[]{eventScriptable});
-                    if (!(result instanceof Boolean)) {
-                        return true;
+                    val result = f.call(ctx, thisScope, thisScope, arrayOf<Any?>(eventScriptable))
+                    if (result !is Boolean) {
+                        return true
                     }
-                    return ((Boolean) result).booleanValue();
-                } catch (final Exception thrown) {
-                    logJSException(thrown);
-                    return true;
+                    return result
+                } catch (thrown: Exception) {
+                    logJSException(thrown)
+                    return true
                 }
             } finally {
-                Context.exit();
+                Context.exit()
             }
         } else {
             // TODO: Should this be true? I am copying the return from the exception clause above.
-            System.out.println("Rejected request to execute script");
-            return true;
-        }
-
-    }
-
-    public static void logJSException(final Throwable err) {
-        logger.log(Level.WARNING, "Unable to evaluate Javascript code", err);
-        if (err instanceof RhinoException rhinoException) {
-            logger.log(Level.WARNING, "JS Error: " + rhinoException.details() + "\nJS Stack:\n" + rhinoException.getScriptStackTrace());
+            println("Rejected request to execute script")
+            return true
         }
     }
 
-    public static boolean executeFunction(final Scriptable thisScope, final Function f, final java.net.URL codeSource,
-                                          final UserAgentContext ucontext, final ContextFactory contextFactory) {
-        final Context ctx = createContext(codeSource, ucontext, contextFactory);
+    fun logJSException(err: Throwable?) {
+        logger.log(Level.WARNING, "Unable to evaluate Javascript code", err)
+        if (err is RhinoException) {
+            logger.log(
+                Level.WARNING,
+                "JS Error: " + err.details() + "\nJS Stack:\n" + err.scriptStackTrace
+            )
+        }
+    }
+
+    fun executeFunction(
+        thisScope: Scriptable?, f: Function, codeSource: URL?,
+        ucontext: UserAgentContext, contextFactory: ContextFactory
+    ): Boolean {
+        val ctx = createContext(codeSource, ucontext, contextFactory)
         try {
             try {
-                final Object result = f.call(ctx, thisScope, thisScope, new Object[0]);
-                if (!(result instanceof Boolean)) {
-                    return true;
+                val result = f.call(ctx, thisScope, thisScope, arrayOfNulls<Any>(0))
+                if (result !is Boolean) {
+                    return true
                 }
-                return ((Boolean) result).booleanValue();
-            } catch (final Exception err) {
-                logJSException(err);
-                return true;
+                return result
+            } catch (err: Exception) {
+                logJSException(err)
+                return true
             }
         } finally {
-            Context.exit();
+            Context.exit()
         }
     }
-
 }

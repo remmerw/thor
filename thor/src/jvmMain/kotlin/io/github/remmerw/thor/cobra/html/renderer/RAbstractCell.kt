@@ -1,62 +1,61 @@
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import org.eclipse.jdt.annotation.NonNull;
+import io.github.remmerw.thor.cobra.html.HtmlRendererContext
+import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
+import io.github.remmerw.thor.cobra.html.renderer.TableMatrix.ColSizeInfo
+import io.github.remmerw.thor.cobra.html.renderer.TableMatrix.RowSizeInfo
+import io.github.remmerw.thor.cobra.html.style.RenderState
+import io.github.remmerw.thor.cobra.ua.UserAgentContext
+import java.awt.Dimension
 
-import java.awt.Dimension;
+abstract class RAbstractCell(
+    modelNode: NodeImpl?,
+    listNesting: Int,
+    pcontext: UserAgentContext?,
+    rcontext: HtmlRendererContext?,
+    frameContext: FrameContext?,
+    parentContainer: RenderableContainer?
+) : RBlock(modelNode, listNesting, pcontext, rcontext, frameContext, parentContainer) {
+    var topLeftVirtualCell: VirtualCell? = null
 
-import io.github.remmerw.thor.cobra.html.HtmlRendererContext;
-import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl;
-import io.github.remmerw.thor.cobra.html.style.RenderState;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext;
+    abstract fun setCellBounds(
+        colSizes: Array<ColSizeInfo?>?,
+        rowSizes: Array<RowSizeInfo?>?,
+        hasBorder: Int,
+        cellSpacingX: Int,
+        cellSpacingY: Int
+    )
 
-public abstract class RAbstractCell extends RBlock {
+    abstract val widthText: String?
 
-    private VirtualCell topLeftVirtualCell;
+    abstract val heightText: String?
 
-    public RAbstractCell(NodeImpl modelNode, int listNesting, UserAgentContext pcontext, HtmlRendererContext rcontext,
-                         FrameContext frameContext, RenderableContainer parentContainer) {
-        super(modelNode, listNesting, pcontext, rcontext, frameContext, parentContainer);
-    }
+    abstract var rowSpan: Int
 
-    public abstract void setCellBounds(final TableMatrix.ColSizeInfo[] colSizes, final TableMatrix.RowSizeInfo[] rowSizes, final int hasBorder, final int cellSpacingX, final int cellSpacingY);
+    abstract val colSpan: Int
 
-    public abstract String getWidthText();
+    abstract fun doCellLayout(
+        width: Int, height: Int, expandWidth: Boolean, expandHeight: Boolean,
+        sizeOnly: Boolean
+    ): Dimension?
 
-    public abstract String getHeightText();
+    abstract val renderState: RenderState
 
-    public abstract int getRowSpan();
+    val virtualColumn: Int
+        /**
+         * @return Returns the virtualColumn.
+         */
+        get() {
+            val vc = this.topLeftVirtualCell
+            return if (vc == null) 0 else vc.getColumn()
+        }
 
-    public abstract void setRowSpan(final int rowSpan);
-
-    public abstract int getColSpan();
-
-    protected abstract Dimension doCellLayout(final int width, final int height, final boolean expandWidth, final boolean expandHeight,
-                                              final boolean sizeOnly);
-
-    abstract @NonNull RenderState getRenderState();
-
-    public VirtualCell getTopLeftVirtualCell() {
-        return this.topLeftVirtualCell;
-    }
-
-    public void setTopLeftVirtualCell(final VirtualCell vc) {
-        this.topLeftVirtualCell = vc;
-    }
-
-    /**
-     * @return Returns the virtualColumn.
-     */
-    public int getVirtualColumn() {
-        final VirtualCell vc = this.topLeftVirtualCell;
-        return vc == null ? 0 : vc.getColumn();
-    }
-
-    /**
-     * @return Returns the virtualRow.
-     */
-    public int getVirtualRow() {
-        final VirtualCell vc = this.topLeftVirtualCell;
-        return vc == null ? 0 : vc.getRow();
-    }
-
+    val virtualRow: Int
+        /**
+         * @return Returns the virtualRow.
+         */
+        get() {
+            val vc = this.topLeftVirtualCell
+            return if (vc == null) 0 else vc.getRow()
+        }
 }

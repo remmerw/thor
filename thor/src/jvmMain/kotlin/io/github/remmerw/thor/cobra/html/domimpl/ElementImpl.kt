@@ -21,228 +21,202 @@
 /*
  * Created on Oct 29, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.Attr;
-import org.w3c.dom.Comment;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
-import org.w3c.dom.TypeInfo;
-import org.w3c.dom.events.Event;
-import org.w3c.dom.events.EventException;
-import org.w3c.dom.events.EventListener;
-import org.w3c.dom.events.EventTarget;
+import io.github.remmerw.thor.cobra.html.parser.HtmlParser
+import io.github.remmerw.thor.cobra.util.Strings
+import org.w3c.dom.Attr
+import org.w3c.dom.Comment
+import org.w3c.dom.DOMException
+import org.w3c.dom.Element
+import org.w3c.dom.NamedNodeMap
+import org.w3c.dom.Node
+import org.w3c.dom.NodeList
+import org.w3c.dom.Text
+import org.w3c.dom.TypeInfo
+import org.w3c.dom.events.Event
+import org.w3c.dom.events.EventException
+import org.w3c.dom.events.EventListener
+import org.w3c.dom.events.EventTarget
+import java.util.LinkedList
+import java.util.Locale
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import io.github.remmerw.thor.cobra.html.parser.HtmlParser;
-import io.github.remmerw.thor.cobra.util.Strings;
-
-public class ElementImpl extends NodeImpl implements Element, EventTarget {
-    private final String name;
-    protected Map<String, String> attributes;
-
-    public ElementImpl(final String name) {
-        super();
-        this.name = name;
-    }
-
-    protected static boolean isTagName(final Node node, final String name) {
-        return node.getNodeName().equalsIgnoreCase(name);
-    }
-
-    protected final static String normalizeAttributeName(final String name) {
-        return name.toLowerCase();
-    }
+open class ElementImpl(private val name: String) : NodeImpl(), Element, EventTarget {
+    protected var attributes: MutableMap<String?, String?>? = null
 
     /*
      * (non-Javadoc)
      *
      * @see org.xamjwg.html.domimpl.NodeImpl#getattributes()
      */
-    @Override
-    public NamedNodeMap getAttributes() {
-        synchronized (this) {
-            Map<String, String> attrs = this.attributes;
-
+    override fun getAttributes(): NamedNodeMap {
+        synchronized(this) {
+            var attrs: MutableMap<String?, String?>? = this.attributes
             // TODO: Check if NamedNodeMapImpl can be changed to dynamically query the attributes field
             //       instead of keeping a reference to it. This will allow the NamedNodeMap to be live as well
             //       as avoid allocating of a HashMap here when attributes are empty.
             if (attrs == null) {
-                attrs = new HashMap<>();
-                this.attributes = attrs;
+                attrs = HashMap<String?, String?>()
+                this.attributes = attrs
             }
-            return new NamedNodeMapImpl(this, this.attributes);
+            return NamedNodeMapImpl(this, this.attributes)
         }
     }
 
-    @Override
-    public boolean hasAttributes() {
-        synchronized (this) {
-            final Map<String, String> attrs = this.attributes;
-            return attrs != null && !attrs.isEmpty();
+    override fun hasAttributes(): Boolean {
+        synchronized(this) {
+            val attrs: MutableMap<String?, String?>? = this.attributes
+            return attrs != null && !attrs.isEmpty()
         }
     }
 
-    @Override
-    public boolean equalAttributes(final Node arg) {
-        if (arg instanceof ElementImpl) {
-            synchronized (this) {
-                Map<String, String> attrs1 = this.attributes;
+    override fun equalAttributes(arg: Node?): Boolean {
+        if (arg is ElementImpl) {
+            synchronized(this) {
+                var attrs1: MutableMap<String?, String?>? = this.attributes
                 if (attrs1 == null) {
-                    attrs1 = Collections.emptyMap();
+                    attrs1 = mutableMapOf<String?, String?>()
                 }
-                Map<String, String> attrs2 = ((ElementImpl) arg).attributes;
+                var attrs2: MutableMap<String?, String?>? = arg.attributes
                 if (attrs2 == null) {
-                    attrs2 = Collections.emptyMap();
+                    attrs2 = mutableMapOf<String?, String?>()
                 }
-                return java.util.Objects.equals(attrs1, attrs2);
+                return attrs1 == attrs2
             }
         } else {
-            return false;
+            return false
         }
     }
 
-    // private String title;
+    var id: String?
+        // private String title;
+        get() {
+            // TODO: Check if a cache is useful for this attribute. Original gngr code had a cache here.
+            val id = this.getAttribute("id")
+            return if (id == null) "" else id
+        }
+        set(id) {
+            this.setAttribute("id", id)
+        }
 
-    public String getId() {
-        // TODO: Check if a cache is useful for this attribute. Original gngr code had a cache here.
-        final String id = this.getAttribute("id");
-        return id == null ? "" : id;
-    }
+    var title: String?
+        get() = this.getAttribute("title")
+        set(title) {
+            this.setAttribute("title", title)
+        }
 
-    public void setId(final String id) {
-        this.setAttribute("id", id);
-    }
+    var lang: String?
+        get() = this.getAttribute("lang")
+        set(lang) {
+            this.setAttribute("lang", lang)
+        }
 
-    public String getTitle() {
-        return this.getAttribute("title");
-    }
+    var dir: String?
+        get() = this.getAttribute("dir")
+        set(dir) {
+            this.setAttribute("dir", dir)
+        }
 
-    public void setTitle(final String title) {
-        this.setAttribute("title", title);
-    }
-
-    public String getLang() {
-        return this.getAttribute("lang");
-    }
-
-    public void setLang(final String lang) {
-        this.setAttribute("lang", lang);
-    }
-
-    public String getDir() {
-        return this.getAttribute("dir");
-    }
-
-    public void setDir(final String dir) {
-        this.setAttribute("dir", dir);
-    }
-
-    public final String getAttribute(final String name) {
-        final String normalName = normalizeAttributeName(name);
-        synchronized (this) {
-            final Map<String, String> attributes = this.attributes;
-            return attributes == null ? null : attributes.get(normalName);
+    override fun getAttribute(name: String): String? {
+        val normalName: String = normalizeAttributeName(name)
+        synchronized(this) {
+            val attributes: MutableMap<String?, String?>? = this.attributes
+            return if (attributes == null) null else attributes.get(normalName)
         }
     }
 
-    private Attr getAttr(final String normalName, final String value) {
+    private fun getAttr(normalName: String?, value: String?): Attr {
         // TODO: "specified" attributes
-        return new AttrImpl(normalName, value, true, this, "id".equals(normalName));
+        return AttrImpl(normalName, value, true, this, "id" == normalName)
     }
 
-    public Attr getAttributeNode(final String name) {
-        final String normalName = normalizeAttributeName(name);
-        synchronized (this) {
-            final Map<String, String> attributes = this.attributes;
-            final String value = attributes == null ? null : attributes.get(normalName);
-            return value == null ? null : this.getAttr(normalName, value);
+    override fun getAttributeNode(name: String): Attr? {
+        val normalName: String = normalizeAttributeName(name)
+        synchronized(this) {
+            val attributes: MutableMap<String?, String?>? = this.attributes
+            val value = if (attributes == null) null else attributes.get(normalName)
+            return if (value == null) null else this.getAttr(normalName, value)
         }
     }
 
-    public Attr getAttributeNodeNS(final String namespaceURI, final String localName) throws DOMException {
-        throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "Namespaces not supported");
+    @Throws(DOMException::class)
+    override fun getAttributeNodeNS(namespaceURI: String?, localName: String?): Attr? {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Namespaces not supported")
     }
 
-    public String getAttributeNS(final String namespaceURI, final String localName) throws DOMException {
-        throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "Namespaces not supported");
+    @Throws(DOMException::class)
+    override fun getAttributeNS(namespaceURI: String?, localName: String?): String {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Namespaces not supported")
     }
 
-    public NodeList getElementsByTagName(final String name) {
-        final boolean matchesAll = "*".equals(name);
-        final List<Node> descendents = new LinkedList<>();
-        synchronized (this.treeLock) {
-            final ArrayList<Node> nl = this.nodeList;
+    override fun getElementsByTagName(name: String?): NodeList {
+        val matchesAll = "*" == name
+        val descendents: MutableList<Node?> = LinkedList<Node?>()
+        synchronized(this.treeLock) {
+            val nl = this.nodeList
             if (nl != null) {
-                final Iterator<Node> i = nl.iterator();
+                val i = nl.iterator()
                 while (i.hasNext()) {
-                    final Node child = i.next();
-                    if (child instanceof Element childElement) {
-                        if (matchesAll || isTagName(childElement, name)) {
-                            descendents.add(child);
+                    val child = i.next()
+                    if (child is Element) {
+                        if (matchesAll || isTagName(child, name)) {
+                            descendents.add(child)
                         }
-                        final NodeList sublist = childElement.getElementsByTagName(name);
-                        final int length = sublist.getLength();
-                        for (int idx = 0; idx < length; idx++) {
-                            descendents.add(sublist.item(idx));
+                        val sublist = child.getElementsByTagName(name)
+                        val length = sublist.length
+                        for (idx in 0..<length) {
+                            descendents.add(sublist.item(idx))
                         }
                     }
                 }
             }
         }
-        return new NodeListImpl(descendents);
+        return NodeListImpl(descendents)
     }
 
-    public NodeList getElementsByTagNameNS(final String namespaceURI, final String localName) throws DOMException {
-        throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "Namespaces not supported");
+    @Throws(DOMException::class)
+    override fun getElementsByTagNameNS(namespaceURI: String?, localName: String?): NodeList {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Namespaces not supported")
     }
 
-    public TypeInfo getSchemaTypeInfo() {
-        throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "Namespaces not supported");
+    override fun getSchemaTypeInfo(): TypeInfo? {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Namespaces not supported")
     }
 
-    public String getTagName() {
+    override fun getTagName(): String {
         // In HTML, tag names are supposed to be returned in upper-case, but in XHTML they are returned in original case
         // as per https://developer.mozilla.org/en-US/docs/Web/API/Element.tagName
-        return this.getNodeName().toUpperCase();
+        return this.nodeName.uppercase(Locale.getDefault())
     }
 
-    public boolean hasAttribute(final String name) {
-        final String normalName = normalizeAttributeName(name);
-        synchronized (this) {
-            final Map<String, String> attributes = this.attributes;
-            return attributes != null && attributes.containsKey(normalName);
+    override fun hasAttribute(name: String): Boolean {
+        val normalName: String = normalizeAttributeName(name)
+        synchronized(this) {
+            val attributes: MutableMap<String?, String?>? = this.attributes
+            return attributes != null && attributes.containsKey(normalName)
         }
     }
 
-    public boolean hasAttributeNS(final String namespaceURI, final String localName) throws DOMException {
-        throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "Namespaces not supported");
+    @Throws(DOMException::class)
+    override fun hasAttributeNS(namespaceURI: String?, localName: String?): Boolean {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Namespaces not supported")
     }
 
-    public void removeAttribute(final String name) throws DOMException {
-        changeAttribute(name, null);
+    @Throws(DOMException::class)
+    override fun removeAttribute(name: String) {
+        changeAttribute(name, null)
     }
 
-    public Attr removeAttributeNode(final Attr oldAttr) throws DOMException {
-        final String attrName = oldAttr.getName();
-        final String oldValue = changeAttribute(attrName, null);
+    @Throws(DOMException::class)
+    override fun removeAttributeNode(oldAttr: Attr): Attr? {
+        val attrName = oldAttr.name
+        val oldValue = changeAttribute(attrName, null)
 
-        final String normalName = normalizeAttributeName(attrName);
-        return oldValue == null ? null : this.getAttr(normalName, oldValue);
+        val normalName: String = normalizeAttributeName(attrName)
+        return if (oldValue == null) null else this.getAttr(normalName, oldValue)
     }
 
-  /*
+    /*
   protected void assignAttributeField(final String normalName, final String value) {
     // Note: overriders assume that processing here is only done after
     // checking attribute names, i.e. they may not call the super
@@ -261,48 +235,61 @@ public class ElementImpl extends NodeImpl implements Element, EventTarget {
       }
     }
   }*/
-
-    public void removeAttributeNS(final String namespaceURI, final String localName) throws DOMException {
-        throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "Namespaces not supported");
+    @Throws(DOMException::class)
+    override fun removeAttributeNS(namespaceURI: String?, localName: String?) {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Namespaces not supported")
     }
 
-    public void setAttribute(final String name, final String value) throws DOMException {
+    @Throws(DOMException::class)
+    override fun setAttribute(name: String, value: String?) {
         // Convert null to "null" : String.
         // This is how Firefox behaves and is also consistent with DOM 3
-        final String valueNonNull = value == null ? "null" : value;
-        changeAttribute(name, valueNonNull);
+        val valueNonNull = if (value == null) "null" else value
+        changeAttribute(name, valueNonNull)
     }
 
-    public Attr setAttributeNode(final Attr newAttr) throws DOMException {
-        changeAttribute(newAttr.getName(), newAttr.getValue());
+    @Throws(DOMException::class)
+    override fun setAttributeNode(newAttr: Attr): Attr {
+        changeAttribute(newAttr.name, newAttr.value)
 
-        return newAttr;
+        return newAttr
     }
 
-    public Attr setAttributeNodeNS(final Attr newAttr) throws DOMException {
-        throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "Namespaces not supported");
+    @Throws(DOMException::class)
+    override fun setAttributeNodeNS(newAttr: Attr?): Attr? {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Namespaces not supported")
     }
 
-    public void setAttributeNS(final String namespaceURI, final String qualifiedName, final String value) throws DOMException {
-        throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "Namespaces not supported");
+    @Throws(DOMException::class)
+    override fun setAttributeNS(namespaceURI: String?, qualifiedName: String?, value: String?) {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Namespaces not supported")
     }
 
-    public void setIdAttribute(final String name, final boolean isId) throws DOMException {
-        final String normalName = normalizeAttributeName(name);
-        if (!"id".equals(normalName)) {
-            throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "IdAttribute can't be anything other than ID");
+    @Throws(DOMException::class)
+    override fun setIdAttribute(name: String, isId: Boolean) {
+        val normalName: String = normalizeAttributeName(name)
+        if ("id" != normalName) {
+            throw DOMException(
+                DOMException.NOT_SUPPORTED_ERR,
+                "IdAttribute can't be anything other than ID"
+            )
         }
     }
 
-    public void setIdAttributeNode(final Attr idAttr, final boolean isId) throws DOMException {
-        final String normalName = normalizeAttributeName(idAttr.getName());
-        if (!"id".equals(normalName)) {
-            throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "IdAttribute can't be anything other than ID");
+    @Throws(DOMException::class)
+    override fun setIdAttributeNode(idAttr: Attr, isId: Boolean) {
+        val normalName: String = normalizeAttributeName(idAttr.name)
+        if ("id" != normalName) {
+            throw DOMException(
+                DOMException.NOT_SUPPORTED_ERR,
+                "IdAttribute can't be anything other than ID"
+            )
         }
     }
 
-    public void setIdAttributeNS(final String namespaceURI, final String localName, final boolean isId) throws DOMException {
-        throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "Namespaces not supported");
+    @Throws(DOMException::class)
+    override fun setIdAttributeNS(namespaceURI: String?, localName: String?, isId: Boolean) {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Namespaces not supported")
     }
 
     /*
@@ -310,9 +297,8 @@ public class ElementImpl extends NodeImpl implements Element, EventTarget {
      *
      * @see org.xamjwg.html.domimpl.NodeImpl#getLocalName()
      */
-    @Override
-    public String getLocalName() {
-        return this.getNodeName();
+    override fun getLocalName(): String {
+        return this.nodeName
     }
 
     /*
@@ -320,9 +306,8 @@ public class ElementImpl extends NodeImpl implements Element, EventTarget {
      *
      * @see org.xamjwg.html.domimpl.NodeImpl#getNodeName()
      */
-    @Override
-    public String getNodeName() {
-        return this.name;
+    override fun getNodeName(): String {
+        return this.name
     }
 
     /*
@@ -330,9 +315,8 @@ public class ElementImpl extends NodeImpl implements Element, EventTarget {
      *
      * @see org.xamjwg.html.domimpl.NodeImpl#getNodeType()
      */
-    @Override
-    public short getNodeType() {
-        return Node.ELEMENT_NODE;
+    override fun getNodeType(): Short {
+        return ELEMENT_NODE
     }
 
     /*
@@ -340,9 +324,9 @@ public class ElementImpl extends NodeImpl implements Element, EventTarget {
      *
      * @see org.xamjwg.html.domimpl.NodeImpl#getNodeValue()
      */
-    @Override
-    public String getNodeValue() throws DOMException {
-        return null;
+    @Throws(DOMException::class)
+    override fun getNodeValue(): String? {
+        return null
     }
 
     /*
@@ -350,8 +334,8 @@ public class ElementImpl extends NodeImpl implements Element, EventTarget {
      *
      * @see org.xamjwg.html.domimpl.NodeImpl#setNodeValue(java.lang.String)
      */
-    @Override
-    public void setNodeValue(final String nodeValue) throws DOMException {
+    @Throws(DOMException::class)
+    override fun setNodeValue(nodeValue: String?) {
         // nop
     }
 
@@ -361,106 +345,105 @@ public class ElementImpl extends NodeImpl implements Element, EventTarget {
      *
      * @param includeComment
      */
-    protected String getRawInnerText(final boolean includeComment) {
-        synchronized (this.treeLock) {
-            final ArrayList<Node> nl = this.nodeList;
+    protected fun getRawInnerText(includeComment: Boolean): String {
+        synchronized(this.treeLock) {
+            val nl = this.nodeList
             if (nl != null) {
-                final Iterator<Node> i = nl.iterator();
-                StringBuffer sb = null;
+                val i = nl.iterator()
+                var sb: StringBuffer? = null
                 while (i.hasNext()) {
-                    final Object node = i.next();
-                    if (node instanceof Text tn) {
-                        final String txt = tn.getNodeValue();
-                        if (!"".equals(txt)) {
+                    val node: Any? = i.next()
+                    if (node is Text) {
+                        val txt = node.nodeValue
+                        if ("" != txt) {
                             if (sb == null) {
-                                sb = new StringBuffer();
+                                sb = StringBuffer()
                             }
-                            sb.append(txt);
+                            sb.append(txt)
                         }
-                    } else if (node instanceof ElementImpl en) {
-                        final String txt = en.getRawInnerText(includeComment);
-                        if (!"".equals(txt)) {
+                    } else if (node is ElementImpl) {
+                        val txt = node.getRawInnerText(includeComment)
+                        if ("" != txt) {
                             if (sb == null) {
-                                sb = new StringBuffer();
+                                sb = StringBuffer()
                             }
-                            sb.append(txt);
+                            sb.append(txt)
                         }
-                    } else if (includeComment && (node instanceof Comment cn)) {
-                        final String txt = cn.getNodeValue();
-                        if (!"".equals(txt)) {
+                    } else if (includeComment && (node is Comment)) {
+                        val txt = node.nodeValue
+                        if ("" != txt) {
                             if (sb == null) {
-                                sb = new StringBuffer();
+                                sb = StringBuffer()
                             }
-                            sb.append(txt);
+                            sb.append(txt)
                         }
                     }
                 }
-                return sb == null ? "" : sb.toString();
+                return if (sb == null) "" else sb.toString()
             } else {
-                return "";
+                return ""
             }
         }
     }
 
-    @Override
-    public String toString() {
-        final StringBuffer sb = new StringBuffer();
-        sb.append(this.getNodeName());
-        sb.append(" [");
-        final NamedNodeMap attribs = this.getAttributes();
-        final int length = attribs.getLength();
-        for (int i = 0; i < length; i++) {
-            final Attr attr = (Attr) attribs.item(i);
-            sb.append(attr.getNodeName());
-            sb.append('=');
-            sb.append(attr.getNodeValue());
+    override fun toString(): String {
+        val sb = StringBuffer()
+        sb.append(this.nodeName)
+        sb.append(" [")
+        val attribs = this.attributes
+        val length = attribs.length
+        for (i in 0..<length) {
+            val attr = attribs.item(i) as Attr
+            sb.append(attr.nodeName)
+            sb.append('=')
+            sb.append(attr.nodeValue)
             if ((i + 1) < length) {
-                sb.append(',');
+                sb.append(',')
             }
         }
-        sb.append("]");
-        return sb.toString();
+        sb.append("]")
+        return sb.toString()
     }
 
-    public void setInnerText(final String newText) {
+    fun setInnerText(newText: String?) {
         // TODO: Is this check for owner document really required?
-        final org.w3c.dom.Document document = this.document;
+        val document = this.document
         if (document == null) {
-            this.warn("setInnerText(): Element " + this + " does not belong to a document.");
-            return;
+            this.warn("setInnerText(): Element " + this + " does not belong to a document.")
+            return
         }
 
-        removeAllChildrenImpl();
+        removeAllChildrenImpl()
 
         // Create node and call appendChild outside of synchronized block.
-        final Node textNode = document.createTextNode(newText);
-        this.appendChild(textNode);
+        val textNode: Node? = document.createTextNode(newText)
+        this.appendChild(textNode)
     }
 
-    @Override
-    protected Node createSimilarNode() {
-        final HTMLDocumentImpl doc = (HTMLDocumentImpl) this.document;
-        return doc == null ? null : doc.createElement(this.getTagName());
+    override fun createSimilarNode(): Node? {
+        val doc = this.document as HTMLDocumentImpl?
+        return if (doc == null) null else doc.createElement(this.tagName)
     }
 
-    @Override
-    protected String htmlEncodeChildText(final String text) {
+    override fun htmlEncodeChildText(text: String): String? {
         if (HtmlParser.isDecodeEntities(this.name)) {
-            return Strings.strictHtmlEncode(text, false);
+            return Strings.strictHtmlEncode(text, false)
         } else {
-            return text;
+            return text
         }
     }
 
     /**
      * To be overridden by Elements that need a notification of attribute changes.
-     * <p>
+     *
+     *
      * This is called only when the element is attached to a document at the time
      * the attribute is changed. If an attribute is changed while not attached to
      * a document, this function is *not* called when the element is attached to a
      * document. We chose this design because it covers our current use cases
      * well.
-     * <p>
+     *
+     *
      * If, in the future, a notification is always desired then the design can be
      * altered easily later.
      *
@@ -468,15 +451,15 @@ public class ElementImpl extends NodeImpl implements Element, EventTarget {
      * @param oldValue null, if the attribute was absent
      * @param newValue null, if the attribute is now removed
      */
-    protected void handleAttributeChanged(final String name, final String oldValue, final String newValue) {
+    protected open fun handleAttributeChanged(name: String?, oldValue: String?, newValue: String?) {
         // TODO: Need to move this to a separate function, similar to updateIdMap()
         // TODO: Need to update the name map, whenever attachment changes
-        final HTMLDocumentImpl document = (HTMLDocumentImpl) this.document;
-        if ("name".equals(name)) {
+        val document = this.document as HTMLDocumentImpl
+        if ("name" == name) {
             if (oldValue != null) {
-                document.removeNamedItem(oldValue);
+                document.removeNamedItem(oldValue)
             }
-            document.setNamedItem(newValue, this);
+            document.setNamedItem(newValue, this)
         }
     }
 
@@ -486,110 +469,121 @@ public class ElementImpl extends NodeImpl implements Element, EventTarget {
      *
      * @return the old attribute value. null if not set previously.
      */
-    private String changeAttribute(final String name, final String newValue) {
-        final String normalName = normalizeAttributeName(name);
+    private fun changeAttribute(name: String, newValue: String?): String? {
+        val normalName: String = normalizeAttributeName(name)
 
-        String oldValue = null;
-        synchronized (this) {
+        var oldValue: String? = null
+        synchronized(this) {
             if (newValue == null) {
                 if (attributes != null) {
-                    oldValue = attributes.remove(normalName);
+                    oldValue = attributes!!.remove(normalName)
                 }
             } else {
                 if (attributes == null) {
-                    attributes = new HashMap<>(2);
+                    attributes = HashMap<String?, String?>(2)
                 }
 
-                oldValue = attributes.put(normalName, newValue);
+                oldValue = attributes!!.put(normalName, newValue)
             }
         }
 
-        if ("id".equals(normalName)) {
-            updateIdMap(oldValue, newValue);
+        if ("id" == normalName) {
+            updateIdMap(oldValue, newValue)
         }
 
         if (isAttachedToDocument()) {
-            handleAttributeChanged(normalName, oldValue, newValue);
+            handleAttributeChanged(normalName, oldValue, newValue)
         }
 
-        return oldValue;
+        return oldValue
     }
 
-    protected void updateIdMap(final boolean isAttached) {
+    fun updateIdMap(isAttached: Boolean) {
         if (hasAttribute("id")) {
-            final String id = getId();
+            val id = this.id!!
             if (isAttached) {
-                ((HTMLDocumentImpl) document).setElementById(id, this);
+                (document as HTMLDocumentImpl).setElementById(id, this)
             } else {
-                ((HTMLDocumentImpl) document).removeElementById(getId());
+                (document as HTMLDocumentImpl).removeElementById(this.id)
             }
         }
     }
 
-    private void updateIdMap(final String oldIdValue, final String newIdValue) {
-        if (isAttachedToDocument() && !java.util.Objects.equals(oldIdValue, newIdValue)) {
+    private fun updateIdMap(oldIdValue: String?, newIdValue: String?) {
+        if (isAttachedToDocument() && oldIdValue != newIdValue) {
             if (oldIdValue != null) {
-                ((HTMLDocumentImpl) document).removeElementById(oldIdValue);
+                (document as HTMLDocumentImpl).removeElementById(oldIdValue)
             }
             if (newIdValue != null) {
-                ((HTMLDocumentImpl) document).setElementById(newIdValue, this);
+                (document as HTMLDocumentImpl).setElementById(newIdValue, this)
             }
         }
     }
 
-    // TODO: GH #88 Need to implement these for Document and DocumentFragment as part of ParentNode API
-    public Element getFirstElementChild() {
-        final ArrayList<Node> nl = this.nodeList;
-        for (final Node n : nl) {
-            if (n instanceof Element) {
-                return (Element) n;
+    val firstElementChild: Element?
+        // TODO: GH #88 Need to implement these for Document and DocumentFragment as part of ParentNode API
+        get() {
+            val nl = this.nodeList
+            for (n in nl) {
+                if (n is Element) {
+                    return n
+                }
             }
+
+            return null
         }
 
-        return null;
-    }
-
-    public Element getLastElementChild() {
-        final ArrayList<Node> nl = this.nodeList;
-        final int N = nl.size();
-        for (int i = N - 1; i >= 0; i--) {
-            final Node n = nl.get(i);
-            if (n instanceof Element) {
-                return (Element) n;
+    val lastElementChild: Element?
+        get() {
+            val nl = this.nodeList
+            val N = nl.size
+            for (i in N - 1 downTo 0) {
+                val n = nl.get(i)
+                if (n is Element) {
+                    return n
+                }
             }
+
+            return null
         }
 
-        return null;
-    }
-
-    public int getChildElementCount() {
-        final ArrayList<Node> nl = this.nodeList;
-        int count = 0;
-        for (final Node n : nl) {
-            if (n instanceof Element) {
-                count++;
+    val childElementCount: Int
+        get() {
+            val nl = this.nodeList
+            var count = 0
+            for (n in nl) {
+                if (n is Element) {
+                    count++
+                }
             }
+
+            return count
         }
 
-        return count;
-    }
-
-    @Override
-    public void addEventListener(String type, EventListener listener, boolean useCapture) {
+    override fun addEventListener(type: String?, listener: EventListener?, useCapture: Boolean) {
         // TODO Auto-generated method stub
-        System.out.println("TODO: addEventListener() in ElementImpl");
+        println("TODO: addEventListener() in ElementImpl")
     }
 
-    @Override
-    public void removeEventListener(String type, EventListener listener, boolean useCapture) {
+    override fun removeEventListener(type: String?, listener: EventListener?, useCapture: Boolean) {
         // TODO Auto-generated method stub
-        System.out.println("TODO: removeEventListener() in ElementImpl");
+        println("TODO: removeEventListener() in ElementImpl")
     }
 
-    @Override
-    public boolean dispatchEvent(Event evt) throws EventException {
+    @Throws(EventException::class)
+    override fun dispatchEvent(evt: Event?): Boolean {
         // TODO Auto-generated method stub
-        System.out.println("TODO: dispatchEvent() in ElementImpl");
-        return false;
+        println("TODO: dispatchEvent() in ElementImpl")
+        return false
+    }
+
+    companion object {
+        protected fun isTagName(node: Node, name: String?): Boolean {
+            return node.nodeName.equals(name, ignoreCase = true)
+        }
+
+        protected fun normalizeAttributeName(name: String): String {
+            return name.lowercase(Locale.getDefault())
+        }
     }
 }

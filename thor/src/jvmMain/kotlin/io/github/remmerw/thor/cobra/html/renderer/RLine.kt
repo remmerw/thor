@@ -21,81 +21,26 @@
 /*
  * Created on Apr 16, 2005
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
-
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-
-import cz.vutbr.web.css.CSSProperty.VerticalAlign;
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode;
-import io.github.remmerw.thor.cobra.html.style.RenderState;
+import cz.vutbr.web.css.CSSProperty.VerticalAlign
+import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
+import io.github.remmerw.thor.cobra.html.style.RenderState
+import java.awt.Color
+import java.awt.Graphics
+import java.awt.Rectangle
+import java.awt.event.MouseEvent
+import kotlin.math.max
 
 /**
  * @author J. H. S.
  */
-class RLine extends BaseRCollection {
-    private final ArrayList<@NonNull Renderable> renderables = new ArrayList<>(8);
-    // private final RenderState startRenderState;
-    private int baseLineOffset;
-    private int desiredMaxWidth;
-
-    /**
-     * Offset where next renderable should be placed. This can be different to
-     * width.
-     */
-    private int xoffset;
-
-    private boolean allowOverflow = false;
-    private boolean firstAllowOverflowWord = false;
-    private BoundableRenderable mousePressTarget;
-    private LineBreak lineBreak;
-
-    public RLine(final ModelNode modelNode, final RenderableContainer container, final int x, final int y, final int desiredMaxWidth,
-                 final int height,
-                 final boolean initialAllowOverflow) {
-        // Note that in the case of RLine, modelNode is the context node
-        // at the beginning of the line, not a node that encloses the whole line.
-        super(container, modelNode);
-        this.x = x;
-        this.y = y;
-        this.height = height;
-        this.desiredMaxWidth = desiredMaxWidth;
-        // Layout here can always be "invalidated"
-        this.layoutUpTreeCanBeInvalidated = true;
-        this.allowOverflow = initialAllowOverflow;
-    }
-
-    public boolean isAllowOverflow() {
-        return this.allowOverflow;
-    }
-
-    public void setAllowOverflow(final boolean flag) {
-        if (flag != this.allowOverflow) {
-            this.allowOverflow = flag;
-            if (flag) {
-                // Set to true only if allowOverflow was
-                // previously false.
-                this.firstAllowOverflowWord = true;
-            }
-        }
-    }
-
-    /**
-     * This method should only be invoked when the line has no items yet.
-     */
-    public void changeLimits(final int x, final int desiredMaxWidth) {
-        this.x = x;
-        this.desiredMaxWidth = desiredMaxWidth;
-    }
+internal class RLine(
+    modelNode: ModelNode?, container: RenderableContainer?, x: Int, y: Int, desiredMaxWidth: Int,
+    height: Int,
+    initialAllowOverflow: Boolean
+) : BaseRCollection(container, modelNode) {
+    private val renderables = ArrayList<Renderable>(8)
 
     /*
      * (non-Javadoc)
@@ -103,84 +48,130 @@ class RLine extends BaseRCollection {
      * @see
      * net.sourceforge.xamj.domimpl.markup.Renderable#paint(java.awt.Graphics)
      */
+    // private final RenderState startRenderState;
+    var baselineOffset: Int = 0
+        private set
+    private var desiredMaxWidth: Int
 
-    public int getBaselineOffset() {
-        return this.baseLineOffset;
+    /**
+     * Offset where next renderable should be placed. This can be different to
+     * width.
+     */
+    private var xoffset = 0
+
+    private var allowOverflow = false
+    private var firstAllowOverflowWord = false
+    private var mousePressTarget: BoundableRenderable? = null
+    var lineBreak: LineBreak? = null
+
+    init {
+        // Note that in the case of RLine, modelNode is the context node
+        // at the beginning of the line, not a node that encloses the whole line.
+        this.x = x
+        this.y = y
+        this.height = height
+        this.desiredMaxWidth = desiredMaxWidth
+        // Layout here can always be "invalidated"
+        this.layoutUpTreeCanBeInvalidated = true
+        this.allowOverflow = initialAllowOverflow
     }
 
-    @Override
-    protected void invalidateLayoutLocal() {
+    fun isAllowOverflow(): Boolean {
+        return this.allowOverflow
+    }
+
+    fun setAllowOverflow(flag: Boolean) {
+        if (flag != this.allowOverflow) {
+            this.allowOverflow = flag
+            if (flag) {
+                // Set to true only if allowOverflow was
+                // previously false.
+                this.firstAllowOverflowWord = true
+            }
+        }
+    }
+
+    /**
+     * This method should only be invoked when the line has no items yet.
+     */
+    fun changeLimits(x: Int, desiredMaxWidth: Int) {
+        this.x = x
+        this.desiredMaxWidth = desiredMaxWidth
+    }
+
+    override fun invalidateLayoutLocal() {
         // Workaround for fact that RBlockViewport does not
         // get validated or invalidated.
-        this.layoutUpTreeCanBeInvalidated = true;
+        this.layoutUpTreeCanBeInvalidated = true
     }
 
-    public void paint(final Graphics g) {
+    override fun paint(g: Graphics) {
         // Paint according to render state of the start of line first.
-        final RenderState rs = this.modelNode.getRenderState();
+        val rs = this.modelNode.renderState
 
-        if ((rs != null) && (rs.getVisibility() != RenderState.VISIBILITY_VISIBLE)) {
+        if ((rs != null) && (rs.visibility != RenderState.VISIBILITY_VISIBLE)) {
             // Just don't paint it.
-            return;
+            return
         }
 
         if (rs != null) {
-            final Color textColor = rs.getColor();
-            g.setColor(textColor);
-            final Font font = rs.getFont();
-            g.setFont(font);
+            val textColor = rs.color
+            g.color = textColor
+            val font = rs.font
+            g.font = font
         }
         // Note that partial paints of the line can only be done
         // if all RStyleChanger's are applied first.
-        final Iterator<Renderable> i = this.renderables.iterator();
+        val i = this.renderables.iterator()
         while (i.hasNext()) {
-            final Renderable r = i.next();
-            if (r instanceof RElement relement) {
+            val r = i.next()
+            if (r is RElement) {
                 // RElements should be translated.
-                if (!relement.isDelegated()) {
-                    final Graphics newG = g.create();
-                    newG.translate(relement.getVisualX(), relement.getVisualY());
+                if (!r.isDelegated()) {
+                    val newG = g.create()
+                    newG.translate(r.getVisualX(), r.getVisualY())
                     try {
-                        relement.paint(newG);
+                        r.paint(newG)
                     } finally {
-                        newG.dispose();
+                        newG.dispose()
                     }
                 }
-            } else if (r instanceof BoundableRenderable br) {
-                if (!br.isDelegated()) {
-                    br.paintTranslated(g);
+            } else if (r is BoundableRenderable) {
+                if (!r.isDelegated()) {
+                    r.paintTranslated(g)
                 }
             } else {
-                r.paint(g);
+                r.paint(g)
             }
         }
     }
 
-    @Override
-    public boolean extractSelectionText(final StringBuffer buffer, final boolean inSelection, final RenderableSpot startPoint,
-                                        final RenderableSpot endPoint) {
-        final boolean result = super.extractSelectionText(buffer, inSelection, startPoint, endPoint);
+    override fun extractSelectionText(
+        buffer: StringBuffer, inSelection: Boolean, startPoint: RenderableSpot?,
+        endPoint: RenderableSpot?
+    ): Boolean {
+        val result = super.extractSelectionText(buffer, inSelection, startPoint, endPoint)
         if (result) {
-            final LineBreak br = this.lineBreak;
+            val br = this.lineBreak
             if (br != null) {
-                buffer.append(System.getProperty("line.separator"));
+                buffer.append(System.getProperty("line.separator"))
             } else {
-                final ArrayList<Renderable> renderables = this.renderables;
-                final int size = renderables.size();
-                if ((size > 0) && !(renderables.get(size - 1) instanceof RBlank)) {
-                    buffer.append(" ");
+                val renderables = this.renderables
+                val size = renderables.size
+                if ((size > 0) && renderables.get(size - 1) !is RBlank) {
+                    buffer.append(" ")
                 }
             }
         }
-        return result;
+        return result
     }
 
-    public final void addStyleChanger(final @NonNull RStyleChanger sc) {
-        this.renderables.add(sc);
+    fun addStyleChanger(sc: RStyleChanger) {
+        this.renderables.add(sc)
     }
 
-    public final void simplyAdd(final @NonNull Renderable r) {
-        this.renderables.add(r);
+    fun simplyAdd(r: Renderable) {
+        this.renderables.add(r)
     }
 
     /**
@@ -188,133 +179,138 @@ class RLine extends BaseRCollection {
      * that RLine does not set sizes, but only origins.
      *
      * @throws OverflowException Thrown if the renderable overflows the line. All overflowing
-     *                           renderables are added to the exception.
+     * renderables are added to the exception.
      */
-    public final void add(final Renderable renderable) throws OverflowException {
-        if (renderable instanceof RWord) {
-            this.addWord((RWord) renderable);
-        } else if (renderable instanceof RBlank) {
-            this.addBlank((RBlank) renderable);
-        } else if (renderable instanceof RElement) {
-            this.addElement((RElement) renderable);
-        } else if (renderable instanceof RSpacing) {
-            this.addSpacing((RSpacing) renderable);
-        } else if (renderable instanceof RStyleChanger) {
-            this.addStyleChanger((RStyleChanger) renderable);
-        } else if (renderable instanceof RFloatInfo) {
-            this.simplyAdd(renderable);
+    @Throws(OverflowException::class)
+    fun add(renderable: Renderable?) {
+        if (renderable is RWord) {
+            this.addWord(renderable)
+        } else if (renderable is RBlank) {
+            this.addBlank(renderable)
+        } else if (renderable is RElement) {
+            this.addElement(renderable)
+        } else if (renderable is RSpacing) {
+            this.addSpacing(renderable)
+        } else if (renderable is RStyleChanger) {
+            this.addStyleChanger(renderable)
+        } else if (renderable is RFloatInfo) {
+            this.simplyAdd(renderable)
         } else {
-            throw new IllegalArgumentException("Can't add " + renderable);
+            throw IllegalArgumentException("Can't add " + renderable)
         }
     }
 
-    public final void addWord(final RWord rword) throws OverflowException {
+    @Throws(OverflowException::class)
+    fun addWord(rword: RWord) {
         // Check if it fits horzizontally
-        int offset = this.xoffset;
-        final int wiwidth = rword.width;
-        final boolean allowOverflow = this.allowOverflow;
-        final boolean firstAllowOverflowWord = this.firstAllowOverflowWord;
+        var offset = this.xoffset
+        val wiwidth = rword.width
+        val allowOverflow = this.allowOverflow
+        val firstAllowOverflowWord = this.firstAllowOverflowWord
         if (allowOverflow && firstAllowOverflowWord) {
-            this.firstAllowOverflowWord = false;
+            this.firstAllowOverflowWord = false
         }
         if ((!allowOverflow || firstAllowOverflowWord) && (offset != 0) && ((offset + wiwidth) > this.desiredMaxWidth)) {
-            final ArrayList<Renderable> renderables = this.renderables;
-            ArrayList<Renderable> overflow = null;
-            boolean cancel = false;
+            val renderables = this.renderables
+            var overflow: ArrayList<Renderable?>? = null
+            var cancel = false
             // Check if other words need to be overflown (for example,
             // a word just before a markup tag adjacent to the word
             // we're trying to add). An RBlank between words prevents
             // a word from being overflown to the next line (and this
             // is the usefulness of RBlank.)
-            int newOffset = offset;
-            int newWidth = offset;
-            for (int i = renderables.size(); --i >= 0; ) {
-                final Renderable renderable = renderables.get(i);
-                if ((renderable instanceof RWord) || !(renderable instanceof BoundableRenderable br)) {
+            var newOffset = offset
+            var newWidth = offset
+            var i = renderables.size
+            while (--i >= 0) {
+                val renderable: Renderable? = renderables.get(i)
+                if ((renderable is RWord) || renderable !is BoundableRenderable) {
                     if (overflow == null) {
-                        overflow = new ArrayList<>();
+                        overflow = ArrayList<Renderable?>()
                     }
-                    if ((renderable != rword) && (renderable instanceof RWord) && (((RWord) renderable).getX() == 0)) {
+                    if ((renderable !== rword) && (renderable is RWord) && (renderable.getX() == 0)) {
                         // Can't overflow words starting at offset zero.
                         // Note that all or none should be overflown.
-                        cancel = true;
+                        cancel = true
                         // No need to set offset - set later.
-                        break;
+                        break
                     }
-                    overflow.add(0, renderable);
-                    renderables.remove(i);
+                    overflow.add(0, renderable)
+                    renderables.removeAt(i)
                 } else {
-                    if (renderable instanceof RBlank rblank) {
-                        newWidth = rblank.getX();
-                        newOffset = newWidth + rblank.getWidth();
+                    if (renderable is RBlank) {
+                        newWidth = renderable.getX()
+                        newOffset = newWidth + renderable.getWidth()
                     } else {
-                        newWidth = newOffset = br.getX() + br.getWidth();
+                        newOffset = renderable.getX() + renderable.getWidth()
+                        newWidth = newOffset
                     }
-                    break;
+                    break
                 }
             }
             if (cancel) {
                 // Oops. Need to undo overflow.
                 if (overflow != null) {
-                    final Iterator<Renderable> i = overflow.iterator();
+                    val i = overflow.iterator()
                     while (i.hasNext()) {
-                        renderables.add(i.next());
+                        renderables.add(i.next()!!)
                     }
                 }
             } else {
-                this.xoffset = newOffset;
-                this.width = newWidth;
+                this.xoffset = newOffset
+                this.width = newWidth
                 if (overflow == null) {
-                    throw new OverflowException(Collections.singleton(rword));
+                    throw OverflowException(mutableSetOf<Renderable?>(rword))
                 } else {
-                    overflow.add(rword);
-                    throw new OverflowException(overflow);
+                    overflow.add(rword)
+                    throw OverflowException(overflow)
                 }
             }
         }
 
         // Add it
-
-        int extraHeight = 0;
-        final int maxDescent = this.height - this.baseLineOffset;
+        var extraHeight = 0
+        val maxDescent = this.height - this.baselineOffset
         if (rword.descent > maxDescent) {
-            extraHeight += (rword.descent - maxDescent);
+            extraHeight += (rword.descent - maxDescent)
         }
-        final int maxAscentPlusLeading = this.baseLineOffset;
+        val maxAscentPlusLeading = this.baselineOffset
         if (rword.ascentPlusLeading > maxAscentPlusLeading) {
-            extraHeight += (rword.ascentPlusLeading - maxAscentPlusLeading);
+            extraHeight += (rword.ascentPlusLeading - maxAscentPlusLeading)
         }
         if (extraHeight > 0) {
-            final int newHeight = this.height + extraHeight;
-            this.adjustHeight(newHeight, newHeight, VerticalAlign.BOTTOM);
+            val newHeight = this.height + extraHeight
+            this.adjustHeight(newHeight, newHeight, VerticalAlign.BOTTOM)
         }
-        this.renderables.add(rword);
-        rword.setParent(this);
-        final int x = offset;
-        offset += wiwidth;
-        this.width = this.xoffset = offset;
-        rword.setOrigin(x, this.baseLineOffset - rword.ascentPlusLeading);
+        this.renderables.add(rword)
+        rword.setParent(this)
+        val x = offset
+        offset += wiwidth
+        this.xoffset = offset
+        this.width = this.xoffset
+        rword.setOrigin(x, this.baselineOffset - rword.ascentPlusLeading)
     }
 
-    public final void addBlank(final RBlank rblank) {
+    fun addBlank(rblank: RBlank) {
         // NOTE: Blanks may be added without concern for wrapping (?)
-        final int x = this.xoffset;
-        final int width = rblank.width;
-        rblank.setOrigin(x, this.baseLineOffset - rblank.ascentPlusLeading);
-        this.renderables.add(rblank);
-        rblank.setParent(this);
+        val x = this.xoffset
+        val width = rblank.width
+        rblank.setOrigin(x, this.baselineOffset - rblank.ascentPlusLeading)
+        this.renderables.add(rblank)
+        rblank.setParent(this)
         // Only move xoffset, but not width
-        this.xoffset = x + width;
+        this.xoffset = x + width
     }
 
-    public final void addSpacing(final RSpacing rblank) {
+    fun addSpacing(rblank: RSpacing) {
         // NOTE: Spacing may be added without concern for wrapping (?)
-        final int x = this.xoffset;
-        final int width = rblank.width;
-        rblank.setOrigin(x, (this.height - rblank.height) / 2);
-        this.renderables.add(rblank);
-        rblank.setParent(this);
-        this.width = this.xoffset = x + width;
+        val x = this.xoffset
+        val width = rblank.width
+        rblank.setOrigin(x, (this.height - rblank.height) / 2)
+        this.renderables.add(rblank)
+        rblank.setParent(this)
+        this.xoffset = x + width
+        this.width = this.xoffset
     }
 
     /**
@@ -323,38 +319,29 @@ class RLine extends BaseRCollection {
      * @param elementHeight The required new line height.
      * @param valign
      */
-    private final void setElementY(final RElement relement, final int elementHeight, final @Nullable VerticalAlign valign) {
+    private fun setElementY(relement: RElement, elementHeight: Int, valign: VerticalAlign?) {
         // At this point height should be more than what's needed.
-        int yoffset;
+        val yoffset: Int
         if (valign != null) {
-            switch (valign) {
-                case BOTTOM:
-                    yoffset = this.height - elementHeight;
-                    break;
-                case MIDDLE:
-                    yoffset = (this.height - elementHeight) / 2;
-                    break;
-                case BASELINE:
-                    yoffset = this.baseLineOffset - elementHeight;
-                    break;
-                case TOP:
-                    yoffset = 0;
-                    break;
-                default:
-                    yoffset = this.baseLineOffset - elementHeight;
+            when (valign) {
+                VerticalAlign.BOTTOM -> yoffset = this.height - elementHeight
+                VerticalAlign.MIDDLE -> yoffset = (this.height - elementHeight) / 2
+                VerticalAlign.BASELINE -> yoffset = this.baselineOffset - elementHeight
+                VerticalAlign.TOP -> yoffset = 0
+                else -> yoffset = this.baselineOffset - elementHeight
             }
         } else {
-            yoffset = this.baseLineOffset - elementHeight;
+            yoffset = this.baselineOffset - elementHeight
         }
         // RLine only sets origins, not sizes.
         // relement.setBounds(x, yoffset, width, height);
-        relement.setY(yoffset);
+        relement.setY(yoffset)
     }
 
     /**
      * Positions line elements vertically.
      */
-  /*
+    /*
   final void positionVertically() {
     final ArrayList<Renderable> renderables = this.renderables;
 
@@ -421,62 +408,59 @@ class RLine extends BaseRCollection {
     }
   }
   */
-
     // Check if it fits horizontally
-    final boolean checkFit(final RElement relement) {
-        final int origXOffset = this.xoffset;
-        final int desiredMaxWidth = this.desiredMaxWidth;
-        final int pw = relement.getWidth();
-        final boolean allowOverflow = this.allowOverflow;
-        final boolean firstAllowOverflowWord = this.firstAllowOverflowWord;
+    fun checkFit(relement: RElement): Boolean {
+        val origXOffset = this.xoffset
+        val desiredMaxWidth = this.desiredMaxWidth
+        val pw = relement.getWidth()
+        val allowOverflow = this.allowOverflow
+        val firstAllowOverflowWord = this.firstAllowOverflowWord
         if (allowOverflow && firstAllowOverflowWord) {
-            this.firstAllowOverflowWord = false;
+            this.firstAllowOverflowWord = false
         }
-        final boolean overflows = (!allowOverflow || firstAllowOverflowWord) && (origXOffset != 0) && ((origXOffset + pw) > desiredMaxWidth);
-        return !overflows;
+        val overflows =
+            (!allowOverflow || firstAllowOverflowWord) && (origXOffset != 0) && ((origXOffset + pw) > desiredMaxWidth)
+        return !overflows
     }
 
-    private final void addElement(final RElement relement) throws OverflowException {
+    @Throws(OverflowException::class)
+    private fun addElement(relement: RElement) {
         if (!checkFit(relement)) {
-            throw new OverflowException(Collections.singleton(relement));
+            throw OverflowException(mutableSetOf<Renderable?>(relement))
         }
 
         // Note: Renderable for widget doesn't paint the widget, but
         // it's needed for height readjustment.
-        final int boundsh = this.height;
-        final int origXOffset = this.xoffset;
-        final int pw = relement.getWidth();
-        final int ph = relement.getHeight();
-        int requiredHeight;
+        val boundsh = this.height
+        val origXOffset = this.xoffset
+        val pw = relement.getWidth()
+        val ph = relement.getHeight()
+        val requiredHeight: Int
 
-        final @Nullable VerticalAlign valign = relement.getVAlign();
+        val valign = relement.getVAlign()
         if (valign != null) {
-            switch (valign) {
-                case BASELINE:
-                    requiredHeight = ph + (boundsh - this.baseLineOffset);
-                    break;
-                case MIDDLE:
-                    // TODO: This code probably only works with the older ABS-MIDDLE type of alignment.
-                    requiredHeight = Math.max(ph, (ph / 2) + (boundsh - this.baseLineOffset));
-                    break;
-                default:
-                    requiredHeight = ph;
-                    break;
+            when (valign) {
+                VerticalAlign.BASELINE -> requiredHeight = ph + (boundsh - this.baselineOffset)
+                VerticalAlign.MIDDLE ->                     // TODO: This code probably only works with the older ABS-MIDDLE type of alignment.
+                    requiredHeight = max(ph, (ph / 2) + (boundsh - this.baselineOffset))
+
+                else -> requiredHeight = ph
             }
         } else {
-            requiredHeight = ph;
+            requiredHeight = ph
         }
 
         if (requiredHeight > boundsh) {
             // Height adjustment depends on bounds being already set.
-            this.adjustHeight(requiredHeight, ph, valign);
+            this.adjustHeight(requiredHeight, ph, valign)
         }
-        this.renderables.add(relement);
-        relement.setParent(this);
-        relement.setX(origXOffset);
-        this.setElementY(relement, ph, valign);
-        final int newX = origXOffset + pw;
-        this.width = this.xoffset = newX;
+        this.renderables.add(relement)
+        relement.setParent(this)
+        relement.setX(origXOffset)
+        this.setElementY(relement, ph, valign)
+        val newX = origXOffset + pw
+        this.xoffset = newX
+        this.width = this.xoffset
     }
 
     /**
@@ -486,68 +470,57 @@ class RLine extends BaseRCollection {
      * @param newHeight
      * @param alignmentY
      */
-    private void adjustHeight(final int newHeight, final int elementHeight, final @Nullable VerticalAlign valign) {
+    private fun adjustHeight(newHeight: Int, elementHeight: Int, valign: VerticalAlign?) {
         // Set new line height
         // int oldHeight = this.height;
-        this.height = newHeight;
-        final ArrayList<Renderable> renderables = this.renderables;
+        this.height = newHeight
+        val renderables = this.renderables
         // Find max baseline
-        final FontMetrics firstFm = this.modelNode.getRenderState().getFontMetrics();
-        int maxDescent = firstFm.getDescent();
-        int maxAscentPlusLeading = firstFm.getAscent() + firstFm.getLeading();
-        for (final Renderable renderable : renderables) {
-            final Object r = renderable;
-            if (r instanceof RStyleChanger rstyleChanger) {
-                final FontMetrics fm = rstyleChanger.getModelNode().getRenderState().getFontMetrics();
-                final int descent = fm.getDescent();
+        val firstFm = this.modelNode.renderState!!.fontMetrics
+        var maxDescent = firstFm.getDescent()
+        var maxAscentPlusLeading = firstFm.getAscent() + firstFm.getLeading()
+        for (renderable in renderables) {
+            val r: Any? = renderable
+            if (r is RStyleChanger) {
+                val fm = r.getModelNode().renderState!!.fontMetrics
+                val descent = fm.getDescent()
                 if (descent > maxDescent) {
-                    maxDescent = descent;
+                    maxDescent = descent
                 }
-                final int ascentPlusLeading = fm.getAscent() + fm.getLeading();
+                val ascentPlusLeading = fm.getAscent() + fm.getLeading()
                 if (ascentPlusLeading > maxAscentPlusLeading) {
-                    maxAscentPlusLeading = ascentPlusLeading;
+                    maxAscentPlusLeading = ascentPlusLeading
                 }
             }
         }
-        final int textHeight = maxDescent + maxAscentPlusLeading;
+        val textHeight = maxDescent + maxAscentPlusLeading
 
         // TODO: Need to take into account previous RElement's and
         // their alignments?
-
-        int baseline;
+        val baseline: Int
         if (valign != null) {
-            switch (valign) {
-                case BOTTOM:
-                    baseline = newHeight - maxDescent;
-                    break;
-                case MIDDLE:
-                    baseline = ((newHeight + textHeight) / 2) - maxDescent;
-                    break;
-                case BASELINE:
-                    baseline = elementHeight;
-                    break;
-                case TOP:
-                    baseline = maxAscentPlusLeading;
-                    break;
-                default:
-                    baseline = elementHeight;
-                    break;
+            when (valign) {
+                VerticalAlign.BOTTOM -> baseline = newHeight - maxDescent
+                VerticalAlign.MIDDLE -> baseline = ((newHeight + textHeight) / 2) - maxDescent
+                VerticalAlign.BASELINE -> baseline = elementHeight
+                VerticalAlign.TOP -> baseline = maxAscentPlusLeading
+                else -> baseline = elementHeight
             }
         } else {
-            baseline = elementHeight;
+            baseline = elementHeight
         }
-        this.baseLineOffset = baseline;
+        this.baselineOffset = baseline
 
         // Change bounds of renderables accordingly
-        for (final Renderable renderable : renderables) {
-            final Object r = renderable;
-            if (r instanceof RWord rword) {
-                rword.setY(baseline - rword.ascentPlusLeading);
-            } else if (r instanceof RBlank rblank) {
-                rblank.setY(baseline - rblank.ascentPlusLeading);
-            } else if (r instanceof RElement relement) {
+        for (renderable in renderables) {
+            val r: Any? = renderable
+            if (r is RWord) {
+                r.setY(baseline - r.ascentPlusLeading)
+            } else if (r is RBlank) {
+                r.setY(baseline - r.ascentPlusLeading)
+            } else if (r is RElement) {
                 // int w = relement.getWidth();
-                this.setElementY(relement, relement.getHeight(), relement.getVAlign());
+                this.setElementY(r, r.getHeight(), r.getVAlign())
             } else {
                 // RSpacing and RStyleChanger don't matter?
             }
@@ -555,18 +528,18 @@ class RLine extends BaseRCollection {
         // TODO: Could throw OverflowException when we add floating widgets
     }
 
-    public boolean onMouseClick(final java.awt.event.MouseEvent event, final int x, final int y) {
-        final Renderable[] rarray = this.renderables.toArray(Renderable.EMPTY_ARRAY);
-        final BoundableRenderable r = MarkupUtilities.findRenderable(rarray, x, y, false);
+    override fun onMouseClick(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val rarray = this.renderables.toArray<Renderable?>(Renderable.Companion.EMPTY_ARRAY)
+        val r = MarkupUtilities.findRenderable(rarray, x, y, false)
         if (r != null) {
-            final Rectangle rbounds = r.getVisualBounds();
-            return r.onMouseClick(event, x - rbounds.x, y - rbounds.y);
+            val rbounds = r.getVisualBounds()
+            return r.onMouseClick(event, x - rbounds.x, y - rbounds.y)
         } else {
-            return true;
+            return true
         }
     }
 
-  /*
+    /*
   public boolean onMousePressed(final java.awt.event.MouseEvent event, final int x, final int y) {
     final Renderable[] rarray = this.renderables.toArray(Renderable.EMPTY_ARRAY);
     final BoundableRenderable r = MarkupUtilities.findRenderable(rarray, x, y, false);
@@ -578,57 +551,56 @@ class RLine extends BaseRCollection {
       return true;
     }
   }*/
-
-    public boolean onDoubleClick(final java.awt.event.MouseEvent event, final int x, final int y) {
-        final Renderable[] rarray = this.renderables.toArray(Renderable.EMPTY_ARRAY);
-        final BoundableRenderable r = MarkupUtilities.findRenderable(rarray, x, y, false);
+    override fun onDoubleClick(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val rarray = this.renderables.toArray<Renderable?>(Renderable.Companion.EMPTY_ARRAY)
+        val r = MarkupUtilities.findRenderable(rarray, x, y, false)
         if (r != null) {
-            final Rectangle rbounds = r.getVisualBounds();
-            return r.onDoubleClick(event, x - rbounds.x, y - rbounds.y);
+            val rbounds = r.getVisualBounds()
+            return r.onDoubleClick(event, x - rbounds.x, y - rbounds.y)
         } else {
-            return true;
+            return true
         }
     }
 
-    public RenderableSpot getLowestRenderableSpot(final int x, final int y) {
-        final Renderable[] rarray = this.renderables.toArray(Renderable.EMPTY_ARRAY);
-        final BoundableRenderable br = MarkupUtilities.findRenderable(rarray, x, y, false);
+    override fun getLowestRenderableSpot(x: Int, y: Int): RenderableSpot? {
+        val rarray = this.renderables.toArray<Renderable?>(Renderable.Companion.EMPTY_ARRAY)
+        val br = MarkupUtilities.findRenderable(rarray, x, y, false)
         if (br != null) {
-            final Rectangle rbounds = br.getVisualBounds();
-            return br.getLowestRenderableSpot(x - rbounds.x, y - rbounds.y);
+            val rbounds = br.getVisualBounds()
+            return br.getLowestRenderableSpot(x - rbounds.x, y - rbounds.y)
         } else {
-            return new RenderableSpot(this, x, y);
+            return RenderableSpot(this, x, y)
         }
     }
 
-    public boolean onMouseReleased(final java.awt.event.MouseEvent event, final int x, final int y) {
-        final Renderable[] rarray = this.renderables.toArray(Renderable.EMPTY_ARRAY);
-        final BoundableRenderable r = MarkupUtilities.findRenderable(rarray, x, y, false);
+    override fun onMouseReleased(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val rarray = this.renderables.toArray<Renderable?>(Renderable.Companion.EMPTY_ARRAY)
+        val r = MarkupUtilities.findRenderable(rarray, x, y, false)
         if (r != null) {
-            final Rectangle rbounds = r.getVisualBounds();
-            final BoundableRenderable oldArmedRenderable = this.mousePressTarget;
-            if ((oldArmedRenderable != null) && (r != oldArmedRenderable)) {
-                oldArmedRenderable.onMouseDisarmed(event);
-                this.mousePressTarget = null;
+            val rbounds = r.getVisualBounds()
+            val oldArmedRenderable = this.mousePressTarget
+            if ((oldArmedRenderable != null) && (r !== oldArmedRenderable)) {
+                oldArmedRenderable.onMouseDisarmed(event)
+                this.mousePressTarget = null
             }
-            return r.onMouseReleased(event, x - rbounds.x, y - rbounds.y);
+            return r.onMouseReleased(event, x - rbounds.x, y - rbounds.y)
         } else {
-            final BoundableRenderable oldArmedRenderable = this.mousePressTarget;
+            val oldArmedRenderable = this.mousePressTarget
             if (oldArmedRenderable != null) {
-                oldArmedRenderable.onMouseDisarmed(event);
-                this.mousePressTarget = null;
+                oldArmedRenderable.onMouseDisarmed(event)
+                this.mousePressTarget = null
             }
-            return true;
+            return true
         }
     }
 
-    public boolean onMouseDisarmed(final java.awt.event.MouseEvent event) {
-        final BoundableRenderable target = this.mousePressTarget;
+    override fun onMouseDisarmed(event: MouseEvent?): Boolean {
+        val target = this.mousePressTarget
         if (target != null) {
-            this.mousePressTarget = null;
-            return target.onMouseDisarmed(event);
+            this.mousePressTarget = null
+            return target.onMouseDisarmed(event)
         } else {
-            return true;
+            return true
         }
     }
 
@@ -671,10 +643,8 @@ class RLine extends BaseRCollection {
     // throw new OverflowException(overflown);
     // }
     // }
-
-    @Override
-    public Color getBlockBackgroundColor() {
-        return this.container.getPaintedBackgroundColor();
+    override fun getBlockBackgroundColor(): Color? {
+        return this.container.getPaintedBackgroundColor()
     }
 
     /*
@@ -682,11 +652,11 @@ class RLine extends BaseRCollection {
      *
      * @see org.xamjwg.html.renderer.RCollection#getRenderables()
      */
-    public Iterator<@NonNull Renderable> getRenderables(final boolean topFirst) {
+    override fun getRenderables(topFirst: Boolean): MutableIterator<Renderable> {
         // TODO: Returning Renderables in order always, assuming that they don't overlap.
         //       Need to check the assumption
-        return this.renderables.iterator();
-    /*
+        return this.renderables.iterator()
+        /*
     if (topFirst) {
       return CollectionUtilities.reverseIterator(this.renderables);
     } else {
@@ -694,31 +664,19 @@ class RLine extends BaseRCollection {
     }*/
     }
 
-    public boolean isContainedByNode() {
-        return false;
+    override fun isContainedByNode(): Boolean {
+        return false
     }
 
-    public LineBreak getLineBreak() {
-        return lineBreak;
-    }
+    val isEmpty: Boolean
+        get() = this.xoffset == 0
 
-    public void setLineBreak(final LineBreak lineBreak) {
-        this.lineBreak = lineBreak;
-    }
-
-    public boolean isEmpty() {
-        return this.xoffset == 0;
-    }
-
-    @Override
-    public Rectangle getClipBounds() {
+    override fun getClipBounds(): Rectangle? {
         // throw new NotImplementedYetException("This method is not expected to be called for RLine");
-        return null;
+        return null
     }
 
-    @Override
-    public String toString() {
-        return "RLine belonging to: " + getParent();
+    override fun toString(): String {
+        return "RLine belonging to: " + getParent()
     }
-
 }

@@ -21,155 +21,141 @@
 /*
  * Created on Jan 14, 2006
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.mozilla.javascript.Function;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.html.HTMLCollection;
-import org.w3c.dom.html.HTMLFormElement;
+import io.github.remmerw.thor.cobra.html.FormInput
+import io.github.remmerw.thor.cobra.html.js.Executor
+import io.github.remmerw.thor.cobra.html.js.Window.JSSupplierTask
+import org.mozilla.javascript.Function
+import org.w3c.dom.Element
+import org.w3c.dom.Node
+import org.w3c.dom.html.HTMLCollection
+import org.w3c.dom.html.HTMLFormElement
+import java.net.MalformedURLException
+import java.util.Collections
+import java.util.Locale
+import java.util.function.Consumer
+import java.util.function.Supplier
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
+class HTMLFormElementImpl : HTMLAbstractUIElement, HTMLFormElement {
+    private var elements: HTMLCollection? = null
+    var onsubmit: Function? = null
+        get() = this.getEventFunction(field, "onsubmit")
 
-import io.github.remmerw.thor.cobra.html.FormInput;
-import io.github.remmerw.thor.cobra.html.HtmlRendererContext;
-import io.github.remmerw.thor.cobra.html.js.Executor;
-import io.github.remmerw.thor.cobra.html.js.Window;
-import io.github.remmerw.thor.cobra.html.js.Window.JSSupplierTask;
+    constructor(name: String?) : super(name)
 
-public class HTMLFormElementImpl extends HTMLAbstractUIElement implements HTMLFormElement {
-    private HTMLCollection elements;
-    private Function onsubmit;
+    constructor() : super("FORM")
 
-    public HTMLFormElementImpl(final String name) {
-        super(name);
-    }
-
-    public HTMLFormElementImpl() {
-        super("FORM");
-    }
-
-    static boolean isInput(final Node node) {
-        final String name = node.getNodeName().toLowerCase();
-        return name.equals("input") || name.equals("textarea") || name.equals("select");
-    }
-
-    public Object namedItem(final String name) {
+    fun namedItem(name: String): Any? {
         try {
             // TODO: This could use document.namedItem.
-            this.visit(new NodeVisitor() {
-                public void visit(final Node node) {
-                    if (HTMLFormElementImpl.isInput(node)) {
-                        if (name.equals(((Element) node).getAttribute("name"))) {
-                            throw new StopVisitorException(node);
+            this.visit(object : NodeVisitor {
+                override fun visit(node: Node) {
+                    if (isInput(node)) {
+                        if (name == (node as Element).getAttribute("name")) {
+                            throw StopVisitorException(node)
                         }
                     }
                 }
-            });
-        } catch (final StopVisitorException sve) {
-            return sve.getTag();
+            })
+        } catch (sve: StopVisitorException) {
+            return sve.getTag()
         }
-        return null;
+        return null
     }
 
-    public Object item(final int index) {
+    fun item(index: Int): Any? {
         try {
-            this.visit(new NodeVisitor() {
-                private int current = 0;
+            this.visit(object : NodeVisitor {
+                private var current = 0
 
-                public void visit(final Node node) {
-                    if (HTMLFormElementImpl.isInput(node)) {
+                override fun visit(node: Node) {
+                    if (isInput(node)) {
                         if (this.current == index) {
-                            throw new StopVisitorException(node);
+                            throw StopVisitorException(node)
                         }
-                        this.current++;
+                        this.current++
                     }
                 }
-            });
-        } catch (final StopVisitorException sve) {
-            return sve.getTag();
+            })
+        } catch (sve: StopVisitorException) {
+            return sve.getTag()
         }
-        return null;
+        return null
     }
 
-    public HTMLCollection getElements() {
-        HTMLCollection elements = this.elements;
+    override fun getElements(): HTMLCollection {
+        var elements = this.elements
         if (elements == null) {
-            elements = new DescendentHTMLCollection(this, new InputFilter(), this.treeLock, false);
-            this.elements = elements;
+            elements = DescendentHTMLCollection(
+                this,
+                HTMLFormElementImpl.InputFilter(),
+                this.treeLock,
+                false
+            )
+            this.elements = elements
         }
-        return elements;
+        return elements
     }
 
-    public int getLength() {
-        return this.getElements().getLength();
+    override fun getLength(): Int {
+        return this.getElements().length
     }
 
-    public String getName() {
-        return this.getAttribute("name");
+    override fun getName(): String? {
+        return this.getAttribute("name")
     }
 
-    public void setName(final String name) {
-        this.setAttribute("name", name);
+    override fun setName(name: String?) {
+        this.setAttribute("name", name)
     }
 
-    public String getAcceptCharset() {
-        return this.getAttribute("acceptCharset");
+    override fun getAcceptCharset(): String? {
+        return this.getAttribute("acceptCharset")
     }
 
-    public void setAcceptCharset(final String acceptCharset) {
-        this.setAttribute("acceptCharset", acceptCharset);
+    override fun setAcceptCharset(acceptCharset: String?) {
+        this.setAttribute("acceptCharset", acceptCharset)
     }
 
-    public String getAction() {
-        return this.getAttribute("action");
+    override fun getAction(): String? {
+        return this.getAttribute("action")
     }
 
-    public void setAction(final String action) {
-        this.setAttribute("action", action);
+    override fun setAction(action: String?) {
+        this.setAttribute("action", action)
     }
 
-    public String getEnctype() {
-        return this.getAttribute("enctype");
+    override fun getEnctype(): String? {
+        return this.getAttribute("enctype")
     }
 
-    public void setEnctype(final String enctype) {
-        this.setAttribute("enctype", enctype);
+    override fun setEnctype(enctype: String?) {
+        this.setAttribute("enctype", enctype)
     }
 
-    public String getMethod() {
-        String method = this.getAttribute("method");
+    override fun getMethod(): String {
+        var method = this.getAttribute("method")
         if (method == null) {
-            method = "GET";
+            method = "GET"
         }
-        return method;
+        return method
     }
 
-    public void setMethod(final String method) {
-        this.setAttribute("method", method);
+    override fun setMethod(method: String?) {
+        this.setAttribute("method", method)
     }
 
-    public String getTarget() {
-        return this.getAttribute("target");
+    override fun getTarget(): String? {
+        return this.getAttribute("target")
     }
 
-    public void setTarget(final String target) {
-        this.setAttribute("target", target);
+    override fun setTarget(target: String?) {
+        this.setAttribute("target", target)
     }
 
-    public void submit() {
-        this.submit(null);
-    }
-
-    public Function getOnsubmit() {
-        return this.getEventFunction(this.onsubmit, "onsubmit");
-    }
-
-    public void setOnsubmit(final Function value) {
-        this.onsubmit = value;
+    override fun submit() {
+        this.submit(null)
     }
 
     /**
@@ -177,81 +163,95 @@ public class HTMLFormElementImpl extends HTMLAbstractUIElement implements HTMLFo
      * button.
      *
      * @param extraFormInputs Any additional form inputs that need to be submitted, e.g. the
-     *                        submit button parameter.
+     * submit button parameter.
      */
-    public final void submit(final FormInput[] extraFormInputs) {
-        final Function onsubmit = this.getOnsubmit();
+    fun submit(extraFormInputs: Array<FormInput?>?) {
+        val onsubmit = this.onsubmit
         if (onsubmit != null) {
             // TODO: onsubmit event object?
             // dispatchEvent(new Event("submit", this));
-            final Window window = ((HTMLDocumentImpl) document).getWindow();
-            window.addJSTask(new JSSupplierTask<>(0, () -> {
-                return Executor.executeFunction(this, onsubmit, null, window.getContextFactory());
-            }, (result) -> {
-                if (result) {
-                    submitFormImpl(extraFormInputs);
-                }
-            }));
+            val window = (document as HTMLDocumentImpl).getWindow()
+            window.addJSTask(
+                JSSupplierTask<Boolean?>(
+                    0,
+                    Supplier {
+                        Executor.executeFunction(
+                            this,
+                            onsubmit,
+                            null,
+                            window.getContextFactory()
+                        )
+                    },
+                    Consumer { result: Boolean? ->
+                        if (result) {
+                            submitFormImpl(extraFormInputs)
+                        }
+                    })
+            )
         } else {
-            submitFormImpl(extraFormInputs);
+            submitFormImpl(extraFormInputs)
         }
-
     }
 
-    private void submitFormImpl(final FormInput[] extraFormInputs) {
-        final HtmlRendererContext context = this.getHtmlRendererContext();
+    private fun submitFormImpl(extraFormInputs: Array<FormInput?>?) {
+        val context = this.getHtmlRendererContext()
         if (context != null) {
-            final ArrayList<FormInput> formInputs = new ArrayList<>();
+            val formInputs = ArrayList<FormInput?>()
             if (extraFormInputs != null) {
-                Collections.addAll(formInputs, extraFormInputs);
+                Collections.addAll<FormInput?>(formInputs, *extraFormInputs)
             }
-            this.visit(new NodeVisitor() {
-                public void visit(final Node node) {
-                    if (node instanceof HTMLElementImpl) {
-                        final FormInput[] fis = ((HTMLElementImpl) node).getFormInputs();
+            this.visit(object : NodeVisitor {
+                override fun visit(node: Node?) {
+                    if (node is HTMLElementImpl) {
+                        val fis = node.getFormInputs()
                         if (fis != null) {
-                            for (final FormInput fi : fis) {
-                                if (fi.getName() == null) {
-                                    throw new IllegalStateException("Form input does not have a name: " + node);
-                                }
-                                formInputs.add(fi);
+                            for (fi in fis) {
+                                checkNotNull(fi.getName()) { "Form input does not have a name: " + node }
+                                formInputs.add(fi)
                             }
                         }
                     }
                 }
-            });
-            final FormInput[] fia = formInputs.toArray(FormInput.EMPTY_ARRAY);
-            String href = this.getAction();
+            })
+            val fia = formInputs.toArray<FormInput?>(FormInput.EMPTY_ARRAY)
+            var href = this.action
             if (href == null) {
-                href = this.getBaseURI();
+                href = this.getBaseURI()
             }
             try {
-                final URL url = this.getFullURL(href);
-                context.submitForm(this.getMethod(), url, this.getTarget(), this.getEnctype(), fia);
-            } catch (final MalformedURLException mfu) {
-                this.warn("submit()", mfu);
+                val url = this.getFullURL(href)
+                context.submitForm(this.getMethod(), url, this.target, this.enctype, fia)
+            } catch (mfu: MalformedURLException) {
+                this.warn("submit()", mfu)
             }
         }
     }
 
-    public void reset() {
-        this.visit(new NodeVisitor() {
-            public void visit(final Node node) {
-                if (node instanceof HTMLBaseInputElement) {
-                    ((HTMLBaseInputElement) node).resetInput();
+    override fun reset() {
+        this.visit(object : NodeVisitor {
+            override fun visit(node: Node?) {
+                if (node is HTMLBaseInputElement) {
+                    node.resetInput()
                 }
             }
-        });
+        })
     }
 
-    private class InputFilter implements NodeFilter {
+    private inner class InputFilter : NodeFilter {
         /*
          * (non-Javadoc)
          *
          * @see org.xamjwg.html.domimpl.NodeFilter#accept(org.w3c.dom.Node)
          */
-        public boolean accept(final Node node) {
-            return HTMLFormElementImpl.isInput(node);
+        override fun accept(node: Node): Boolean {
+            return isInput(node)
+        }
+    }
+
+    companion object {
+        fun isInput(node: Node): Boolean {
+            val name = node.nodeName.lowercase(Locale.getDefault())
+            return name == "input" || name == "textarea" || name == "select"
         }
     }
 }

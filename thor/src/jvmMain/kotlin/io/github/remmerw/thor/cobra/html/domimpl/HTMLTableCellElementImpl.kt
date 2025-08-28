@@ -21,156 +21,150 @@
 /*
  * Created on Dec 4, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.w3c.dom.html.HTMLTableCellElement;
+import io.github.remmerw.thor.cobra.html.style.RenderState
+import io.github.remmerw.thor.cobra.html.style.TableCellRenderState
+import org.w3c.dom.html.HTMLTableCellElement
 
-import io.github.remmerw.thor.cobra.html.style.RenderState;
-import io.github.remmerw.thor.cobra.html.style.TableCellRenderState;
-
-public class HTMLTableCellElementImpl extends HTMLAbstractUIElement implements HTMLTableCellElement {
-    public HTMLTableCellElementImpl(final String name) {
-        super(name);
-    }
-
-    public int getCellIndex() {
+open class HTMLTableCellElementImpl(name: String?) : HTMLAbstractUIElement(name),
+    HTMLTableCellElement {
+    override fun getCellIndex(): Int {
         // TODO Cell index in row
-        return 0;
+        return 0
     }
 
-    public String getAbbr() {
-        return this.getAttribute("abbr");
+    override fun getAbbr(): String? {
+        return this.getAttribute("abbr")
     }
 
-    public void setAbbr(final String abbr) {
-        this.setAttribute("abbr", abbr);
+    override fun setAbbr(abbr: String?) {
+        this.setAttribute("abbr", abbr)
     }
 
-    public String getAlign() {
-        return this.getAttribute("align");
+    override fun getAlign(): String? {
+        return this.getAttribute("align")
     }
 
-    public void setAlign(final String align) {
-        this.setAttribute("align", align);
+    override fun setAlign(align: String?) {
+        this.setAttribute("align", align)
     }
 
-    public String getAxis() {
-        return this.getAttribute("axis");
+    override fun getAxis(): String? {
+        return this.getAttribute("axis")
     }
 
-    public void setAxis(final String axis) {
-        this.setAttribute("axis", axis);
+    override fun setAxis(axis: String?) {
+        this.setAttribute("axis", axis)
     }
 
-    public String getBgColor() {
-        return this.getAttribute("bgcolor");
+    override fun getBgColor(): String? {
+        return this.getAttribute("bgcolor")
     }
 
-    public void setBgColor(final String bgColor) {
-        this.setAttribute("bgcolor", bgColor);
+    override fun setBgColor(bgColor: String?) {
+        this.setAttribute("bgcolor", bgColor)
     }
 
-    public String getCh() {
-        return this.getAttribute("ch");
+    override fun getCh(): String? {
+        return this.getAttribute("ch")
     }
 
-    public void setCh(final String ch) {
-        this.setAttribute("ch", ch);
+    override fun setCh(ch: String?) {
+        this.setAttribute("ch", ch)
     }
 
-    public String getChOff() {
-        return this.getAttribute("choff");
+    override fun getChOff(): String? {
+        return this.getAttribute("choff")
     }
 
-    public void setChOff(final String chOff) {
-        this.setAttribute("choff", chOff);
+    override fun setChOff(chOff: String?) {
+        this.setAttribute("choff", chOff)
     }
 
-    public int getColSpan() {
-        final String colSpanText = this.getAttribute("colspan");
+    override fun getColSpan(): Int {
+        val colSpanText = this.getAttribute("colspan")
         if (colSpanText == null) {
-            return 1;
+            return 1
         } else {
             try {
-                return Integer.parseInt(colSpanText);
-            } catch (final NumberFormatException nfe) {
-                return 1;
+                return colSpanText.toInt()
+            } catch (nfe: NumberFormatException) {
+                return 1
             }
         }
     }
 
-    public void setColSpan(final int colSpan) {
-        this.setAttribute("colspan", String.valueOf(colSpan));
+    override fun setColSpan(colSpan: Int) {
+        this.setAttribute("colspan", colSpan.toString())
     }
 
-    public String getHeaders() {
-        return this.getAttribute("headers");
+    override fun getHeaders(): String? {
+        return this.getAttribute("headers")
     }
 
-    public void setHeaders(final String headers) {
-        this.setAttribute("headers", headers);
+    override fun setHeaders(headers: String?) {
+        this.setAttribute("headers", headers)
     }
 
-    public String getHeight() {
-        return this.getAttribute("height");
+    override fun getHeight(): String? {
+        return this.getAttribute("height")
     }
 
-    public void setHeight(final String height) {
-        this.setAttribute("height", height);
+    override fun setHeight(height: String?) {
+        this.setAttribute("height", height)
     }
 
-    public boolean getNoWrap() {
-        return "nowrap".equalsIgnoreCase(this.getAttribute("nowrap"));
+    override fun getNoWrap(): Boolean {
+        return "nowrap".equals(this.getAttribute("nowrap"), ignoreCase = true)
     }
 
-    public void setNoWrap(final boolean noWrap) {
-        this.setAttribute("nowrap", noWrap ? "nowrap" : null);
+    override fun setNoWrap(noWrap: Boolean) {
+        this.setAttribute("nowrap", if (noWrap) "nowrap" else null)
     }
 
-    public int getRowSpan() {
-        final String rowSpanText = this.getAttribute("rowspan");
+    override fun getRowSpan(): Int {
+        val rowSpanText = this.getAttribute("rowspan")
         if (rowSpanText == null) {
-            return 1;
+            return 1
         } else {
             try {
-                return Integer.parseInt(rowSpanText);
-            } catch (final NumberFormatException nfe) {
-                return 1;
+                return rowSpanText.toInt()
+            } catch (nfe: NumberFormatException) {
+                return 1
             }
         }
     }
 
-    public void setRowSpan(final int rowSpan) {
-        this.setAttribute("rowspan", String.valueOf(rowSpan));
+    override fun setRowSpan(rowSpan: Int) {
+        this.setAttribute("rowspan", rowSpan.toString())
     }
 
-    public String getScope() {
-        return this.getAttribute("scope");
+    override fun getScope(): String? {
+        return this.getAttribute("scope")
     }
 
-    public void setScope(final String scope) {
-        this.setAttribute("scope", scope);
+    override fun setScope(scope: String?) {
+        this.setAttribute("scope", scope)
     }
 
-    public String getVAlign() {
-        return this.getAttribute("valign");
+    override fun getVAlign(): String? {
+        return this.getAttribute("valign")
     }
 
-    public void setVAlign(final String vAlign) {
-        this.setAttribute("valign", vAlign);
+    override fun setVAlign(vAlign: String?) {
+        this.setAttribute("valign", vAlign)
     }
 
-    public String getWidth() {
-        return this.getAttribute("width");
+    override fun getWidth(): String? {
+        return this.getAttribute("width")
     }
 
-    public void setWidth(final String width) {
-        this.setAttribute("width", width);
+    override fun setWidth(width: String?) {
+        this.setAttribute("width", width)
     }
 
-    @Override
-    protected @NonNull RenderState createRenderState(final RenderState prevRenderState) {
-        return new TableCellRenderState(prevRenderState, this);
+    override fun createRenderState(prevRenderState: RenderState?): RenderState {
+        return TableCellRenderState(prevRenderState, this)
     }
 }

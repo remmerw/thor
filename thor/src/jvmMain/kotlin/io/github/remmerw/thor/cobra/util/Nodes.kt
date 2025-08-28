@@ -1,152 +1,128 @@
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
 
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.w3c.dom.Element
+import org.w3c.dom.Node
+import org.w3c.dom.NodeList
+import java.util.function.Consumer
 
-import java.util.Iterator;
-import java.util.function.Consumer;
-
-public class Nodes {
-    private static final Iterable<Node> emptyIterableNode = new Iterable<Node>() {
-        @Override
-        public Iterator<Node> iterator() {
-
-            return new Iterator<Node>() {
-
-                @Override
-                public boolean hasNext() {
-                    return false;
+object Nodes {
+    private val emptyIterableNode: Iterable<Node> = object : Iterable<Node?> {
+        override fun iterator(): MutableIterator<Node?> {
+            return object : MutableIterator<Node?> {
+                override fun hasNext(): Boolean {
+                    return false
                 }
 
-                @Override
-                public Node next() {
-                    throw new IllegalStateException();
+                override fun next(): Node? {
+                    throw IllegalStateException()
                 }
 
-                @Override
-                public void remove() {
-                    throw new NotImplementedYetException();
+                override fun remove() {
+                    throw NotImplementedYetException()
                 }
-            };
-        }
-    };
-    private static final Iterable<Element> emptyIterableElement = new Iterable<Element>() {
-        @Override
-        public Iterator<Element> iterator() {
-
-            return new Iterator<Element>() {
-
-                @Override
-                public boolean hasNext() {
-                    return false;
-                }
-
-                @Override
-                public Element next() {
-                    throw new IllegalStateException();
-                }
-
-                @Override
-                public void remove() {
-                    throw new NotImplementedYetException();
-                }
-            };
-        }
-    };
-
-    public static Node getCommonAncestor(final Node node1, final Node node2) {
-        if ((node1 == null) || (node2 == null)) {
-            return null;
-        }
-        Node checkNode = node1;
-        while (!isSameOrAncestorOf(checkNode, node2)) {
-            checkNode = checkNode.getParentNode();
-            if (checkNode == null) {
-                return null;
             }
         }
-        return checkNode;
+    }
+    private val emptyIterableElement: Iterable<Element?> = object : Iterable<Element?> {
+        override fun iterator(): MutableIterator<Element?> {
+            return object : MutableIterator<Element?> {
+                override fun hasNext(): Boolean {
+                    return false
+                }
+
+                override fun next(): Element? {
+                    throw IllegalStateException()
+                }
+
+                override fun remove() {
+                    throw NotImplementedYetException()
+                }
+            }
+        }
     }
 
-    public static boolean isSameOrAncestorOf(final Node node, final Node child) {
+    fun getCommonAncestor(node1: Node?, node2: Node?): Node? {
+        if ((node1 == null) || (node2 == null)) {
+            return null
+        }
+        var checkNode: Node? = node1
+        while (!isSameOrAncestorOf(checkNode, node2)) {
+            checkNode = checkNode!!.parentNode
+            if (checkNode == null) {
+                return null
+            }
+        }
+        return checkNode
+    }
+
+    fun isSameOrAncestorOf(node: Node?, child: Node): Boolean {
         if (child.isSameNode(node)) {
-            return true;
+            return true
         }
-        final Node parent = child.getParentNode();
+        val parent = child.parentNode
         if (parent == null) {
-            return false;
+            return false
         }
-        return isSameOrAncestorOf(node, parent);
+        return isSameOrAncestorOf(node, parent)
     }
 
-    public static Iterable<Node> makeIterable(final NodeList nodeList) {
+    fun makeIterable(nodeList: NodeList?): Iterable<Node> {
         if (nodeList == null) {
-            return emptyIterableNode;
+            return emptyIterableNode
         } else {
-            return new Iterable<Node>() {
-                @Override
-                public Iterator<Node> iterator() {
+            return object : Iterable<Node?> {
+                override fun iterator(): MutableIterator<Node?> {
+                    return object : MutableIterator<Node?> {
+                        private var i = 0
 
-                    return new Iterator<Node>() {
-                        private int i = 0;
-
-                        @Override
-                        public boolean hasNext() {
-                            return i < nodeList.getLength();
+                        override fun hasNext(): Boolean {
+                            return i < nodeList.length
                         }
 
-                        @Override
-                        public Node next() {
-                            return nodeList.item(i++);
+                        override fun next(): Node? {
+                            return nodeList.item(i++)
                         }
 
-                        @Override
-                        public void remove() {
-                            throw new NotImplementedYetException();
+                        override fun remove() {
+                            throw NotImplementedYetException()
                         }
-                    };
+                    }
                 }
-            };
+            }
         }
     }
 
-    public static Iterable<Element> makeIterableElements(final NodeList nodeList) {
+    fun makeIterableElements(nodeList: NodeList?): Iterable<Element?> {
         if (nodeList == null) {
-            return emptyIterableElement;
+            return emptyIterableElement
         } else {
-            return new Iterable<Element>() {
-                @Override
-                public Iterator<Element> iterator() {
+            return object : Iterable<Element?> {
+                override fun iterator(): MutableIterator<Element?> {
+                    return object : MutableIterator<Element?> {
+                        private var i = 0
 
-                    return new Iterator<Element>() {
-                        private int i = 0;
-
-                        @Override
-                        public boolean hasNext() {
-                            return i < nodeList.getLength();
+                        override fun hasNext(): Boolean {
+                            return i < nodeList.length
                         }
 
-                        @Override
-                        public Element next() {
-                            return (Element) nodeList.item(i++);
+                        override fun next(): Element? {
+                            return nodeList.item(i++) as Element?
                         }
 
-                        @Override
-                        public void remove() {
-                            throw new NotImplementedYetException();
+                        override fun remove() {
+                            throw NotImplementedYetException()
                         }
-                    };
+                    }
                 }
-            };
+            }
         }
     }
 
-    public static void forEachNode(final Node node, final Consumer<Node> consumer) {
+    fun forEachNode(node: Node, consumer: Consumer<Node?>) {
         // TODO: Change from recursive to iterative
-        for (final Node child : Nodes.makeIterable(node.getChildNodes())) {
-            consumer.accept(child);
-            forEachNode(child, consumer);
+        for (child in makeIterable(node.childNodes)) {
+            consumer.accept(child)
+            forEachNode(child, consumer)
         }
     }
 }

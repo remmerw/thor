@@ -21,60 +21,58 @@
 /*
  * Created on Mar 19, 2005
  */
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EventListener;
-import java.util.EventObject;
+import java.util.EventListener
+import java.util.EventObject
 
 /**
  * @author J. H. S.
  */
-public abstract class EventDispatch2 {
-    private static final EventListener[] EMPTY_ARRAY = new EventListener[0];
-    private Collection<EventListener> listeners;
+abstract class EventDispatch2 {
+    private var listeners: MutableCollection<EventListener?>? = null
 
-    public EventDispatch2() {
+    fun createListenerCollection(): MutableCollection<EventListener?> {
+        return ArrayList<EventListener?>()
     }
 
-    public Collection<EventListener> createListenerCollection() {
-        return new ArrayList<>();
-    }
-
-    public final void addListener(final EventListener listener) {
-        synchronized (this) {
+    fun addListener(listener: EventListener?) {
+        synchronized(this) {
             if (this.listeners == null) {
-                this.listeners = this.createListenerCollection();
+                this.listeners = this.createListenerCollection()
             }
-            this.listeners.add(listener);
+            this.listeners!!.add(listener)
         }
     }
 
-    public final void removeListener(final EventListener listener) {
-        synchronized (this) {
+    fun removeListener(listener: EventListener?) {
+        synchronized(this) {
             if (this.listeners != null) {
-                this.listeners.remove(listener);
+                this.listeners!!.remove(listener)
             }
         }
     }
 
-    public final boolean fireEvent(final EventObject event) {
-        EventListener[] larray;
-        synchronized (this) {
-            final Collection<EventListener> listeners = this.listeners;
-            if ((listeners == null) || (listeners.size() == 0)) {
-                return false;
+    fun fireEvent(event: EventObject?): Boolean {
+        val larray: Array<EventListener?>?
+        synchronized(this) {
+            val listeners = this.listeners
+            if ((listeners == null) || (listeners.size == 0)) {
+                return false
             }
-            larray = this.listeners.toArray(EMPTY_ARRAY);
+            larray = this.listeners.toArray<EventListener?>(EMPTY_ARRAY)
         }
-        final int length = larray.length;
-        for (int i = 0; i < length; i++) {
+        val length = larray!!.size
+        for (i in 0..<length) {
             // Call holding no locks
-            this.dispatchEvent(larray[i], event);
+            this.dispatchEvent(larray[i], event)
         }
-        return true;
+        return true
     }
 
-    protected abstract void dispatchEvent(EventListener listener, EventObject event);
+    protected abstract fun dispatchEvent(listener: EventListener?, event: EventObject?)
+
+    companion object {
+        private val EMPTY_ARRAY = arrayOfNulls<EventListener>(0)
+    }
 }

@@ -1,23 +1,18 @@
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.html.HTMLBRElement;
+import org.w3c.dom.html.HTMLBRElement
 
-public class HTMLBRElementImpl extends HTMLElementImpl implements HTMLBRElement {
-    public HTMLBRElementImpl(final String name) {
-        super(name);
+class HTMLBRElementImpl(name: String?) : HTMLElementImpl(name), HTMLBRElement {
+    override fun getClear(): String? {
+        return this.getAttribute("clear")
     }
 
-    public String getClear() {
-        return this.getAttribute("clear");
+    override fun setClear(clear: String?) {
+        this.setAttribute("clear", clear)
     }
 
-    public void setClear(final String clear) {
-        this.setAttribute("clear", clear);
-    }
-
-    @Override
-    protected void appendInnerTextImpl(final StringBuffer buffer) {
-        buffer.append("\r\n");
-        super.appendInnerTextImpl(buffer);
+    override fun appendInnerTextImpl(buffer: StringBuffer) {
+        buffer.append("\r\n")
+        super.appendInnerTextImpl(buffer)
     }
 }

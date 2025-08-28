@@ -21,68 +21,61 @@
 /*
  * Created on Jan 15, 2006
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Insets;
+import io.github.remmerw.thor.cobra.html.domimpl.ElementImpl
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement
+import io.github.remmerw.thor.cobra.util.Strings
+import io.github.remmerw.thor.cobra.util.gui.WrapperLayout
+import java.awt.Dimension
+import javax.swing.JScrollPane
+import javax.swing.JTextArea
+import javax.swing.text.JTextComponent
 
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.text.JTextComponent;
+internal class InputTextAreaControl(modelNode: HTMLBaseInputElement?) :
+    BaseInputControl(modelNode) {
+    private val widget: JTextComponent
+    private var cols = -1
+    private var rows = -1
 
-import io.github.remmerw.thor.cobra.html.domimpl.ElementImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement;
-import io.github.remmerw.thor.cobra.util.Strings;
-import io.github.remmerw.thor.cobra.util.gui.WrapperLayout;
-
-class InputTextAreaControl extends BaseInputControl {
-    private static final long serialVersionUID = -3789900200642578384L;
-    private final JTextComponent widget;
-    private int cols = -1;
-    private int rows = -1;
-
-    public InputTextAreaControl(final HTMLBaseInputElement modelNode) {
-        super(modelNode);
-        this.setLayout(WrapperLayout.getInstance());
-        final JTextComponent widget = this.createTextField();
-        this.widget = widget;
-        this.add(new JScrollPane(widget));
+    init {
+        this.layout = WrapperLayout.instance
+        val widget = this.createTextField()
+        this.widget = widget
+        this.add(JScrollPane(widget))
 
         // Note: Value attribute cannot be set in reset() method.
         // Otherwise, layout revalidation causes typed values to
         // be lost (including revalidation due to hover.)
-
-        final ElementImpl element = this.controlElement;
-        final String value = element.getTextContent();
-        ((JTextArea) widget).setLineWrap(true);
-        widget.setText(value);
+        val element: ElementImpl = this.controlElement
+        val value = element.getTextContent()
+        (widget as JTextArea).lineWrap = true
+        widget.text = value
     }
 
-    @Override
-    public void reset(final int availWidth, final int availHeight) {
-        super.reset(availWidth, availHeight);
-        final ElementImpl element = this.controlElement;
-        final String colsStr = element.getAttribute("cols");
+    override fun reset(availWidth: Int, availHeight: Int) {
+        super.reset(availWidth, availHeight)
+        val element: ElementImpl = this.controlElement
+        val colsStr = element.getAttribute("cols")
         if (colsStr != null) {
             try {
-                this.setCols(Integer.parseInt(colsStr));
-            } catch (final NumberFormatException nfe) {
+                this.setCols(colsStr.toInt())
+            } catch (nfe: NumberFormatException) {
                 // ignore
             }
         }
-        final String rowsStr = element.getAttribute("rows");
+        val rowsStr = element.getAttribute("rows")
         if (rowsStr != null) {
             try {
-                this.setRows(Integer.parseInt(rowsStr));
-            } catch (final NumberFormatException nfe) {
+                this.setRows(rowsStr.toInt())
+            } catch (nfe: NumberFormatException) {
                 // ignore
             }
         }
     }
 
-    protected JTextComponent createTextField() {
-        return new JTextArea();
+    protected fun createTextField(): JTextComponent {
+        return JTextArea()
     }
 
     /*
@@ -90,9 +83,8 @@ class InputTextAreaControl extends BaseInputControl {
      *
      * @see org.xamjwg.html.renderer.BaseInputControl#getCols()
      */
-    @Override
-    public int getCols() {
-        return this.cols;
+    override fun getCols(): Int {
+        return this.cols
     }
 
     /*
@@ -100,11 +92,10 @@ class InputTextAreaControl extends BaseInputControl {
      *
      * @see org.xamjwg.html.renderer.BaseInputControl#setCols(int)
      */
-    @Override
-    public void setCols(final int cols) {
+    override fun setCols(cols: Int) {
         if (cols != this.cols) {
-            this.cols = cols;
-            this.invalidate();
+            this.cols = cols
+            this.invalidate()
         }
     }
 
@@ -113,9 +104,8 @@ class InputTextAreaControl extends BaseInputControl {
      *
      * @see org.xamjwg.html.renderer.BaseInputControl#getRows()
      */
-    @Override
-    public int getRows() {
-        return this.rows;
+    override fun getRows(): Int {
+        return this.rows
     }
 
     /*
@@ -123,82 +113,77 @@ class InputTextAreaControl extends BaseInputControl {
      *
      * @see org.xamjwg.html.renderer.BaseInputControl#setRows(int)
      */
-    @Override
-    public void setRows(final int rows) {
+    override fun setRows(rows: Int) {
         if (rows != this.rows) {
-            this.rows = rows;
-            this.invalidate();
+            this.rows = rows
+            this.invalidate()
         }
     }
 
-    @Override
-    public java.awt.Dimension getPreferredSize() {
-        int pw;
-        final int cols = this.cols;
+    override fun getPreferredSize(): Dimension {
+        val pw: Int
+        val cols = this.cols
         if (cols == -1) {
-            pw = 100;
+            pw = 100
         } else {
-            final Font f = this.widget.getFont();
-            final FontMetrics fm = this.widget.getFontMetrics(f);
-            final Insets insets = this.widget.getInsets();
-            pw = insets.left + insets.right + (fm.charWidth('*') * cols);
+            val f = this.widget.getFont()
+            val fm = this.widget.getFontMetrics(f)
+            val insets = this.widget.insets
+            pw = insets.left + insets.right + (fm.charWidth('*') * cols)
         }
-        int ph;
-        final int rows = this.rows;
+        val ph: Int
+        val rows = this.rows
         if (rows == -1) {
-            ph = 100;
+            ph = 100
         } else {
-            final Font f = this.widget.getFont();
-            final FontMetrics fm = this.widget.getFontMetrics(f);
-            final Insets insets = this.widget.getInsets();
-            ph = insets.top + insets.bottom + (fm.getHeight() * rows);
+            val f = this.widget.getFont()
+            val fm = this.widget.getFontMetrics(f)
+            val insets = this.widget.insets
+            ph = insets.top + insets.bottom + (fm.height * rows)
         }
-        return new java.awt.Dimension(pw, ph);
-
+        return Dimension(pw, ph)
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.renderer.BaseInputControl#getReadOnly()
-     */
-    @Override
-    public boolean getReadOnly() {
-        return !this.widget.isEditable();
+    var readOnly: Boolean
+        /*
+             * (non-Javadoc)
+             *
+             * @see org.xamjwg.html.renderer.BaseInputControl#getReadOnly()
+             */
+        get() = !this.widget.isEditable
+        /*
+             * (non-Javadoc)
+             *
+             * @see org.xamjwg.html.renderer.BaseInputControl#setReadOnly(boolean)
+             */
+        set(readOnly) {
+            this.widget.setEditable(readOnly)
+        }
+
+    var value: String?
+        /*
+             * (non-Javadoc)
+             *
+             * @see org.xamjwg.html.renderer.BaseInputControl#getValue()
+             */
+        get() {
+            val text = this.widget.text
+            return Strings.getCRLFString(text)
+        }
+        /*
+             * (non-Javadoc)
+             *
+             * @see org.xamjwg.html.renderer.BaseInputControl#setValue(java.lang.String)
+             */
+        set(value) {
+            this.widget.setText(value)
+        }
+
+    override fun resetInput() {
+        this.widget.text = ""
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.renderer.BaseInputControl#setReadOnly(boolean)
-     */
-    @Override
-    public void setReadOnly(final boolean readOnly) {
-        this.widget.setEditable(readOnly);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.renderer.BaseInputControl#getValue()
-     */
-    @Override
-    public String getValue() {
-        final String text = this.widget.getText();
-        return Strings.getCRLFString(text);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.renderer.BaseInputControl#setValue(java.lang.String)
-     */
-    @Override
-    public void setValue(final String value) {
-        this.widget.setText(value);
-    }
-
-    public void resetInput() {
-        this.widget.setText("");
+    companion object {
+        private val serialVersionUID = -3789900200642578384L
     }
 }

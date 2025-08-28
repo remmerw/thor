@@ -21,323 +21,274 @@
 /*
  * Created on Jan 15, 2006
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.mozilla.javascript.Function;
-import org.w3c.dom.Node;
-import org.w3c.dom.html.HTMLFormElement;
+import io.github.remmerw.thor.cobra.html.FormInput
+import io.github.remmerw.thor.cobra.html.js.Event
+import io.github.remmerw.thor.cobra.html.js.NotGetterSetter
+import io.github.remmerw.thor.cobra.ua.ImageResponse
+import org.mozilla.javascript.Function
+import org.w3c.dom.html.HTMLFormElement
 
-import java.util.ArrayList;
+abstract class HTMLBaseInputElement(name: String?) : HTMLAbstractUIElement(name) {
+    private val imageListeners = ArrayList<ImageListener?>(1)
+    protected var inputContext: InputContext? = null
+    protected var deferredValue: String? = null
+    protected var deferredChecked: Boolean? = null
+    protected var deferredReadonly: Boolean? = null
+    protected var deferredDisabled: Boolean? = null
+    var onload: Function? = null
+        get() = this.getEventFunction(field, "onload")
+    private var imageResponse: ImageResponse? = null
+    private var imageSrc: String? = null
 
-import io.github.remmerw.thor.cobra.html.FormInput;
-import io.github.remmerw.thor.cobra.html.js.Event;
-import io.github.remmerw.thor.cobra.html.js.NotGetterSetter;
-import io.github.remmerw.thor.cobra.ua.ImageResponse;
-import io.github.remmerw.thor.cobra.ua.ImageResponse.State;
-
-public abstract class HTMLBaseInputElement extends HTMLAbstractUIElement {
-    private final ArrayList<ImageListener> imageListeners = new ArrayList<>(1);
-    protected InputContext inputContext;
-    protected String deferredValue;
-    protected Boolean deferredChecked;
-    protected Boolean deferredReadonly;
-    protected Boolean deferredDisabled;
-    private Function onload;
-    private ImageResponse imageResponse = null;
-    private String imageSrc;
-
-    public HTMLBaseInputElement(final String name) {
-        super(name);
-    }
-
-    public void setInputContext(final @NonNull InputContext ic) {
-        String dv = null;
-        Boolean defDisabled = null;
-        Boolean defReadonly = null;
-        Boolean defChecked = null;
-        synchronized (this) {
-            this.inputContext = ic;
-            dv = this.deferredValue;
-            defDisabled = this.deferredDisabled;
-            defReadonly = this.deferredReadonly;
-            defChecked = this.deferredChecked;
+    open fun setInputContext(ic: InputContext) {
+        var dv: String? = null
+        var defDisabled: Boolean? = null
+        var defReadonly: Boolean? = null
+        var defChecked: Boolean? = null
+        synchronized(this) {
+            this.inputContext = ic
+            dv = this.deferredValue
+            defDisabled = this.deferredDisabled
+            defReadonly = this.deferredReadonly
+            defChecked = this.deferredChecked
         }
         if (dv != null) {
-            ic.setValue(dv);
+            ic.setValue(dv)
         }
         if (defDisabled != null) {
-            ic.setDisabled(defDisabled.booleanValue());
+            ic.setDisabled(defDisabled)
         }
         if (defReadonly != null) {
-            ic.setDisabled(defReadonly.booleanValue());
+            ic.setDisabled(defReadonly)
         }
         if (defChecked != null) {
-            ic.setDisabled(defChecked.booleanValue());
+            ic.setDisabled(defChecked)
         }
     }
 
-    public String getDefaultValue() {
-        return this.getAttribute("defaultValue");
-    }
-
-    public void setDefaultValue(final String defaultValue) {
-        this.setAttribute("defaultValue", defaultValue);
-    }
-
-    public HTMLFormElement getForm() {
-        Node parent = this.getParentNode();
-        while ((parent != null) && !(parent instanceof HTMLFormElement)) {
-            parent = parent.getParentNode();
+    var defaultValue: String?
+        get() = this.getAttribute("defaultValue")
+        set(defaultValue) {
+            this.setAttribute("defaultValue", defaultValue)
         }
-        return (HTMLFormElement) parent;
-    }
 
-    public void submitForm(final FormInput[] extraFormInputs) {
-        final HTMLFormElementImpl form = (HTMLFormElementImpl) this.getForm();
-        if (form != null) {
-            form.submit(extraFormInputs);
-        }
-    }
-
-    public void resetForm() {
-        final HTMLFormElement form = this.getForm();
-        if (form != null) {
-            form.reset();
-        }
-    }
-
-    public String getAccept() {
-        return this.getAttribute("accept");
-    }
-
-    public void setAccept(final String accept) {
-        this.setAttribute("accept", accept);
-    }
-
-    public String getAccessKey() {
-        return this.getAttribute("accessKey");
-    }
-
-    public void setAccessKey(final String accessKey) {
-        this.setAttribute("accessKey", accessKey);
-    }
-
-    public String getAlign() {
-        return this.getAttribute("align");
-    }
-
-    public void setAlign(final String align) {
-        this.setAttribute("align", align);
-    }
-
-    public String getAlt() {
-        return this.getAttribute("alit");
-    }
-
-    public void setAlt(final String alt) {
-        this.setAttribute("alt", alt);
-    }
-
-    public String getName() {
-        // TODO: Should this return value of "id"?
-        return this.getAttribute("name");
-    }
-
-    public void setName(final String name) {
-        this.setAttribute("name", name);
-    }
-
-    public boolean getDisabled() {
-        final InputContext ic = this.inputContext;
-        if (ic == null) {
-            final Boolean db = this.deferredDisabled;
-            return db != null && db.booleanValue();
-        } else {
-            return ic.getDisabled();
-        }
-    }
-
-    public void setDisabled(final boolean disabled) {
-        final InputContext ic = this.inputContext;
-        if (ic != null) {
-            ic.setDisabled(disabled);
-        } else {
-            this.deferredDisabled = Boolean.valueOf(disabled);
-        }
-    }
-
-    public boolean getReadOnly() {
-        final InputContext ic = this.inputContext;
-        if (ic == null) {
-            final Boolean db = this.deferredReadonly;
-            return db != null && db.booleanValue();
-        } else {
-            return ic.getReadOnly();
-        }
-    }
-
-    public void setReadOnly(final boolean readOnly) {
-        final InputContext ic = this.inputContext;
-        if (ic != null) {
-            ic.setReadOnly(readOnly);
-        } else {
-            this.deferredReadonly = Boolean.valueOf(readOnly);
-        }
-    }
-
-    public boolean getChecked() {
-        final InputContext ic = this.inputContext;
-        if (ic == null) {
-            final Boolean db = this.deferredChecked;
-            return db != null && db.booleanValue();
-        } else {
-            return ic.getChecked();
-        }
-    }
-
-    public void setChecked(final boolean value) {
-        final InputContext ic = this.inputContext;
-        if (ic != null) {
-            ic.setChecked(value);
-        } else {
-            this.deferredChecked = Boolean.valueOf(value);
-        }
-    }
-
-    public int getTabIndex() {
-        final InputContext ic = this.inputContext;
-        return ic == null ? 0 : ic.getTabIndex();
-    }
-
-    public void setTabIndex(final int tabIndex) {
-        final InputContext ic = this.inputContext;
-        if (ic != null) {
-            ic.setTabIndex(tabIndex);
-        }
-    }
-
-    public String getValue() {
-        final InputContext ic = this.inputContext;
-        if (ic != null) {
-            // Note: Per HTML Spec, setValue does not set attribute.
-            return ic.getValue();
-        } else {
-            final String dv = this.deferredValue;
-            if (dv != null) {
-                return dv;
-            } else {
-                final String val = this.getAttribute("value");
-                return val == null ? "" : val;
+    val form: HTMLFormElement?
+        get() {
+            var parent = this.parentNode
+            while ((parent != null) && parent !is HTMLFormElement) {
+                parent = parent.parentNode
             }
+            return parent
+        }
+
+    fun submitForm(extraFormInputs: Array<FormInput?>?) {
+        val form = this.form as HTMLFormElementImpl?
+        if (form != null) {
+            form.submit(extraFormInputs)
         }
     }
 
-    public void setValue(final String value) {
-        InputContext ic = null;
-        synchronized (this) {
-            ic = this.inputContext;
+    fun resetForm() {
+        val form = this.form
+        if (form != null) {
+            form.reset()
+        }
+    }
+
+    var accept: String?
+        get() = this.getAttribute("accept")
+        set(accept) {
+            this.setAttribute("accept", accept)
+        }
+
+    var accessKey: String?
+        get() = this.getAttribute("accessKey")
+        set(accessKey) {
+            this.setAttribute("accessKey", accessKey)
+        }
+
+    var align: String?
+        get() = this.getAttribute("align")
+        set(align) {
+            this.setAttribute("align", align)
+        }
+
+    var alt: String?
+        get() = this.getAttribute("alit")
+        set(alt) {
+            this.setAttribute("alt", alt)
+        }
+
+    var name: String?
+        get() =// TODO: Should this return value of "id"?
+            this.getAttribute("name")
+        set(name) {
+            this.setAttribute("name", name)
+        }
+
+    var disabled: Boolean
+        get() {
+            val ic = this.inputContext
             if (ic == null) {
-                this.deferredValue = value;
+                val db = this.deferredDisabled
+                return db != null && db
+            } else {
+                return ic.getDisabled()
             }
         }
+        set(disabled) {
+            val ic = this.inputContext
+            if (ic != null) {
+                ic.setDisabled(disabled)
+            } else {
+                this.deferredDisabled = disabled
+            }
+        }
+
+    var readOnly: Boolean
+        get() {
+            val ic = this.inputContext
+            if (ic == null) {
+                val db = this.deferredReadonly
+                return db != null && db
+            } else {
+                return ic.getReadOnly()
+            }
+        }
+        set(readOnly) {
+            val ic = this.inputContext
+            if (ic != null) {
+                ic.setReadOnly(readOnly)
+            } else {
+                this.deferredReadonly = readOnly
+            }
+        }
+
+    open var checked: Boolean
+        get() {
+            val ic = this.inputContext
+            if (ic == null) {
+                val db = this.deferredChecked
+                return db != null && db
+            } else {
+                return ic.getChecked()
+            }
+        }
+        set(value) {
+            val ic = this.inputContext
+            if (ic != null) {
+                ic.setChecked(value)
+            } else {
+                this.deferredChecked = value
+            }
+        }
+
+    var tabIndex: Int
+        get() {
+            val ic = this.inputContext
+            return if (ic == null) 0 else ic.getTabIndex()
+        }
+        set(tabIndex) {
+            val ic = this.inputContext
+            if (ic != null) {
+                ic.setTabIndex(tabIndex)
+            }
+        }
+
+    var value: String?
+        get() {
+            val ic = this.inputContext
+            if (ic != null) {
+                // Note: Per HTML Spec, setValue does not set attribute.
+                return ic.getValue()
+            } else {
+                val dv = this.deferredValue
+                if (dv != null) {
+                    return dv
+                } else {
+                    val `val` = this.getAttribute("value")
+                    return if (`val` == null) "" else `val`
+                }
+            }
+        }
+        set(value) {
+            var ic: InputContext? = null
+            synchronized(this) {
+                ic = this.inputContext
+                if (ic == null) {
+                    this.deferredValue = value
+                }
+            }
+            if (ic != null) {
+                ic.setValue(value)
+            }
+        }
+
+    protected val fileValue: File?
+        /*
+             * (non-Javadoc)
+             *
+             * @see
+             * org.xamjwg.html.domimpl.HTMLElementImpl#assignAttributeField(java.lang.
+             * String, java.lang.String)
+             */
+        get() {
+            val ic = this.inputContext
+            if (ic != null) {
+                return ic.getFileValue()
+            } else {
+                return null
+            }
+        }
+
+    override fun blur() {
+        val ic = this.inputContext
         if (ic != null) {
-            ic.setValue(value);
+            ic.blur()
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.xamjwg.html.domimpl.HTMLElementImpl#assignAttributeField(java.lang.
-     * String, java.lang.String)
-     */
-  /*
-  @Override
-  protected void assignAttributeField(final String normalName, final String value) {
-    if ("value".equals(normalName)) {
-      this.setValue(value);
-    } else if ("checked".equals(normalName)) {
-      this.setChecked(value != null);
-    } else if ("disabled".equals(normalName)) {
-      this.setDisabled(value != null);
-    } else if ("readonly".equals(normalName)) {
-      this.setReadOnly(value != null);
-    } else if ("src".equals(normalName)) {
-      // TODO: Should check whether "type" == "image"
-      this.loadImage(value);
-    } else {
-      super.assignAttributeField(normalName, value);
-    }
-  }*/
-
-    protected java.io.File getFileValue() {
-        final InputContext ic = this.inputContext;
+    override fun focus() {
+        val ic = this.inputContext
         if (ic != null) {
-            return ic.getFileValue();
-        } else {
-            return null;
+            ic.focus()
         }
     }
 
-    @Override
-    public void blur() {
-        final InputContext ic = this.inputContext;
+    fun select() {
+        val ic = this.inputContext
         if (ic != null) {
-            ic.blur();
+            ic.select()
         }
     }
 
-    @Override
-    public void focus() {
-        final InputContext ic = this.inputContext;
-        if (ic != null) {
-            ic.focus();
-        }
-    }
-
-    public void select() {
-        final InputContext ic = this.inputContext;
-        if (ic != null) {
-            ic.select();
-        }
-    }
-
-    @Override
-    protected void handleAttributeChanged(String name, String oldValue, String newValue) {
-        super.handleAttributeChanged(name, oldValue, newValue);
-        if ("value".equals(name)) {
-            this.setValue(newValue);
-        } else if ("checked".equals(name)) {
-            this.setChecked(newValue != null);
-        } else if ("disabled".equals(name)) {
-            this.setDisabled(newValue != null);
-        } else if ("readonly".equals(name)) {
-            this.setReadOnly(newValue != null);
-        } else if ("src".equals(name)) {
+    override fun handleAttributeChanged(name: String?, oldValue: String?, newValue: String?) {
+        super.handleAttributeChanged(name, oldValue, newValue)
+        if ("value" == name) {
+            this.value = newValue
+        } else if ("checked" == name) {
+            this.checked = newValue != null
+        } else if ("disabled" == name) {
+            this.disabled = newValue != null
+        } else if ("readonly" == name) {
+            this.readOnly = newValue != null
+        } else if ("src" == name) {
             // TODO: Should check whether "type" == "image"
-            this.loadImage(newValue);
+            this.loadImage(newValue)
         }
     }
 
-    public Function getOnload() {
-        return this.getEventFunction(this.onload, "onload");
-    }
-
-    public void setOnload(final Function onload) {
-        this.onload = onload;
-    }
-
-    private void loadImage(final String src) {
-        final HTMLDocumentImpl document = (HTMLDocumentImpl) this.document;
+    private fun loadImage(src: String?) {
+        val document = this.document as HTMLDocumentImpl?
         if (document != null) {
-            synchronized (this.imageListeners) {
-                this.imageSrc = src;
-                this.imageResponse = null;
+            synchronized(this.imageListeners) {
+                this.imageSrc = src
+                this.imageResponse = null
             }
             if (src != null) {
-                document.loadImage(src, new LocalImageListener(src));
+                document.loadImage(src, HTMLBaseInputElement.LocalImageListener(src))
             }
         }
     }
@@ -348,57 +299,57 @@ public abstract class HTMLBaseInputElement extends HTMLAbstractUIElement {
      *
      * @param listener
      */
-    public void addImageListener(final ImageListener listener) {
-        final ArrayList<ImageListener> l = this.imageListeners;
-        ImageResponse currentImageResponse;
-        synchronized (l) {
-            currentImageResponse = this.imageResponse;
-            l.add(listener);
+    fun addImageListener(listener: ImageListener) {
+        val l = this.imageListeners
+        val currentImageResponse: ImageResponse?
+        synchronized(l) {
+            currentImageResponse = this.imageResponse
+            l.add(listener)
         }
-        if (currentImageResponse.state != State.loading) {
+        if (currentImageResponse!!.state != ImageResponse.State.loading) {
             // Call listener right away if there's already an
             // image; holding no locks.
-            listener.imageLoaded(new ImageEvent(this, currentImageResponse));
+            listener.imageLoaded(ImageEvent(this, currentImageResponse))
             // Should not call onload handler here. That's taken
             // care of otherwise.
         }
     }
 
-    public void removeImageListener(final ImageListener listener) {
-        final ArrayList<ImageListener> l = this.imageListeners;
-        synchronized (l) {
-            l.remove(l);
+    fun removeImageListener(listener: ImageListener?) {
+        val l = this.imageListeners
+        synchronized(l) {
+            l.remove(l)
         }
     }
 
-    void resetInput() {
-        final InputContext ic = this.inputContext;
+    open fun resetInput() {
+        val ic = this.inputContext
         if (ic != null) {
-            ic.resetInput();
+            ic.resetInput()
         }
     }
 
-    private void dispatchEvent(final String expectedImgSrc, final ImageEvent event) {
-        final ArrayList<ImageListener> l = this.imageListeners;
-        ImageListener[] listenerArray;
-        synchronized (l) {
-            if (!expectedImgSrc.equals(this.imageSrc)) {
-                return;
+    private fun dispatchEvent(expectedImgSrc: String, event: ImageEvent) {
+        val l = this.imageListeners
+        val listenerArray: Array<ImageListener?>?
+        synchronized(l) {
+            if (expectedImgSrc != this.imageSrc) {
+                return
             }
-            this.imageResponse = event.imageResponse;
+            this.imageResponse = event.imageResponse
             // Get array of listeners while holding lock.
-            listenerArray = l.toArray(ImageListener.EMPTY_ARRAY);
+            listenerArray = l.toArray<ImageListener?>(ImageListener.Companion.EMPTY_ARRAY)
         }
-        final int llength = listenerArray.length;
-        for (int i = 0; i < llength; i++) {
+        val llength = listenerArray!!.size
+        for (i in 0..<llength) {
             // Inform listener, holding no lock.
-            listenerArray[i].imageLoaded(event);
+            listenerArray[i]!!.imageLoaded(event)
         }
 
         // TODO: With this change, setOnLoad method should add a listener with dispatch mechanism. Best implemented in a parent class.
-        dispatchEvent(new Event("load", this));
+        dispatchEvent(Event("load", this))
 
-    /*
+        /*
     final Function onload = this.getOnload();
     if (onload != null) {
       // TODO: onload event object?
@@ -407,23 +358,17 @@ public abstract class HTMLBaseInputElement extends HTMLAbstractUIElement {
     }
 
     @NotGetterSetter
-    public void setCustomValidity(final String message) {
+    fun setCustomValidity(message: String?) {
         // TODO Implement
-        System.out.println("TODO: HTMLBaseInputElement.setCustomValidity() " + message);
+        println("TODO: HTMLBaseInputElement.setCustomValidity() " + message)
     }
 
-    private class LocalImageListener implements ImageListener {
-        private final String expectedImgSrc;
-
-        public LocalImageListener(final String imgSrc) {
-            this.expectedImgSrc = imgSrc;
+    private inner class LocalImageListener(private val expectedImgSrc: String) : ImageListener {
+        override fun imageLoaded(event: ImageEvent) {
+            dispatchEvent(this.expectedImgSrc, event)
         }
 
-        public void imageLoaded(final ImageEvent event) {
-            dispatchEvent(this.expectedImgSrc, event);
-        }
-
-        public void imageAborted() {
+        override fun imageAborted() {
             // Do nothing
         }
     }

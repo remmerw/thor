@@ -18,18 +18,18 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.js;
+package io.github.remmerw.thor.cobra.js
 
-import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.Scriptable
 
-public abstract class AbstractScriptableDelegate implements ScriptableDelegate {
-    private Scriptable scriptable;
+abstract class AbstractScriptableDelegate : ScriptableDelegate {
+    private var scriptable: Scriptable? = null
 
-    public Scriptable getScriptable() {
-        return this.scriptable;
+    override fun getScriptable(): Scriptable? {
+        return this.scriptable
     }
 
-    public void setScriptable(final Scriptable scriptable) {
-        this.scriptable = scriptable;
+    override fun setScriptable(scriptable: Scriptable?) {
+        this.scriptable = scriptable
     }
 }

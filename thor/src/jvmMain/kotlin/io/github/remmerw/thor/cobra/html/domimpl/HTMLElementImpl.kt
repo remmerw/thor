@@ -20,57 +20,857 @@
 /*
  * Created on Sep 3, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.w3c.css.sac.InputSource;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.html.HTMLElement;
-import org.w3c.dom.html.HTMLFormElement;
-import org.xml.sax.SAXException;
+import cz.vutbr.web.css.MatchCondition
+import cz.vutbr.web.css.NodeData
+import cz.vutbr.web.css.RuleSet
+import cz.vutbr.web.css.Selector.PseudoDeclaration
+import cz.vutbr.web.css.StyleSheet
+import cz.vutbr.web.css.TermList
+import cz.vutbr.web.csskit.MatchConditionOnElements
+import cz.vutbr.web.domassign.Analyzer.OrderedRule
+import cz.vutbr.web.domassign.AnalyzerUtil
+import io.github.remmerw.thor.cobra.html.FormInput
+import io.github.remmerw.thor.cobra.html.parser.HtmlParser
+import io.github.remmerw.thor.cobra.html.style.CSS2PropertiesContext
+import io.github.remmerw.thor.cobra.html.style.CSSUtilities
+import io.github.remmerw.thor.cobra.html.style.ComputedJStyleProperties
+import io.github.remmerw.thor.cobra.html.style.JStyleProperties
+import io.github.remmerw.thor.cobra.html.style.LocalJStyleProperties
+import io.github.remmerw.thor.cobra.html.style.RenderState
+import io.github.remmerw.thor.cobra.html.style.StyleElements
+import io.github.remmerw.thor.cobra.html.style.StyleSheetRenderState
+import io.github.remmerw.thor.cobra.js.HideFromJS
+import io.github.remmerw.thor.cobra.util.Strings
+import org.w3c.css.sac.InputSource
+import org.w3c.dom.DOMException
+import org.w3c.dom.html.HTMLElement
+import org.w3c.dom.html.HTMLFormElement
+import org.xml.sax.SAXException
+import java.io.IOException
+import java.io.Reader
+import java.io.StringReader
+import java.util.Arrays
+import java.util.Locale
+import java.util.StringTokenizer
+import java.util.logging.Level
+import kotlin.concurrent.Volatile
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.logging.Level;
+open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
+    @Volatile
+    private var currentStyle: JStyleProperties? = null
+    private var cachedNodeData: NodeData? = null
 
-import cz.vutbr.web.css.CombinedSelector;
-import cz.vutbr.web.css.MatchCondition;
-import cz.vutbr.web.css.NodeData;
-import cz.vutbr.web.css.RuleSet;
-import cz.vutbr.web.css.Selector;
-import cz.vutbr.web.css.Selector.PseudoDeclaration;
-import cz.vutbr.web.css.StyleSheet;
-import cz.vutbr.web.css.TermList;
-import cz.vutbr.web.csskit.MatchConditionOnElements;
-import cz.vutbr.web.domassign.Analyzer.OrderedRule;
-import cz.vutbr.web.domassign.AnalyzerUtil;
-import io.github.remmerw.thor.cobra.html.FormInput;
-import io.github.remmerw.thor.cobra.html.parser.HtmlParser;
-import io.github.remmerw.thor.cobra.html.style.CSS2PropertiesContext;
-import io.github.remmerw.thor.cobra.html.style.CSSUtilities;
-import io.github.remmerw.thor.cobra.html.style.ComputedJStyleProperties;
-import io.github.remmerw.thor.cobra.html.style.JStyleProperties;
-import io.github.remmerw.thor.cobra.html.style.LocalJStyleProperties;
-import io.github.remmerw.thor.cobra.html.style.RenderState;
-import io.github.remmerw.thor.cobra.html.style.StyleElements;
-import io.github.remmerw.thor.cobra.html.style.StyleSheetRenderState;
-import io.github.remmerw.thor.cobra.js.HideFromJS;
-import io.github.remmerw.thor.cobra.util.Strings;
+    @Volatile
+    private var cachedRules: Array<OrderedRule>? = null
 
-public class HTMLElementImpl extends ElementImpl implements HTMLElement, CSS2PropertiesContext {
-    private static final MatchConditionOnElements elementMatchCondition = new MatchConditionOnElements();
-    private static final String[] layoutProperties = {
+    /**
+     * True if there is any hover rule that is applicable to this element or descendants.
+     * This is a very crude measure, but highly effective with most web-sites.
+     */
+    private var cachedHasHoverRule = false
+    private var beforeNode: GeneratedElement? = null
+    private var afterNode: GeneratedElement? = null
+    private var isMouseOver = false
+
+    // TODO: noStyleSheet is not used. Consider removing.
+    constructor(name: String?, noStyleSheet: Boolean) : super(name)
+
+    constructor(name: String?) : super(name)
+
+    protected fun forgetLocalStyle() {
+        synchronized(this) {
+            //TODO to be reconsidered in issue #41
+            this.currentStyle = null
+            this.cachedNodeData = null
+        }
+    }
+
+    fun forgetStyle(deep: Boolean) {
+        // TODO: OPTIMIZATION: If we had a ComputedStyle map in
+        // window (Mozilla model) the map could be cleared in one shot.
+        synchronized(treeLock) {
+            //TODO to be reconsidered in issue #41
+            /*
+      this.currentStyleDeclarationState = null;
+      this.computedStyles = null;
+      this.isHoverStyle = null;
+      this.hasHoverStyleByElement = null;
+       */
+            this.currentStyle = null
+            this.cachedRules = null
+            this.cachedNodeData = null
+            if (deep) {
+                val nl = this.nodeList
+                if (nl != null) {
+                    val i = nl.iterator()
+                    while (i.hasNext()) {
+                        val node: Any? = i.next()
+                        if (node is HTMLElementImpl) {
+                            node.forgetStyle(deep)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Gets the style object associated with the element. It may return null only
+     * if the type of element does not handle stylesheets.
+     * Hiding from JS because it is not a standard property. See GH #141
+     */
+    @HideFromJS
+    open fun getCurrentStyle(): JStyleProperties {
+        synchronized(this) {
+            if (currentStyle != null) {
+                return currentStyle!!
+            }
+            currentStyle = ComputedJStyleProperties(this, getNodeData(null), true)
+            return currentStyle!!
+        }
+    }
+
+    private fun getNodeData(psuedoElement: PseudoDeclaration?): NodeData? {
+        // The analyzer needs the tree lock, when traversing the DOM.
+        // To break deadlocks, we take the tree lock before taking the element lock (priority based dead-lock break).
+        synchronized(this.treeLock) {
+            synchronized(this) {
+                if (cachedNodeData != null) {
+                    return cachedNodeData
+                }
+                val doc = this.document as HTMLDocumentImpl
+
+                if (cachedRules == null) {
+                    val jSheets = ArrayList<RuleSet?>(2)
+                    val attributeStyle = StyleElements.convertAttributesToStyles(this)
+                    if (attributeStyle != null && attributeStyle.size > 0) {
+                        jSheets.add(attributeStyle.get(0) as RuleSet?)
+                    }
+
+                    val inlineStyle = this.inlineJStyle
+                    if (inlineStyle != null && inlineStyle.size > 0) {
+                        jSheets.add(inlineStyle.get(0) as RuleSet?)
+                    }
+
+                    cachedRules = AnalyzerUtil.getApplicableRules(
+                        this,
+                        doc.getClassifiedRules(),
+                        if (jSheets.size > 0) jSheets.toTypedArray<RuleSet?>() else null
+                    )
+                    cachedHasHoverRule = hasHoverRule(cachedRules!!)
+                }
+
+                val nodeData = AnalyzerUtil.getElementStyle(
+                    this,
+                    psuedoElement,
+                    doc.getMatcher(),
+                    elementMatchCondition,
+                    cachedRules
+                )
+                val parent = this.parentNode
+                if ((parent != null) && (parent is HTMLElementImpl)) {
+                    nodeData.inheritFrom(parent.getNodeData(psuedoElement))
+                    nodeData.concretize()
+                }
+
+                this.beforeNode = setupGeneratedNode(
+                    doc,
+                    nodeData,
+                    PseudoDeclaration.BEFORE,
+                    cachedRules!!,
+                    this
+                )
+                this.afterNode = setupGeneratedNode(
+                    doc,
+                    nodeData,
+                    PseudoDeclaration.AFTER,
+                    cachedRules!!,
+                    this
+                )
+
+                cachedNodeData = nodeData
+                // System.out.println("In " + this);
+                // System.out.println("  Node data: " + nodeData);
+                return nodeData
+            }
+        }
+    }
+
+    @HideFromJS
+    fun getBeforeNode(): NodeImpl? {
+        return beforeNode
+    }
+
+    @HideFromJS
+    fun getAfterNode(): NodeImpl? {
+        return afterNode
+    }
+
+    /*
+   currentStyle is not a standard property. See GH 141.
+  public void setCurrentStyle(final Object value) {
+    throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "Cannot set currentStyle property");
+  }
+  */
+    var style: Any?
+        /**
+         * Gets the local style object associated with the element. The properties
+         * object returned only includes properties from the local style attribute. It
+         * may return null only if the type of element does not handle stylesheets.
+         */
+        get() = LocalJStyleProperties(this)
+        set(value) {
+            throw DOMException(
+                DOMException.NOT_SUPPORTED_ERR,
+                "Cannot set style property"
+            )
+        }
+
+    private val inlineJStyle: StyleSheet?
+        get() {
+            synchronized(this) {
+                val style = this.getAttribute("style")
+                if ((style != null) && (style.length != 0)) {
+                    return CSSUtilities.jParseInlineStyle(style, null, this, true)
+                }
+            }
+            // Synchronization note: Make sure getStyle() does not return multiple values.
+            return null
+        }
+
+    // TODO hide from JS
+    // Chromium(v37) and firefox(v32) do not expose this function
+    // couldn't find anything in the standards.
+    fun getComputedStyle(pseudoElement: String?): JStyleProperties {
+        return ComputedJStyleProperties(
+            this,
+            getNodeData(getPseudoDeclaration(pseudoElement)),
+            false
+        )
+    }
+
+    override fun getClassName(): String {
+        val className = this.getAttribute("class")
+        // Blank required instead of null.
+        return if (className == null) "" else className
+    }
+
+    override fun setClassName(className: String?) {
+        this.setAttribute("class", className)
+    }
+
+    var charset: String?
+        get() = this.getAttribute("charset")
+        set(charset) {
+            this.setAttribute("charset", charset)
+        }
+
+    /*
+  @Override
+  protected void assignAttributeField(final String normalName, final String value) {
+    if (!this.notificationsSuspended) {
+      this.informInvalidAttibute(normalName);
+    } else {
+      if ("style".equals(normalName)) {
+        this.forgetLocalStyle();
+      }
+    }
+    super.assignAttributeField(normalName, value);
+  }*/
+    override fun warn(message: String?, err: Throwable?) {
+        logger.log(Level.WARNING, message, err)
+    }
+
+    override fun warn(message: String?) {
+        logger.log(Level.WARNING, message)
+    }
+
+    protected fun getAttributeAsInt(name: String?, defaultValue: Int): Int {
+        val value = this.getAttribute(name)
+        try {
+            return value.toInt()
+        } catch (err: Exception) {
+            this.warn("Bad integer", err)
+            return defaultValue
+        }
+    }
+
+    fun getAttributeAsBoolean(name: String?): Boolean {
+        return this.getAttribute(name) != null
+    }
+
+    override fun handleAttributeChanged(name: String?, oldValue: String?, newValue: String?) {
+        super.handleAttributeChanged(name, oldValue, newValue)
+        forgetStyle(true)
+        this.informInvalidRecursive()
+    }
+
+    fun setMouseOver(mouseOver: Boolean) {
+        // TODO: Synchronize with treeLock here instead of in invalidateDescendtsForHover?
+        if (this.isMouseOver != mouseOver) {
+            if (mouseOver) {
+                elementMatchCondition.addMatch(this, PseudoDeclaration.HOVER)
+            } else {
+                elementMatchCondition.removeMatch(this, PseudoDeclaration.HOVER)
+            }
+            // Change isMouseOver field before checking to invalidate.
+            this.isMouseOver = mouseOver
+
+            // TODO: If informLocalInvalid detects a layout change, then there is no need to do descendant invalidation.
+
+            // Check if descendents are affected (e.g. div:hover a { ... } )
+            if (cachedHasHoverRule) {
+                this.invalidateDescendentsForHover(mouseOver)
+                if (this.hasHoverStyle()) {
+                    this.informLocalInvalid()
+                }
+            }
+        }
+    }
+
+    /* Not required anymore
+  private static boolean isSameNodeData(final NodeData a, final NodeData b) {
+    final Collection<String> aProps = a.getPropertyNames();
+    final Collection<String> bProps = b.getPropertyNames();
+    if (aProps.size() == bProps.size()) {
+      for (final String ap : aProps) {
+        final Term<?> aVal = a.getValue(ap, true);
+        final Term<?> bVal = b.getValue(ap, true);
+        if (aVal != null) {
+          if (!aVal.equals(bVal)) {
+            return false;
+          }
+        }
+        final CSSProperty aProp = a.getProperty(ap);
+        final CSSProperty bProp = b.getProperty(ap);
+        if (!aProp.equals(bProp)) {
+          return false;
+        }
+      }
+      return true;
+    }
+    return false;
+  }
+  */
+    private fun invalidateDescendentsForHover(mouseOver: Boolean) {
+        synchronized(this.treeLock) {
+            if (!mouseOver) {
+                val hoverCondition = elementMatchCondition.clone() as MatchConditionOnElements
+                hoverCondition.addMatch(this, PseudoDeclaration.HOVER)
+                invalidateDescendentsForHoverImpl(this, hoverCondition)
+            } else {
+                invalidateDescendentsForHoverImpl(this, elementMatchCondition)
+            }
+        }
+    }
+
+    private fun invalidateDescendentsForHoverImpl(
+        ancestor: HTMLElementImpl?,
+        hoverCondition: MatchCondition?
+    ) {
+        val nodeList = this.nodeList
+        if (nodeList != null) {
+            val size = nodeList.size
+            for (i in 0..<size) {
+                val node: Any? = nodeList.get(i)
+                if (node is HTMLElementImpl) {
+                    val hasMatch = node.hasHoverStyle(ancestor, hoverCondition)
+                    if (hasMatch) {
+                        node.informLocalInvalid()
+                    }
+                    node.invalidateDescendentsForHoverImpl(ancestor, hoverCondition)
+                }
+            }
+        }
+    }
+
+    // TODO: Cache the result of this
+    private fun hasHoverStyle(): Boolean {
+        val rules = cachedRules
+        if (rules == null) {
+            return false
+        }
+        return AnalyzerUtil.hasPseudoSelector(
+            rules,
+            this,
+            elementMatchCondition,
+            PseudoDeclaration.HOVER
+        )
+    }
+
+    // TODO: Cache the result of this
+    private fun hasHoverStyle(
+        ancestor: HTMLElementImpl?,
+        hoverCondition: MatchCondition?
+    ): Boolean {
+        val rules = cachedRules
+        if (rules == null) {
+            return false
+        }
+        val doc = this.document as HTMLDocumentImpl
+        return AnalyzerUtil.hasPseudoSelectorForAncestor(
+            rules,
+            this,
+            ancestor,
+            doc.getMatcher(),
+            hoverCondition,
+            PseudoDeclaration.HOVER
+        )
+    }
+
+    val pseudoNames: MutableSet<String?>?
+        /**
+         * Gets the pseudo-element lowercase names currently applicable to this
+         * element. Method must return `null` if there are no such
+         * pseudo-elements.
+         */
+        get() {
+            var pnset: MutableSet<String?>? = null
+            if (this.isMouseOver) {
+                pnset = HashSet<String?>(1)
+                pnset.add("hover")
+            }
+            return pnset
+        }
+
+    override fun informInvalid() {
+        // This is called when an attribute or child changes.
+        // TODO: forgetStyle can call informInvalid() since informInvalid() seems to always follow forgetStyle()
+        this.forgetStyle(false)
+        super.informInvalid()
+    }
+
+    fun informLocalInvalid() {
+        // TODO: forgetStyle can call informInvalid() since informInvalid() seems to always follow forgetStyle()
+        //       ^^ Hah, not any more
+        val prevStyle: JStyleProperties? = currentStyle
+        this.forgetLocalStyle()
+        val newStyle = getCurrentStyle()
+        if (layoutChanges(prevStyle, newStyle)) {
+            super.informInvalid()
+        } else {
+            super.informLookInvalid()
+        }
+    }
+
+    // TODO: Use the handleAttributeChanged() system and remove informInvalidAttribute
+    /*
+  private void informInvalidAttibute(final String normalName) {
+    if (isAttachedToDocument()) {
+      // This is called when an attribute changes while
+      // the element is allowing notifications.
+      if ("style".equals(normalName)) {
+        this.forgetLocalStyle();
+      }
+
+      forgetStyle(true);
+      informInvalidRecursive();
+    }
+  }*/
+    private fun informInvalidRecursive() {
+        super.informInvalid()
+        val nodeList = this.getChildrenArray()
+        if (nodeList != null) {
+            for (n in nodeList) {
+                if (n is HTMLElementImpl) {
+                    n.informInvalidRecursive()
+                }
+            }
+        }
+    }
+
+    open val formInputs: Array<FormInput?>?
+        /**
+         * Gets form input due to the current element. It should return
+         * `null` except when the element is a form input element.
+         */
+        get() =// Override in input elements
+            null
+
+    private fun classMatch(classTL: String?): Boolean {
+        val classNames = this.getClassName()
+        if ((classNames == null) || (classNames.length == 0)) {
+            return classTL == null
+        }
+        val tok = StringTokenizer(classNames, " \t\r\n")
+        while (tok.hasMoreTokens()) {
+            val token = tok.nextToken()
+            if (token.lowercase(Locale.getDefault()) == classTL) {
+                return true
+            }
+        }
+        return false
+    }
+
+    /**
+     * Get an ancestor that matches the element tag name given and the style class
+     * given.
+     *
+     * @param elementTL An tag name in lowercase or an asterisk (*).
+     * @param classTL   A class name in lowercase.
+     */
+    fun getAncestorWithClass(elementTL: String, classTL: String?): HTMLElementImpl? {
+        val nodeObj: Any? = this.parentNode
+        if (nodeObj is HTMLElementImpl) {
+            val pelementTL = nodeObj.tagName.lowercase(Locale.getDefault())
+            if (("*" == elementTL || elementTL == pelementTL) && nodeObj.classMatch(classTL)) {
+                return nodeObj
+            }
+            return nodeObj.getAncestorWithClass(elementTL, classTL)
+        } else {
+            return null
+        }
+    }
+
+    fun getParentWithClass(elementTL: String, classTL: String?): HTMLElementImpl? {
+        val nodeObj: Any? = this.parentNode
+        if (nodeObj is HTMLElementImpl) {
+            val pelementTL = nodeObj.tagName.lowercase(Locale.getDefault())
+            if (("*" == elementTL || elementTL == pelementTL) && nodeObj.classMatch(classTL)) {
+                return nodeObj
+            }
+        }
+        return null
+    }
+
+    val preceedingSiblingElement: HTMLElementImpl?
+        get() {
+            val parentNode = this.parentNode
+            if (parentNode == null) {
+                return null
+            }
+            val childNodes = parentNode.childNodes
+            if (childNodes == null) {
+                return null
+            }
+            val length = childNodes.length
+            var priorElement: HTMLElementImpl? = null
+            for (i in 0..<length) {
+                val child = childNodes.item(i)
+                if (child === this) {
+                    return priorElement
+                }
+                if (child is HTMLElementImpl) {
+                    priorElement = child
+                }
+            }
+            return null
+        }
+
+    fun getPreceedingSiblingWithClass(elementTL: String, classTL: String?): HTMLElementImpl? {
+        val psibling = this.preceedingSiblingElement
+        if (psibling != null) {
+            val pelementTL = psibling.tagName.lowercase(Locale.getDefault())
+            if (("*" == elementTL || elementTL == pelementTL) && psibling.classMatch(classTL)) {
+                return psibling
+            }
+        }
+        return null
+    }
+
+    fun getAncestorWithId(elementTL: String, idTL: String): HTMLElementImpl? {
+        val nodeObj: Any? = this.parentNode
+        if (nodeObj is HTMLElementImpl) {
+            val pelementTL = nodeObj.tagName.lowercase(Locale.getDefault())
+            val pid = nodeObj.id
+            val pidTL = if (pid == null) null else pid.lowercase(Locale.getDefault())
+            if (("*" == elementTL || elementTL == pelementTL) && idTL == pidTL) {
+                return nodeObj
+            }
+            return nodeObj.getAncestorWithId(elementTL, idTL)
+        } else {
+            return null
+        }
+    }
+
+    fun getParentWithId(elementTL: String, idTL: String): HTMLElementImpl? {
+        val nodeObj: Any? = this.parentNode
+        if (nodeObj is HTMLElementImpl) {
+            val pelementTL = nodeObj.tagName.lowercase(Locale.getDefault())
+            val pid = nodeObj.id
+            val pidTL = if (pid == null) null else pid.lowercase(Locale.getDefault())
+            if (("*" == elementTL || elementTL == pelementTL) && idTL == pidTL) {
+                return nodeObj
+            }
+        }
+        return null
+    }
+
+    fun getPreceedingSiblingWithId(elementTL: String, idTL: String): HTMLElementImpl? {
+        val psibling = this.preceedingSiblingElement
+        if (psibling != null) {
+            val pelementTL = psibling.tagName.lowercase(Locale.getDefault())
+            val pid = psibling.id
+            val pidTL = if (pid == null) null else pid.lowercase(Locale.getDefault())
+            if (("*" == elementTL || elementTL == pelementTL) && idTL == pidTL) {
+                return psibling
+            }
+        }
+        return null
+    }
+
+    fun getAncestor(elementTL: String): HTMLElementImpl? {
+        val nodeObj: Any? = this.parentNode
+        if (nodeObj is HTMLElementImpl) {
+            if ("*" == elementTL) {
+                return nodeObj
+            }
+            val pelementTL = nodeObj.tagName.lowercase(Locale.getDefault())
+            if (elementTL == pelementTL) {
+                return nodeObj
+            }
+            return nodeObj.getAncestor(elementTL)
+        } else {
+            return null
+        }
+    }
+
+    fun getParent(elementTL: String): HTMLElementImpl? {
+        val nodeObj: Any? = this.parentNode
+        if (nodeObj is HTMLElementImpl) {
+            if ("*" == elementTL) {
+                return nodeObj
+            }
+            val pelementTL = nodeObj.tagName.lowercase(Locale.getDefault())
+            if (elementTL == pelementTL) {
+                return nodeObj
+            }
+        }
+        return null
+    }
+
+    fun getPreceedingSibling(elementTL: String): HTMLElementImpl? {
+        val psibling = this.preceedingSiblingElement
+        if (psibling != null) {
+            if ("*" == elementTL) {
+                return psibling
+            }
+            val pelementTL = psibling.tagName.lowercase(Locale.getDefault())
+            if (elementTL == pelementTL) {
+                return psibling
+            }
+        }
+        return null
+    }
+
+    protected fun getAncestorForJavaClass(javaClass: Class<HTMLFormElement?>): Any? {
+        val nodeObj: Any? = this.parentNode
+        if ((nodeObj == null) || javaClass.isInstance(nodeObj)) {
+            return nodeObj
+        } else if (nodeObj is HTMLElementImpl) {
+            return nodeObj.getAncestorForJavaClass(javaClass)
+        } else {
+            return null
+        }
+    }
+
+    fun setInnerHTML(newHtml: String) {
+        val document = this.document as HTMLDocumentImpl?
+        if (document == null) {
+            this.warn("setInnerHTML(): Element " + this + " does not belong to a document.")
+            return
+        }
+        val parser = HtmlParser(
+            document.getUserAgentContext(),
+            document,
+            null,
+            null,
+            null,
+            false,  /* TODO */
+            false
+        )
+        synchronized(this) {
+            removeAllChildrenImpl()
+        }
+        // Should not synchronize around parser probably.
+        try {
+            StringReader(newHtml).use { reader ->
+                parser.parse(reader, this)
+            }
+        } catch (e: IOException) {
+            this.warn("setInnerHTML(): Error setting inner HTML.", e)
+        } catch (e: SAXException) {
+            this.warn("setInnerHTML(): Error setting inner HTML.", e)
+        }
+    }
+
+    val outerHTML: String
+        get() {
+            val buffer = StringBuffer()
+            synchronized(this) {
+                this.appendOuterHTMLImpl(buffer)
+            }
+            return buffer.toString()
+        }
+
+    fun appendOuterHTMLImpl(buffer: StringBuffer) {
+        val tagName = this.tagName
+        buffer.append('<')
+        buffer.append(tagName)
+        val attributes: MutableMap<String?, String?>? = this.attributes
+        if (attributes != null) {
+            attributes.forEach { (k: String?, v: String?) ->
+                if (v != null) {
+                    buffer.append(' ')
+                    buffer.append(k)
+                    buffer.append("=\"")
+                    buffer.append(Strings.strictHtmlEncode(v, true))
+                    buffer.append("\"")
+                }
+            }
+        }
+        val nl = this.nodeList
+        if ((nl == null) || (nl.size == 0)) {
+            buffer.append("/>")
+            return
+        }
+        buffer.append('>')
+        this.appendInnerHTMLImpl(buffer)
+        buffer.append("</")
+        buffer.append(tagName)
+        buffer.append('>')
+    }
+
+    override fun createRenderState(prevRenderState: RenderState?): RenderState {
+        // Overrides NodeImpl method
+        // Called in synchronized block already
+        return StyleSheetRenderState(prevRenderState, this)
+    }
+
+    val offsetTop: Int
+        get() {
+            // TODO: Sometimes this can be called while parsing, and
+            // browsers generally give the right answer.
+            val uiNode = this.getUINode()
+            return if (uiNode == null) 0 else uiNode.getBoundsRelativeToBlock().y
+        }
+
+    val offsetLeft: Int
+        get() {
+            val uiNode = this.getUINode()
+            return if (uiNode == null) 0 else uiNode.getBoundsRelativeToBlock().x
+        }
+
+    val offsetWidth: Int
+        get() {
+            val uiNode = this.getUINode()
+            return if (uiNode == null) 0 else uiNode.getBoundsRelativeToBlock().width
+        }
+
+    val offsetHeight: Int
+        get() {
+            val uiNode = this.getUINode()
+            return if (uiNode == null) 0 else uiNode.getBoundsRelativeToBlock().height
+        }
+
+    override fun getDocumentBaseURI(): String? {
+        val doc = this.document as HTMLDocumentImpl?
+        if (doc != null) {
+            return doc.getBaseURI()
+        } else {
+            return null
+        }
+    }
+
+    override fun handleDocumentAttachmentChanged() {
+        if (isAttachedToDocument()) {
+            forgetLocalStyle()
+            forgetStyle(false)
+            informInvalid()
+        }
+        super.handleDocumentAttachmentChanged()
+    }
+
+    val classList: DOMTokenList
+        get() = DOMTokenList()
+
+    // Based on http://www.w3.org/TR/dom/#domtokenlist
+    inner class DOMTokenList {
+        private val classes: Array<String?>
+            get() = getAttribute("class").split(" ".toRegex()).dropLastWhile { it.isEmpty() }
+                .toTypedArray()
+
+        private fun getClasses(max: Int): Array<String?> {
+            return getAttribute("class").split(" ".toRegex(), max.coerceAtLeast(0)).toTypedArray()
+        }
+
+        val length: Long
+            get() = this.classes.length.toLong()
+
+        fun item(index: Long): String? {
+            val indexInt = index.toInt()
+            return getClasses(indexInt + 1)[0]
+        }
+
+        fun contains(token: String?): Boolean {
+            return Arrays.stream<String?>(this.classes).anyMatch { t: String? -> t == token }
+        }
+
+        fun add(token: String?) {
+            add(arrayOf<String>(token!!))
+        }
+
+        fun add(tokens: Array<String>) {
+            val sb = StringBuilder()
+            for (token in tokens) {
+                if (token.length == 0) {
+                    throw DOMException(DOMException.SYNTAX_ERR, "empty token")
+                }
+
+                // TODO: Check for whitespace and throw IllegalCharacterError
+                sb.append(' ')
+                sb.append(token)
+            }
+            setAttribute("class", getAttribute("class") + sb)
+        }
+
+        fun remove(tokenToRemove: String?) {
+            remove(arrayOf<String?>(tokenToRemove))
+        }
+
+        fun remove(tokensToRemove: Array<String?>) {
+            val existingClasses = this.classes
+            val sb = StringBuilder()
+            for (clazz in existingClasses) {
+                if (!Arrays.stream<String?>(tokensToRemove)
+                        .anyMatch { tr: String? -> tr == clazz }
+                ) {
+                    sb.append(' ')
+                    sb.append(clazz)
+                }
+            }
+            setAttribute("class", sb.toString())
+        }
+
+        fun toggle(tokenToToggle: String): Boolean {
+            val existingClasses = this.classes
+            for (clazz in existingClasses) {
+                if (tokenToToggle == clazz) {
+                    remove(tokenToToggle)
+                    return false
+                }
+            }
+
+            // Not found, hence add
+            add(tokenToToggle)
+            return true
+        }
+
+        fun toggle(token: String?, force: Boolean): Boolean {
+            if (force) {
+                add(token)
+            } else {
+                remove(token)
+            }
+            return force
+        } /* TODO: stringifier; */
+    }
+
+    companion object {
+        private val elementMatchCondition = MatchConditionOnElements()
+        private val layoutProperties = arrayOf<String?>(
             "margin-top",
             "margin-bottom",
             "margin-left",
@@ -96,848 +896,92 @@ public class HTMLElementImpl extends ElementImpl implements HTMLElement, CSS2Pro
             "font-size",
             "font-family",
             "font-weight",
-            "font-variant"  // TODO: Add other font properties that affect layouting
-    };
-    private volatile JStyleProperties currentStyle = null;
-    private NodeData cachedNodeData = null;
-    private volatile OrderedRule[] cachedRules = null;
-    /**
-     * True if there is any hover rule that is applicable to this element or descendants.
-     * This is a very crude measure, but highly effective with most web-sites.
-     */
-    private boolean cachedHasHoverRule = false;
-    private GeneratedElement beforeNode;
-    private GeneratedElement afterNode;
-    private boolean isMouseOver = false;
+            "font-variant" // TODO: Add other font properties that affect layouting
+        )
 
-    // TODO: noStyleSheet is not used. Consider removing.
-    public HTMLElementImpl(final String name, final boolean noStyleSheet) {
-        super(name);
-    }
-
-    public HTMLElementImpl(final String name) {
-        super(name);
-    }
-
-    private static GeneratedElement setupGeneratedNode(final HTMLDocumentImpl doc, final NodeData nodeData, final PseudoDeclaration decl, final OrderedRule[] rules, final HTMLElementImpl elem) {
-        final NodeData genNodeData = AnalyzerUtil.getElementStyle(elem, decl, doc.getMatcher(), elementMatchCondition, rules);
-        /*
+        private fun setupGeneratedNode(
+            doc: HTMLDocumentImpl,
+            nodeData: NodeData?,
+            decl: PseudoDeclaration?,
+            rules: Array<OrderedRule>,
+            elem: HTMLElementImpl?
+        ): GeneratedElement? {
+            val genNodeData = AnalyzerUtil.getElementStyle(
+                elem,
+                decl,
+                doc.getMatcher(),
+                elementMatchCondition,
+                rules
+            )
+            /*
          * TODO: getValue returns null when `content:inherit` is set. This gives correct behavior per spec,
          * but one of the test disagrees https://github.com/w3c/csswg-test/issues/1133
          * If the test is accepted to be valid, then we should call inherit() and concretize() before getting the "content" value.
          */
-        final TermList content = genNodeData.getValue(TermList.class, "content", true);
-        if (content != null) {
-            genNodeData.inheritFrom(nodeData);
-            genNodeData.concretize();
-            return new GeneratedElement(elem, genNodeData, content);
-        } else {
-            return null;
-        }
-    }
-
-    private static boolean hasHoverRule(OrderedRule[] rules) {
-        for (final OrderedRule or : rules) {
-            final RuleSet r = or.getRule();
-            for (final CombinedSelector cs : r.getSelectors()) {
-                for (final Selector s : cs) {
-                    if (s.hasPseudoDeclaration(PseudoDeclaration.HOVER)) {
-                        return true;
-                    }
-                }
+            val content = genNodeData.getValue<TermList?>(TermList::class.java, "content", true)
+            if (content != null) {
+                genNodeData.inheritFrom(nodeData)
+                genNodeData.concretize()
+                return GeneratedElement(elem, genNodeData, content)
+            } else {
+                return null
             }
         }
-        return false;
-    }
 
-    static private PseudoDeclaration getPseudoDeclaration(final String pseudoElement) {
-        if ((pseudoElement != null)) {
-            String choppedPseudoElement = pseudoElement;
-            if (pseudoElement.startsWith("::")) {
-                choppedPseudoElement = pseudoElement.substring(2);
-            } else if (pseudoElement.startsWith(":")) {
-                choppedPseudoElement = pseudoElement.substring(1);
-            }
-            final PseudoDeclaration[] pseudoDeclarations = PseudoDeclaration.values();
-            for (final PseudoDeclaration pd : pseudoDeclarations) {
-                if (pd.isPseudoElement()) {
-                    if (pd.value().equals(choppedPseudoElement)) {
-                        return pd;
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    protected final static InputSource getCssInputSourceForDecl(final String text) {
-        final Reader reader = new StringReader(text);
-        final InputSource is = new InputSource(reader);
-        return is;
-    }
-
-    private static boolean layoutChanges(final JStyleProperties prevStyle, final JStyleProperties newStyle) {
-        if (prevStyle == null || newStyle == null) {
-            return true;
-        }
-
-        for (final String p : layoutProperties) {
-            if (!Objects.equals(prevStyle.helperTryBoth(p), newStyle.helperTryBoth(p))) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    protected final void forgetLocalStyle() {
-        synchronized (this) {
-            //TODO to be reconsidered in issue #41
-
-            this.currentStyle = null;
-            this.cachedNodeData = null;
-            //TODO to be removed during code cleanup
-      /*
-      this.currentStyleDeclarationState = null;
-      this.localStyleDeclarationState = null;
-      this.computedStyles = null;
-       */
-        }
-
-    }
-
-    protected final void forgetStyle(final boolean deep) {
-        // TODO: OPTIMIZATION: If we had a ComputedStyle map in
-        // window (Mozilla model) the map could be cleared in one shot.
-        synchronized (treeLock) {
-            //TODO to be reconsidered in issue #41
-      /*
-      this.currentStyleDeclarationState = null;
-      this.computedStyles = null;
-      this.isHoverStyle = null;
-      this.hasHoverStyleByElement = null;
-       */
-            this.currentStyle = null;
-            this.cachedRules = null;
-            this.cachedNodeData = null;
-            if (deep) {
-                final ArrayList<Node> nl = this.nodeList;
-                if (nl != null) {
-                    final Iterator<Node> i = nl.iterator();
-                    while (i.hasNext()) {
-                        final Object node = i.next();
-                        if (node instanceof HTMLElementImpl) {
-                            ((HTMLElementImpl) node).forgetStyle(deep);
+        private fun hasHoverRule(rules: Array<OrderedRule>): Boolean {
+            for (or in rules) {
+                val r = or.rule
+                for (cs in r.selectors) {
+                    for (s in cs) {
+                        if (s.hasPseudoDeclaration(PseudoDeclaration.HOVER)) {
+                            return true
                         }
                     }
                 }
             }
+            return false
         }
-    }
 
-    /**
-     * Gets the style object associated with the element. It may return null only
-     * if the type of element does not handle stylesheets.
-     * Hiding from JS because it is not a standard property. See GH #141
-     */
-    @HideFromJS
-    public @NonNull JStyleProperties getCurrentStyle() {
-        synchronized (this) {
-            if (currentStyle != null) {
-                return currentStyle;
-            }
-            currentStyle = new ComputedJStyleProperties(this, getNodeData(null), true);
-            return currentStyle;
-        }
-    }
-
-    private NodeData getNodeData(final PseudoDeclaration psuedoElement) {
-        // The analyzer needs the tree lock, when traversing the DOM.
-        // To break deadlocks, we take the tree lock before taking the element lock (priority based dead-lock break).
-        synchronized (this.treeLock) {
-            synchronized (this) {
-                if (cachedNodeData != null) {
-                    return cachedNodeData;
+        private fun getPseudoDeclaration(pseudoElement: String?): PseudoDeclaration? {
+            if ((pseudoElement != null)) {
+                var choppedPseudoElement: String? = pseudoElement
+                if (pseudoElement.startsWith("::")) {
+                    choppedPseudoElement = pseudoElement.substring(2)
+                } else if (pseudoElement.startsWith(":")) {
+                    choppedPseudoElement = pseudoElement.substring(1)
                 }
-
-                final HTMLDocumentImpl doc = (HTMLDocumentImpl) this.document;
-
-                if (cachedRules == null) {
-                    final ArrayList<RuleSet> jSheets = new ArrayList<>(2);
-                    final StyleSheet attributeStyle = StyleElements.convertAttributesToStyles(this);
-                    if (attributeStyle != null && attributeStyle.size() > 0) {
-                        jSheets.add((RuleSet) attributeStyle.get(0));
+                val pseudoDeclarations = PseudoDeclaration.entries.toTypedArray()
+                for (pd in pseudoDeclarations) {
+                    if (pd.isPseudoElement) {
+                        if (pd.value() == choppedPseudoElement) {
+                            return pd
+                        }
                     }
-
-                    final StyleSheet inlineStyle = this.getInlineJStyle();
-                    if (inlineStyle != null && inlineStyle.size() > 0) {
-                        jSheets.add((RuleSet) inlineStyle.get(0));
-                    }
-
-                    cachedRules = AnalyzerUtil.getApplicableRules(this, doc.getClassifiedRules(), jSheets.size() > 0 ? jSheets.toArray(new RuleSet[jSheets.size()]) : null);
-                    cachedHasHoverRule = hasHoverRule(cachedRules);
-
-                }
-
-                final NodeData nodeData = AnalyzerUtil.getElementStyle(this, psuedoElement, doc.getMatcher(), elementMatchCondition, cachedRules);
-                final Node parent = this.parentNode;
-                if ((parent != null) && (parent instanceof HTMLElementImpl parentElement)) {
-                    nodeData.inheritFrom(parentElement.getNodeData(psuedoElement));
-                    nodeData.concretize();
-                }
-
-                this.beforeNode = setupGeneratedNode(doc, nodeData, PseudoDeclaration.BEFORE, cachedRules, this);
-                this.afterNode = setupGeneratedNode(doc, nodeData, PseudoDeclaration.AFTER, cachedRules, this);
-
-                cachedNodeData = nodeData;
-                // System.out.println("In " + this);
-                // System.out.println("  Node data: " + nodeData);
-                return nodeData;
-            }
-        }
-    }
-
-    @HideFromJS
-    public NodeImpl getBeforeNode() {
-        return beforeNode;
-    }
-
-    @HideFromJS
-    public NodeImpl getAfterNode() {
-        return afterNode;
-    }
-
-  /*
-   currentStyle is not a standard property. See GH 141.
-  public void setCurrentStyle(final Object value) {
-    throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "Cannot set currentStyle property");
-  }
-  */
-
-    /**
-     * Gets the local style object associated with the element. The properties
-     * object returned only includes properties from the local style attribute. It
-     * may return null only if the type of element does not handle stylesheets.
-     */
-    public JStyleProperties getStyle() {
-        return new LocalJStyleProperties(this);
-    }
-
-    public void setStyle(final Object value) {
-        throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "Cannot set style property");
-    }
-
-    private StyleSheet getInlineJStyle() {
-        synchronized (this) {
-            final String style = this.getAttribute("style");
-            if ((style != null) && (style.length() != 0)) {
-                return CSSUtilities.jParseInlineStyle(style, null, this, true);
-            }
-        }
-        // Synchronization note: Make sure getStyle() does not return multiple values.
-        return null;
-    }
-
-    // TODO hide from JS
-    // Chromium(v37) and firefox(v32) do not expose this function
-    // couldn't find anything in the standards.
-    public JStyleProperties getComputedStyle(final String pseudoElement) {
-        return new ComputedJStyleProperties(this, getNodeData(getPseudoDeclaration(pseudoElement)), false);
-    }
-
-    public String getClassName() {
-        final String className = this.getAttribute("class");
-        // Blank required instead of null.
-        return className == null ? "" : className;
-    }
-
-    public void setClassName(final String className) {
-        this.setAttribute("class", className);
-    }
-
-    public String getCharset() {
-        return this.getAttribute("charset");
-    }
-
-    public void setCharset(final String charset) {
-        this.setAttribute("charset", charset);
-    }
-
-  /*
-  @Override
-  protected void assignAttributeField(final String normalName, final String value) {
-    if (!this.notificationsSuspended) {
-      this.informInvalidAttibute(normalName);
-    } else {
-      if ("style".equals(normalName)) {
-        this.forgetLocalStyle();
-      }
-    }
-    super.assignAttributeField(normalName, value);
-  }*/
-
-    @Override
-    public void warn(final String message, final Throwable err) {
-        logger.log(Level.WARNING, message, err);
-    }
-
-    @Override
-    public void warn(final String message) {
-        logger.log(Level.WARNING, message);
-    }
-
-    protected int getAttributeAsInt(final String name, final int defaultValue) {
-        final String value = this.getAttribute(name);
-        try {
-            return Integer.parseInt(value);
-        } catch (final Exception err) {
-            this.warn("Bad integer", err);
-            return defaultValue;
-        }
-    }
-
-    public boolean getAttributeAsBoolean(final String name) {
-        return this.getAttribute(name) != null;
-    }
-
-    @Override
-    protected void handleAttributeChanged(String name, String oldValue, String newValue) {
-        super.handleAttributeChanged(name, oldValue, newValue);
-        forgetStyle(true);
-        this.informInvalidRecursive();
-    }
-
-    public void setMouseOver(final boolean mouseOver) {
-        // TODO: Synchronize with treeLock here instead of in invalidateDescendtsForHover?
-        if (this.isMouseOver != mouseOver) {
-            if (mouseOver) {
-                elementMatchCondition.addMatch(this, PseudoDeclaration.HOVER);
-            } else {
-                elementMatchCondition.removeMatch(this, PseudoDeclaration.HOVER);
-            }
-            // Change isMouseOver field before checking to invalidate.
-            this.isMouseOver = mouseOver;
-
-            // TODO: If informLocalInvalid detects a layout change, then there is no need to do descendant invalidation.
-
-            // Check if descendents are affected (e.g. div:hover a { ... } )
-            if (cachedHasHoverRule) {
-                this.invalidateDescendentsForHover(mouseOver);
-                if (this.hasHoverStyle()) {
-                    this.informLocalInvalid();
                 }
             }
+            return null
         }
-    }
 
-  /* Not required anymore
-  private static boolean isSameNodeData(final NodeData a, final NodeData b) {
-    final Collection<String> aProps = a.getPropertyNames();
-    final Collection<String> bProps = b.getPropertyNames();
-    if (aProps.size() == bProps.size()) {
-      for (final String ap : aProps) {
-        final Term<?> aVal = a.getValue(ap, true);
-        final Term<?> bVal = b.getValue(ap, true);
-        if (aVal != null) {
-          if (!aVal.equals(bVal)) {
-            return false;
-          }
+        protected fun getCssInputSourceForDecl(text: String): InputSource {
+            val reader: Reader = StringReader(text)
+            val `is` = InputSource(reader)
+            return `is`
         }
-        final CSSProperty aProp = a.getProperty(ap);
-        final CSSProperty bProp = b.getProperty(ap);
-        if (!aProp.equals(bProp)) {
-          return false;
-        }
-      }
-      return true;
-    }
-    return false;
-  }
-  */
 
-    private void invalidateDescendentsForHover(final boolean mouseOver) {
-        synchronized (this.treeLock) {
-            if (!mouseOver) {
-                final MatchConditionOnElements hoverCondition = (MatchConditionOnElements) elementMatchCondition.clone();
-                hoverCondition.addMatch(this, PseudoDeclaration.HOVER);
-                invalidateDescendentsForHoverImpl(this, hoverCondition);
-            } else {
-                invalidateDescendentsForHoverImpl(this, elementMatchCondition);
+        private fun layoutChanges(
+            prevStyle: JStyleProperties?,
+            newStyle: JStyleProperties?
+        ): Boolean {
+            if (prevStyle == null || newStyle == null) {
+                return true
             }
-        }
-    }
 
-    private void invalidateDescendentsForHoverImpl(final HTMLElementImpl ancestor, final MatchCondition hoverCondition) {
-        final ArrayList<Node> nodeList = this.nodeList;
-        if (nodeList != null) {
-            final int size = nodeList.size();
-            for (int i = 0; i < size; i++) {
-                final Object node = nodeList.get(i);
-                if (node instanceof HTMLElementImpl descendent) {
-                    final boolean hasMatch = descendent.hasHoverStyle(ancestor, hoverCondition);
-                    if (hasMatch) {
-                        descendent.informLocalInvalid();
-                    }
-                    descendent.invalidateDescendentsForHoverImpl(ancestor, hoverCondition);
+            for (p in layoutProperties) {
+                if (prevStyle.helperTryBoth(p) != newStyle.helperTryBoth(p)) {
+                    return true
                 }
             }
+            return false
         }
     }
-
-    // TODO: Cache the result of this
-    private boolean hasHoverStyle() {
-        final OrderedRule[] rules = cachedRules;
-        if (rules == null) {
-            return false;
-        }
-        return AnalyzerUtil.hasPseudoSelector(rules, this, elementMatchCondition, PseudoDeclaration.HOVER);
-    }
-
-    // TODO: Cache the result of this
-    private boolean hasHoverStyle(final HTMLElementImpl ancestor, final MatchCondition hoverCondition) {
-        final OrderedRule[] rules = cachedRules;
-        if (rules == null) {
-            return false;
-        }
-        final HTMLDocumentImpl doc = (HTMLDocumentImpl) this.document;
-        return AnalyzerUtil.hasPseudoSelectorForAncestor(rules, this, ancestor, doc.getMatcher(), hoverCondition, PseudoDeclaration.HOVER);
-    }
-
-    /**
-     * Gets the pseudo-element lowercase names currently applicable to this
-     * element. Method must return <code>null</code> if there are no such
-     * pseudo-elements.
-     */
-    public Set<String> getPseudoNames() {
-        Set<String> pnset = null;
-        if (this.isMouseOver) {
-            pnset = new HashSet<>(1);
-            pnset.add("hover");
-        }
-        return pnset;
-    }
-
-    @Override
-    public void informInvalid() {
-        // This is called when an attribute or child changes.
-        // TODO: forgetStyle can call informInvalid() since informInvalid() seems to always follow forgetStyle()
-        this.forgetStyle(false);
-        super.informInvalid();
-    }
-
-    public void informLocalInvalid() {
-        // TODO: forgetStyle can call informInvalid() since informInvalid() seems to always follow forgetStyle()
-        //       ^^ Hah, not any more
-        final JStyleProperties prevStyle = currentStyle;
-        this.forgetLocalStyle();
-        final JStyleProperties newStyle = getCurrentStyle();
-        if (layoutChanges(prevStyle, newStyle)) {
-            super.informInvalid();
-        } else {
-            super.informLookInvalid();
-        }
-    }
-
-    // TODO: Use the handleAttributeChanged() system and remove informInvalidAttribute
-  /*
-  private void informInvalidAttibute(final String normalName) {
-    if (isAttachedToDocument()) {
-      // This is called when an attribute changes while
-      // the element is allowing notifications.
-      if ("style".equals(normalName)) {
-        this.forgetLocalStyle();
-      }
-
-      forgetStyle(true);
-      informInvalidRecursive();
-    }
-  }*/
-
-    private void informInvalidRecursive() {
-        super.informInvalid();
-        final NodeImpl[] nodeList = this.getChildrenArray();
-        if (nodeList != null) {
-            for (final NodeImpl n : nodeList) {
-                if (n instanceof HTMLElementImpl htmlElementImpl) {
-                    htmlElementImpl.informInvalidRecursive();
-                }
-            }
-        }
-    }
-
-    /**
-     * Gets form input due to the current element. It should return
-     * <code>null</code> except when the element is a form input element.
-     */
-    protected FormInput[] getFormInputs() {
-        // Override in input elements
-        return null;
-    }
-
-    private boolean classMatch(final String classTL) {
-        final String classNames = this.getClassName();
-        if ((classNames == null) || (classNames.length() == 0)) {
-            return classTL == null;
-        }
-        final StringTokenizer tok = new StringTokenizer(classNames, " \t\r\n");
-        while (tok.hasMoreTokens()) {
-            final String token = tok.nextToken();
-            if (token.toLowerCase().equals(classTL)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Get an ancestor that matches the element tag name given and the style class
-     * given.
-     *
-     * @param elementTL An tag name in lowercase or an asterisk (*).
-     * @param classTL   A class name in lowercase.
-     */
-    public HTMLElementImpl getAncestorWithClass(final String elementTL, final String classTL) {
-        final Object nodeObj = this.getParentNode();
-        if (nodeObj instanceof HTMLElementImpl parentElement) {
-            final String pelementTL = parentElement.getTagName().toLowerCase();
-            if (("*".equals(elementTL) || elementTL.equals(pelementTL)) && parentElement.classMatch(classTL)) {
-                return parentElement;
-            }
-            return parentElement.getAncestorWithClass(elementTL, classTL);
-        } else {
-            return null;
-        }
-    }
-
-    public HTMLElementImpl getParentWithClass(final String elementTL, final String classTL) {
-        final Object nodeObj = this.getParentNode();
-        if (nodeObj instanceof HTMLElementImpl parentElement) {
-            final String pelementTL = parentElement.getTagName().toLowerCase();
-            if (("*".equals(elementTL) || elementTL.equals(pelementTL)) && parentElement.classMatch(classTL)) {
-                return parentElement;
-            }
-        }
-        return null;
-    }
-
-    public HTMLElementImpl getPreceedingSiblingElement() {
-        final Node parentNode = this.getParentNode();
-        if (parentNode == null) {
-            return null;
-        }
-        final NodeList childNodes = parentNode.getChildNodes();
-        if (childNodes == null) {
-            return null;
-        }
-        final int length = childNodes.getLength();
-        HTMLElementImpl priorElement = null;
-        for (int i = 0; i < length; i++) {
-            final Node child = childNodes.item(i);
-            if (child == this) {
-                return priorElement;
-            }
-            if (child instanceof HTMLElementImpl) {
-                priorElement = (HTMLElementImpl) child;
-            }
-        }
-        return null;
-    }
-
-    public HTMLElementImpl getPreceedingSiblingWithClass(final String elementTL, final String classTL) {
-        final HTMLElementImpl psibling = this.getPreceedingSiblingElement();
-        if (psibling != null) {
-            final String pelementTL = psibling.getTagName().toLowerCase();
-            if (("*".equals(elementTL) || elementTL.equals(pelementTL)) && psibling.classMatch(classTL)) {
-                return psibling;
-            }
-        }
-        return null;
-    }
-
-    public HTMLElementImpl getAncestorWithId(final String elementTL, final String idTL) {
-        final Object nodeObj = this.getParentNode();
-        if (nodeObj instanceof HTMLElementImpl parentElement) {
-            final String pelementTL = parentElement.getTagName().toLowerCase();
-            final String pid = parentElement.getId();
-            final String pidTL = pid == null ? null : pid.toLowerCase();
-            if (("*".equals(elementTL) || elementTL.equals(pelementTL)) && idTL.equals(pidTL)) {
-                return parentElement;
-            }
-            return parentElement.getAncestorWithId(elementTL, idTL);
-        } else {
-            return null;
-        }
-    }
-
-    public HTMLElementImpl getParentWithId(final String elementTL, final String idTL) {
-        final Object nodeObj = this.getParentNode();
-        if (nodeObj instanceof HTMLElementImpl parentElement) {
-            final String pelementTL = parentElement.getTagName().toLowerCase();
-            final String pid = parentElement.getId();
-            final String pidTL = pid == null ? null : pid.toLowerCase();
-            if (("*".equals(elementTL) || elementTL.equals(pelementTL)) && idTL.equals(pidTL)) {
-                return parentElement;
-            }
-        }
-        return null;
-    }
-
-    public HTMLElementImpl getPreceedingSiblingWithId(final String elementTL, final String idTL) {
-        final HTMLElementImpl psibling = this.getPreceedingSiblingElement();
-        if (psibling != null) {
-            final String pelementTL = psibling.getTagName().toLowerCase();
-            final String pid = psibling.getId();
-            final String pidTL = pid == null ? null : pid.toLowerCase();
-            if (("*".equals(elementTL) || elementTL.equals(pelementTL)) && idTL.equals(pidTL)) {
-                return psibling;
-            }
-        }
-        return null;
-    }
-
-    public HTMLElementImpl getAncestor(final String elementTL) {
-        final Object nodeObj = this.getParentNode();
-        if (nodeObj instanceof HTMLElementImpl parentElement) {
-            if ("*".equals(elementTL)) {
-                return parentElement;
-            }
-            final String pelementTL = parentElement.getTagName().toLowerCase();
-            if (elementTL.equals(pelementTL)) {
-                return parentElement;
-            }
-            return parentElement.getAncestor(elementTL);
-        } else {
-            return null;
-        }
-    }
-
-    public HTMLElementImpl getParent(final String elementTL) {
-        final Object nodeObj = this.getParentNode();
-        if (nodeObj instanceof HTMLElementImpl parentElement) {
-            if ("*".equals(elementTL)) {
-                return parentElement;
-            }
-            final String pelementTL = parentElement.getTagName().toLowerCase();
-            if (elementTL.equals(pelementTL)) {
-                return parentElement;
-            }
-        }
-        return null;
-    }
-
-    public HTMLElementImpl getPreceedingSibling(final String elementTL) {
-        final HTMLElementImpl psibling = this.getPreceedingSiblingElement();
-        if (psibling != null) {
-            if ("*".equals(elementTL)) {
-                return psibling;
-            }
-            final String pelementTL = psibling.getTagName().toLowerCase();
-            if (elementTL.equals(pelementTL)) {
-                return psibling;
-            }
-        }
-        return null;
-    }
-
-    protected Object getAncestorForJavaClass(final Class<HTMLFormElement> javaClass) {
-        final Object nodeObj = this.getParentNode();
-        if ((nodeObj == null) || javaClass.isInstance(nodeObj)) {
-            return nodeObj;
-        } else if (nodeObj instanceof HTMLElementImpl) {
-            return ((HTMLElementImpl) nodeObj).getAncestorForJavaClass(javaClass);
-        } else {
-            return null;
-        }
-    }
-
-    public void setInnerHTML(final String newHtml) {
-        final HTMLDocumentImpl document = (HTMLDocumentImpl) this.document;
-        if (document == null) {
-            this.warn("setInnerHTML(): Element " + this + " does not belong to a document.");
-            return;
-        }
-        final HtmlParser parser = new HtmlParser(document.getUserAgentContext(), document, null, null, null, false /* TODO */, false);
-        synchronized (this) {
-            removeAllChildrenImpl();
-        }
-        // Should not synchronize around parser probably.
-        try (
-                final Reader reader = new StringReader(newHtml)) {
-            parser.parse(reader, this);
-        } catch (final IOException | SAXException e) {
-            this.warn("setInnerHTML(): Error setting inner HTML.", e);
-        }
-    }
-
-    public String getOuterHTML() {
-        final StringBuffer buffer = new StringBuffer();
-        synchronized (this) {
-            this.appendOuterHTMLImpl(buffer);
-        }
-        return buffer.toString();
-    }
-
-    protected void appendOuterHTMLImpl(final StringBuffer buffer) {
-        final String tagName = this.getTagName();
-        buffer.append('<');
-        buffer.append(tagName);
-        final Map<String, String> attributes = this.attributes;
-        if (attributes != null) {
-            attributes.forEach((k, v) -> {
-                if (v != null) {
-                    buffer.append(' ');
-                    buffer.append(k);
-                    buffer.append("=\"");
-                    buffer.append(Strings.strictHtmlEncode(v, true));
-                    buffer.append("\"");
-                }
-            });
-        }
-        final ArrayList<Node> nl = this.nodeList;
-        if ((nl == null) || (nl.size() == 0)) {
-            buffer.append("/>");
-            return;
-        }
-        buffer.append('>');
-        this.appendInnerHTMLImpl(buffer);
-        buffer.append("</");
-        buffer.append(tagName);
-        buffer.append('>');
-    }
-
-    @Override
-    protected @NonNull RenderState createRenderState(final RenderState prevRenderState) {
-        // Overrides NodeImpl method
-        // Called in synchronized block already
-        return new StyleSheetRenderState(prevRenderState, this);
-    }
-
-    public int getOffsetTop() {
-        // TODO: Sometimes this can be called while parsing, and
-        // browsers generally give the right answer.
-        final UINode uiNode = this.getUINode();
-        return uiNode == null ? 0 : uiNode.getBoundsRelativeToBlock().y;
-    }
-
-    public int getOffsetLeft() {
-        final UINode uiNode = this.getUINode();
-        return uiNode == null ? 0 : uiNode.getBoundsRelativeToBlock().x;
-    }
-
-    public int getOffsetWidth() {
-        final UINode uiNode = this.getUINode();
-        return uiNode == null ? 0 : uiNode.getBoundsRelativeToBlock().width;
-    }
-
-    public int getOffsetHeight() {
-        final UINode uiNode = this.getUINode();
-        return uiNode == null ? 0 : uiNode.getBoundsRelativeToBlock().height;
-    }
-
-    public String getDocumentBaseURI() {
-        final HTMLDocumentImpl doc = (HTMLDocumentImpl) this.document;
-        if (doc != null) {
-            return doc.getBaseURI();
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    protected void handleDocumentAttachmentChanged() {
-        if (isAttachedToDocument()) {
-            forgetLocalStyle();
-            forgetStyle(false);
-            informInvalid();
-        }
-        super.handleDocumentAttachmentChanged();
-    }
-
-    public DOMTokenList getClassList() {
-        return new DOMTokenList();
-    }
-
-    // Based on http://www.w3.org/TR/dom/#domtokenlist
-    public final class DOMTokenList {
-
-        private String[] getClasses() {
-            return getAttribute("class").split(" ");
-        }
-
-        private String[] getClasses(final int max) {
-            return getAttribute("class").split(" ", max);
-        }
-
-        public long getLength() {
-            return getClasses().length;
-        }
-
-        public String item(final long index) {
-            final int indexInt = (int) index;
-            return getClasses(indexInt + 1)[0];
-        }
-
-        public boolean contains(final String token) {
-            return Arrays.stream(getClasses()).anyMatch(t -> t.equals(token));
-        }
-
-        public void add(final String token) {
-            add(new String[]{token});
-        }
-
-        public void add(final String[] tokens) {
-            final StringBuilder sb = new StringBuilder();
-            for (final String token : tokens) {
-                if (token.length() == 0) {
-                    throw new DOMException(DOMException.SYNTAX_ERR, "empty token");
-                }
-                // TODO: Check for whitespace and throw IllegalCharacterError
-
-                sb.append(' ');
-                sb.append(token);
-            }
-            setAttribute("class", getAttribute("class") + sb);
-        }
-
-        public void remove(final String tokenToRemove) {
-            remove(new String[]{tokenToRemove});
-        }
-
-        public void remove(final String[] tokensToRemove) {
-            final String[] existingClasses = getClasses();
-            final StringBuilder sb = new StringBuilder();
-            for (final String clazz : existingClasses) {
-                if (!Arrays.stream(tokensToRemove).anyMatch(tr -> tr.equals(clazz))) {
-                    sb.append(' ');
-                    sb.append(clazz);
-                }
-            }
-            setAttribute("class", sb.toString());
-        }
-
-        public boolean toggle(final String tokenToToggle) {
-            final String[] existingClasses = getClasses();
-            for (final String clazz : existingClasses) {
-                if (tokenToToggle.equals(clazz)) {
-                    remove(tokenToToggle);
-                    return false;
-                }
-            }
-
-            // Not found, hence add
-            add(tokenToToggle);
-            return true;
-        }
-
-        public boolean toggle(final String token, final boolean force) {
-            if (force) {
-                add(token);
-            } else {
-                remove(token);
-            }
-            return force;
-        }
-
-        /* TODO: stringifier; */
-    }
-
 }

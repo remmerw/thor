@@ -21,171 +21,170 @@
 /*
  * Created on Dec 4, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Node;
-import org.w3c.dom.html.HTMLCollection;
-import org.w3c.dom.html.HTMLElement;
-import org.w3c.dom.html.HTMLTableCellElement;
-import org.w3c.dom.html.HTMLTableRowElement;
+import org.w3c.dom.DOMException
+import org.w3c.dom.Node
+import org.w3c.dom.html.HTMLCollection
+import org.w3c.dom.html.HTMLElement
+import org.w3c.dom.html.HTMLTableCellElement
+import org.w3c.dom.html.HTMLTableRowElement
 
-import java.util.ArrayList;
+class HTMLTableRowElementImpl : HTMLElementImpl, HTMLTableRowElement {
+    constructor(name: String?) : super(name, true)
 
-public class HTMLTableRowElementImpl extends HTMLElementImpl implements HTMLTableRowElement {
-    public HTMLTableRowElementImpl(final String name) {
-        super(name, true);
-    }
+    constructor() : super("TR", true)
 
-    public HTMLTableRowElementImpl() {
-        super("TR", true);
-    }
-
-    public int getRowIndex() {
-        final NodeImpl parent = (NodeImpl) this.getParentNode();
+    override fun getRowIndex(): Int {
+        val parent = this.parentNode as NodeImpl?
         if (parent == null) {
-            return -1;
+            return -1
         }
         try {
-            parent.visit(new NodeVisitor() {
-                private int count = 0;
+            parent.visit(object : NodeVisitor {
+                private var count = 0
 
-                public void visit(final Node node) {
-                    if (node instanceof HTMLTableRowElementImpl) {
-                        if (HTMLTableRowElementImpl.this == node) {
-                            throw new StopVisitorException(this.count);
+                override fun visit(node: Node?) {
+                    if (node is HTMLTableRowElementImpl) {
+                        if (this@HTMLTableRowElementImpl === node) {
+                            throw StopVisitorException(this.count)
                         }
-                        this.count++;
+                        this.count++
                     }
                 }
-            });
-        } catch (final StopVisitorException sve) {
-            return ((Integer) sve.getTag()).intValue();
+            })
+        } catch (sve: StopVisitorException) {
+            return (sve.getTag() as Int)
         }
-        return -1;
+        return -1
     }
 
-    public int getSectionRowIndex() {
+    override fun getSectionRowIndex(): Int {
         // TODO Auto-generated method stub
-        return 0;
+        return 0
     }
 
-    public HTMLCollection getCells() {
-        final NodeFilter filter = new NodeFilter() {
-            public boolean accept(final Node node) {
-                return node instanceof HTMLTableCellElementImpl;
+    override fun getCells(): HTMLCollection {
+        val filter: NodeFilter = object : NodeFilter {
+            override fun accept(node: Node?): Boolean {
+                return node is HTMLTableCellElementImpl
             }
-        };
-        return new DescendentHTMLCollection(this, filter, this.treeLock, false);
+        }
+        return DescendentHTMLCollection(this, filter, this.treeLock, false)
     }
 
-    public String getAlign() {
-        return this.getAttribute("align");
+    override fun getAlign(): String? {
+        return this.getAttribute("align")
     }
 
-    public void setAlign(final String align) {
-        this.setAttribute("align", align);
+    override fun setAlign(align: String?) {
+        this.setAttribute("align", align)
     }
 
-    public String getBgColor() {
-        return this.getAttribute("bgcolor");
+    override fun getBgColor(): String? {
+        return this.getAttribute("bgcolor")
     }
 
-    public void setBgColor(final String bgColor) {
-        this.setAttribute("bgcolor", bgColor);
+    override fun setBgColor(bgColor: String?) {
+        this.setAttribute("bgcolor", bgColor)
     }
 
-    public String getCh() {
-        return this.getAttribute("ch");
+    override fun getCh(): String? {
+        return this.getAttribute("ch")
     }
 
-    public void setCh(final String ch) {
-        this.setAttribute("ch", ch);
+    override fun setCh(ch: String?) {
+        this.setAttribute("ch", ch)
     }
 
-    public String getChOff() {
-        return this.getAttribute("choff");
+    override fun getChOff(): String? {
+        return this.getAttribute("choff")
     }
 
-    public void setChOff(final String chOff) {
-        this.setAttribute("choff", chOff);
+    override fun setChOff(chOff: String?) {
+        this.setAttribute("choff", chOff)
     }
 
-    public String getVAlign() {
-        return this.getAttribute("valign");
+    override fun getVAlign(): String? {
+        return this.getAttribute("valign")
     }
 
-    public void setVAlign(final String vAlign) {
-        this.setAttribute("valign", vAlign);
+    override fun setVAlign(vAlign: String?) {
+        this.setAttribute("valign", vAlign)
     }
 
     /**
      * Inserts a TH element at the specified index.
-     * <p>
+     *
+     *
      * Note: This method is non-standard.
      *
      * @param index The cell index to insert at.
      * @return The element that was inserted.
      * @throws DOMException When the index is out of range.
      */
-    public HTMLElement insertHeader(final int index) throws DOMException {
-        return this.insertCell(index, "TH");
+    @Throws(DOMException::class)
+    fun insertHeader(index: Int): HTMLElement? {
+        return this.insertCell(index, "TH")
     }
 
-    public HTMLElement insertCell(final int index) throws DOMException {
-        return this.insertCell(index, "TD");
+    @Throws(DOMException::class)
+    override fun insertCell(index: Int): HTMLElement? {
+        return this.insertCell(index, "TD")
     }
 
-    private HTMLElement insertCell(final int index, final String tagName) throws DOMException {
-        final org.w3c.dom.Document doc = this.document;
+    @Throws(DOMException::class)
+    private fun insertCell(index: Int, tagName: String?): HTMLElement? {
+        val doc = this.document
         if (doc == null) {
-            throw new DOMException(DOMException.WRONG_DOCUMENT_ERR, "Orphan element");
+            throw DOMException(DOMException.WRONG_DOCUMENT_ERR, "Orphan element")
         }
-        final HTMLElement cellElement = (HTMLElement) doc.createElement(tagName);
-        synchronized (this.treeLock) {
+        val cellElement = doc.createElement(tagName) as HTMLElement?
+        synchronized(this.treeLock) {
             if (index == -1) {
-                this.appendChild(cellElement);
-                return cellElement;
+                this.appendChild(cellElement)
+                return cellElement
             }
-            final ArrayList<Node> nl = this.nodeList;
+            val nl = this.nodeList
             if (nl != null) {
-                final int size = nl.size();
-                int trcount = 0;
-                for (int i = 0; i < size; i++) {
-                    final Node node = nl.get(i);
-                    if (node instanceof HTMLTableCellElement) {
+                val size = nl.size
+                var trcount = 0
+                for (i in 0..<size) {
+                    val node = nl.get(i)
+                    if (node is HTMLTableCellElement) {
                         if (trcount == index) {
-                            this.insertAt(cellElement, i);
-                            return cellElement;
+                            this.insertAt(cellElement, i)
+                            return cellElement
                         }
-                        trcount++;
+                        trcount++
                     }
                 }
             } else {
-                this.appendChild(cellElement);
-                return cellElement;
+                this.appendChild(cellElement)
+                return cellElement
             }
         }
-        throw new DOMException(DOMException.INDEX_SIZE_ERR, "Index out of range");
+        throw DOMException(DOMException.INDEX_SIZE_ERR, "Index out of range")
     }
 
-    public void deleteCell(final int index) throws DOMException {
-        synchronized (this.treeLock) {
-            final ArrayList<Node> nl = this.nodeList;
+    @Throws(DOMException::class)
+    override fun deleteCell(index: Int) {
+        synchronized(this.treeLock) {
+            val nl = this.nodeList
             if (nl != null) {
-                final int size = nl.size();
-                int trcount = 0;
-                for (int i = 0; i < size; i++) {
-                    final Node node = nl.get(i);
-                    if (node instanceof HTMLTableCellElement) {
+                val size = nl.size
+                var trcount = 0
+                for (i in 0..<size) {
+                    val node = nl.get(i)
+                    if (node is HTMLTableCellElement) {
                         if (trcount == index) {
-                            this.removeChildAt(index);
+                            this.removeChildAt(index)
                         }
-                        trcount++;
+                        trcount++
                     }
                 }
             }
         }
-        throw new DOMException(DOMException.INDEX_SIZE_ERR, "Index out of range");
+        throw DOMException(DOMException.INDEX_SIZE_ERR, "Index out of range")
     }
 }

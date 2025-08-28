@@ -1,173 +1,181 @@
-package io.github.remmerw.thor.cobra.validation;
+package io.github.remmerw.thor.cobra.validation
 
-import org.eclipse.jdt.annotation.NonNull;
+import de.malkusch.whoisServerList.publicSuffixList.PublicSuffixList
+import de.malkusch.whoisServerList.publicSuffixList.PublicSuffixListFactory
+import io.github.remmerw.thor.cobra.util.Urls
+import java.net.MalformedURLException
+import java.net.URL
+import java.util.LinkedList
+import java.util.Locale
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Collection;
-import java.util.LinkedList;
+object DomainValidation {
+    private val suffixList: PublicSuffixList = PublicSuffixListFactory().build()
 
-import de.malkusch.whoisServerList.publicSuffixList.PublicSuffixList;
-import de.malkusch.whoisServerList.publicSuffixList.PublicSuffixListFactory;
-import io.github.remmerw.thor.cobra.util.Urls;
-
-public final class DomainValidation {
-
-    private static final PublicSuffixList suffixList = new PublicSuffixListFactory().build();
-
-    public static boolean isValidCookieDomain(String domain, final String requestHostName) {
-        String plainDomain;
+    @JvmStatic
+    fun isValidCookieDomain(domain: String, requestHostName: String): Boolean {
+        var domain = domain
+        val plainDomain: String?
         if (!domain.startsWith(".")) {
             // Valid domains must start with a dot according to RFC 2109, but
             // RFC 2965 specifies a dot is prepended in the Set-Cookie2 header.
-            plainDomain = domain;
-            domain = "." + domain;
+            plainDomain = domain
+            domain = ".$domain"
         } else {
-            plainDomain = domain.substring(1);
+            plainDomain = domain.substring(1)
         }
-        final String plainDomainTL = plainDomain.toLowerCase();
-        final String hostNameTL = requestHostName.toLowerCase();
-        if (plainDomainTL.equals(hostNameTL)) {
-            return true;
+        val plainDomainTL = plainDomain.lowercase(Locale.getDefault())
+        val hostNameTL = requestHostName.lowercase(Locale.getDefault())
+        if (plainDomainTL == hostNameTL) {
+            return true
         } else {
             if (!hostNameTL.endsWith(plainDomainTL)) {
-                return false;
+                return false
             } else {
                 // plainDomainTL is a suffix of hostName TL. Now ensure the first non-common character is a '.',
                 // and there is a residual character after that
-                final int nonCommonLength = hostNameTL.length() - plainDomainTL.length();
-                final boolean residualCharacterExists = nonCommonLength >= 2;
+                val nonCommonLength = hostNameTL.length - plainDomainTL.length
+                val residualCharacterExists = nonCommonLength >= 2
                 if (!residualCharacterExists) {
-                    return false;
+                    return false
                 } else {
-                    final char firstNonCommonCharacter = hostNameTL.charAt(nonCommonLength - 1);
+                    val firstNonCommonCharacter = hostNameTL.get(nonCommonLength - 1)
                     if (firstNonCommonCharacter != '.') {
-                        return false;
+                        return false
                     }
                 }
             }
         }
 
-        return !isPublicSuffix(plainDomain);
+        return !isPublicSuffix(plainDomain)
     }
 
     /**
      * Returns true if the given domain is a public suffix.
      *
-     * @param domain The domain to check. Expected <b>not</b> to have any leading or
-     *               trailing '.'
+     * @param domain The domain to check. Expected **not** to have any leading or
+     * trailing '.'
      * @return true if the given domain is a public suffix
      */
-    public static boolean isPublicSuffix(final String domain) {
-        return suffixList.isPublicSuffix(domain);
+    fun isPublicSuffix(domain: String): Boolean {
+        return suffixList.isPublicSuffix(domain)
     }
 
     /**
      * Returns a collection of domains that are acceptable for cookies originating
      * from the given hostname
      */
-    public static Collection<String> getPossibleDomains(final String hostName) {
+    fun getPossibleDomains(hostName: String): MutableCollection<String?> {
         // TODO: reuse collection object instead of creating a new one per recursive call.
-        final Collection<String> domains = new LinkedList<>();
-        domains.add(hostName);
-        final int dotIdx = hostName.indexOf('.', 1);
+        val domains: MutableCollection<String?> = LinkedList<String?>()
+        domains.add(hostName)
+        val dotIdx = hostName.indexOf('.', 1)
         if (dotIdx == -1) {
-            return domains;
+            return domains
         }
-        final String testDomain = hostName.substring(dotIdx);
+        val testDomain = hostName.substring(dotIdx)
         if (!isValidCookieDomain(testDomain, hostName)) {
-            return domains;
+            return domains
         }
-        domains.addAll(getPossibleDomains(testDomain.substring(1)));
-        return domains;
+        domains.addAll(getPossibleDomains(testDomain.substring(1)))
+        return domains
     }
 
-    public static boolean isLikelyHostName(final String name) {
-        final String nameTL = name.toLowerCase();
+    fun isLikelyHostName(name: String): Boolean {
+        val nameTL = name.lowercase(Locale.getDefault())
         if (nameTL.startsWith("www.")) {
-            return true;
+            return true
         }
         if (endsWithGTLD(name)) {
-            return true;
+            return true
         }
-        final int lastDotIdx = nameTL.lastIndexOf('.');
+        val lastDotIdx = nameTL.lastIndexOf('.')
         if (lastDotIdx == -1) {
-            return false;
+            return false
         }
         // Check for country code.
-        return lastDotIdx == (nameTL.length() - 3);
+        return lastDotIdx == (nameTL.length - 3)
     }
 
-    private static boolean endsWithGTLD(final String name) {
-        if (name.length() == 0) {
-            return false;
+    private fun endsWithGTLD(name: String): Boolean {
+        if (name.length == 0) {
+            return false
         } else if (isPublicSuffix(name)) {
-            return true;
+            return true
         } else {
-            final int sepIndex = name.indexOf('.');
+            val sepIndex = name.indexOf('.')
             if (sepIndex < 0) {
-                return false;
+                return false
             } else {
-                return endsWithGTLD(name.substring(sepIndex + 1));
+                return endsWithGTLD(name.substring(sepIndex + 1))
             }
         }
     }
 
-    public static @NonNull URL guessURL(URL baseURL, String spec) throws MalformedURLException {
-        URL finalURL;
+    @Throws(MalformedURLException::class)
+    fun guessURL(baseURL: URL?, spec: String): URL {
+        var baseURL = baseURL
+        var spec = spec
+        var finalURL: URL
         try {
             if (baseURL != null) {
-                final int colonIdx = spec.indexOf(':');
-                final String newProtocol = colonIdx == -1 ? null : spec.substring(0, colonIdx);
-                if ((newProtocol != null) && !newProtocol.equalsIgnoreCase(baseURL.getProtocol())) {
-                    baseURL = null;
+                val colonIdx = spec.indexOf(':')
+                val newProtocol = if (colonIdx == -1) null else spec.substring(0, colonIdx)
+                if ((newProtocol != null) && !newProtocol.equals(
+                        baseURL.protocol,
+                        ignoreCase = true
+                    )
+                ) {
+                    baseURL = null
                 }
             }
-            finalURL = Urls.createURL(baseURL, spec);
-        } catch (final MalformedURLException mfu) {
-            spec = spec.trim();
-            final int idx = spec.indexOf(':');
+            finalURL = Urls.createURL(baseURL, spec)
+        } catch (mfu: MalformedURLException) {
+            spec = spec.trim { it <= ' ' }
+            val idx = spec.indexOf(':')
             if (idx == -1) {
-                final int slashIdx = spec.indexOf('/');
+                val slashIdx = spec.indexOf('/')
                 if (slashIdx == 0) {
                     // A file, absolute
-                    finalURL = new URL("file:" + spec);
+                    finalURL = URL("file:" + spec)
                 } else {
                     if (slashIdx == -1) {
                         // No slash, no colon, must be host.
-                        finalURL = new URL(baseURL, "http://" + spec);
+                        finalURL = URL(baseURL, "http://" + spec)
                     } else {
-                        final String possibleHost = spec.substring(0, slashIdx).toLowerCase();
-                        finalURL = guessProtocol(baseURL, spec, possibleHost);
+                        val possibleHost =
+                            spec.substring(0, slashIdx).lowercase(Locale.getDefault())
+                        finalURL = guessProtocol(baseURL, spec, possibleHost)
                     }
                 }
             } else {
                 if (idx == 1) {
                     // Likely a drive
-                    finalURL = new URL(baseURL, "file:" + spec);
+                    finalURL = URL(baseURL, "file:" + spec)
                 } else {
-                    final String possibleHost = spec.substring(0, idx).toLowerCase();
-                    finalURL = guessProtocol(baseURL, spec, possibleHost);
+                    val possibleHost = spec.substring(0, idx).lowercase(Locale.getDefault())
+                    finalURL = guessProtocol(baseURL, spec, possibleHost)
                 }
             }
         }
-        if (!"".equals(finalURL.getHost()) && (finalURL.toExternalForm().indexOf(' ') != -1)) {
-            throw new MalformedURLException("There are blanks in the URL: " + finalURL.toExternalForm());
+        if ("" != finalURL.host && (finalURL.toExternalForm().indexOf(' ') != -1)) {
+            throw MalformedURLException("There are blanks in the URL: " + finalURL.toExternalForm())
         }
-        return finalURL;
+        return finalURL
     }
 
-    private static URL guessProtocol(final URL baseURL, final String spec, final String possibleHost) throws MalformedURLException {
-        if (DomainValidation.isLikelyHostName(possibleHost)) {
+    @Throws(MalformedURLException::class)
+    private fun guessProtocol(baseURL: URL?, spec: String?, possibleHost: String): URL {
+        if (isLikelyHostName(possibleHost)) {
             // TODO: Use https when possible
-            return new URL(baseURL, "http://" + spec);
+            return URL(baseURL, "http://" + spec)
         } else {
             // TODO: Should file URLs be guessed? Probably not.
-            return new URL(baseURL, "file:" + spec);
+            return URL(baseURL, "file:" + spec)
         }
     }
 
-    public static @NonNull URL guessURL(final String spec) throws MalformedURLException {
-        return guessURL(null, spec);
+    @Throws(MalformedURLException::class)
+    fun guessURL(spec: String): URL {
+        return guessURL(null, spec)
     }
 }

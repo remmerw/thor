@@ -21,22 +21,15 @@
 /*
  * Created on Mar 31, 2005
  */
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
 
 /**
  * @author J. H. S.
  */
-public class Diagnostics {
-    /**
-     *
-     */
-    private Diagnostics() {
-        super();
-    }
-
-    public static void Assert(final boolean condition, final String message) {
+object Diagnostics {
+    fun Assert(condition: Boolean, message: String?) {
         if (!condition) {
-            throw new AssertionError(message);
+            throw AssertionError(message)
         }
     }
 }

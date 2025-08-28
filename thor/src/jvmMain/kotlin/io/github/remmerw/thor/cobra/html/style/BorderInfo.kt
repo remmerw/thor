@@ -18,28 +18,26 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.style;
+package io.github.remmerw.thor.cobra.html.style
 
-import java.awt.Color;
+import java.awt.Color
 
-public class BorderInfo {
-    public int topStyle;
-    public int leftStyle;
-    public int bottomStyle;
-    public int rightStyle;
+class BorderInfo {
+    var topStyle: Int = 0
+    var leftStyle: Int = 0
+    var bottomStyle: Int = 0
+    var rightStyle: Int = 0
 
-    public Color topColor;
-    public Color leftColor;
-    public Color bottomColor;
-    public Color rightColor;
+    var topColor: Color? = null
+    var leftColor: Color? = null
+    var bottomColor: Color? = null
+    var rightColor: Color? = null
 
-    public HtmlInsets insets;
+    var insets: HtmlInsets? = null
 
-    @Override
-    public String toString() {
-        return "BorderInfo [topStyle=" + topStyle + ", leftStyle=" + leftStyle + ", bottomStyle=" + bottomStyle + ", rightStyle=" + rightStyle
+    override fun toString(): String {
+        return ("BorderInfo [topStyle=" + topStyle + ", leftStyle=" + leftStyle + ", bottomStyle=" + bottomStyle + ", rightStyle=" + rightStyle
                 + ", topColor=" + topColor + ", leftColor=" + leftColor + ", bottomColor=" + bottomColor + ", rightColor=" + rightColor
-                + ", insets=" + insets + "]";
+                + ", insets=" + insets + "]")
     }
-
 }

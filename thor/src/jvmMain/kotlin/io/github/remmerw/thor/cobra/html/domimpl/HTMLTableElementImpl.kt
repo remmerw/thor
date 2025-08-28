@@ -21,145 +21,137 @@
 /*
  * Created on Dec 3, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Node;
-import org.w3c.dom.html.HTMLCollection;
-import org.w3c.dom.html.HTMLElement;
-import org.w3c.dom.html.HTMLTableCaptionElement;
-import org.w3c.dom.html.HTMLTableElement;
-import org.w3c.dom.html.HTMLTableSectionElement;
+import io.github.remmerw.thor.cobra.html.js.PropertyName
+import io.github.remmerw.thor.cobra.html.style.HtmlLength
+import io.github.remmerw.thor.cobra.html.style.HtmlValues
+import io.github.remmerw.thor.cobra.html.style.RenderState
+import io.github.remmerw.thor.cobra.html.style.TableRenderState
+import org.w3c.dom.DOMException
+import org.w3c.dom.html.HTMLCollection
+import org.w3c.dom.html.HTMLElement
+import org.w3c.dom.html.HTMLTableCaptionElement
+import org.w3c.dom.html.HTMLTableElement
+import org.w3c.dom.html.HTMLTableSectionElement
 
-import java.util.ArrayList;
+class HTMLTableElementImpl : HTMLAbstractUIElement, HTMLTableElement {
+    private var caption: HTMLTableCaptionElement? = null
+    private var thead: HTMLTableSectionElement? = null
+    private var tfoot: HTMLTableSectionElement? = null
 
-import io.github.remmerw.thor.cobra.html.js.PropertyName;
-import io.github.remmerw.thor.cobra.html.style.HtmlLength;
-import io.github.remmerw.thor.cobra.html.style.HtmlValues;
-import io.github.remmerw.thor.cobra.html.style.JStyleProperties;
-import io.github.remmerw.thor.cobra.html.style.RenderState;
-import io.github.remmerw.thor.cobra.html.style.TableRenderState;
+    constructor() : super("TABLE")
 
-public class HTMLTableElementImpl extends HTMLAbstractUIElement implements HTMLTableElement {
+    constructor(name: String?) : super(name)
 
-    private HTMLTableCaptionElement caption;
-    private HTMLTableSectionElement thead;
-    private HTMLTableSectionElement tfoot;
-
-    public HTMLTableElementImpl() {
-        super("TABLE");
+    override fun getCaption(): HTMLTableCaptionElement? {
+        return this.caption
     }
 
-    public HTMLTableElementImpl(final String name) {
-        super(name);
+    @Throws(DOMException::class)
+    override fun setCaption(caption: HTMLTableCaptionElement?) {
+        this.caption = caption
     }
 
-    public HTMLTableCaptionElement getCaption() {
-        return this.caption;
+    override fun getTHead(): HTMLTableSectionElement? {
+        return this.thead
     }
 
-    public void setCaption(final HTMLTableCaptionElement caption) throws DOMException {
-        this.caption = caption;
+    @Throws(DOMException::class)
+    override fun setTHead(tHead: HTMLTableSectionElement?) {
+        this.thead = tHead
     }
 
-    public HTMLTableSectionElement getTHead() {
-        return this.thead;
+    override fun getTFoot(): HTMLTableSectionElement? {
+        return this.tfoot
     }
 
-    public void setTHead(final HTMLTableSectionElement tHead) throws DOMException {
-        this.thead = tHead;
+    @Throws(DOMException::class)
+    override fun setTFoot(tFoot: HTMLTableSectionElement?) {
+        this.tfoot = tFoot
     }
 
-    public HTMLTableSectionElement getTFoot() {
-        return this.tfoot;
-    }
-
-    public void setTFoot(final HTMLTableSectionElement tFoot) throws DOMException {
-        this.tfoot = tFoot;
-    }
-
-    public HTMLCollection getRows() {
+    override fun getRows(): HTMLCollection {
         // TODO: filter by display: table-row
-        return new DescendentHTMLCollection(this, new NodeNameFilter("TR"), this.treeLock, false);
+        return DescendentHTMLCollection(this, NodeNameFilter("TR"), this.treeLock, false)
     }
 
     @PropertyName("tBodies")
-    public HTMLCollection getTBodies() {
+    override fun getTBodies(): HTMLCollection {
         // TODO: filter by display: table-row-group
-        return new DescendentHTMLCollection(this, new NodeNameFilter("TBODY"), this.treeLock, false);
+        return DescendentHTMLCollection(this, NodeNameFilter("TBODY"), this.treeLock, false)
     }
 
-    public String getAlign() {
-        return this.getAttribute("align");
+    override fun getAlign(): String? {
+        return this.getAttribute("align")
     }
 
-    public void setAlign(final String align) {
-        this.setAttribute("align", align);
+    override fun setAlign(align: String?) {
+        this.setAttribute("align", align)
     }
 
-    public String getBgColor() {
-        return this.getAttribute("bgcolor");
+    override fun getBgColor(): String? {
+        return this.getAttribute("bgcolor")
     }
 
-    public void setBgColor(final String bgColor) {
-        this.setAttribute("bgcolor", bgColor);
+    override fun setBgColor(bgColor: String?) {
+        this.setAttribute("bgcolor", bgColor)
     }
 
-    public String getBorder() {
-        return this.getAttribute("border");
+    override fun getBorder(): String? {
+        return this.getAttribute("border")
     }
 
-    public void setBorder(final String border) {
-        this.setAttribute("border", border);
+    override fun setBorder(border: String?) {
+        this.setAttribute("border", border)
     }
 
-    public String getCellPadding() {
-        return this.getAttribute("cellpadding");
+    override fun getCellPadding(): String? {
+        return this.getAttribute("cellpadding")
     }
 
-    public void setCellPadding(final String cellPadding) {
-        this.setAttribute("cellpadding", cellPadding);
+    override fun setCellPadding(cellPadding: String?) {
+        this.setAttribute("cellpadding", cellPadding)
     }
 
-    public String getCellSpacing() {
-        return this.getAttribute("cellspacing");
+    override fun getCellSpacing(): String? {
+        return this.getAttribute("cellspacing")
     }
 
-    public void setCellSpacing(final String cellSpacing) {
-        this.setAttribute("cellspacing", cellSpacing);
+    override fun setCellSpacing(cellSpacing: String?) {
+        this.setAttribute("cellspacing", cellSpacing)
     }
 
-    public String getFrame() {
-        return this.getAttribute("frame");
+    override fun getFrame(): String? {
+        return this.getAttribute("frame")
     }
 
-    public void setFrame(final String frame) {
-        this.setAttribute("frame", frame);
+    override fun setFrame(frame: String?) {
+        this.setAttribute("frame", frame)
     }
 
-    public String getRules() {
-        return this.getAttribute("rules");
+    override fun getRules(): String? {
+        return this.getAttribute("rules")
     }
 
-    public void setRules(final String rules) {
-        this.setAttribute("rules", rules);
+    override fun setRules(rules: String?) {
+        this.setAttribute("rules", rules)
     }
 
-    public String getSummary() {
-        return this.getAttribute("summary");
+    override fun getSummary(): String? {
+        return this.getAttribute("summary")
     }
 
-    public void setSummary(final String summary) {
-        this.setAttribute("summary", summary);
+    override fun setSummary(summary: String?) {
+        this.setAttribute("summary", summary)
     }
 
-    public String getWidth() {
-        return this.getAttribute("width");
+    override fun getWidth(): String? {
+        return this.getAttribute("width")
     }
 
-    public void setWidth(final String width) {
-        this.setAttribute("width", width);
+    override fun setWidth(width: String?) {
+        this.setAttribute("width", width)
     }
 
     /*
@@ -167,19 +159,33 @@ public class HTMLTableElementImpl extends HTMLAbstractUIElement implements HTMLT
      *
      * @see org.xamjwg.html.renderer.RenderableContext#getHeightLength()
      */
-    public HtmlLength getHeightLength(final int availHeight) {
+    fun getHeightLength(availHeight: Int): HtmlLength? {
         try {
-            final JStyleProperties props = this.getCurrentStyle();
-            final String heightText = props.getHeight();
+            val props = this.getCurrentStyle()
+            val heightText = props.height
             if (heightText == null) {
                 // TODO: convert attributes to CSS properties
-                return new HtmlLength(HtmlValues.getPixelSize(this.getAttribute("height"), this.getRenderState(), 0, availHeight));
+                return HtmlLength(
+                    HtmlValues.getPixelSize(
+                        this.getAttribute("height"),
+                        this.getRenderState(),
+                        0,
+                        availHeight
+                    )
+                )
             } else {
-                return new HtmlLength(HtmlValues.getPixelSize(heightText, this.getRenderState(), 0, availHeight));
+                return HtmlLength(
+                    HtmlValues.getPixelSize(
+                        heightText,
+                        this.getRenderState(),
+                        0,
+                        availHeight
+                    )
+                )
             }
-        } catch (final NumberFormatException err) {
-            System.out.println("Number format exception: " + err);
-            return null;
+        } catch (err: NumberFormatException) {
+            println("Number format exception: " + err)
+            return null
         }
     }
 
@@ -188,109 +194,124 @@ public class HTMLTableElementImpl extends HTMLAbstractUIElement implements HTMLT
      *
      * @see org.xamjwg.html.renderer.RenderableContext#getWidthLength()
      */
-    public HtmlLength getWidthLength(final int availWidth) {
+    fun getWidthLength(availWidth: Int): HtmlLength? {
         try {
-            final JStyleProperties props = this.getCurrentStyle();
-            final String widthText = props.getWidth();
+            val props = this.getCurrentStyle()
+            val widthText = props.width
             if (widthText == null) {
                 // TODO: convert attributes to CSS properties
-                return new HtmlLength(HtmlValues.getPixelSize(this.getAttribute("width"), this.getRenderState(), 0, availWidth));
+                return HtmlLength(
+                    HtmlValues.getPixelSize(
+                        this.getAttribute("width"),
+                        this.getRenderState(),
+                        0,
+                        availWidth
+                    )
+                )
             } else {
-                return new HtmlLength(HtmlValues.getPixelSize(widthText, this.getRenderState(), 0, availWidth));
+                return HtmlLength(
+                    HtmlValues.getPixelSize(
+                        widthText,
+                        this.getRenderState(),
+                        0,
+                        availWidth
+                    )
+                )
             }
-        } catch (final NumberFormatException err) {
-            System.out.println("Number format exception: " + err);
-            return null;
+        } catch (err: NumberFormatException) {
+            println("Number format exception: " + err)
+            return null
         }
     }
 
-    public HTMLElement createTHead() {
-        final org.w3c.dom.Document doc = this.document;
-        return doc == null ? null : (HTMLElement) doc.createElement("thead");
+    override fun createTHead(): HTMLElement? {
+        val doc = this.document
+        return if (doc == null) null else doc.createElement("thead") as HTMLElement?
     }
 
-    public void deleteTHead() {
-        this.removeChildren(new NodeNameFilter("THEAD"));
+    override fun deleteTHead() {
+        this.removeChildren(NodeNameFilter("THEAD"))
     }
 
-    public HTMLElement createTFoot() {
-        final org.w3c.dom.Document doc = this.document;
-        return doc == null ? null : (HTMLElement) doc.createElement("tfoot");
+    override fun createTFoot(): HTMLElement? {
+        val doc = this.document
+        return if (doc == null) null else doc.createElement("tfoot") as HTMLElement?
     }
 
-    public void deleteTFoot() {
-        this.removeChildren(new NodeNameFilter("TFOOT"));
+    override fun deleteTFoot() {
+        this.removeChildren(NodeNameFilter("TFOOT"))
     }
 
-    public HTMLElement createCaption() {
-        final org.w3c.dom.Document doc = this.document;
-        return doc == null ? null : (HTMLElement) doc.createElement("caption");
+    override fun createCaption(): HTMLElement? {
+        val doc = this.document
+        return if (doc == null) null else doc.createElement("caption") as HTMLElement?
     }
 
-    public void deleteCaption() {
-        this.removeChildren(new NodeNameFilter("CAPTION"));
+    override fun deleteCaption() {
+        this.removeChildren(NodeNameFilter("CAPTION"))
     }
 
     /**
-     * Inserts a row at the index given. If <code>index</code> is <code>-1</code>,
+     * Inserts a row at the index given. If `index` is `-1`,
      * the row is appended as the last row.
      */
-    public HTMLElement insertRow(final int index) throws DOMException {
-        final org.w3c.dom.Document doc = this.document;
+    @Throws(DOMException::class)
+    override fun insertRow(index: Int): HTMLElement? {
+        val doc = this.document
         if (doc == null) {
-            throw new DOMException(DOMException.WRONG_DOCUMENT_ERR, "Orphan element");
+            throw DOMException(DOMException.WRONG_DOCUMENT_ERR, "Orphan element")
         }
-        final HTMLElement rowElement = (HTMLElement) doc.createElement("TR");
-        synchronized (this.treeLock) {
+        val rowElement = doc.createElement("TR") as HTMLElement?
+        synchronized(this.treeLock) {
             if (index == -1) {
-                this.appendChild(rowElement);
-                return rowElement;
+                this.appendChild(rowElement)
+                return rowElement
             }
-            final ArrayList<Node> nl = this.nodeList;
+            val nl = this.nodeList
             if (nl != null) {
-                final int size = nl.size();
-                int trcount = 0;
-                for (int i = 0; i < size; i++) {
-                    final Node node = nl.get(i);
-                    if ("TR".equalsIgnoreCase(node.getNodeName())) {
+                val size = nl.size
+                var trcount = 0
+                for (i in 0..<size) {
+                    val node = nl.get(i)
+                    if ("TR".equals(node.nodeName, ignoreCase = true)) {
                         if (trcount == index) {
-                            this.insertAt(rowElement, i);
-                            return rowElement;
+                            this.insertAt(rowElement, i)
+                            return rowElement
                         }
-                        trcount++;
+                        trcount++
                     }
                 }
             } else {
-                this.appendChild(rowElement);
-                return rowElement;
+                this.appendChild(rowElement)
+                return rowElement
             }
         }
-        throw new DOMException(DOMException.INDEX_SIZE_ERR, "Index out of range");
+        throw DOMException(DOMException.INDEX_SIZE_ERR, "Index out of range")
     }
 
-    public void deleteRow(final int index) throws DOMException {
-        synchronized (this.treeLock) {
-            final ArrayList<Node> nl = this.nodeList;
+    @Throws(DOMException::class)
+    override fun deleteRow(index: Int) {
+        synchronized(this.treeLock) {
+            val nl = this.nodeList
             if (nl != null) {
-                final int size = nl.size();
-                int trcount = 0;
-                for (int i = 0; i < size; i++) {
-                    final Node node = nl.get(i);
-                    if ("TR".equalsIgnoreCase(node.getNodeName())) {
+                val size = nl.size
+                var trcount = 0
+                for (i in 0..<size) {
+                    val node = nl.get(i)
+                    if ("TR".equals(node.nodeName, ignoreCase = true)) {
                         if (trcount == index) {
-                            this.removeChildAt(i);
-                            return;
+                            this.removeChildAt(i)
+                            return
                         }
-                        trcount++;
+                        trcount++
                     }
                 }
             }
         }
-        throw new DOMException(DOMException.INDEX_SIZE_ERR, "Index out of range");
+        throw DOMException(DOMException.INDEX_SIZE_ERR, "Index out of range")
     }
 
-    @Override
-    protected @NonNull RenderState createRenderState(final RenderState prevRenderState) {
-        return new TableRenderState(prevRenderState, this);
+    override fun createRenderState(prevRenderState: RenderState?): RenderState {
+        return TableRenderState(prevRenderState, this)
     }
 }

@@ -18,22 +18,19 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.js;
+package io.github.remmerw.thor.cobra.js
 
-import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.Scriptable
 
 // TODO: This is being used in lots of classes. Is it to just cache the wrapper object? Or is it essential for functionality?
 //       For example, does it help ensure that properties set on the wrapper are not lost?
 //       Ephemeral objects such as Events might be okay to be GCed. Depends on how Rhino maintains references to JS objects.
-
 /**
  * Java classes used in Javascript should implement this interface. While all
  * classes can be mapped to JavaScript, implementing this interface ensures that
  * the Java object proxy is not garbage collected as long as the Java object is
  * not garbage collected.
  */
-public interface ScriptableDelegate {
-    Scriptable getScriptable();
-
-    void setScriptable(Scriptable scriptable);
+interface ScriptableDelegate {
+    var scriptable: Scriptable?
 }

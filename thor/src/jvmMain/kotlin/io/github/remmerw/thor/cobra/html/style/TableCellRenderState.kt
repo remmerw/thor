@@ -1,281 +1,286 @@
-package io.github.remmerw.thor.cobra.html.style;
+package io.github.remmerw.thor.cobra.html.style
 
-import org.w3c.dom.css.CSS2Properties;
-import org.w3c.dom.html.HTMLElement;
-import org.w3c.dom.html.HTMLTableElement;
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLTableCellElementImpl
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLTableRowElementImpl
+import io.github.remmerw.thor.cobra.util.gui.ColorFactory
+import org.w3c.dom.css.CSS2Properties
+import org.w3c.dom.html.HTMLElement
+import org.w3c.dom.html.HTMLTableElement
+import java.net.MalformedURLException
+import java.util.Locale
 
-import java.awt.Color;
-import java.net.MalformedURLException;
+class TableCellRenderState(prevRenderState: RenderState?, element: HTMLElementImpl) :
+    StyleSheetRenderState(prevRenderState, element) {
+    private var alignXPercent = -1
+    private var alignYPercent = -1
+    private var backgroundInfo: BackgroundInfo? =
+        INVALID_BACKGROUND_INFO
 
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLTableCellElementImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLTableRowElementImpl;
-import io.github.remmerw.thor.cobra.util.gui.ColorFactory;
-
-public class TableCellRenderState extends StyleSheetRenderState {
-    private int alignXPercent = -1;
-    private int alignYPercent = -1;
-    private BackgroundInfo backgroundInfo = INVALID_BACKGROUND_INFO;
-
-    public TableCellRenderState(final RenderState prevRenderState, final HTMLElementImpl element) {
-        super(prevRenderState, element);
+    override fun invalidate() {
+        super.invalidate()
+        this.alignXPercent = -1
+        this.alignYPercent = -1
+        this.backgroundInfo = INVALID_BACKGROUND_INFO
+        this.paddingInsets = INVALID_INSETS
     }
 
-    @Override
-    public void invalidate() {
-        super.invalidate();
-        this.alignXPercent = -1;
-        this.alignYPercent = -1;
-        this.backgroundInfo = INVALID_BACKGROUND_INFO;
-        this.paddingInsets = INVALID_INSETS;
-    }
-
-    @Override
-    public int getAlignXPercent() {
-        int axp = this.alignXPercent;
+    override fun getAlignXPercent(): Int {
+        var axp = this.alignXPercent
         if (axp != -1) {
-            return axp;
+            return axp
         }
-        final CSS2Properties props = this.getCssProperties();
+        val props: CSS2Properties? = this.getCssProperties()
         if (props != null) {
-            final String textAlign = props.getTextAlign();
-            if ((textAlign != null) && (textAlign.length() != 0)) {
-                return super.getAlignXPercent();
+            val textAlign = props.textAlign
+            if ((textAlign != null) && (textAlign.length != 0)) {
+                return super.getAlignXPercent()
             }
         }
         // Parent already knows about "align" attribute, but override because of TH.
-        String align = this.element.getAttribute("align");
-        final HTMLElement element = this.element;
-        HTMLElement rowElement = null;
-        final Object parent = element.getParentNode();
-        if (parent instanceof HTMLElement) {
-            rowElement = (HTMLElement) parent;
+        var align = this.element.getAttribute("align")
+        val element: HTMLElement = this.element
+        var rowElement: HTMLElement? = null
+        val parent: Any? = element.parentNode
+        if (parent is HTMLElement) {
+            rowElement = parent
         }
-        if ((align == null) || (align.length() == 0)) {
+        if ((align == null) || (align.length == 0)) {
             if (rowElement != null) {
-                align = rowElement.getAttribute("align");
-                if ((align != null) && (align.length() == 0)) {
-                    align = null;
+                align = rowElement.getAttribute("align")
+                if ((align != null) && (align.length == 0)) {
+                    align = null
                 }
             } else {
-                align = null;
+                align = null
             }
         }
         if (align == null) {
-            if ("TH".equalsIgnoreCase(element.getNodeName())) {
-                axp = 50;
+            if ("TH".equals(element.nodeName, ignoreCase = true)) {
+                axp = 50
             } else {
-                axp = 0;
+                axp = 0
             }
-        } else if ("center".equalsIgnoreCase(align) || "middle".equalsIgnoreCase(align)) {
-            axp = 50;
-        } else if ("left".equalsIgnoreCase(align)) {
-            axp = 0;
-        } else if ("right".equalsIgnoreCase(align)) {
-            axp = 100;
+        } else if ("center".equals(align, ignoreCase = true) || "middle".equals(
+                align,
+                ignoreCase = true
+            )
+        ) {
+            axp = 50
+        } else if ("left".equals(align, ignoreCase = true)) {
+            axp = 0
+        } else if ("right".equals(align, ignoreCase = true)) {
+            axp = 100
         } else {
             // TODO: justify, etc.
-            axp = 0;
+            axp = 0
         }
-        this.alignXPercent = axp;
-        return axp;
+        this.alignXPercent = axp
+        return axp
     }
 
-    @Override
-    public int getAlignYPercent() {
-        int ayp = this.alignYPercent;
+    override fun getAlignYPercent(): Int {
+        var ayp = this.alignYPercent
         if (ayp != -1) {
-            return ayp;
+            return ayp
         }
-        final CSS2Properties props = this.getCssProperties();
+        val props: CSS2Properties? = this.getCssProperties()
         if (props != null) {
-            final String textAlign = props.getVerticalAlign();
-            if ((textAlign != null) && (textAlign.length() != 0)) {
-                return super.getAlignYPercent();
+            val textAlign = props.verticalAlign
+            if ((textAlign != null) && (textAlign.length != 0)) {
+                return super.getAlignYPercent()
             }
         }
-        String valign = this.element.getAttribute("valign");
-        final HTMLElement element = this.element;
-        HTMLElement rowElement = null;
-        final Object parent = element.getParentNode();
-        if (parent instanceof HTMLElement) {
-            rowElement = (HTMLElement) parent;
+        var valign = this.element.getAttribute("valign")
+        val element: HTMLElement = this.element
+        var rowElement: HTMLElement? = null
+        val parent: Any? = element.parentNode
+        if (parent is HTMLElement) {
+            rowElement = parent
         }
-        if ((valign == null) || (valign.length() == 0)) {
+        if ((valign == null) || (valign.length == 0)) {
             if (rowElement != null) {
-                valign = rowElement.getAttribute("valign");
-                if ((valign != null) && (valign.length() == 0)) {
-                    valign = null;
+                valign = rowElement.getAttribute("valign")
+                if ((valign != null) && (valign.length == 0)) {
+                    valign = null
                 }
             } else {
-                valign = null;
+                valign = null
             }
         }
         if (valign == null) {
-            ayp = 50;
-        } else if ("top".equalsIgnoreCase(valign)) {
-            ayp = 0;
-        } else if ("middle".equalsIgnoreCase(valign) || "center".equalsIgnoreCase(valign)) {
-            ayp = 50;
-        } else if ("bottom".equalsIgnoreCase(valign)) {
-            ayp = 100;
+            ayp = 50
+        } else if ("top".equals(valign, ignoreCase = true)) {
+            ayp = 0
+        } else if ("middle".equals(valign, ignoreCase = true) || "center".equals(
+                valign,
+                ignoreCase = true
+            )
+        ) {
+            ayp = 50
+        } else if ("bottom".equals(valign, ignoreCase = true)) {
+            ayp = 100
         } else {
             // TODO: baseline, etc.
-            ayp = 50;
+            ayp = 50
         }
-        this.alignYPercent = ayp;
-        return ayp;
+        this.alignYPercent = ayp
+        return ayp
     }
 
-    @Override
-    public BackgroundInfo getBackgroundInfo() {
-        BackgroundInfo binfo = this.backgroundInfo;
-        if (binfo != INVALID_BACKGROUND_INFO) {
-            return binfo;
+    override fun getBackgroundInfo(): BackgroundInfo? {
+        var binfo = this.backgroundInfo
+        if (binfo !== INVALID_BACKGROUND_INFO) {
+            return binfo
         }
         // Apply style based on deprecated attributes.
-        binfo = super.getBackgroundInfo();
-        final HTMLTableCellElementImpl element = (HTMLTableCellElementImpl) this.element;
-        HTMLTableRowElementImpl rowElement = null;
-        final Object parentNode = element.getParentNode();
-        if (parentNode instanceof HTMLTableRowElementImpl) {
-            rowElement = (HTMLTableRowElementImpl) parentNode;
+        binfo = super.getBackgroundInfo()
+        val element = this.element as HTMLTableCellElementImpl
+        var rowElement: HTMLTableRowElementImpl? = null
+        val parentNode: Any? = element.parentNode
+        if (parentNode is HTMLTableRowElementImpl) {
+            rowElement = parentNode
         }
         if ((binfo == null) || (binfo.backgroundColor == null)) {
-            String bgColor = element.getBgColor();
-            if ((bgColor == null) || "".equals(bgColor)) {
+            var bgColor = element.bgColor
+            if ((bgColor == null) || "" == bgColor) {
                 if (rowElement != null) {
-                    bgColor = rowElement.getBgColor();
+                    bgColor = rowElement.bgColor
                 }
             }
-            if ((bgColor != null) && !"".equals(bgColor)) {
-                final Color bgc = ColorFactory.getInstance().getColor(bgColor);
+            if ((bgColor != null) && "" != bgColor) {
+                val bgc = ColorFactory.getInstance().getColor(bgColor)
                 if (binfo == null) {
-                    binfo = new BackgroundInfo();
+                    binfo = BackgroundInfo()
                 }
-                binfo.backgroundColor = bgc;
+                binfo.backgroundColor = bgc
             }
         }
         if ((binfo == null) || (binfo.backgroundImage == null)) {
-            final String background = element.getAttribute("background");
-            if ((background != null) && !"".equals(background)) {
+            val background = element.getAttribute("background")
+            if ((background != null) && "" != background) {
                 if (binfo == null) {
-                    binfo = new BackgroundInfo();
+                    binfo = BackgroundInfo()
                 }
                 try {
-                    binfo.backgroundImage = this.document.getFullURL(background);
-                } catch (final MalformedURLException mfe) {
-                    throw new IllegalArgumentException(mfe);
+                    binfo.backgroundImage = this.document.getFullURL(background)
+                } catch (mfe: MalformedURLException) {
+                    throw IllegalArgumentException(mfe)
                 }
             }
         }
-        this.backgroundInfo = binfo;
-        return binfo;
+        this.backgroundInfo = binfo
+        return binfo
     }
 
-    private HTMLTableElement getTableElement() {
-        org.w3c.dom.Node ancestor = this.element.getParentNode();
-        while ((ancestor != null) && !(ancestor instanceof HTMLTableElement)) {
-            ancestor = ancestor.getParentNode();
+    private val tableElement: HTMLTableElement?
+        get() {
+            var ancestor = this.element.getParentNode()
+            while ((ancestor != null) && ancestor !is HTMLTableElement) {
+                ancestor = ancestor.parentNode
+            }
+            return ancestor
         }
-        return (HTMLTableElement) ancestor;
-    }
 
-    @Override
-    public HtmlInsets getPaddingInsets() {
-        HtmlInsets insets = this.paddingInsets;
-        if (insets != INVALID_INSETS) {
-            return insets;
+    override fun getPaddingInsets(): HtmlInsets? {
+        var insets = this.paddingInsets
+        if (insets !== INVALID_INSETS) {
+            return insets
         }
-        insets = super.getPaddingInsets();
+        insets = super.getPaddingInsets()
         if (insets == null) {
-            final HTMLTableElement tableElement = this.getTableElement();
+            val tableElement = this.tableElement
             if (tableElement == null) {
                 // Return without caching
-                return null;
+                return null
             }
-            String cellPaddingText = tableElement.getAttribute("cellpadding");
-            if ((cellPaddingText != null) && (cellPaddingText.length() != 0)) {
-                cellPaddingText = cellPaddingText.trim();
-                int cellPadding;
-                int cellPaddingType;
+            var cellPaddingText = tableElement.getAttribute("cellpadding")
+            if ((cellPaddingText != null) && (cellPaddingText.length != 0)) {
+                cellPaddingText = cellPaddingText.trim { it <= ' ' }
+                var cellPadding: Int
+                val cellPaddingType: Int
                 if (cellPaddingText.endsWith("%")) {
-                    cellPaddingType = HtmlInsets.TYPE_PERCENT;
+                    cellPaddingType = HtmlInsets.Companion.TYPE_PERCENT
                     try {
-                        cellPadding = Integer.parseInt(cellPaddingText.substring(0, cellPaddingText.length() - 1));
-                    } catch (final NumberFormatException nfe) {
-                        cellPadding = 0;
+                        cellPadding =
+                            cellPaddingText.substring(0, cellPaddingText.length - 1).toInt()
+                    } catch (nfe: NumberFormatException) {
+                        cellPadding = 0
                     }
                 } else {
-                    cellPaddingType = HtmlInsets.TYPE_PIXELS;
+                    cellPaddingType = HtmlInsets.Companion.TYPE_PIXELS
                     try {
-                        cellPadding = Integer.parseInt(cellPaddingText);
-                    } catch (final NumberFormatException nfe) {
-                        cellPadding = 0;
+                        cellPadding = cellPaddingText.toInt()
+                    } catch (nfe: NumberFormatException) {
+                        cellPadding = 0
                     }
                 }
-                insets = new HtmlInsets();
-                insets.top = insets.left = insets.right = insets.bottom = cellPadding;
-                insets.topType = insets.leftType = insets.rightType = insets.bottomType = cellPaddingType;
+                insets = HtmlInsets()
+                insets.bottom = cellPadding
+                insets.right = insets.bottom
+                insets.left = insets.right
+                insets.top = insets.left
+                insets.bottomType = cellPaddingType
+                insets.rightType = insets.bottomType
+                insets.leftType = insets.rightType
+                insets.topType = insets.leftType
             }
         }
-        this.paddingInsets = insets;
-        return insets;
+        this.paddingInsets = insets
+        return insets
     }
 
-    @Override
-    public int getWhiteSpace() {
+    override fun getWhiteSpace(): Int {
         // Overrides super.
-        if (RenderThreadState.getState().overrideNoWrap) {
-            return WS_NOWRAP;
+        if (RenderThreadState.Companion.getState().overrideNoWrap) {
+            return RenderState.Companion.WS_NOWRAP
         }
-        final Integer ws = this.iWhiteSpace;
+        val ws = this.iWhiteSpace
         if (ws != null) {
-            return ws.intValue();
+            return ws
         }
-        final JStyleProperties props = this.getCssProperties();
-        final String whiteSpaceText = props == null ? null : props.getWhiteSpace();
-        int wsValue;
+        val props = this.getCssProperties()
+        val whiteSpaceText = if (props == null) null else props.getWhiteSpace()
+        var wsValue: Int
         if (whiteSpaceText == null) {
-            final HTMLElementImpl element = this.element;
+            val element = this.element
             if ((element != null) && element.getAttributeAsBoolean("nowrap")) {
-                wsValue = WS_NOWRAP;
+                wsValue = RenderState.Companion.WS_NOWRAP
             } else {
-                final RenderState prs = this.prevRenderState;
+                val prs = this.prevRenderState
                 if (prs != null) {
-                    wsValue = prs.getWhiteSpace();
+                    wsValue = prs.getWhiteSpace()
                 } else {
-                    wsValue = WS_NORMAL;
+                    wsValue = RenderState.Companion.WS_NORMAL
                 }
             }
         } else {
-            final String whiteSpaceTextTL = whiteSpaceText.toLowerCase();
-            if ("nowrap".equals(whiteSpaceTextTL)) {
-                wsValue = WS_NOWRAP;
-            } else if ("pre".equals(whiteSpaceTextTL)) {
-                wsValue = WS_PRE;
+            val whiteSpaceTextTL = whiteSpaceText.lowercase(Locale.getDefault())
+            if ("nowrap" == whiteSpaceTextTL) {
+                wsValue = RenderState.Companion.WS_NOWRAP
+            } else if ("pre" == whiteSpaceTextTL) {
+                wsValue = RenderState.Companion.WS_PRE
             } else {
-                wsValue = WS_NORMAL;
+                wsValue = RenderState.Companion.WS_NORMAL
             }
         }
-        if (wsValue == WS_NOWRAP) {
+        if (wsValue == RenderState.Companion.WS_NOWRAP) {
             // In table cells, if the width is defined as an absolute value,
             // nowrap has no effect (IE and FireFox behavior).
-            final HTMLElementImpl element = this.element;
-            String width = props == null ? null : props.getWidth();
+            val element = this.element
+            var width = if (props == null) null else props.getWidth()
             if (width == null) {
-                width = element.getAttribute("width");
-                if ((width != null) && (width.length() > 0) && !width.endsWith("%")) {
-                    wsValue = WS_NORMAL;
+                width = element.getAttribute("width")
+                if ((width != null) && (width.length > 0) && !width.endsWith("%")) {
+                    wsValue = RenderState.Companion.WS_NORMAL
                 }
             } else {
-                if (!width.trim().endsWith("%")) {
-                    wsValue = WS_NORMAL;
+                if (!width.trim { it <= ' ' }.endsWith("%")) {
+                    wsValue = RenderState.Companion.WS_NORMAL
                 }
             }
         }
-        this.iWhiteSpace = (wsValue);
-        return wsValue;
+        this.iWhiteSpace = (wsValue)
+        return wsValue
     }
-
 }

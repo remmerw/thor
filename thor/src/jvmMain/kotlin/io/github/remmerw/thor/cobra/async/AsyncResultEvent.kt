@@ -21,36 +21,31 @@
 /*
  * Created on Mar 31, 2005
  */
-package io.github.remmerw.thor.cobra.async;
+package io.github.remmerw.thor.cobra.async
 
-import java.util.EventObject;
+import java.util.EventObject
 
 /**
  * An asynchronous result event. This is a generic class with a
- * <code>TResult</code> type parameter, the type of the result.
+ * `TResult` type parameter, the type of the result.
  *
  * @author J. H. S.
  * @see AsyncResultListener
  */
-final class AsyncResultEvent<TResult> extends EventObject {
-    private static final long serialVersionUID = -4837654436436995017L;
-    private final TResult result;
-
-    /**
-     * Instance constructor.
-     *
-     * @param source The event source.
-     * @param result The asynchronous result.
-     */
-    public AsyncResultEvent(final Object source, final TResult result) {
-        super(source);
-        this.result = result;
-    }
-
+internal class AsyncResultEvent<TResult>
+/**
+ * Instance constructor.
+ *
+ * @param source The event source.
+ * @param result The asynchronous result.
+ */(
+    source: Any,
     /**
      * Gets the asynchronous result. This may be an exception instance.
      */
-    public TResult getResult() {
-        return this.result;
+    val result: TResult?
+) : EventObject(source) {
+    companion object {
+        private val serialVersionUID = -4837654436436995017L
     }
 }

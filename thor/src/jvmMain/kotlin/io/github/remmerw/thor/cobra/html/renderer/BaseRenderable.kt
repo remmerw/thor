@@ -1,17 +1,8 @@
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-abstract class BaseRenderable implements Renderable {
-    private int ordinal = 0;
+internal abstract class BaseRenderable : Renderable {
+    var ordinal: Int = 0
 
-    public int getOrdinal() {
-        return this.ordinal;
-    }
-
-    public void setOrdinal(final int ordinal) {
-        this.ordinal = ordinal;
-    }
-
-    public int getZIndex() {
-        return 0;
-    }
+    open val zIndex: Int
+        get() = 0
 }

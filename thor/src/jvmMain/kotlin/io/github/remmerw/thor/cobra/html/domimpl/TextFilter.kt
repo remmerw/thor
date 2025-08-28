@@ -21,16 +21,13 @@
 /*
  * Created on Nov 13, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.Node;
+import org.w3c.dom.Node
+import org.w3c.dom.Text
 
-public class TextFilter implements NodeFilter {
-    public TextFilter() {
-        super();
-    }
-
-    public boolean accept(final Node node) {
-        return node instanceof org.w3c.dom.Text;
+class TextFilter : NodeFilter {
+    override fun accept(node: Node?): Boolean {
+        return node is Text
     }
 }

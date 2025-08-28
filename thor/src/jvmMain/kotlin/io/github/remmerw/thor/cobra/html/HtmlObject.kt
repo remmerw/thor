@@ -1,19 +1,17 @@
-package io.github.remmerw.thor.cobra.html;
-
-import java.awt.Component;
+package io.github.remmerw.thor.cobra.html
 
 /**
  * This interface should be implemented to provide OBJECT, EMBED or APPLET
  * functionality.
  */
-public interface HtmlObject {
-    Component getComponent();
+interface HtmlObject {
+    val component: Component?
 
-    void suspend();
+    fun suspend()
 
-    void resume();
+    fun resume()
 
-    void destroy();
+    fun destroy()
 
     /**
      * Called as the object is layed out, either the first time it's layed out or
@@ -21,5 +19,5 @@ public interface HtmlObject {
      * based on element children or attributes and possibly change its preferred
      * size if appropriate.
      */
-    void reset(int availableWidth, int availableHeight);
+    fun reset(availableWidth: Int, availableHeight: Int)
 }

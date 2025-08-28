@@ -18,44 +18,31 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-public class ParentFloatingBoundsSource implements FloatingBoundsSource {
-    private final int blockShiftRight;
-    private final int expectedBlockWidth;
-    private final int newX;
-    private final int newY;
-    private final FloatingBounds floatBounds;
-
-    public ParentFloatingBoundsSource(final int blockShiftRight, final int expectedWidth, final int newX, final int newY,
-                                      final FloatingBounds floatBounds) {
-        super();
-        this.blockShiftRight = blockShiftRight;
-        this.expectedBlockWidth = expectedWidth;
-        this.newX = newX;
-        this.newY = newY;
-        this.floatBounds = floatBounds;
+class ParentFloatingBoundsSource(
+    private val blockShiftRight: Int,
+    private val expectedBlockWidth: Int,
+    private val newX: Int,
+    private val newY: Int,
+    private val floatBounds: FloatingBounds?
+) : FloatingBoundsSource {
+    override fun getChildBlockFloatingBounds(apparentBlockWidth: Int): FloatingBounds {
+        val actualRightShift = this.blockShiftRight + (this.expectedBlockWidth - apparentBlockWidth)
+        return ShiftedFloatingBounds(this.floatBounds, -this.newX, -actualRightShift, -this.newY)
     }
 
-    public FloatingBounds getChildBlockFloatingBounds(final int apparentBlockWidth) {
-        final int actualRightShift = this.blockShiftRight + (this.expectedBlockWidth - apparentBlockWidth);
-        return new ShiftedFloatingBounds(this.floatBounds, -this.newX, -actualRightShift, -this.newY);
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
+    override fun equals(obj: Any?): Boolean {
         // Important for layout caching.
-        if (!(obj instanceof ParentFloatingBoundsSource other)) {
-            return false;
+        if (obj !is ParentFloatingBoundsSource) {
+            return false
         }
-        return (this.blockShiftRight == other.blockShiftRight) && (this.expectedBlockWidth == other.expectedBlockWidth)
-                && (this.newX == other.newX)
-                && (this.newY == other.newY) && java.util.Objects.equals(this.floatBounds, other.floatBounds);
-
+        return (this.blockShiftRight == obj.blockShiftRight) && (this.expectedBlockWidth == obj.expectedBlockWidth)
+                && (this.newX == obj.newX)
+                && (this.newY == obj.newY) && this.floatBounds == obj.floatBounds
     }
 
-    @Override
-    public int hashCode() {
-        return this.newX ^ this.newY ^ this.blockShiftRight ^ this.expectedBlockWidth;
+    override fun hashCode(): Int {
+        return this.newX xor this.newY xor this.blockShiftRight xor this.expectedBlockWidth
     }
 }

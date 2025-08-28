@@ -21,105 +21,106 @@
 /*
  * Created on Sep 10, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.Attr;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.TypeInfo;
+import org.w3c.dom.Attr
+import org.w3c.dom.DOMException
+import org.w3c.dom.Element
+import org.w3c.dom.Node
+import org.w3c.dom.TypeInfo
 
-public class AttrImpl extends NodeImpl implements Attr {
-    private final String name;
-    private final boolean specified;
-    private final Element ownerElement;
-    private String value;
-    private boolean isId;
+class AttrImpl : NodeImpl, Attr {
+    private val name: String
+    private val specified: Boolean
+    private val ownerElement: Element?
+    private var value: String?
+    private var isId: Boolean
 
     /**
      * @param name
      * @param value
      */
-    public AttrImpl(final String name, final String value, final boolean specified, final Element owner, final boolean isId) {
-        super();
-        this.name = name;
-        this.value = value;
-        this.specified = specified;
-        this.ownerElement = owner;
-        this.isId = isId;
+    constructor(
+        name: String,
+        value: String?,
+        specified: Boolean,
+        owner: Element?,
+        isId: Boolean
+    ) : super() {
+        this.name = name
+        this.value = value
+        this.specified = specified
+        this.ownerElement = owner
+        this.isId = isId
     }
 
     /**
      * @param name
      */
-    public AttrImpl(final String name) {
-        super();
-        this.name = name;
-        this.value = "";
-        this.specified = false;
-        this.ownerElement = null;
-        this.isId = false;
+    constructor(name: String) : super() {
+        this.name = name
+        this.value = ""
+        this.specified = false
+        this.ownerElement = null
+        this.isId = false
     }
 
-    @Override
-    public String getLocalName() {
-        return this.name;
+    override fun getLocalName(): String {
+        return this.name
     }
 
-    @Override
-    public String getNodeName() {
-        return this.name;
+    override fun getNodeName(): String {
+        return this.name
     }
 
-    @Override
-    public String getNodeValue() throws DOMException {
-        return this.value;
+    @Throws(DOMException::class)
+    override fun getNodeValue(): String? {
+        return this.value
     }
 
-    @Override
-    public void setNodeValue(final String nodeValue) throws DOMException {
-        this.value = nodeValue;
+    @Throws(DOMException::class)
+    override fun setNodeValue(nodeValue: String?) {
+        this.value = nodeValue
     }
 
-    @Override
-    public short getNodeType() {
-        return Node.ATTRIBUTE_NODE;
+    override fun getNodeType(): Short {
+        return ATTRIBUTE_NODE
     }
 
-    public String getName() {
-        return this.name;
+    override fun getName(): String {
+        return this.name
     }
 
-    public boolean getSpecified() {
-        return this.specified;
+    override fun getSpecified(): Boolean {
+        return this.specified
     }
 
-    public String getValue() {
-        return this.value;
+    override fun getValue(): String? {
+        return this.value
     }
 
-    public void setValue(final String value) throws DOMException {
-        this.value = value;
+    @Throws(DOMException::class)
+    override fun setValue(value: String?) {
+        this.value = value
     }
 
-    public Element getOwnerElement() {
-        return this.ownerElement;
+    override fun getOwnerElement(): Element? {
+        return this.ownerElement
     }
 
-    public TypeInfo getSchemaTypeInfo() {
-        throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "Namespaces not supported");
+    override fun getSchemaTypeInfo(): TypeInfo? {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Namespaces not supported")
     }
 
-    public boolean isId() {
-        return this.isId;
+    override fun isId(): Boolean {
+        return this.isId
     }
 
-    public void setId(final boolean value) {
-        this.isId = value;
+    fun setId(value: Boolean) {
+        this.isId = value
     }
 
-    @Override
-    protected Node createSimilarNode() {
-        return new AttrImpl(this.name, this.value, this.specified, this.ownerElement, this.isId);
+    override fun createSimilarNode(): Node {
+        return AttrImpl(this.name, this.value, this.specified, this.ownerElement, this.isId)
     }
 }

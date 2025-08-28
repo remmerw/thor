@@ -21,57 +21,58 @@
 /*
  * Created on Oct 23, 2005
  */
-package io.github.remmerw.thor.cobra.html.parser;
+package io.github.remmerw.thor.cobra.html.parser
 
-import java.util.Set;
-
-class ElementInfo {
-    public static final int END_ELEMENT_FORBIDDEN = 0;
-    public static final int END_ELEMENT_OPTIONAL = 1;
-    public static final int END_ELEMENT_REQUIRED = 2;
-    public final int endElementType;
-    public final boolean childElementOk;
-    public final Set<String> stopTags;
-    public final boolean noScriptElement;
-    public final boolean decodeEntities;
+internal class ElementInfo {
+    val endElementType: Int
+    val childElementOk: Boolean
+    val stopTags: MutableSet<String?>?
+    val noScriptElement: Boolean
+    val decodeEntities: Boolean
 
     /**
      * @param ok
      * @param type
      */
-    public ElementInfo(final boolean ok, final int type) {
-        this.childElementOk = ok;
-        this.endElementType = type;
-        this.stopTags = null;
-        this.noScriptElement = false;
-        this.decodeEntities = true;
+    constructor(ok: Boolean, type: Int) {
+        this.childElementOk = ok
+        this.endElementType = type
+        this.stopTags = null
+        this.noScriptElement = false
+        this.decodeEntities = true
     }
 
     /**
      * @param ok
      * @param type
      */
-    public ElementInfo(final boolean ok, final int type, final Set<String> stopTags) {
-        this.childElementOk = ok;
-        this.endElementType = type;
-        this.stopTags = stopTags;
-        this.noScriptElement = false;
-        this.decodeEntities = true;
+    constructor(ok: Boolean, type: Int, stopTags: MutableSet<String?>?) {
+        this.childElementOk = ok
+        this.endElementType = type
+        this.stopTags = stopTags
+        this.noScriptElement = false
+        this.decodeEntities = true
     }
 
-    public ElementInfo(final boolean ok, final int type, final Set<String> stopTags, final boolean noScriptElement) {
-        this.childElementOk = ok;
-        this.endElementType = type;
-        this.stopTags = stopTags;
-        this.noScriptElement = noScriptElement;
-        this.decodeEntities = true;
+    constructor(ok: Boolean, type: Int, stopTags: MutableSet<String?>?, noScriptElement: Boolean) {
+        this.childElementOk = ok
+        this.endElementType = type
+        this.stopTags = stopTags
+        this.noScriptElement = noScriptElement
+        this.decodeEntities = true
     }
 
-    public ElementInfo(final boolean ok, final int type, final boolean decodeEntities) {
-        this.childElementOk = ok;
-        this.endElementType = type;
-        this.stopTags = null;
-        this.noScriptElement = false;
-        this.decodeEntities = decodeEntities;
+    constructor(ok: Boolean, type: Int, decodeEntities: Boolean) {
+        this.childElementOk = ok
+        this.endElementType = type
+        this.stopTags = null
+        this.noScriptElement = false
+        this.decodeEntities = decodeEntities
+    }
+
+    companion object {
+        const val END_ELEMENT_FORBIDDEN: Int = 0
+        const val END_ELEMENT_OPTIONAL: Int = 1
+        const val END_ELEMENT_REQUIRED: Int = 2
     }
 }

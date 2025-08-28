@@ -1,17 +1,13 @@
-package io.github.remmerw.thor.cobra.ssl;
+package io.github.remmerw.thor.cobra.ssl
 
-public enum SslState {
+enum class SslState(name: String) {
     NONE("None"),
     VALID("Valid"),
     INVALID("Invalid");
 
-    private final String name;
+    val name: String?
 
-    SslState(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return this.name;
+    init {
+        this.name = name
     }
 }

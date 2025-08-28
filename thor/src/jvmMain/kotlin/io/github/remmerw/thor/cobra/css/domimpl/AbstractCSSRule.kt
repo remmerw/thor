@@ -13,35 +13,26 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+package io.github.remmerw.thor.cobra.css.domimpl
 
-package io.github.remmerw.thor.cobra.css.domimpl;
+import org.w3c.dom.css.CSSRule
+import org.w3c.dom.css.CSSStyleSheet
 
-import org.w3c.dom.css.CSSRule;
-import org.w3c.dom.css.CSSStyleSheet;
-
-abstract class AbstractCSSRule implements CSSRule {
-
-    final protected JStyleSheetWrapper containingStyleSheet;
-
-    AbstractCSSRule(final JStyleSheetWrapper containingStyleSheet) {
-        this.containingStyleSheet = containingStyleSheet;
-    }
-
+internal abstract class AbstractCSSRule(val containingStyleSheet: JStyleSheetWrapper?) : CSSRule {
     /**
      * @return The style sheet that contains this rule.
      */
-    public CSSStyleSheet getParentStyleSheet() {
-        return containingStyleSheet;
+    override fun getParentStyleSheet(): CSSStyleSheet? {
+        return containingStyleSheet
     }
 
     /**
      * If this rule is contained inside another rule (e.g. a style rule inside an @media
      * block), this is the containing rule. If this rule is not nested inside any
-     * other rules, this returns <code>null</code>.
+     * other rules, this returns `null`.
      */
-    public CSSRule getParentRule() {
+    override fun getParentRule(): CSSRule? {
         // TODO needs to be overridden in MediaRule
-        return null;
+        return null
     }
-
 }

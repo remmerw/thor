@@ -21,28 +21,18 @@
 /*
  * Created on Apr 17, 2005
  */
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
 
-import java.lang.reflect.Array;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.function.Consumer;
+import java.lang.reflect.Array
+import java.util.function.Consumer
 
 /**
  * @author J. H. S.
  */
-public class ArrayUtilities {
-
-    /**
-     *
-     */
-    private ArrayUtilities() {
-        super();
-    }
-
-    public static <T> T[] copy(final Collection<T> collection, final Class<T> clazz) {
-        @SuppressWarnings("unchecked") final T[] castedArray = (T[]) Array.newInstance(clazz, collection.size());
-        return collection.toArray(castedArray);
+object ArrayUtilities {
+    fun <T> copy(collection: MutableCollection<T?>, clazz: Class<T?>?): Array<T?> {
+        val castedArray = Array.newInstance(clazz, collection.size) as kotlin.Array<T?>
+        return collection.toArray<T?>(castedArray)
     }
 
     /**
@@ -50,15 +40,23 @@ public class ArrayUtilities {
      * to create an array if size is zero. But that is so only if the passed array
      * is a static zero sized array
      */
-    public static <T> T[] copySynched(final Collection<T> collection, final Object syncObj, final T[] initArray) {
-        synchronized (syncObj) {
-            return collection.toArray(initArray);
+    fun <T> copySynched(
+        collection: MutableCollection<T?>,
+        syncObj: Any,
+        initArray: kotlin.Array<T?>
+    ): kotlin.Array<T?> {
+        synchronized(syncObj) {
+            return collection.toArray<T?>(initArray)
         }
     }
 
-    public static <T> T[] copySynched(final Collection<T> collection, final Object syncObj, final Class<T> clazz) {
-        synchronized (syncObj) {
-            return copy(collection, clazz);
+    fun <T> copySynched(
+        collection: MutableCollection<T?>,
+        syncObj: Any,
+        clazz: Class<T?>?
+    ): kotlin.Array<T?> {
+        synchronized(syncObj) {
+            return copy<T?>(collection, clazz)
         }
     }
 
@@ -70,39 +68,42 @@ public class ArrayUtilities {
      * @param syncObj The object to synchronize upon.
      * @param func    The function to call on each element.
      */
-    public static <T, E extends Throwable> void forEachSynched(final Collection<T> collection, final Object syncObj,
-                                                               final Consumer<T> consumer) throws E {
-        if (collection.size() > 0) {
-            @SuppressWarnings("unchecked") final Class<T> clazz = (Class<T>) collection.iterator().next().getClass();
-            final T[] copy = copySynched(collection, syncObj, clazz);
-            for (final T element : copy) {
-                consumer.accept(element);
+    @Throws(E::class)
+    fun <T, E : Throwable?> forEachSynched(
+        collection: MutableCollection<T?>, syncObj: Any,
+        consumer: Consumer<T?>
+    ) {
+        if (collection.size > 0) {
+            val clazz = collection.iterator().next()!!.javaClass as Class<T?>
+            val copy = copySynched<T?>(collection, syncObj, clazz)
+            for (element in copy) {
+                consumer.accept(element)
             }
         }
     }
 
-    public static <T> Iterator<T> iterator(final T[] array, final int offset, final int length) {
-        return new ArrayIterator<>(array, offset, length);
+    fun <T> iterator(array: kotlin.Array<T?>, offset: Int, length: Int): MutableIterator<T?> {
+        return ArrayIterator<T?>(array, offset, length)
     }
 
-    public static <T> boolean contains(final T[] ts, final T t) {
-        for (final T e : ts) {
-            if (java.util.Objects.equals(e, t)) {
-                return true;
+    fun <T> contains(ts: kotlin.Array<T?>, t: T?): Boolean {
+        for (e in ts) {
+            if (e == t) {
+                return true
             }
         }
-        return false;
+        return false
     }
 
-    private static class ArrayIterator<T> implements Iterator<T> {
-        private final T[] array;
-        private final int top;
-        private int offset;
+    private class ArrayIterator<T>(
+        private val array: kotlin.Array<T?>,
+        private var offset: Int,
+        length: Int
+    ) : MutableIterator<T?> {
+        private val top: Int
 
-        public ArrayIterator(final T[] array, final int offset, final int length) {
-            this.array = array;
-            this.offset = offset;
-            this.top = offset + length;
+        init {
+            this.top = offset + length
         }
 
         /*
@@ -110,8 +111,8 @@ public class ArrayUtilities {
          *
          * @see java.util.Iterator#hasNext()
          */
-        public boolean hasNext() {
-            return this.offset < this.top;
+        override fun hasNext(): Boolean {
+            return this.offset < this.top
         }
 
         /*
@@ -119,8 +120,8 @@ public class ArrayUtilities {
          *
          * @see java.util.Iterator#next()
          */
-        public T next() {
-            return this.array[this.offset++];
+        override fun next(): T? {
+            return this.array[this.offset++]
         }
 
         /*
@@ -128,8 +129,8 @@ public class ArrayUtilities {
          *
          * @see java.util.Iterator#remove()
          */
-        public void remove() {
-            throw new UnsupportedOperationException();
+        override fun remove() {
+            throw UnsupportedOperationException()
         }
     }
 }

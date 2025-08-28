@@ -20,78 +20,71 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.github.remmerw.thor.cobra.clientlet;
+package io.github.remmerw.thor.cobra.clientlet
 
-import org.eclipse.jdt.annotation.NonNull;
-
-import java.net.URL;
-
-import io.github.remmerw.thor.cobra.ua.ParameterInfo;
-import io.github.remmerw.thor.cobra.ua.RequestType;
-import io.github.remmerw.thor.cobra.ua.UserAgent;
+import io.github.remmerw.thor.cobra.ua.ParameterInfo
 
 /**
  * A URL request such as a HTTP, file or FTP request.
  *
  * @author J. H. S.
  */
-public interface ClientletRequest {
+interface ClientletRequest {
     /**
      * Gets the request method.
      *
      * @return GET, POST, etc.
      */
-    String getMethod();
+    val method: String?
 
     /**
      * Gets the request URL.
      */
-    @NonNull
-    URL getRequestURL();
+    val requestURL: URL
 
     /**
      * Gets information about the user agent making the request.
      */
-    UserAgent getUserAgent();
+    val userAgent: UserAgent?
 
     /**
-     * Gets the referring URL. It should be <code>null</code> if none or unknown.
+     * Gets the referring URL. It should be `null` if none or unknown.
      */
-    String getReferrer();
+    val referrer: String?
 
     /**
      * Gets information about the request parameters.
      */
-    ParameterInfo getParameterInfo();
+    val parameterInfo: ParameterInfo?
 
     /**
      * Gets additional headers used in the request.
      */
-    Header[] getExtraHeaders();
+    val extraHeaders: Array<Header?>?
 
     /**
      * Convenience method. Determines if the request method is GET.
      */
-    boolean isGetRequest();
+    val isGetRequest: Boolean
 
     /**
      * Convenience method. Determines if the request method is POST.
      */
-    boolean isPostRequest();
+    val isPostRequest: Boolean
 
     /**
      * Determines if the request was made in order to open a new browser window.
      */
-    boolean isNewWindowRequest();
+    val isNewWindowRequest: Boolean
 
     /**
-     * Provides alternative POST data in case no <code>ParameterInfo</code> is
+     * Provides alternative POST data in case no `ParameterInfo` is
      * provied.
      */
-    String getAltPostData();
+    val altPostData: String?
 
     /**
      * Gets the type of request.
      */
-    RequestType getRequestType();
+    val requestType: RequestType?
 }

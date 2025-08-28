@@ -21,46 +21,38 @@
 /*
  * Created on Oct 9, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.DOMException;
-import org.w3c.dom.DocumentFragment;
-import org.w3c.dom.Node;
+import org.w3c.dom.DOMException
+import org.w3c.dom.DocumentFragment
+import org.w3c.dom.Node
 
 /* TODO: extends ElementImpl as a hack, to get the ParentNode functionality.
          Better solution would be to extend from NodeImpl and create a ParentNode interface with default methods.
          Issue #88 */
-public class DocumentFragmentImpl extends ElementImpl implements DocumentFragment {
-    public DocumentFragmentImpl() {
-        super("#document-fragment");
+class DocumentFragmentImpl : ElementImpl("#document-fragment"), DocumentFragment {
+    override fun getLocalName(): String? {
+        return null
     }
 
-    @Override
-    public String getLocalName() {
-        return null;
+    override fun getNodeName(): String {
+        return "#document-fragment"
     }
 
-    @Override
-    public String getNodeName() {
-        return "#document-fragment";
+    @Throws(DOMException::class)
+    override fun getNodeValue(): String? {
+        return null
     }
 
-    @Override
-    public String getNodeValue() throws DOMException {
-        return null;
+    @Throws(DOMException::class)
+    override fun setNodeValue(nodeValue: String?) {
     }
 
-    @Override
-    public void setNodeValue(final String nodeValue) throws DOMException {
+    override fun getNodeType(): Short {
+        return DOCUMENT_FRAGMENT_NODE
     }
 
-    @Override
-    public short getNodeType() {
-        return Node.DOCUMENT_FRAGMENT_NODE;
-    }
-
-    @Override
-    protected Node createSimilarNode() {
-        return new DocumentFragmentImpl();
+    override fun createSimilarNode(): Node {
+        return DocumentFragmentImpl()
     }
 }

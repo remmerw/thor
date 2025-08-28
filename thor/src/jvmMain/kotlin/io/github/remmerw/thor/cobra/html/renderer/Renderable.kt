@@ -21,32 +21,29 @@
 /*
  * Created on Apr 16, 2005
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import java.awt.Graphics;
-
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode;
+import java.awt.Graphics
 
 /**
  * Represents a renderer (view) node.
  */
-public interface Renderable {
-    Renderable[] EMPTY_ARRAY = new Renderable[0];
+interface Renderable {
+    fun paint(g: Graphics?)
 
-    void paint(Graphics g);
+    val modelNode: ModelNode?
 
-    ModelNode getModelNode();
+    val isFixed: Boolean
+        get() = false
 
-    default boolean isFixed() {
-        return false;
-    }
+    val isReadyToPaint: Boolean
+        get() = true
 
-    default boolean isReadyToPaint() {
-        return true;
-    }
+    val isReplacedElement: Boolean
+        get() =// TODO: Match all other replaced elements such as audio, video, canvas, etc. Refer: http://stackoverflow.com/a/12468620
+            this.modelNode.nodeName.equalsIgnoreCase("IMG")
 
-    default boolean isReplacedElement() {
-        // TODO: Match all other replaced elements such as audio, video, canvas, etc. Refer: http://stackoverflow.com/a/12468620
-        return getModelNode().getNodeName().equalsIgnoreCase("IMG");
+    companion object {
+        val EMPTY_ARRAY: Array<Renderable?> = arrayOfNulls<Renderable>(0)
     }
 }

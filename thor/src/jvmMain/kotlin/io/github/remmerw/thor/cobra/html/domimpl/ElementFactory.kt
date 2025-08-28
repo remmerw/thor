@@ -21,98 +21,105 @@
 /*
  * Created on Oct 8, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.DOMException;
-import org.w3c.dom.html.HTMLElement;
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementBuilder.Anchor
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementBuilder.BaseFont
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementBuilder.Frameset
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementBuilder.Heading
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementBuilder.IFrame
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementBuilder.Img
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementBuilder.NonStandard
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementBuilder.Pre
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementBuilder.Quote
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementBuilder.Textarea
+import org.w3c.dom.DOMException
+import org.w3c.dom.html.HTMLElement
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+internal class ElementFactory private constructor() {
+    private val builders: MutableMap<String?, HTMLElementBuilder?> =
+        HashMap<String?, HTMLElementBuilder?>(80)
 
-class ElementFactory {
-    private static final ElementFactory instance = new ElementFactory();
-    private final Map<String, HTMLElementBuilder> builders = new HashMap<>(80);
-
-    private ElementFactory() {
+    init {
         // This sets up builders for each known element tag.
-        final Map<String, HTMLElementBuilder> builders = this.builders;
-        builders.put("HTML", new HTMLElementBuilder.Html());
-        builders.put("TITLE", new HTMLElementBuilder.Title());
-        builders.put("BASE", new HTMLElementBuilder.Base());
+        val builders = this.builders
+        builders.put("HTML", HTMLElementBuilder.Html())
+        builders.put("TITLE", HTMLElementBuilder.Title())
+        builders.put("BASE", HTMLElementBuilder.Base())
 
-        final HTMLElementBuilder div = new HTMLElementBuilder.Div();
-        builders.put("DIV", div);
-        builders.put("DL", div);
+        val div: HTMLElementBuilder = HTMLElementBuilder.Div()
+        builders.put("DIV", div)
+        builders.put("DL", div)
 
-        builders.put("BODY", new HTMLElementBuilder.Body());
-        builders.put("PRE", new HTMLElementBuilder.Pre());
-        builders.put("P", new HTMLElementBuilder.P());
+        builders.put("BODY", HTMLElementBuilder.Body())
+        builders.put("PRE", Pre())
+        builders.put("P", HTMLElementBuilder.P())
 
-        final HTMLElementBuilder qb = new HTMLElementBuilder.Quote();
-        builders.put("BLOCKQUOTE", qb);
-        builders.put("Q", qb);
+        val qb: HTMLElementBuilder = Quote()
+        builders.put("BLOCKQUOTE", qb)
+        builders.put("Q", qb)
 
-        builders.put("SPAN", new HTMLElementBuilder.Span());
-        builders.put("SCRIPT", new HTMLElementBuilder.Script());
-        builders.put("IMG", new HTMLElementBuilder.Img());
-        builders.put("STYLE", new HTMLElementBuilder.Style());
-        builders.put("LINK", new HTMLElementBuilder.Link());
-        builders.put("A", new HTMLElementBuilder.Anchor());
-        builders.put("ANCHOR", new HTMLElementBuilder.Anchor());
-        builders.put("TABLE", new HTMLElementBuilder.Table());
-        builders.put("TD", new HTMLElementBuilder.Td());
-        builders.put("TH", new HTMLElementBuilder.Th());
-        builders.put("TR", new HTMLElementBuilder.Tr());
-        builders.put("FORM", new HTMLElementBuilder.Form());
-        builders.put("INPUT", new HTMLElementBuilder.Input());
-        builders.put("BUTTON", new HTMLElementBuilder.Button());
-        builders.put("TEXTAREA", new HTMLElementBuilder.Textarea());
-        builders.put("SELECT", new HTMLElementBuilder.Select());
-        builders.put("OPTION", new HTMLElementBuilder.Option());
-        builders.put("FRAMESET", new HTMLElementBuilder.Frameset());
-        builders.put("FRAME", new HTMLElementBuilder.Frame());
-        builders.put("IFRAME", new HTMLElementBuilder.IFrame());
-        builders.put("UL", new HTMLElementBuilder.Ul());
-        builders.put("OL", new HTMLElementBuilder.Ol());
-        builders.put("LI", new HTMLElementBuilder.Li());
-        builders.put("HR", new HTMLElementBuilder.Hr());
-        builders.put("BR", new HTMLElementBuilder.Br());
-        builders.put("OBJECT", new HTMLElementBuilder.HtmlObject());
-        builders.put("APPLET", new HTMLElementBuilder.Applet());
-        builders.put("EMBED", new HTMLElementBuilder.NonStandard());
-        builders.put("FONT", new HTMLElementBuilder.Font());
-        builders.put("BASEFONT", new HTMLElementBuilder.BaseFont());
+        builders.put("SPAN", HTMLElementBuilder.Span())
+        builders.put("SCRIPT", HTMLElementBuilder.Script())
+        builders.put("IMG", Img())
+        builders.put("STYLE", HTMLElementBuilder.Style())
+        builders.put("LINK", HTMLElementBuilder.Link())
+        builders.put("A", Anchor())
+        builders.put("ANCHOR", Anchor())
+        builders.put("TABLE", HTMLElementBuilder.Table())
+        builders.put("TD", HTMLElementBuilder.Td())
+        builders.put("TH", HTMLElementBuilder.Th())
+        builders.put("TR", HTMLElementBuilder.Tr())
+        builders.put("FORM", HTMLElementBuilder.Form())
+        builders.put("INPUT", HTMLElementBuilder.Input())
+        builders.put("BUTTON", HTMLElementBuilder.Button())
+        builders.put("TEXTAREA", Textarea())
+        builders.put("SELECT", HTMLElementBuilder.Select())
+        builders.put("OPTION", HTMLElementBuilder.Option())
+        builders.put("FRAMESET", Frameset())
+        builders.put("FRAME", HTMLElementBuilder.Frame())
+        builders.put("IFRAME", IFrame())
+        builders.put("UL", HTMLElementBuilder.Ul())
+        builders.put("OL", HTMLElementBuilder.Ol())
+        builders.put("LI", HTMLElementBuilder.Li())
+        builders.put("HR", HTMLElementBuilder.Hr())
+        builders.put("BR", HTMLElementBuilder.Br())
+        builders.put("OBJECT", HTMLElementBuilder.HtmlObject())
+        builders.put("APPLET", HTMLElementBuilder.Applet())
+        builders.put("EMBED", NonStandard())
+        builders.put("FONT", HTMLElementBuilder.Font())
+        builders.put("BASEFONT", BaseFont())
 
-        final HTMLElementBuilder heading = new HTMLElementBuilder.Heading();
-        builders.put("H1", heading);
-        builders.put("H2", heading);
-        builders.put("H3", heading);
-        builders.put("H4", heading);
-        builders.put("H5", heading);
-        builders.put("H6", heading);
+        val heading: HTMLElementBuilder = Heading()
+        builders.put("H1", heading)
+        builders.put("H2", heading)
+        builders.put("H3", heading)
+        builders.put("H4", heading)
+        builders.put("H5", heading)
+        builders.put("H6", heading)
 
-        builders.put("CANVAS", new HTMLElementBuilder.Canvas());
+        builders.put("CANVAS", HTMLElementBuilder.Canvas())
     }
 
-    public static ElementFactory getInstance() {
-        return instance;
-    }
-
-    public final HTMLElement createElement(final HTMLDocumentImpl document, final String name) throws DOMException {
-        final String normalName = name.toUpperCase(Locale.ENGLISH);
+    @Throws(DOMException::class)
+    fun createElement(document: HTMLDocumentImpl?, name: String): HTMLElement {
+        val normalName = name.uppercase()
         // No need to synchronize; read-only map at this point.
-        final HTMLElementBuilder builder = this.builders.get(normalName);
+        val builder = this.builders.get(normalName)
         if (builder == null) {
             // TODO: IE would assume name is html text here?
             // TODO: ^^ Other browsers throw an exception if there are illegal characters in the name.
             //          But am not sure what the legal character set is. Characters like angle-brackets
             //          do throw an exception in Chromium and Firefox. - hrj
-            final HTMLElementImpl element = new HTMLElementImpl(name);
-            element.setOwnerDocument(document);
-            return element;
+            val element = HTMLElementImpl(name)
+            element.setOwnerDocument(document)
+            return element
         } else {
-            return builder.create(document, name);
+            return builder.create(document, name)
         }
+    }
+
+    companion object {
+        val instance: ElementFactory = ElementFactory()
     }
 }

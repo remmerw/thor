@@ -1,35 +1,31 @@
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.WeakHashMap
 
-public class Items {
-    private static final Map<Object, Map<String, Object>> sourceMap = new WeakHashMap<>();
+object Items {
+    private val sourceMap: MutableMap<Any?, MutableMap<String?, Any?>?> =
+        WeakHashMap<Any?, MutableMap<String?, Any?>?>()
 
-    private Items() {
-    }
-
-    public static Object getItem(final Object source, final String name) {
-        final Map<Object, Map<String, Object>> sm = sourceMap;
-        synchronized (sm) {
-            final Map<String, Object> itemMap = sm.get(source);
+    fun getItem(source: Any?, name: String?): Any? {
+        val sm = sourceMap
+        synchronized(sm) {
+            val itemMap = sm.get(source)
             if (itemMap == null) {
-                return null;
+                return null
             }
-            return itemMap.get(name);
+            return itemMap.get(name)
         }
     }
 
-    public static void setItem(final Object source, final String name, final Object value) {
-        final Map<Object, Map<String, Object>> sm = sourceMap;
-        synchronized (sm) {
-            Map<String, Object> itemMap = sm.get(source);
+    fun setItem(source: Any?, name: String?, value: Any?) {
+        val sm = sourceMap
+        synchronized(sm) {
+            var itemMap = sm.get(source)
             if (itemMap == null) {
-                itemMap = new HashMap<>(1);
-                sm.put(source, itemMap);
+                itemMap = HashMap<String?, Any?>(1)
+                sm.put(source, itemMap)
             }
-            itemMap.put(name, value);
+            itemMap.put(name, value)
         }
     }
 }

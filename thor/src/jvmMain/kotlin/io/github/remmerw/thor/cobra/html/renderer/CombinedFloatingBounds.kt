@@ -18,59 +18,53 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-class CombinedFloatingBounds implements FloatingBounds {
-    private final FloatingBounds floatBounds1;
-    private final FloatingBounds floatBounds2;
+import kotlin.math.max
 
-    public CombinedFloatingBounds(final FloatingBounds floatBounds1, final FloatingBounds floatBounds2) {
-        super();
-        this.floatBounds1 = floatBounds1;
-        this.floatBounds2 = floatBounds2;
+internal class CombinedFloatingBounds(
+    private val floatBounds1: FloatingBounds,
+    private val floatBounds2: FloatingBounds
+) : FloatingBounds {
+    override fun getClearY(y: Int): Int {
+        return max(this.floatBounds1.getClearY(y), this.floatBounds2.getClearY(y))
     }
 
-    public int getClearY(final int y) {
-        return Math.max(this.floatBounds1.getClearY(y), this.floatBounds2.getClearY(y));
+    override fun getFirstClearY(y: Int): Int {
+        return max(this.floatBounds1.getFirstClearY(y), this.floatBounds2.getFirstClearY(y))
     }
 
-    public int getFirstClearY(final int y) {
-        return Math.max(this.floatBounds1.getFirstClearY(y), this.floatBounds2.getFirstClearY(y));
+    override fun getLeft(y: Int): Int {
+        return max(this.floatBounds1.getLeft(y), this.floatBounds2.getLeft(y))
     }
 
-    public int getLeft(final int y) {
-        return Math.max(this.floatBounds1.getLeft(y), this.floatBounds2.getLeft(y));
+    override fun getLeftClearY(y: Int): Int {
+        return max(this.floatBounds1.getLeftClearY(y), this.floatBounds2.getLeftClearY(y))
     }
 
-    public int getLeftClearY(final int y) {
-        return Math.max(this.floatBounds1.getLeftClearY(y), this.floatBounds2.getLeftClearY(y));
+    override fun getMaxY(): Int {
+        return max(this.floatBounds1.getMaxY(), this.floatBounds2.getMaxY())
     }
 
-    public int getMaxY() {
-        return Math.max(this.floatBounds1.getMaxY(), this.floatBounds2.getMaxY());
+    override fun getRight(y: Int): Int {
+        return max(this.floatBounds1.getRight(y), this.floatBounds2.getRight(y))
     }
 
-    public int getRight(final int y) {
-        return Math.max(this.floatBounds1.getRight(y), this.floatBounds2.getRight(y));
+    override fun getRightClearY(y: Int): Int {
+        return max(this.floatBounds1.getRightClearY(y), this.floatBounds2.getRightClearY(y))
     }
 
-    public int getRightClearY(final int y) {
-        return Math.max(this.floatBounds1.getRightClearY(y), this.floatBounds2.getRightClearY(y));
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
+    override fun equals(obj: Any?): Boolean {
         // Important for layout caching.
-        if (!(obj instanceof CombinedFloatingBounds other)) {
-            return false;
+        if (obj !is CombinedFloatingBounds) {
+            return false
         }
-        return java.util.Objects.equals(other.floatBounds1, this.floatBounds1) && java.util.Objects.equals(other.floatBounds2, this.floatBounds2);
+        return obj.floatBounds1 == this.floatBounds1 && obj.floatBounds2 == this.floatBounds2
     }
 
-    @Override
-    public int hashCode() {
-        final FloatingBounds fbounds1 = this.floatBounds1;
-        final FloatingBounds fbounds2 = this.floatBounds2;
-        return (fbounds1 == null ? 0 : fbounds1.hashCode()) ^ (fbounds2 == null ? 0 : fbounds2.hashCode());
+    override fun hashCode(): Int {
+        val fbounds1 = this.floatBounds1
+        val fbounds2 = this.floatBounds2
+        return (if (fbounds1 == null) 0 else fbounds1.hashCode()) xor (if (fbounds2 == null) 0 else fbounds2.hashCode())
     }
 }

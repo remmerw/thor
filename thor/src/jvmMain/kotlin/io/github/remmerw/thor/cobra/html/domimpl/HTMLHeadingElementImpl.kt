@@ -18,47 +18,41 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.html.HTMLHeadingElement;
+import org.w3c.dom.html.HTMLHeadingElement
 
-public class HTMLHeadingElementImpl extends HTMLAbstractUIElement implements HTMLHeadingElement {
-    public HTMLHeadingElementImpl(final String name) {
-        super(name);
+class HTMLHeadingElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLHeadingElement {
+    override fun getAlign(): String? {
+        return this.getAttribute("align")
     }
 
-    public String getAlign() {
-        return this.getAttribute("align");
+    override fun setAlign(align: String?) {
+        this.setAttribute("align", align)
     }
 
-    public void setAlign(final String align) {
-        this.setAttribute("align", align);
-    }
-
-    @Override
-    protected void appendInnerTextImpl(final StringBuffer buffer) {
-        final int length = buffer.length();
-        int lineBreaks;
+    override fun appendInnerTextImpl(buffer: StringBuffer) {
+        val length = buffer.length
+        var lineBreaks: Int
         if (length == 0) {
-            lineBreaks = 2;
+            lineBreaks = 2
         } else {
-            int start = length - 4;
+            var start = length - 4
             if (start < 0) {
-                start = 0;
+                start = 0
             }
-            lineBreaks = 0;
-            for (int i = start; i < length; i++) {
-                final char ch = buffer.charAt(i);
+            lineBreaks = 0
+            for (i in start..<length) {
+                val ch = buffer.get(i)
                 if (ch == '\n') {
-                    lineBreaks++;
+                    lineBreaks++
                 }
             }
         }
-        for (int i = 0; i < (2 - lineBreaks); i++) {
-            buffer.append("\r\n");
+        for (i in 0..<(2 - lineBreaks)) {
+            buffer.append("\r\n")
         }
-        super.appendInnerTextImpl(buffer);
-        buffer.append("\r\n\r\n");
+        super.appendInnerTextImpl(buffer)
+        buffer.append("\r\n\r\n")
     }
-
 }

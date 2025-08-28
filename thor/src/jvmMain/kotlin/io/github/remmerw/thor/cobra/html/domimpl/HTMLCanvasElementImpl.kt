@@ -17,727 +17,728 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
  */
+package io.github.remmerw.thor.cobra.html.domimpl
 
-package io.github.remmerw.thor.cobra.html.domimpl;
+import io.github.remmerw.thor.cobra.html.js.NotGetterSetter
+import io.github.remmerw.thor.cobra.js.HideFromJS
+import io.github.remmerw.thor.cobra.util.gui.ColorFactory
+import org.mozilla.javascript.typedarrays.NativeUint8ClampedArray
+import org.w3c.dom.html.HTMLElement
+import java.awt.AlphaComposite
+import java.awt.BasicStroke
+import java.awt.Color
+import java.awt.Graphics
+import java.awt.Graphics2D
+import java.awt.LinearGradientPaint
+import java.awt.Paint
+import java.awt.RenderingHints
+import java.awt.Shape
+import java.awt.geom.AffineTransform
+import java.awt.geom.Rectangle2D
+import java.awt.image.BufferedImage
+import java.io.ByteArrayOutputStream
+import java.io.IOException
+import java.util.Base64
+import java.util.Locale
+import java.util.Stack
+import javax.imageio.ImageIO
+import kotlin.math.min
 
-import org.mozilla.javascript.typedarrays.NativeUint8ClampedArray;
-import org.w3c.dom.html.HTMLElement;
+class HTMLCanvasElementImpl : HTMLAbstractUIElement("CANVAS"), HTMLElement {
+    private val canvasContext = CanvasContext()
+    var width: Int = 0
+        private set
+    var height: Int = 0
+        private set
+    private var image: BufferedImage? = null
+    private var offsetX = 0
+    private var offsetY = 0
 
-import java.awt.AlphaComposite;
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.LinearGradientPaint;
-import java.awt.Paint;
-import java.awt.RenderingHints;
-import java.awt.Shape;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Stack;
-
-import javax.imageio.ImageIO;
-
-import io.github.remmerw.thor.cobra.html.js.NotGetterSetter;
-import io.github.remmerw.thor.cobra.js.HideFromJS;
-import io.github.remmerw.thor.cobra.util.gui.ColorFactory;
-
-public class HTMLCanvasElementImpl extends HTMLAbstractUIElement implements HTMLElement {
-
-    private static final Color gridColor = new Color(30, 30, 30, 30);
-    private static final int GRID_SIZE = 10;
-    final private CanvasContext canvasContext = new CanvasContext();
-    private int computedWidth = 0;
-    private int computedHeight = 0;
-    private BufferedImage image = null;
-    private int offsetX = 0;
-    private int offsetY = 0;
-
-    public HTMLCanvasElementImpl() {
-        super("CANVAS");
-
+    init {
         // The default width and height are defined by the spec to 300 x 150
-        setBounds(0, 0, 300, 150);
+        setBounds(0, 0, 300, 150)
     }
 
-    private static int packBytes2Int(final byte a, final byte b, final byte c, final byte d) {
-        return (a << 24) | ((b & 0xff) << 16) | ((c & 0xff) << 8) | (d & 0xff);
-    }
-
-    private static Color parseColor(final String color) {
-        return ColorFactory.getInstance().getColor(color);
-    }
-
-    public String toDataURL() {
-        return toDataURL("image/png", 1);
-    }
-
-    public String toDataURL(final String type, final double encoderOptions) {
-        String format = "png";
-        if ("image/png".equals(type)) {
-            format = "png";
-        } else if ("image/gif".equals(type)) {
-            format = "gif";
-        } else if ("image/jpeg".equals(type)) {
-            format = "jpg";
+    @JvmOverloads
+    fun toDataURL(type: String = "image/png", encoderOptions: Double = 1.0): String {
+        var format = "png"
+        if ("image/png" == type) {
+            format = "png"
+        } else if ("image/gif" == type) {
+            format = "gif"
+        } else if ("image/jpeg" == type) {
+            format = "jpg"
         }
 
-        if (computedWidth == 0 || computedHeight == 0) {
-            return "data:,";
+        if (this.width == 0 || this.height == 0) {
+            return "data:,"
         }
 
         try {
-            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            ImageIO.write(image, format, outputStream);
-            final String outputStr = Base64.getEncoder().encodeToString(outputStream.toByteArray());
-            return "data:" + type + ";base64," + outputStr;
-        } catch (final IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Unexpected exception while encoding canvas to data-url");
+            val outputStream = ByteArrayOutputStream()
+            ImageIO.write(image, format, outputStream)
+            val outputStr = Base64.getEncoder().encodeToString(outputStream.toByteArray())
+            return "data:" + type + ";base64," + outputStr
+        } catch (e: IOException) {
+            e.printStackTrace()
+            throw RuntimeException("Unexpected exception while encoding canvas to data-url")
         }
     }
 
-    public int getHeight() {
-        return computedHeight;
+    fun setHeight(height: Double) {
+        this.height = (height.toInt())
+        this.setAttribute("height", "" + this.height)
+        refreshImageDimension()
     }
 
-    public void setHeight(final double height) {
-        computedHeight = ((int) height);
-        this.setAttribute("height", "" + computedHeight);
-        refreshImageDimension();
-    }
-
-    public int getWidth() {
-        return computedWidth;
-    }
-
-    public void setWidth(final double width) {
-        computedWidth = ((int) width);
-        this.setAttribute("width", "" + computedWidth);
-        refreshImageDimension();
+    fun setWidth(width: Double) {
+        this.width = (width.toInt())
+        this.setAttribute("width", "" + this.width)
+        refreshImageDimension()
     }
 
     @HideFromJS
-    public void paintComponent(final Graphics g) {
+    fun paintComponent(g: Graphics) {
         if (image != null) {
-
             // Draw a grid if debugging
             /** TODO debug
-             if (CobraParser.isDebugOn) {
-             final Graphics newG = g.create(offsetX, offsetY, computedWidth, computedHeight);
-             try {
-             drawGrid(newG);
-             } finally {
-             newG.dispose();
-             }
-             }*/
+             * if (CobraParser.isDebugOn) {
+             * final Graphics newG = g.create(offsetX, offsetY, computedWidth, computedHeight);
+             * try {
+             * drawGrid(newG);
+             * } finally {
+             * newG.dispose();
+             * }
+             * } */
 
-            g.drawImage(image, offsetX, offsetY, null);
+            g.drawImage(image, offsetX, offsetY, null)
         }
     }
 
     @HideFromJS
-    public void setBounds(final int x, final int y, final int width, final int height) {
-        offsetX = x;
-        offsetY = y;
+    fun setBounds(x: Int, y: Int, width: Int, height: Int) {
+        offsetX = x
+        offsetY = y
 
-        computedWidth = width;
-        computedHeight = height;
-        refreshImageDimension();
+        this.width = width
+        this.height = height
+        refreshImageDimension()
     }
 
-    private void refreshImageDimension() {
+    private fun refreshImageDimension() {
         if (image == null) {
-            createNewImage(computedWidth, computedHeight);
-        } else if (image.getWidth(null) != computedWidth || image.getHeight(null) != computedHeight) {
-            createNewImage(computedWidth, computedHeight);
+            createNewImage(this.width, this.height)
+        } else if (image!!.getWidth(null) != this.width || image!!.getHeight(null) != this.height) {
+            createNewImage(this.width, this.height)
         }
     }
 
-    private void createNewImage(final int width, final int height) {
+    private fun createNewImage(width: Int, height: Int) {
         if (width != 0 && height != 0) {
-            image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-            canvasContext.invalidate();
+            image = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
+            canvasContext.invalidate()
         } else {
             // TODO: Need to handle the case when width or height is zero. Buffered image doesn't accept zero width / height.
         }
     }
 
-    private void repaint() {
-        getUINode().repaint(HTMLCanvasElementImpl.this);
+    private fun repaint() {
+        getUINode().repaint(this@HTMLCanvasElementImpl)
     }
 
-    private void drawGrid(final Graphics g) {
-        final Graphics2D g2 = (Graphics2D) g;
-        final int height = image.getHeight(null);
-        final int width = image.getWidth(null);
+    private fun drawGrid(g: Graphics?) {
+        val g2 = g as Graphics2D
+        val height = image!!.getHeight(null)
+        val width = image!!.getWidth(null)
 
-        g2.setColor(gridColor);
+        g2.color = gridColor
 
-        for (int i = 0; i < height; i += GRID_SIZE) {
-            g2.drawLine(0, i, width, i);
-        }
-
-        for (int i = 0; i < width; i += GRID_SIZE) {
-            g2.drawLine(i, 0, i, height);
-        }
-    }
-
-    public CanvasContext getContext(final String type) {
-        return canvasContext;
-    }
-
-    public static final class ImageData {
-
-        final private int width;
-        final private int height;
-        final private NativeUint8ClampedArray dataInternal;
-
-        public ImageData(final int width, final int height, final NativeUint8ClampedArray data) {
-            this.width = width;
-            this.height = height;
-
-            this.dataInternal = data;
-        }
-
-        public int getWidth() {
-            return width;
-        }
-
-        public int getHeight() {
-            return height;
-        }
-
-        public NativeUint8ClampedArray getData() {
-            return dataInternal;
-        }
-    }
-
-    final public class CanvasContext {
-        private final Stack<CanvasState> drawingStateStack = new Stack<>();
-        private CanvasPath2D cpath2D = new CanvasPath2D();
-        private int rule = AlphaComposite.SRC_OVER;
-        private Graphics2D cachedGraphics = null;
-        private CanvasState currDrawingState = new CanvasState();
-
-        public void fillRect(final int x, final int y, final int width, final int height) {
-            final Graphics2D g2 = getGraphics();
-            g2.setPaint(currDrawingState.paintFill);
-            g2.fillRect(x, y, width, height);
-            repaint();
-        }
-
-        public void clearRect(final int x, final int y, final int width, final int height) {
-            final Graphics2D g2 = getGraphics();
-            g2.clearRect(x, y, width, height);
-            repaint();
-        }
-
-        private AffineTransform getCurrentTransformMatrix() {
-            final Graphics2D g2 = getGraphics();
-            return g2.getTransform();
-        }
-
-        private Shape getCurrClip() {
-            final Graphics2D g2 = getGraphics();
-            return g2.getClip();
-        }
-
-        public void scale(final double x, final double y) {
-            final Graphics2D g2 = getGraphics();
-            g2.scale(x, y);
-        }
-
-        public void rotate(final double angle) {
-            final Graphics2D g2 = getGraphics();
-            g2.rotate(angle);
-        }
-
-        public void translate(final double x, final double y) {
-            final Graphics2D g2 = getGraphics();
-            g2.translate(x, y);
-        }
-
-        public void transform(final double a, final double b, final double c, final double d, final double e, final double f) {
-            final Graphics2D g2 = getGraphics();
-            final AffineTransform tx = new AffineTransform(a, b, c, d, e, f);
-            g2.transform(tx);
-        }
-
-        public void setTransform(final double a, final double b, final double c, final double d, final double e, final double f) {
-            final Graphics2D g2 = getGraphics();
-            final AffineTransform tx = new AffineTransform(a, b, c, d, e, f);
-            g2.setTransform(tx);
-        }
-
-        public void resetTransform() {
-            final Graphics2D g2 = getGraphics();
-            g2.setTransform(new AffineTransform());
-        }
-
-        public void beginPath() {
-            cpath2D = new CanvasPath2D();
-        }
-
-        public void closePath() {
-            cpath2D.closePath();
-        }
-
-        public void moveTo(final double x, final double y) {
-            cpath2D.moveToWithTransform(x, y, getCurrentTransformMatrix());
-        }
-
-        public void lineTo(final int x, final int y) {
-            cpath2D.lineToWithTransform(x, y, getCurrentTransformMatrix());
-        }
-
-        public void quadraticCurveTo(final double x1, final double y1, final double x2, final double y2) {
-            cpath2D.quadraticCurveToWithTransform(x1, y1, x2, y2, getCurrentTransformMatrix());
-        }
-
-        public void bezierCurveTo(final double x1, final double y1, final double x2, final double y2, final double x3, final double y3) {
-            cpath2D.bezierCurveToWithTransform(x1, y1, x2, y2, x3, y3, getCurrentTransformMatrix());
-        }
-
-        public void arc(final int x, final int y, final int radius, final double startAngle, final double endAngle) {
-            arc(x, y, radius, startAngle, endAngle, false);
-        }
-
-        public void arc(final int x, final int y, final int radius, final double startAngle, final double endAngle, final boolean antiClockwise) {
-            cpath2D.arcWithTransform(x, y, radius, startAngle, endAngle, antiClockwise, getCurrentTransformMatrix());
-        }
-
-        public void arcTo(final double x1, final double y1, final double x2, final double y2, final double radius) {
-            cpath2D.arcToWithTransform(x1, y1, x2, y2, radius, getCurrentTransformMatrix());
-        }
-
-        public void ellipse(final double x, final double y, final double radiusX, final double radiusY, final double rotation,
-                            final double startAngle, final double endAngle, final boolean antiClockwise) {
-            cpath2D.ellipseWithTransform(x, y, radiusX, radiusY, rotation, startAngle, endAngle, antiClockwise, getCurrentTransformMatrix());
-        }
-
-        public void ellipse(final double x, final double y, final double radiusX, final double radiusY, final double rotation,
-                            final double startAngle, final double endAngle) {
-            ellipse(x, y, radiusX, radiusY, rotation, startAngle, endAngle, false);
-        }
-
-        public void rect(final double x, final double y, final double width, final double height) {
-            cpath2D.rectWithTransform(x, y, width, height, getCurrentTransformMatrix());
-        }
-
-        public void strokeRect(final double x, final double y, final double w, final double h) {
-            final Graphics2D g2 = getGraphics();
-            g2.setPaint(currDrawingState.paintStroke);
-            g2.draw(new Rectangle2D.Double(x, y, w, h));
-        }
-
-        public void stroke() {
-            final Graphics2D g2 = getGraphics();
-            final AffineTransform currAFT = g2.getTransform();
-            resetTransform();
-            stroke(cpath2D);
-            g2.setTransform(currAFT);
-        }
-
-        public void stroke(final CanvasPath2D cpath2D) {
-            final Graphics2D g2 = getGraphics();
-            g2.setPaint(currDrawingState.paintStroke);
-            g2.draw(cpath2D.path2D);
-            repaint();
-        }
-
-        public void fill() {
-            final Graphics2D g2 = getGraphics();
-            final AffineTransform currAFT = g2.getTransform();
-            resetTransform();
-            fill(cpath2D);
-            g2.setTransform(currAFT);
-        }
-
-        public void fill(final CanvasPath2D cpath2D) {
-            final Graphics2D g2 = getGraphics();
-            g2.setPaint(currDrawingState.paintFill);
-            g2.fill(cpath2D.path2D);
-            repaint();
-        }
-
-        public void clip() {
-            clip(cpath2D);
-        }
-
-        public void clip(final CanvasPath2D cpath2D) {
-            final Graphics2D g2 = getGraphics();
-            g2.clip(cpath2D.path2D);
-        }
-
-        public void resetClip() {
-            final Graphics2D g2 = getGraphics();
-            g2.setClip(null);
-        }
-
-        private String toHex(final int r, final int g, final int b) {
-            return "#" + toBrowserHexValue(r) + toBrowserHexValue(g) + toBrowserHexValue(b);
-        }
-
-        private String toBrowserHexValue(final int number) {
-            final StringBuilder builder = new StringBuilder(Integer.toHexString(number & 0xff));
-            while (builder.length() < 2) {
-                builder.append("0");
-            }
-            return builder.toString().toLowerCase();
-        }
-
-        public Object getFillStyle() {
-            return formatStyle(currDrawingState.paintFill);
-        }
-
-        // TODO: Check if polymorphism can be handled in JavaObjectWrapper
-        public void setFillStyle(final Object style) {
-            if (style instanceof String) {
-                currDrawingState.paintFill = parseColor((String) style);
-            } else if (style instanceof CanvasGradient) {
-                currDrawingState.paintFill = ((CanvasGradient) style).toPaint();
-            } else {
-                throw new UnsupportedOperationException("Fill style not recognized");
+        run {
+            var i = 0
+            while (i < height) {
+                g2.drawLine(0, i, width, i)
+                i += GRID_SIZE
             }
         }
 
-        private Object formatStyle(final Paint paint) {
-            if (paint instanceof Color color) {
-                if (color.getAlpha() == 1) {
-                    return toHex(color.getRed(), color.getGreen(), color.getBlue());
+        var i = 0
+        while (i < width) {
+            g2.drawLine(i, 0, i, height)
+            i += GRID_SIZE
+        }
+    }
+
+    fun getContext(type: String?): CanvasContext {
+        return canvasContext
+    }
+
+    class ImageData(val width: Int, val height: Int, val data: NativeUint8ClampedArray?)
+
+    inner class CanvasContext {
+        private val drawingStateStack: Stack<CanvasState> = Stack<CanvasState>()
+        private var cpath2D = CanvasPath2D()
+        private var rule = AlphaComposite.SRC_OVER
+        private var cachedGraphics: Graphics2D? = null
+        private var currDrawingState = CanvasState()
+
+        fun fillRect(x: Int, y: Int, width: Int, height: Int) {
+            val g2 = this.graphics
+            g2.paint = currDrawingState.paintFill
+            g2.fillRect(x, y, width, height)
+            repaint()
+        }
+
+        fun clearRect(x: Int, y: Int, width: Int, height: Int) {
+            val g2 = this.graphics
+            g2.clearRect(x, y, width, height)
+            repaint()
+        }
+
+        private val currentTransformMatrix: AffineTransform?
+            get() {
+                val g2 = this.graphics
+                return g2.transform
+            }
+
+        private val currClip: Shape?
+            get() {
+                val g2 = this.graphics
+                return g2.clip
+            }
+
+        fun scale(x: Double, y: Double) {
+            val g2 = this.graphics
+            g2.scale(x, y)
+        }
+
+        fun rotate(angle: Double) {
+            val g2 = this.graphics
+            g2.rotate(angle)
+        }
+
+        fun translate(x: Double, y: Double) {
+            val g2 = this.graphics
+            g2.translate(x, y)
+        }
+
+        fun transform(a: Double, b: Double, c: Double, d: Double, e: Double, f: Double) {
+            val g2 = this.graphics
+            val tx = AffineTransform(a, b, c, d, e, f)
+            g2.transform(tx)
+        }
+
+        fun setTransform(a: Double, b: Double, c: Double, d: Double, e: Double, f: Double) {
+            val g2 = this.graphics
+            val tx = AffineTransform(a, b, c, d, e, f)
+            g2.transform = tx
+        }
+
+        fun resetTransform() {
+            val g2 = this.graphics
+            g2.transform = AffineTransform()
+        }
+
+        fun beginPath() {
+            cpath2D = CanvasPath2D()
+        }
+
+        fun closePath() {
+            cpath2D.closePath()
+        }
+
+        fun moveTo(x: Double, y: Double) {
+            cpath2D.moveToWithTransform(x, y, this.currentTransformMatrix)
+        }
+
+        fun lineTo(x: Int, y: Int) {
+            cpath2D.lineToWithTransform(x.toDouble(), y.toDouble(), this.currentTransformMatrix)
+        }
+
+        fun quadraticCurveTo(x1: Double, y1: Double, x2: Double, y2: Double) {
+            cpath2D.quadraticCurveToWithTransform(x1, y1, x2, y2, this.currentTransformMatrix)
+        }
+
+        fun bezierCurveTo(x1: Double, y1: Double, x2: Double, y2: Double, x3: Double, y3: Double) {
+            cpath2D.bezierCurveToWithTransform(x1, y1, x2, y2, x3, y3, this.currentTransformMatrix)
+        }
+
+        @JvmOverloads
+        fun arc(
+            x: Int,
+            y: Int,
+            radius: Int,
+            startAngle: Double,
+            endAngle: Double,
+            antiClockwise: Boolean = false
+        ) {
+            cpath2D.arcWithTransform(
+                x.toDouble(), y.toDouble(), radius.toDouble(), startAngle, endAngle, antiClockwise,
+                this.currentTransformMatrix
+            )
+        }
+
+        fun arcTo(x1: Double, y1: Double, x2: Double, y2: Double, radius: Double) {
+            cpath2D.arcToWithTransform(x1, y1, x2, y2, radius, this.currentTransformMatrix)
+        }
+
+        @JvmOverloads
+        fun ellipse(
+            x: Double, y: Double, radiusX: Double, radiusY: Double, rotation: Double,
+            startAngle: Double, endAngle: Double, antiClockwise: Boolean = false
+        ) {
+            cpath2D.ellipseWithTransform(
+                x, y, radiusX, radiusY, rotation, startAngle, endAngle, antiClockwise,
+                this.currentTransformMatrix
+            )
+        }
+
+        fun rect(x: Double, y: Double, width: Double, height: Double) {
+            cpath2D.rectWithTransform(x, y, width, height, this.currentTransformMatrix)
+        }
+
+        fun strokeRect(x: Double, y: Double, w: Double, h: Double) {
+            val g2 = this.graphics
+            g2.paint = currDrawingState.paintStroke
+            g2.draw(Rectangle2D.Double(x, y, w, h))
+        }
+
+        fun stroke() {
+            val g2 = this.graphics
+            val currAFT = g2.transform
+            resetTransform()
+            stroke(cpath2D)
+            g2.transform = currAFT
+        }
+
+        fun stroke(cpath2D: CanvasPath2D) {
+            val g2 = this.graphics
+            g2.paint = currDrawingState.paintStroke
+            g2.draw(cpath2D.path2D)
+            repaint()
+        }
+
+        fun fill() {
+            val g2 = this.graphics
+            val currAFT = g2.transform
+            resetTransform()
+            fill(cpath2D)
+            g2.transform = currAFT
+        }
+
+        fun fill(cpath2D: CanvasPath2D) {
+            val g2 = this.graphics
+            g2.paint = currDrawingState.paintFill
+            g2.fill(cpath2D.path2D)
+            repaint()
+        }
+
+        @JvmOverloads
+        fun clip(cpath2D: CanvasPath2D = this.cpath2D) {
+            val g2 = this.graphics
+            g2.clip(cpath2D.path2D)
+        }
+
+        fun resetClip() {
+            val g2 = this.graphics
+            g2.clip = null
+        }
+
+        private fun toHex(r: Int, g: Int, b: Int): String {
+            return "#" + toBrowserHexValue(r) + toBrowserHexValue(g) + toBrowserHexValue(b)
+        }
+
+        private fun toBrowserHexValue(number: Int): String {
+            val builder = StringBuilder(Integer.toHexString(number and 0xff))
+            while (builder.length < 2) {
+                builder.append("0")
+            }
+            return builder.toString().lowercase(Locale.getDefault())
+        }
+
+        var fillStyle: Any?
+            get() = formatStyle(currDrawingState.paintFill)
+            // TODO: Check if polymorphism can be handled in JavaObjectWrapper
+            set(style) {
+                if (style is String) {
+                    currDrawingState.paintFill =
+                        parseColor(style)
+                } else if (style is CanvasGradient) {
+                    currDrawingState.paintFill = style.toPaint()
                 } else {
-                    System.out.println("Alpha: " + color.getAlpha());
-                    return "rgba(" + color.getRed() + ", " + color.getGreen() + ", " + color.getBlue() + ", " + (color.getAlpha() / 255.0) + ")";
+                    throw UnsupportedOperationException("Fill style not recognized")
+                }
+            }
+
+        private fun formatStyle(paint: Paint?): Any? {
+            if (paint is Color) {
+                if (paint.alpha == 1) {
+                    return toHex(paint.red, paint.green, paint.blue)
+                } else {
+                    println("Alpha: " + paint.alpha)
+                    return "rgba(" + paint.red + ", " + paint.green + ", " + paint.blue + ", " + (paint.alpha / 255.0) + ")"
                 }
             }
             // TODO: Handle canvas pattern and canvas gradient
-            return null;
+            return null
         }
 
-        public Object getStrokeStyle() {
-            return formatStyle(currDrawingState.paintStroke);
-        }
-
-        // TODO: Check if polymorphism can be handled in JavaObjectWrapper
-        public void setStrokeStyle(final Object style) {
-            if (style instanceof String) {
-                currDrawingState.paintStroke = parseColor((String) style);
-            } else if (style instanceof CanvasGradient) {
-                currDrawingState.paintStroke = ((CanvasGradient) style).toPaint();
-            } else {
-                throw new UnsupportedOperationException("Stroke style not recognized");
-            }
-        }
-
-        public float getGlobalAlpha() {
-            return currDrawingState.globalAlpha;
-        }
-
-        public void setGlobalAlpha(final double alpha) {
-            final Graphics2D g2 = getGraphics();
-            currDrawingState.globalAlpha = (float) alpha;
-            final AlphaComposite a = AlphaComposite.getInstance(rule, currDrawingState.globalAlpha);
-            g2.setComposite(a);
-        }
-
-        public String getGlobalCompositeOperation() {
-            return currDrawingState.globalCompositeOperation;
-        }
-
-        public void setGlobalCompositeOperation(final String composition) {
-            final Graphics2D g2 = getGraphics();
-            currDrawingState.globalCompositeOperation = composition;
-
-            if ("source-atop".equals(currDrawingState.globalCompositeOperation)) {
-                rule = AlphaComposite.SRC_ATOP;
-            } else if ("source-in".equals(currDrawingState.globalCompositeOperation)) {
-                rule = AlphaComposite.SRC_IN;
-            } else if ("source-out".equals(currDrawingState.globalCompositeOperation)) {
-                rule = AlphaComposite.SRC_OUT;
-            } else if ("source-over".equals(currDrawingState.globalCompositeOperation)) {
-                rule = AlphaComposite.SRC_OVER;
-            } else if ("destination-atop".equals(currDrawingState.globalCompositeOperation)) {
-                rule = AlphaComposite.DST_ATOP;
-            } else if ("destination-in".equals(currDrawingState.globalCompositeOperation)) {
-                rule = AlphaComposite.DST_IN;
-            } else if ("destination-out".equals(currDrawingState.globalCompositeOperation)) {
-                rule = AlphaComposite.DST_OUT;
-            } else if ("destination-over".equals(currDrawingState.globalCompositeOperation)) {
-                rule = AlphaComposite.DST_OVER;
-            } else if ("xor".equals(currDrawingState.globalCompositeOperation)) {
-                rule = AlphaComposite.XOR;
-            } else if ("clear".equals(currDrawingState.globalCompositeOperation)) {
-                rule = AlphaComposite.CLEAR;
-            }
-
-            final AlphaComposite a = AlphaComposite.getInstance(rule, currDrawingState.globalAlpha);
-            g2.setComposite(a);
-        }
-
-        public double getLineWidth() {
-            return currDrawingState.lineWidth;
-        }
-
-        public void setLineWidth(final double width) {
-            currDrawingState.lineWidth = (float) width;
-            setStroke();
-        }
-
-        public String getLineCap() {
-            if (currDrawingState.lineCap == BasicStroke.CAP_BUTT) {
-                return "butt";
-            } else if (currDrawingState.lineCap == BasicStroke.CAP_ROUND) {
-                return "round";
-            } else if (currDrawingState.lineCap == BasicStroke.CAP_SQUARE) {
-                return "square";
-            }
-            return null;
-        }
-
-        public void setLineCap(final String cap) {
-            if ("butt".equals(cap)) {
-                currDrawingState.lineCap = BasicStroke.CAP_BUTT;
-            } else if ("round".equals(cap)) {
-                currDrawingState.lineCap = BasicStroke.CAP_ROUND;
-            } else if ("square".equals(cap)) {
-                currDrawingState.lineCap = BasicStroke.CAP_SQUARE;
-            }
-
-            setStroke();
-        }
-
-        public String getLineJoin() {
-            if (currDrawingState.lineJoin == BasicStroke.JOIN_MITER) {
-                return "miter";
-            } else if (currDrawingState.lineCap == BasicStroke.JOIN_BEVEL) {
-                return "bevel";
-            } else if (currDrawingState.lineCap == BasicStroke.JOIN_ROUND) {
-                return "round";
-            }
-            return null;
-        }
-
-        public void setLineJoin(final String join) {
-            if ("round".equals(join)) {
-                currDrawingState.lineJoin = BasicStroke.JOIN_ROUND;
-            } else if ("bevel".equals(join)) {
-                currDrawingState.lineJoin = BasicStroke.JOIN_BEVEL;
-            } else if ("miter".equals(join)) {
-                currDrawingState.lineJoin = BasicStroke.JOIN_MITER;
-            }
-            setStroke();
-        }
-
-        public float getMiterLimit() {
-            return currDrawingState.miterLimit;
-        }
-
-        public void setMiterLimit(final double miterLimit) {
-            currDrawingState.miterLimit = (float) miterLimit;
-            setStroke();
-        }
-
-        @NotGetterSetter
-        public double[] getLineDash() {
-            final double[] lineDash1 = new double[currDrawingState.lineDash.length];
-            for (int i = 0; i < currDrawingState.lineDash.length; i++) {
-                lineDash1[i] = currDrawingState.lineDash[i];
-            }
-            return lineDash1;
-        }
-
-        @NotGetterSetter
-        public void setLineDash(final double[] segments) {
-            currDrawingState.lineDash = new float[segments.length];
-            for (int i = 0; i < segments.length; i++) {
-                currDrawingState.lineDash[i] = (float) segments[i];
-            }
-            setStroke();
-        }
-
-        public double getLineDashOffset() {
-            return currDrawingState.lineDashOffset;
-        }
-
-        public void setLineDashOffset(final double lineDashOffset) {
-            currDrawingState.lineDashOffset = (float) lineDashOffset;
-            setStroke();
-        }
-
-        private void setStroke() {
-            final Graphics2D g2 = getGraphics();
-            g2.setStroke(new BasicStroke(currDrawingState.lineWidth, currDrawingState.lineCap, currDrawingState.lineJoin,
-                    currDrawingState.miterLimit, currDrawingState.lineDash, currDrawingState.lineDashOffset));
-        }
-
-        public ImageData createImageData(final int width, final int height) {
-            final NativeUint8ClampedArray data = new NativeUint8ClampedArray(width * height * 4);
-            return new ImageData(width, height, data);
-        }
-
-        public ImageData createImageData(final ImageData imgdata) {
-            final int width = imgdata.getWidth();
-            final int height = imgdata.getHeight();
-            final NativeUint8ClampedArray data = new NativeUint8ClampedArray(width * height * 4);
-            return new ImageData(width, height, data);
-        }
-
-        public ImageData getImageData(final int x, final int y, final int width, final int height) {
-            final int[] argbArray = new int[width * height];
-            image.getRGB(x, y, width, height, argbArray, 0, width);
-            final NativeUint8ClampedArray clampedBuffer = new NativeUint8ClampedArray(width * height * 4);
-            final byte[] clampedByteBuffer = clampedBuffer.getBuffer().getBuffer();
-            for (int i = 0, j = 0; i < argbArray.length; i++, j += 4) {
-                final int argb = argbArray[i];
-                clampedByteBuffer[j] = (byte) ((argb >> 16) & 0xff);
-                clampedByteBuffer[j + 1] = (byte) ((argb >> 8) & 0xff);
-                clampedByteBuffer[j + 2] = (byte) ((argb) & 0xff);
-                clampedByteBuffer[j + 3] = (byte) ((argb >> 24) & 0xff);
-            }
-            return new ImageData(width, height, clampedBuffer);
-        }
-
-        public void putImageData(final ImageData imgData, final int x, final int y) {
-            putImageData(imgData, x, y, imgData.width, imgData.height);
-        }
-
-        public void putImageData(final ImageData imgData, final int x, final int y, final int width, final int height) {
-            System.out.println("putImageData(imgData, x, y, width, height)" + java.util.Arrays.toString(new Object[]{x, y, width, height}));
-            if (x >= 0 && y >= 0) {
-                final byte[] dataBytes = imgData.getData().getBuffer().getBuffer();
-                final int[] argbArray = new int[imgData.width * imgData.height];
-                for (int i = 0, j = 0; i < argbArray.length; i++, j += 4) {
-                    argbArray[i] = packBytes2Int(
-                            dataBytes[j + 3], dataBytes[j],
-                            dataBytes[j + 1], dataBytes[j + 2]);
+        var strokeStyle: Any?
+            get() = formatStyle(currDrawingState.paintStroke)
+            // TODO: Check if polymorphism can be handled in JavaObjectWrapper
+            set(style) {
+                if (style is String) {
+                    currDrawingState.paintStroke =
+                        parseColor(style)
+                } else if (style is CanvasGradient) {
+                    currDrawingState.paintStroke = style.toPaint()
+                } else {
+                    throw UnsupportedOperationException("Stroke style not recognized")
                 }
-                image.setRGB(x, y, Math.min(width, imgData.width), Math.min(height, imgData.height), argbArray, 0, imgData.width);
-                repaint();
+            }
+
+        val globalAlpha: Float
+            get() = currDrawingState.globalAlpha
+
+        fun setGlobalAlpha(alpha: Double) {
+            val g2 = this.graphics
+            currDrawingState.globalAlpha = alpha.toFloat()
+            val a = AlphaComposite.getInstance(rule, currDrawingState.globalAlpha)
+            g2.composite = a
+        }
+
+        var globalCompositeOperation: String?
+            get() = currDrawingState.globalCompositeOperation
+            set(composition) {
+                val g2 = this.graphics
+                currDrawingState.globalCompositeOperation = composition
+
+                if ("source-atop" == currDrawingState.globalCompositeOperation) {
+                    rule = AlphaComposite.SRC_ATOP
+                } else if ("source-in" == currDrawingState.globalCompositeOperation) {
+                    rule = AlphaComposite.SRC_IN
+                } else if ("source-out" == currDrawingState.globalCompositeOperation) {
+                    rule = AlphaComposite.SRC_OUT
+                } else if ("source-over" == currDrawingState.globalCompositeOperation) {
+                    rule = AlphaComposite.SRC_OVER
+                } else if ("destination-atop" == currDrawingState.globalCompositeOperation) {
+                    rule = AlphaComposite.DST_ATOP
+                } else if ("destination-in" == currDrawingState.globalCompositeOperation) {
+                    rule = AlphaComposite.DST_IN
+                } else if ("destination-out" == currDrawingState.globalCompositeOperation) {
+                    rule = AlphaComposite.DST_OUT
+                } else if ("destination-over" == currDrawingState.globalCompositeOperation) {
+                    rule = AlphaComposite.DST_OVER
+                } else if ("xor" == currDrawingState.globalCompositeOperation) {
+                    rule = AlphaComposite.XOR
+                } else if ("clear" == currDrawingState.globalCompositeOperation) {
+                    rule = AlphaComposite.CLEAR
+                }
+
+                val a =
+                    AlphaComposite.getInstance(rule, currDrawingState.globalAlpha)
+                g2.setComposite(a)
+            }
+
+        var lineWidth: Double
+            get() = currDrawingState.lineWidth.toDouble()
+            set(width) {
+                currDrawingState.lineWidth = width.toFloat()
+                setStroke()
+            }
+
+        var lineCap: String?
+            get() {
+                if (currDrawingState.lineCap == BasicStroke.CAP_BUTT) {
+                    return "butt"
+                } else if (currDrawingState.lineCap == BasicStroke.CAP_ROUND) {
+                    return "round"
+                } else if (currDrawingState.lineCap == BasicStroke.CAP_SQUARE) {
+                    return "square"
+                }
+                return null
+            }
+            set(cap) {
+                if ("butt" == cap) {
+                    currDrawingState.lineCap = BasicStroke.CAP_BUTT
+                } else if ("round" == cap) {
+                    currDrawingState.lineCap = BasicStroke.CAP_ROUND
+                } else if ("square" == cap) {
+                    currDrawingState.lineCap = BasicStroke.CAP_SQUARE
+                }
+
+                setStroke()
+            }
+
+        var lineJoin: String?
+            get() {
+                if (currDrawingState.lineJoin == BasicStroke.JOIN_MITER) {
+                    return "miter"
+                } else if (currDrawingState.lineCap == BasicStroke.JOIN_BEVEL) {
+                    return "bevel"
+                } else if (currDrawingState.lineCap == BasicStroke.JOIN_ROUND) {
+                    return "round"
+                }
+                return null
+            }
+            set(join) {
+                if ("round" == join) {
+                    currDrawingState.lineJoin = BasicStroke.JOIN_ROUND
+                } else if ("bevel" == join) {
+                    currDrawingState.lineJoin = BasicStroke.JOIN_BEVEL
+                } else if ("miter" == join) {
+                    currDrawingState.lineJoin = BasicStroke.JOIN_MITER
+                }
+                setStroke()
+            }
+
+        val miterLimit: Float
+            get() = currDrawingState.miterLimit
+
+        fun setMiterLimit(miterLimit: Double) {
+            currDrawingState.miterLimit = miterLimit.toFloat()
+            setStroke()
+        }
+
+        @get:NotGetterSetter
+        @set:NotGetterSetter
+        var lineDash: DoubleArray
+            get() {
+                val lineDash1 =
+                    DoubleArray(currDrawingState.lineDash!!.size)
+                for (i in currDrawingState.lineDash!!.indices) {
+                    lineDash1[i] = currDrawingState.lineDash!![i].toDouble()
+                }
+                return lineDash1
+            }
+            set(segments) {
+                currDrawingState.lineDash = FloatArray(segments.size)
+                for (i in segments.indices) {
+                    currDrawingState.lineDash!![i] = segments[i].toFloat()
+                }
+                setStroke()
+            }
+
+        var lineDashOffset: Double
+            get() = currDrawingState.lineDashOffset.toDouble()
+            set(lineDashOffset) {
+                currDrawingState.lineDashOffset = lineDashOffset.toFloat()
+                setStroke()
+            }
+
+        private fun setStroke() {
+            val g2 = this.graphics
+            g2.stroke = BasicStroke(
+                currDrawingState.lineWidth,
+                currDrawingState.lineCap,
+                currDrawingState.lineJoin,
+                currDrawingState.miterLimit,
+                currDrawingState.lineDash,
+                currDrawingState.lineDashOffset
+            )
+        }
+
+        fun createImageData(width: Int, height: Int): ImageData {
+            val data = NativeUint8ClampedArray(width * height * 4)
+            return ImageData(width, height, data)
+        }
+
+        fun createImageData(imgdata: ImageData): ImageData {
+            val width = imgdata.width
+            val height = imgdata.height
+            val data = NativeUint8ClampedArray(width * height * 4)
+            return ImageData(width, height, data)
+        }
+
+        fun getImageData(x: Int, y: Int, width: Int, height: Int): ImageData {
+            val argbArray = IntArray(width * height)
+            image!!.getRGB(x, y, width, height, argbArray, 0, width)
+            val clampedBuffer = NativeUint8ClampedArray(width * height * 4)
+            val clampedByteBuffer = clampedBuffer.buffer.getBuffer()
+            var i = 0
+            var j = 0
+            while (i < argbArray.size) {
+                val argb = argbArray[i]
+                clampedByteBuffer[j] = ((argb shr 16) and 0xff).toByte()
+                clampedByteBuffer[j + 1] = ((argb shr 8) and 0xff).toByte()
+                clampedByteBuffer[j + 2] = ((argb) and 0xff).toByte()
+                clampedByteBuffer[j + 3] = ((argb shr 24) and 0xff).toByte()
+                i++
+                j += 4
+            }
+            return ImageData(width, height, clampedBuffer)
+        }
+
+        @JvmOverloads
+        fun putImageData(
+            imgData: ImageData,
+            x: Int,
+            y: Int,
+            width: Int = imgData.width,
+            height: Int = imgData.height
+        ) {
+            println(
+                "putImageData(imgData, x, y, width, height)" + arrayOf<Any>(
+                    x,
+                    y,
+                    width,
+                    height
+                ).contentToString()
+            )
+            if (x >= 0 && y >= 0) {
+                val dataBytes = imgData.data!!.buffer.getBuffer()
+                val argbArray = IntArray(imgData.width * imgData.height)
+                var i = 0
+                var j = 0
+                while (i < argbArray.size) {
+                    argbArray[i] = packBytes2Int(
+                        dataBytes[j + 3], dataBytes[j],
+                        dataBytes[j + 1], dataBytes[j + 2]
+                    )
+                    i++
+                    j += 4
+                }
+                image!!.setRGB(
+                    x,
+                    y,
+                    min(width, imgData.width),
+                    min(height, imgData.height),
+                    argbArray,
+                    0,
+                    imgData.width
+                )
+                repaint()
             }
         }
 
         @HideFromJS
-        public synchronized void invalidate() {
-            cachedGraphics = null;
+        @Synchronized
+        fun invalidate() {
+            cachedGraphics = null
         }
 
-        private synchronized Graphics2D getGraphics() {
-            if (cachedGraphics == null) {
-                cachedGraphics = (Graphics2D) image.getGraphics();
-                cachedGraphics.setBackground(new Color(0, 0, 0, 0));
-                cachedGraphics.setPaint(Color.BLACK);
-                cachedGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        @get:Synchronized
+        private val graphics: Graphics2D
+            get() {
+                if (cachedGraphics == null) {
+                    cachedGraphics = image!!.graphics as Graphics2D?
+                    cachedGraphics!!.background = Color(0, 0, 0, 0)
+                    cachedGraphics!!.paint = Color.BLACK
+                    cachedGraphics!!.setRenderingHint(
+                        RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON
+                    )
+                }
+                return cachedGraphics!!
             }
-            return cachedGraphics;
+
+        fun createLinearGradient(x0: Float, y0: Float, x1: Float, y1: Float): CanvasGradient {
+            val linearGradient = LinearCanvasGradient(x0, y0, x1, y1)
+            return linearGradient
         }
 
-        public CanvasGradient createLinearGradient(final float x0, final float y0, final float x1, final float y1) {
-            final LinearCanvasGradient linearGradient = new LinearCanvasGradient(x0, y0, x1, y1);
-            return linearGradient;
-        }
-
-        public void save() {
+        fun save() {
             try {
-                final CanvasState cloneDrawingState = (CanvasState) currDrawingState.clone();
-                cloneDrawingState.currTransformMatrix = this.getCurrentTransformMatrix();
-                cloneDrawingState.currClippingRegion = this.getCurrClip();
-                drawingStateStack.push(cloneDrawingState);
-            } catch (final CloneNotSupportedException e) {
-                e.printStackTrace();
-                throw new IllegalStateException(e);
+                val cloneDrawingState: CanvasState = currDrawingState.clone() as CanvasState
+                cloneDrawingState.currTransformMatrix = this.currentTransformMatrix
+                cloneDrawingState.currClippingRegion = this.currClip
+                drawingStateStack.push(cloneDrawingState)
+            } catch (e: CloneNotSupportedException) {
+                e.printStackTrace()
+                throw IllegalStateException(e)
             }
         }
 
-        public void restore() {
+        fun restore() {
             if (drawingStateStack.empty()) {
                 // Do nothing
             } else {
-                currDrawingState = drawingStateStack.pop();
-                this.setGlobalAlpha(currDrawingState.globalAlpha);
-                this.setGlobalCompositeOperation(currDrawingState.globalCompositeOperation);
-                this.setStroke();
-                getGraphics().setTransform(currDrawingState.currTransformMatrix);
-                getGraphics().setClip(currDrawingState.currClippingRegion);
+                currDrawingState = drawingStateStack.pop()
+                this.setGlobalAlpha(currDrawingState.globalAlpha.toDouble())
+                this.globalCompositeOperation = currDrawingState.globalCompositeOperation
+                this.setStroke()
+                this.graphics.transform = currDrawingState.currTransformMatrix
+                this.graphics.clip = currDrawingState.currClippingRegion
             }
         }
 
-        public void fillText(final String s, final double x, final double y) {
-            final char[] chars = s.toCharArray();
-            final Graphics2D g2 = getGraphics();
-            g2.setPaint(currDrawingState.paintFill);
-            g2.drawChars(chars, 0, chars.length, (int) x, (int) y);
+        fun fillText(s: String, x: Double, y: Double) {
+            val chars = s.toCharArray()
+            val g2 = this.graphics
+            g2.paint = currDrawingState.paintFill
+            g2.drawChars(chars, 0, chars.size, x.toInt(), y.toInt())
         }
 
-        private class CanvasState implements Cloneable {
-            private AffineTransform currTransformMatrix;
-            private Shape currClippingRegion;
-            private Paint paintFill = Color.BLACK;
-            private Paint paintStroke = Color.BLACK;
-            private float lineWidth = 1;
-            private int lineCap = BasicStroke.CAP_BUTT;
-            private int lineJoin = BasicStroke.JOIN_MITER;
-            private float miterLimit = 10;
-            private float[] lineDash = null;
-            private float lineDashOffset = 0;
-            private float globalAlpha = 1;
-            private String globalCompositeOperation = "source-over";
+        private inner class CanvasState : Cloneable {
+            private var currTransformMatrix: AffineTransform? = null
+            private var currClippingRegion: Shape? = null
+            private var paintFill: Paint? = Color.BLACK
+            private var paintStroke: Paint? = Color.BLACK
+            private var lineWidth = 1f
+            private var lineCap = BasicStroke.CAP_BUTT
+            private var lineJoin = BasicStroke.JOIN_MITER
+            private var miterLimit = 10f
+            private var lineDash: FloatArray? = null
+            private var lineDashOffset = 0f
+            private var globalAlpha = 1f
+            private var globalCompositeOperation: String? = "source-over"
 
-            CanvasState() {
-                currTransformMatrix = null;
-                currClippingRegion = null;
-            }
-
-            public Object clone() throws CloneNotSupportedException {
-                return super.clone();
+            @Throws(CloneNotSupportedException::class)
+            override fun clone(): Any {
+                return super.clone()
             }
         }
     }
 
-    public abstract class CanvasGradient {
+    abstract inner class CanvasGradient {
+        protected val offsets: ArrayList<Float?> = ArrayList<Float?>()
+        protected val colors: ArrayList<Color?> = ArrayList<Color?>()
 
-        final protected ArrayList<Float> offsets = new ArrayList<>();
-        final protected ArrayList<Color> colors = new ArrayList<>();
-
-        public void addColorStop(final float offset, final String color) {
-            this.offsets.add(offset);
-            this.colors.add(parseColor(color));
+        fun addColorStop(offset: Float, color: String) {
+            this.offsets.add(offset)
+            this.colors.add(parseColor(color))
         }
 
-        public abstract Paint toPaint();
+        abstract fun toPaint(): Paint?
     }
 
-    public class LinearCanvasGradient extends CanvasGradient {
-        private final float x0;
-        private final float y0;
-        private final float x1;
-        private final float y1;
-
-        LinearCanvasGradient(final float x0, final float y0, final float x1, final float y1) {
-            this.x0 = x0;
-            this.y0 = y0;
-            this.x1 = x1;
-            this.y1 = y1;
-        }
-
-        public Paint toPaint() {
-            if (colors.size() == 0) {
-                return new Color(0, 0, 0, 0);
-            } else if (colors.size() == 1) {
-                return colors.get(0);
+    inner class LinearCanvasGradient internal constructor(
+        private val x0: Float,
+        private val y0: Float,
+        private val x1: Float,
+        private val y1: Float
+    ) : CanvasGradient() {
+        override fun toPaint(): Paint? {
+            if (colors.size == 0) {
+                return Color(0, 0, 0, 0)
+            } else if (colors.size == 1) {
+                return colors.get(0)
             } else {
                 // TODO: See if this can be optimized
-                final float[] offsetsArray = new float[offsets.size()];
-                for (int i = 0; i < offsets.size(); i++) {
-                    offsetsArray[i] = offsets.get(i);
+                val offsetsArray = FloatArray(offsets.size)
+                for (i in offsets.indices) {
+                    offsetsArray[i] = offsets.get(i)!!
                 }
-                return new LinearGradientPaint(x0, y0, x1, y1, offsetsArray, colors.toArray(new Color[colors.size()]));
+                return LinearGradientPaint(
+                    x0,
+                    y0,
+                    x1,
+                    y1,
+                    offsetsArray,
+                    colors.toTypedArray<Color?>()
+                )
             }
+        }
+    }
+
+    companion object {
+        private val gridColor = Color(30, 30, 30, 30)
+        private const val GRID_SIZE = 10
+        private fun packBytes2Int(a: Byte, b: Byte, c: Byte, d: Byte): Int {
+            return (a.toInt() shl 24) or ((b.toInt() and 0xff) shl 16) or ((c.toInt() and 0xff) shl 8) or (d.toInt() and 0xff)
+        }
+
+        private fun parseColor(color: String): Color? {
+            return ColorFactory.getInstance().getColor(color)
         }
     }
 }

@@ -18,34 +18,34 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
 /**
- * An abstract implementation of {@link DocumentNotificationListener} with blank
+ * An abstract implementation of [DocumentNotificationListener] with blank
  * methods, provided for convenience.
  */
-public abstract class DocumentNotificationAdapter implements DocumentNotificationListener {
-    public void allInvalidated() {
+abstract class DocumentNotificationAdapter : DocumentNotificationListener {
+    override fun allInvalidated() {
     }
 
-    public void externalScriptLoading(final NodeImpl node) {
+    override fun externalScriptLoading(node: NodeImpl?) {
     }
 
-    public void invalidated(final NodeImpl node) {
+    override fun invalidated(node: NodeImpl?) {
     }
 
-    public void lookInvalidated(final NodeImpl node) {
+    override fun lookInvalidated(node: NodeImpl?) {
     }
 
-    public void nodeLoaded(final NodeImpl node) {
+    override fun nodeLoaded(node: NodeImpl?) {
     }
 
-    public void positionInvalidated(final NodeImpl node) {
+    override fun positionInvalidated(node: NodeImpl?) {
     }
 
-    public void sizeInvalidated(final NodeImpl node) {
+    override fun sizeInvalidated(node: NodeImpl?) {
     }
 
-    public void structureInvalidated(final NodeImpl node) {
+    override fun structureInvalidated(node: NodeImpl?) {
     }
 }

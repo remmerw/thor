@@ -21,46 +21,41 @@
 /*
  * Created on Feb 12, 2006
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.html.HTMLOListElement;
+import org.w3c.dom.html.HTMLOListElement
 
-public class HTMLOListElementImpl extends HTMLAbstractUIElement implements HTMLOListElement {
-    public HTMLOListElementImpl(final String name) {
-        super(name);
+class HTMLOListElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLOListElement {
+    override fun getCompact(): Boolean {
+        val compactText = this.getAttribute("compact")
+        return "compact".equals(compactText, ignoreCase = true)
     }
 
-    public boolean getCompact() {
-        final String compactText = this.getAttribute("compact");
-        return "compact".equalsIgnoreCase(compactText);
+    override fun setCompact(compact: Boolean) {
+        this.setAttribute("compact", if (compact) "compact" else null)
     }
 
-    public void setCompact(final boolean compact) {
-        this.setAttribute("compact", compact ? "compact" : null);
-    }
-
-    public int getStart() {
-        final String startText = this.getAttribute("start");
+    override fun getStart(): Int {
+        val startText = this.getAttribute("start")
         if (startText == null) {
-            return 1;
+            return 1
         }
         try {
-            return Integer.parseInt(startText);
-        } catch (final NumberFormatException nfe) {
-            return 1;
+            return startText.toInt()
+        } catch (nfe: NumberFormatException) {
+            return 1
         }
     }
 
-    public void setStart(final int start) {
-        this.setAttribute("start", String.valueOf(start));
+    override fun setStart(start: Int) {
+        this.setAttribute("start", start.toString())
     }
 
-    public String getType() {
-        return this.getAttribute("type");
+    override fun getType(): String? {
+        return this.getAttribute("type")
     }
 
-    public void setType(final String type) {
-        this.setAttribute("type", type);
+    override fun setType(type: String?) {
+        this.setAttribute("type", type)
     }
-
 }

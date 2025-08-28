@@ -21,30 +21,24 @@
 /*
  * Created on Mar 19, 2005
  */
-package io.github.remmerw.thor.cobra.util.gui;
+package io.github.remmerw.thor.cobra.util.gui
 
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.LayoutManager;
+import java.awt.Component
+import java.awt.Container
+import java.awt.Dimension
+import java.awt.LayoutManager
 
 /**
  * @author J. H. S.
  */
-public class WrapperLayout implements LayoutManager {
-    private static final WrapperLayout instance = new WrapperLayout();
-
-    public static WrapperLayout getInstance() {
-        return instance;
-    }
-
+class WrapperLayout : LayoutManager {
     /*
      * (non-Javadoc)
      *
      * @see java.awt.LayoutManager#addLayoutComponent(java.lang.String,
      * java.awt.Component)
      */
-    public void addLayoutComponent(final String arg0, final Component arg1) {
+    override fun addLayoutComponent(arg0: String?, arg1: Component?) {
     }
 
     /*
@@ -52,7 +46,7 @@ public class WrapperLayout implements LayoutManager {
      *
      * @see java.awt.LayoutManager#removeLayoutComponent(java.awt.Component)
      */
-    public void removeLayoutComponent(final Component arg0) {
+    override fun removeLayoutComponent(arg0: Component?) {
     }
 
     /*
@@ -60,14 +54,17 @@ public class WrapperLayout implements LayoutManager {
      *
      * @see java.awt.LayoutManager#preferredLayoutSize(java.awt.Container)
      */
-    public Dimension preferredLayoutSize(final Container arg0) {
-        final java.awt.Insets insets = arg0.getInsets();
-        final int count = arg0.getComponentCount();
+    override fun preferredLayoutSize(arg0: Container): Dimension {
+        val insets = arg0.insets
+        val count = arg0.componentCount
         if (count > 0) {
-            final Dimension d = arg0.getComponent(0).getPreferredSize();
-            return new Dimension(d.width + insets.left + insets.right, d.height + insets.top + insets.bottom);
+            val d = arg0.getComponent(0).preferredSize
+            return Dimension(
+                d.width + insets.left + insets.right,
+                d.height + insets.top + insets.bottom
+            )
         } else {
-            return new Dimension(insets.left + insets.right, insets.top + insets.bottom);
+            return Dimension(insets.left + insets.right, insets.top + insets.bottom)
         }
     }
 
@@ -76,14 +73,17 @@ public class WrapperLayout implements LayoutManager {
      *
      * @see java.awt.LayoutManager#minimumLayoutSize(java.awt.Container)
      */
-    public Dimension minimumLayoutSize(final Container arg0) {
-        final java.awt.Insets insets = arg0.getInsets();
-        final int count = arg0.getComponentCount();
+    override fun minimumLayoutSize(arg0: Container): Dimension {
+        val insets = arg0.insets
+        val count = arg0.componentCount
         if (count > 0) {
-            final Dimension d = arg0.getComponent(0).getMinimumSize();
-            return new Dimension(d.width + insets.left + insets.right, d.height + insets.top + insets.bottom);
+            val d = arg0.getComponent(0).minimumSize
+            return Dimension(
+                d.width + insets.left + insets.right,
+                d.height + insets.top + insets.bottom
+            )
         } else {
-            return new Dimension(insets.left + insets.right, insets.top + insets.bottom);
+            return Dimension(insets.left + insets.right, insets.top + insets.bottom)
         }
     }
 
@@ -92,12 +92,21 @@ public class WrapperLayout implements LayoutManager {
      *
      * @see java.awt.LayoutManager#layoutContainer(java.awt.Container)
      */
-    public void layoutContainer(final Container arg0) {
-        final int count = arg0.getComponentCount();
+    override fun layoutContainer(arg0: Container) {
+        val count = arg0.componentCount
         if (count > 0) {
-            final Component child = arg0.getComponent(0);
-            final java.awt.Insets insets = arg0.getInsets();
-            child.setBounds(insets.left, insets.top, arg0.getWidth() - insets.left - insets.right, arg0.getHeight() - insets.top - insets.bottom);
+            val child = arg0.getComponent(0)
+            val insets = arg0.insets
+            child.setBounds(
+                insets.left,
+                insets.top,
+                arg0.getWidth() - insets.left - insets.right,
+                arg0.getHeight() - insets.top - insets.bottom
+            )
         }
+    }
+
+    companion object {
+        val instance: WrapperLayout = WrapperLayout()
     }
 }

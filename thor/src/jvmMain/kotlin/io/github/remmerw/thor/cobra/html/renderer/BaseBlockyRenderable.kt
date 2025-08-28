@@ -1,14 +1,19 @@
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext;
+import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
+import io.github.remmerw.thor.cobra.ua.UserAgentContext
 
-abstract class BaseBlockyRenderable extends BaseElementRenderable {
-
-    public BaseBlockyRenderable(RenderableContainer container, ModelNode modelNode, UserAgentContext ucontext) {
-        super(container, modelNode, ucontext);
-    }
-
-    public abstract void layout(int availWidth, int availHeight, boolean b, boolean c, FloatingBoundsSource source, boolean sizeOnly);
-
+internal abstract class BaseBlockyRenderable(
+    container: RenderableContainer?,
+    modelNode: ModelNode?,
+    ucontext: UserAgentContext?
+) : BaseElementRenderable(container, modelNode, ucontext) {
+    abstract fun layout(
+        availWidth: Int,
+        availHeight: Int,
+        b: Boolean,
+        c: Boolean,
+        source: FloatingBoundsSource?,
+        sizeOnly: Boolean
+    )
 }

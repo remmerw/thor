@@ -18,126 +18,130 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.style;
+package io.github.remmerw.thor.cobra.html.style
 
-import java.awt.Color;
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
+import java.awt.Color
 
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl;
-
-public class ImageRenderState extends StyleSheetRenderState {
-    public ImageRenderState(final RenderState prevRenderState, final HTMLElementImpl element) {
-        super(prevRenderState, element);
-    }
-
+class ImageRenderState(prevRenderState: RenderState?, element: HTMLElementImpl) :
+    StyleSheetRenderState(prevRenderState, element) {
     // TODO: if this logic can be moved to attr2Styles, then this render state could be chopped off.
-    @Override
-    public HtmlInsets getMarginInsets() {
-        HtmlInsets mi = this.marginInsets;
-        if (mi != INVALID_INSETS) {
-            return mi;
+    override fun getMarginInsets(): HtmlInsets? {
+        var mi = this.marginInsets
+        if (mi !== INVALID_INSETS) {
+            return mi
         }
-        final JStyleProperties props = this.getCssProperties();
+        val props = this.getCssProperties()
         if (props == null) {
-            mi = null;
+            mi = null
         } else {
-            mi = HtmlValues.getMarginInsets(props, this);
+            mi = HtmlValues.getMarginInsets(props, this)
         }
         if (mi == null) {
-            int hspace = 0;
-            int vspace = 0;
-            boolean createNew = false;
-            final String hspaceText = this.element.getAttribute("hspace");
-            if ((hspaceText != null) && (hspaceText.length() != 0)) {
-                createNew = true;
+            var hspace = 0
+            var vspace = 0
+            var createNew = false
+            val hspaceText = this.element.getAttribute("hspace")
+            if ((hspaceText != null) && (hspaceText.length != 0)) {
+                createNew = true
                 try {
-                    hspace = Integer.parseInt(hspaceText);
-                } catch (final NumberFormatException nfe) {
+                    hspace = hspaceText.toInt()
+                } catch (nfe: NumberFormatException) {
                     // TODO: Percentages?
                 }
             }
-            final String vspaceText = this.element.getAttribute("vspace");
-            if ((vspaceText != null) && (vspaceText.length() != 0)) {
-                createNew = true;
+            val vspaceText = this.element.getAttribute("vspace")
+            if ((vspaceText != null) && (vspaceText.length != 0)) {
+                createNew = true
                 try {
-                    vspace = Integer.parseInt(vspaceText);
-                } catch (final NumberFormatException nfe) {
+                    vspace = vspaceText.toInt()
+                } catch (nfe: NumberFormatException) {
                     // TODO: Percentages?
                 }
             }
             if (createNew) {
-                mi = new HtmlInsets();
-                mi.top = vspace;
-                mi.topType = HtmlInsets.TYPE_PIXELS;
-                mi.bottom = vspace;
-                mi.bottomType = HtmlInsets.TYPE_PIXELS;
-                mi.left = hspace;
-                mi.leftType = HtmlInsets.TYPE_PIXELS;
-                mi.right = hspace;
-                mi.rightType = HtmlInsets.TYPE_PIXELS;
+                mi = HtmlInsets()
+                mi.top = vspace
+                mi.topType = HtmlInsets.Companion.TYPE_PIXELS
+                mi.bottom = vspace
+                mi.bottomType = HtmlInsets.Companion.TYPE_PIXELS
+                mi.left = hspace
+                mi.leftType = HtmlInsets.Companion.TYPE_PIXELS
+                mi.right = hspace
+                mi.rightType = HtmlInsets.Companion.TYPE_PIXELS
             }
         }
-        this.marginInsets = mi;
-        return mi;
+        this.marginInsets = mi
+        return mi
     }
 
-    @Override
-    public BorderInfo getBorderInfo() {
-        BorderInfo binfo = this.borderInfo;
-        if (binfo != INVALID_BORDER_INFO) {
-            return binfo;
+    override fun getBorderInfo(): BorderInfo? {
+        var binfo = this.borderInfo
+        if (binfo !== INVALID_BORDER_INFO) {
+            return binfo
         }
-        binfo = super.getBorderInfo();
+        binfo = super.getBorderInfo()
         if ((binfo == null)
-                || ((binfo.topStyle == HtmlValues.BORDER_STYLE_NONE) && (binfo.bottomStyle == HtmlValues.BORDER_STYLE_NONE)
-                && (binfo.leftStyle == HtmlValues.BORDER_STYLE_NONE) && (binfo.rightStyle == HtmlValues.BORDER_STYLE_NONE))) {
+            || ((binfo.topStyle == HtmlValues.BORDER_STYLE_NONE) && (binfo.bottomStyle == HtmlValues.BORDER_STYLE_NONE)
+                    && (binfo.leftStyle == HtmlValues.BORDER_STYLE_NONE) && (binfo.rightStyle == HtmlValues.BORDER_STYLE_NONE))
+        ) {
             if (binfo == null) {
-                binfo = new BorderInfo();
+                binfo = BorderInfo()
             }
-            final HTMLElementImpl element = this.element;
+            val element = this.element
             if (element != null) {
-                String border = element.getAttribute("border");
+                var border = element.getAttribute("border")
                 if (border != null) {
-                    border = border.trim();
-                    int value;
-                    int valueType;
+                    border = border.trim { it <= ' ' }
+                    var value: Int
+                    val valueType: Int
                     if (border.endsWith("%")) {
-                        valueType = HtmlInsets.TYPE_PERCENT;
+                        valueType = HtmlInsets.Companion.TYPE_PERCENT
                         try {
-                            value = Integer.parseInt(border.substring(0, border.length() - 1));
-                        } catch (final NumberFormatException nfe) {
-                            value = 0;
+                            value = border.substring(0, border.length - 1).toInt()
+                        } catch (nfe: NumberFormatException) {
+                            value = 0
                         }
                     } else {
-                        valueType = HtmlInsets.TYPE_PIXELS;
+                        valueType = HtmlInsets.Companion.TYPE_PIXELS
                         try {
-                            value = Integer.parseInt(border);
-                        } catch (final NumberFormatException nfe) {
-                            value = 0;
+                            value = border.toInt()
+                        } catch (nfe: NumberFormatException) {
+                            value = 0
                         }
                     }
-                    final HtmlInsets borderInsets = new HtmlInsets();
-                    borderInsets.top = borderInsets.left = borderInsets.right = borderInsets.bottom = value;
-                    borderInsets.topType = borderInsets.leftType = borderInsets.rightType = borderInsets.bottomType = valueType;
-                    binfo.insets = borderInsets;
+                    val borderInsets = HtmlInsets()
+                    borderInsets.bottom = value
+                    borderInsets.right = borderInsets.bottom
+                    borderInsets.left = borderInsets.right
+                    borderInsets.top = borderInsets.left
+                    borderInsets.bottomType = valueType
+                    borderInsets.rightType = borderInsets.bottomType
+                    borderInsets.leftType = borderInsets.rightType
+                    borderInsets.topType = borderInsets.leftType
+                    binfo.insets = borderInsets
                     if (binfo.topColor == null) {
-                        binfo.topColor = Color.BLACK;
+                        binfo.topColor = Color.BLACK
                     }
                     if (binfo.leftColor == null) {
-                        binfo.leftColor = Color.BLACK;
+                        binfo.leftColor = Color.BLACK
                     }
                     if (binfo.rightColor == null) {
-                        binfo.rightColor = Color.BLACK;
+                        binfo.rightColor = Color.BLACK
                     }
                     if (binfo.bottomColor == null) {
-                        binfo.bottomColor = Color.BLACK;
+                        binfo.bottomColor = Color.BLACK
                     }
                     if (value != 0) {
-                        binfo.topStyle = binfo.leftStyle = binfo.rightStyle = binfo.bottomStyle = HtmlValues.BORDER_STYLE_SOLID;
+                        binfo.bottomStyle = HtmlValues.BORDER_STYLE_SOLID
+                        binfo.rightStyle = binfo.bottomStyle
+                        binfo.leftStyle = binfo.rightStyle
+                        binfo.topStyle = binfo.leftStyle
                     }
                 }
             }
         }
-        this.borderInfo = binfo;
-        return binfo;
+        this.borderInfo = binfo
+        return binfo
     }
 }

@@ -18,206 +18,193 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
 
-import java.util.ArrayList;
-import java.util.EventListener;
-import java.util.EventObject;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
+import java.io.IOException
+import java.io.ObjectInputStream
+import java.io.Serializable
+import java.util.EventListener
+import java.util.EventObject
+import java.util.TreeSet
+import kotlin.concurrent.Volatile
 
 /**
  * A cache with least-recently-used policy. Note that this class is not thread
  * safe by itself.
  */
-public class LRUCache implements java.io.Serializable {
-    private static final long serialVersionUID = 940427225784212823L;
-    private final Map<Object, OrderedValue> cacheMap = new HashMap<>();
+class LRUCache(var approxMaxSize: Int) : Serializable {
+    private val cacheMap: MutableMap<Any?, OrderedValue?> = HashMap<Any?, OrderedValue?>()
+
     /**
      * Ascending timestamp order. First is least recently used.
      */
-    private final TreeSet<OrderedValue> timedSet = new TreeSet<>();
-    private int approxMaxSize;
-    private volatile transient EventDispatch2 removalEvent;
-    private int currentSize = 0;
+    private val timedSet: TreeSet<OrderedValue?> = TreeSet<OrderedValue?>()
 
-    public LRUCache(final int approxMaxSize) {
-        this.approxMaxSize = approxMaxSize;
-        this.removalEvent = new RemovalDispatch();
+    @Volatile
+    @Transient
+    private var removalEvent: EventDispatch2
+    var approxSize: Int = 0
+        private set
+
+    init {
+        this.removalEvent = RemovalDispatch()
     }
 
-    private void readObject(final java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
-        in.defaultReadObject();
+    @Throws(IOException::class, ClassNotFoundException::class)
+    private fun readObject(`in`: ObjectInputStream) {
+        `in`.defaultReadObject()
         // Need to initialize transient fields here.
-        this.removalEvent = new RemovalDispatch();
+        this.removalEvent = RemovalDispatch()
     }
 
-    public int getApproxMaxSize() {
-        return approxMaxSize;
-    }
-
-    public void setApproxMaxSize(final int approxMaxSize) {
-        this.approxMaxSize = approxMaxSize;
-    }
-
-    public void put(final Object key, final Object value, final int approxSize) {
+    fun put(key: Any?, value: Any?, approxSize: Int) {
         if (approxSize > this.approxMaxSize) {
             // Can't be inserted.
-            return;
+            return
         }
-        OrderedValue ordVal = this.cacheMap.get(key);
+        var ordVal = this.cacheMap.get(key)
         if (ordVal != null) {
-            if (ordVal.value != value) {
-                this.removalEvent.fireEvent(new RemovalEvent(this, ordVal.value));
+            if (ordVal.value !== value) {
+                this.removalEvent.fireEvent(RemovalEvent(this, ordVal.value))
             }
-            this.currentSize += (approxSize - ordVal.approximateSize);
-            this.timedSet.remove(ordVal);
-            ordVal.approximateSize = approxSize;
-            ordVal.value = value;
-            ordVal.touch();
-            this.timedSet.add(ordVal);
+            this.approxSize += (approxSize - ordVal.approximateSize)
+            this.timedSet.remove(ordVal)
+            ordVal.approximateSize = approxSize
+            ordVal.value = value
+            ordVal.touch()
+            this.timedSet.add(ordVal)
         } else {
-            ordVal = new OrderedValue(key, value, approxSize);
-            this.cacheMap.put(key, ordVal);
-            this.timedSet.add(ordVal);
-            this.currentSize += approxSize;
+            ordVal = OrderedValue(key, value, approxSize)
+            this.cacheMap.put(key, ordVal)
+            this.timedSet.add(ordVal)
+            this.approxSize += approxSize
         }
-        while (this.currentSize > this.approxMaxSize) {
-            this.removeLRU();
+        while (this.approxSize > this.approxMaxSize) {
+            this.removeLRU()
         }
     }
 
-    private void removeLRU() {
-        final OrderedValue ordVal = this.timedSet.first();
+    private fun removeLRU() {
+        val ordVal = this.timedSet.first()
         if (ordVal != null) {
-            this.removalEvent.fireEvent(new RemovalEvent(this, ordVal.value));
+            this.removalEvent.fireEvent(RemovalEvent(this, ordVal.value))
             if (this.timedSet.remove(ordVal)) {
-                this.cacheMap.remove(ordVal.key);
-                this.currentSize -= ordVal.approximateSize;
+                this.cacheMap.remove(ordVal.key)
+                this.approxSize -= ordVal.approximateSize
             } else {
-                throw new IllegalStateException("Could not remove existing tree node.");
+                throw IllegalStateException("Could not remove existing tree node.")
             }
         } else {
-            throw new IllegalStateException("Cannot remove LRU since the cache is empty.");
+            throw IllegalStateException("Cannot remove LRU since the cache is empty.")
         }
     }
 
-    public Object get(final Object key) {
-        final OrderedValue ordVal = this.cacheMap.get(key);
+    fun get(key: Any?): Any? {
+        val ordVal = this.cacheMap.get(key)
         if (ordVal != null) {
-            this.timedSet.remove(ordVal);
-            ordVal.touch();
-            this.timedSet.add(ordVal);
-            return ordVal.value;
+            this.timedSet.remove(ordVal)
+            ordVal.touch()
+            this.timedSet.add(ordVal)
+            return ordVal.value
         } else {
-            return null;
+            return null
         }
     }
 
-    public Object remove(final Object key) {
-        final OrderedValue ordVal = this.cacheMap.get(key);
+    fun remove(key: Any?): Any? {
+        val ordVal = this.cacheMap.get(key)
         if (ordVal != null) {
-            this.removalEvent.fireEvent(new RemovalEvent(this, ordVal.value));
-            this.currentSize -= ordVal.approximateSize;
-            this.timedSet.remove(ordVal);
-            return ordVal.value;
+            this.removalEvent.fireEvent(RemovalEvent(this, ordVal.value))
+            this.approxSize -= ordVal.approximateSize
+            this.timedSet.remove(ordVal)
+            return ordVal.value
         } else {
-            return null;
+            return null
         }
     }
 
-    public void addRemovalListener(final RemovalListener listener) {
-        this.removalEvent.addListener(listener);
+    fun addRemovalListener(listener: RemovalListener?) {
+        this.removalEvent.addListener(listener)
     }
 
-    public void removeRemovalListener(final RemovalListener listener) {
-        this.removalEvent.removeListener(listener);
+    fun removeRemovalListener(listener: RemovalListener?) {
+        this.removalEvent.removeListener(listener)
     }
 
-    public int getApproxSize() {
-        return this.currentSize;
-    }
+    val numEntries: Int
+        get() = this.cacheMap.size
 
-    public int getNumEntries() {
-        return this.cacheMap.size();
-    }
-
-    public List<EntryInfo> getEntryInfoList() {
-        final List<EntryInfo> list = new ArrayList<>();
-        final Iterator<OrderedValue> i = this.cacheMap.values().iterator();
-        while (i.hasNext()) {
-            final OrderedValue ov = i.next();
-            final Object value = ov.value;
-            final Class<? extends Object> vc = value == null ? null : value.getClass();
-            list.add(new EntryInfo(vc, ov.approximateSize));
-        }
-        return list;
-    }
-
-    public static class EntryInfo {
-        public final Class<? extends Object> valueClass;
-        public final int approximateSize;
-
-        public EntryInfo(final Class<? extends Object> valueClass, final int approximateSize) {
-            super();
-            this.valueClass = valueClass;
-            this.approximateSize = approximateSize;
-        }
-
-        @Override
-        public String toString() {
-            final Class<? extends Object> vc = this.valueClass;
-            final String vcName = vc == null ? "<none>" : vc.getName();
-            return "[class=" + vcName + ",approx-size=" + this.approximateSize + "]";
-        }
-    }
-
-    private class OrderedValue implements Comparable<OrderedValue>, java.io.Serializable {
-        private static final long serialVersionUID = 340227625744215821L;
-        private final Object key;
-        private long timestamp;
-        private int approximateSize;
-        private Object value;
-
-        private OrderedValue(final Object key, final Object value, final int approxSize) {
-            this.key = key;
-            this.value = value;
-            this.approximateSize = approxSize;
-            this.touch();
-        }
-
-        private final void touch() {
-            this.timestamp = System.currentTimeMillis();
-        }
-
-        public int compareTo(final OrderedValue arg0) {
-            if (this == arg0) {
-                return 0;
+    val entryInfoList: MutableList<EntryInfo?>
+        get() {
+            val list: MutableList<EntryInfo?> =
+                ArrayList<EntryInfo?>()
+            val i =
+                this.cacheMap.values.iterator()
+            while (i.hasNext()) {
+                val ov = i.next()
+                val value = ov.value
+                val vc: Class<out Any?>? =
+                    if (value == null) null else value.javaClass
+                list.add(EntryInfo(vc, ov.approximateSize))
             }
-            final OrderedValue other = arg0;
-            final long diff = this.timestamp - other.timestamp;
+            return list
+        }
+
+    class EntryInfo(val valueClass: Class<out Any?>?, val approximateSize: Int) {
+        override fun toString(): String {
+            val vc = this.valueClass
+            val vcName = if (vc == null) "<none>" else vc.name
+            return "[class=" + vcName + ",approx-size=" + this.approximateSize + "]"
+        }
+    }
+
+    private inner class OrderedValue(
+        private val key: Any?,
+        private var value: Any?,
+        private var approximateSize: Int
+    ) : Comparable<OrderedValue?>, Serializable {
+        private var timestamp: Long = 0
+
+        init {
+            this.touch()
+        }
+
+        fun touch() {
+            this.timestamp = System.currentTimeMillis()
+        }
+
+        override fun compareTo(arg0: OrderedValue): Int {
+            if (this === arg0) {
+                return 0
+            }
+            val other = arg0
+            val diff = this.timestamp - other.timestamp
             if (diff > 0) {
-                return +1;
+                return +1
             } else if (diff < 0) {
-                return -1;
+                return -1
             }
-            int hc1 = System.identityHashCode(this);
-            int hc2 = System.identityHashCode(other);
+            var hc1 = System.identityHashCode(this)
+            var hc2 = System.identityHashCode(other)
             if (hc1 == hc2) {
-                hc1 = System.identityHashCode(this.value);
-                hc2 = System.identityHashCode(other.value);
+                hc1 = System.identityHashCode(this.value)
+                hc2 = System.identityHashCode(other.value)
             }
-            return hc1 - hc2;
+            return hc1 - hc2
+        }
+
+        companion object {
+            private const val serialVersionUID = 340227625744215821L
         }
     }
 
-    private class RemovalDispatch extends EventDispatch2 {
-        @Override
-        protected void dispatchEvent(final EventListener listener, final EventObject event) {
-            ((RemovalListener) listener).removed((RemovalEvent) event);
+    private inner class RemovalDispatch : EventDispatch2() {
+        override fun dispatchEvent(listener: EventListener, event: EventObject?) {
+            (listener as RemovalListener).removed(event as RemovalEvent?)
         }
+    }
+
+    companion object {
+        private const val serialVersionUID = 940427225784212823L
     }
 }

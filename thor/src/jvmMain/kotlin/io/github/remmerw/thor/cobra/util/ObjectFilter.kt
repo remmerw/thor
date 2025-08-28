@@ -21,10 +21,10 @@
 /*
  * Created on Oct 8, 2005
  */
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
 
-public interface ObjectFilter {
-    Object decode(Object source);
+interface ObjectFilter {
+    fun decode(source: Any?): Any?
 
-    Object encode(Object source);
+    fun encode(source: Any?): Any?
 }

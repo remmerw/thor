@@ -21,29 +21,209 @@
 /*
  * Created on Oct 8, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Scriptable;
-import org.w3c.dom.Document;
-import org.w3c.dom.html.HTMLScriptElement;
+import io.github.remmerw.thor.cobra.html.js.Executor
+import io.github.remmerw.thor.cobra.html.js.Window.JSRunnableTask
+import io.github.remmerw.thor.cobra.ua.UserAgentContext
+import io.github.remmerw.thor.cobra.ua.UserAgentContext.RequestKind
+import io.github.remmerw.thor.cobra.util.SecurityUtil
+import org.mozilla.javascript.Context
+import org.w3c.dom.html.HTMLScriptElement
+import java.io.IOException
+import java.net.MalformedURLException
+import java.security.PrivilegedAction
+import java.util.Arrays
+import java.util.logging.Level
+import kotlin.math.min
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.logging.Level;
+class HTMLScriptElementImpl : HTMLElementImpl, HTMLScriptElement {
+    private var text: String? = null
+    private var defer = false
 
-import io.github.remmerw.thor.cobra.html.js.Executor;
-import io.github.remmerw.thor.cobra.html.js.Window;
-import io.github.remmerw.thor.cobra.html.js.Window.JSRunnableTask;
-import io.github.remmerw.thor.cobra.ua.NetworkRequest;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext.Request;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext.RequestKind;
-import io.github.remmerw.thor.cobra.util.SecurityUtil;
+    constructor() : super("SCRIPT", true)
 
-public class HTMLScriptElementImpl extends HTMLElementImpl implements HTMLScriptElement {
-    private static final String[] jsTypes = {
+    constructor(name: String?) : super(name, true)
+
+    override fun getText(): String? {
+        val t = this.text
+        if (t == null) {
+            return this.getRawInnerText(true)
+        } else {
+            return t
+        }
+    }
+
+    override fun setText(text: String?) {
+        this.text = text
+    }
+
+    override fun getHtmlFor(): String? {
+        return this.getAttribute("htmlFor")
+    }
+
+    override fun setHtmlFor(htmlFor: String?) {
+        this.setAttribute("htmlFor", htmlFor)
+    }
+
+    override fun getEvent(): String? {
+        return this.getAttribute("event")
+    }
+
+    override fun setEvent(event: String?) {
+        this.setAttribute("event", event)
+    }
+
+    override fun getDefer(): Boolean {
+        return this.defer
+    }
+
+    override fun setDefer(defer: Boolean) {
+        this.defer = defer
+    }
+
+    override fun getSrc(): String? {
+        return this.getAttribute("src")
+    }
+
+    override fun setSrc(src: String?) {
+        this.setAttribute("src", src)
+    }
+
+    override fun getType(): String? {
+        return this.getAttribute("type")
+    }
+
+    override fun setType(type: String?) {
+        this.setAttribute("type", type)
+    }
+
+    protected fun processScript() {
+        val scriptType = type
+        if (scriptType != null) {
+            if (Arrays.stream<String?>(jsTypes).noneMatch { e: String? -> e == scriptType }) {
+                (this@HTMLScriptElementImpl.document as HTMLDocumentImpl).markJobsFinished(1, false)
+                return
+            }
+        }
+        val bcontext = this.getUserAgentContext()
+        checkNotNull(bcontext) { "No user agent context." }
+        val docObj = this.document
+        check(docObj is HTMLDocumentImpl) { "no valid document" }
+        if (bcontext.isScriptingEnabled()) {
+            val text: String?
+            val scriptURI: String?
+            val baseLineNumber: Int
+            val src = this.src
+            if (src == null) {
+                val request =
+                    UserAgentContext.Request(docObj.getDocumentURL(), RequestKind.JavaScript)
+                if (bcontext.isRequestPermitted(request)) {
+                    text = this.getText()
+                    scriptURI = docObj.getBaseURI()
+                    baseLineNumber = 1 // TODO: Line number of inner text??
+                } else {
+                    text = null
+                    scriptURI = null
+                    baseLineNumber = -1
+                }
+            } else {
+                this.informExternalScriptLoading()
+                try {
+                    val scriptURL = docObj.getFullURL(src)
+                    scriptURI = scriptURL.toExternalForm()
+                    // Perform a synchronous request
+                    val request = bcontext.createHttpRequest()
+                    SecurityUtil.doPrivileged<Any?>(PrivilegedAction {
+                        // Code might have restrictions on accessing
+                        // items from elsewhere.
+                        try {
+                            request.open("GET", scriptURI, false)
+                            request.send(
+                                null,
+                                UserAgentContext.Request(scriptURL, RequestKind.JavaScript)
+                            )
+                        } catch (thrown: IOException) {
+                            logger.log(Level.WARNING, "processScript()", thrown)
+                        }
+                        null
+                    })
+                    val status = request.getStatus()
+                    if ((status != 200) && (status != 0)) {
+                        this.warn("Script at [" + scriptURI + "] failed to load; HTTP status: " + status + ".")
+                        return
+                    }
+                    text = request.getResponseText()
+                    baseLineNumber = 1
+                } catch (mfe: MalformedURLException) {
+                    throw IllegalArgumentException(mfe)
+                }
+            }
+
+            val window = docObj.getWindow()
+            if (text != null) {
+                val textSub = text.substring(0, min(50, text.length)).replace("\n".toRegex(), "")
+                window.addJSTaskUnchecked(
+                    JSRunnableTask(
+                        0,
+                        "script: " + textSub,
+                        object : Runnable {
+                            override fun run() {
+                                // final Context ctx = Executor.createContext(HTMLScriptElementImpl.this.getDocumentURL(), bcontext);
+                                val ctx = Executor.createContext(
+                                    this@HTMLScriptElementImpl.getDocumentURL(),
+                                    bcontext,
+                                    window.getContextFactory()
+                                )
+                                try {
+                                    val scope = window.getWindowScope()
+                                    checkNotNull(scope) { "Scriptable (scope) instance was null" }
+                                    try {
+                                        ctx.evaluateString(
+                                            scope,
+                                            text,
+                                            scriptURI,
+                                            baseLineNumber,
+                                            null
+                                        )
+                                        // Why catch this?
+                                        // } catch (final EcmaError ecmaError) {
+                                        // logger.log(Level.WARNING,
+                                        // "Javascript error at " + ecmaError.sourceName() + ":" + ecmaError.lineNumber() + ": " + ecmaError.getMessage(),
+                                        // ecmaError);
+                                    } catch (err: Exception) {
+                                        Executor.logJSException(err)
+                                    }
+                                } finally {
+                                    Context.exit()
+                                    docObj.markJobsFinished(1, false)
+                                }
+                            }
+                        })
+                )
+            } else {
+                docObj.markJobsFinished(1, false)
+            }
+        } else {
+            docObj.markJobsFinished(1, false)
+        }
+    }
+
+    override fun appendInnerTextImpl(buffer: StringBuffer?) {
+        // nop
+    }
+
+    override fun handleDocumentAttachmentChanged() {
+        if (isAttachedToDocument()) {
+            (document as HTMLDocumentImpl).addJob(Runnable { processScript() }, false)
+        } else {
+            // TODO What does script element do when detached?
+        }
+        super.handleDocumentAttachmentChanged()
+    }
+
+    companion object {
+        private val jsTypes = arrayOf<String?>(
             "application/ecmascript",
             "application/javascript",
             "application/x-ecmascript",
@@ -60,181 +240,6 @@ public class HTMLScriptElementImpl extends HTMLElementImpl implements HTMLScript
             "text/livescript",
             "text/x-ecmascript",
             "text/x-javascript"
-    };
-    private String text;
-    private boolean defer;
-
-    public HTMLScriptElementImpl() {
-        super("SCRIPT", true);
-    }
-
-    public HTMLScriptElementImpl(final String name) {
-        super(name, true);
-    }
-
-    public String getText() {
-        final String t = this.text;
-        if (t == null) {
-            return this.getRawInnerText(true);
-        } else {
-            return t;
-        }
-    }
-
-    public void setText(final String text) {
-        this.text = text;
-    }
-
-    public String getHtmlFor() {
-        return this.getAttribute("htmlFor");
-    }
-
-    public void setHtmlFor(final String htmlFor) {
-        this.setAttribute("htmlFor", htmlFor);
-    }
-
-    public String getEvent() {
-        return this.getAttribute("event");
-    }
-
-    public void setEvent(final String event) {
-        this.setAttribute("event", event);
-    }
-
-    public boolean getDefer() {
-        return this.defer;
-    }
-
-    public void setDefer(final boolean defer) {
-        this.defer = defer;
-    }
-
-    public String getSrc() {
-        return this.getAttribute("src");
-    }
-
-    public void setSrc(final String src) {
-        this.setAttribute("src", src);
-    }
-
-    public String getType() {
-        return this.getAttribute("type");
-    }
-
-    public void setType(final String type) {
-        this.setAttribute("type", type);
-    }
-
-    protected final void processScript() {
-        final String scriptType = getType();
-        if (scriptType != null) {
-            if (Arrays.stream(jsTypes).noneMatch(e -> e.equals(scriptType))) {
-                ((HTMLDocumentImpl) HTMLScriptElementImpl.this.document).markJobsFinished(1, false);
-                return;
-            }
-        }
-        final UserAgentContext bcontext = this.getUserAgentContext();
-        if (bcontext == null) {
-            throw new IllegalStateException("No user agent context.");
-        }
-        final Document docObj = this.document;
-        if (!(docObj instanceof HTMLDocumentImpl doc)) {
-            throw new IllegalStateException("no valid document");
-        }
-        if (bcontext.isScriptingEnabled()) {
-            String text;
-            final String scriptURI;
-            int baseLineNumber;
-            final String src = this.getSrc();
-            if (src == null) {
-                final Request request = new Request(doc.getDocumentURL(), RequestKind.JavaScript);
-                if (bcontext.isRequestPermitted(request)) {
-                    text = this.getText();
-                    scriptURI = doc.getBaseURI();
-                    baseLineNumber = 1; // TODO: Line number of inner text??
-                } else {
-                    text = null;
-                    scriptURI = null;
-                    baseLineNumber = -1;
-                }
-            } else {
-                this.informExternalScriptLoading();
-                try {
-                    final URL scriptURL = doc.getFullURL(src);
-                    scriptURI = scriptURL.toExternalForm();
-                    // Perform a synchronous request
-                    final NetworkRequest request = bcontext.createHttpRequest();
-                    SecurityUtil.doPrivileged(() -> {
-                        // Code might have restrictions on accessing
-                        // items from elsewhere.
-                        try {
-                            request.open("GET", scriptURI, false);
-                            request.send(null, new Request(scriptURL, RequestKind.JavaScript));
-                        } catch (final java.io.IOException thrown) {
-                            logger.log(Level.WARNING, "processScript()", thrown);
-                        }
-                        return null;
-                    });
-                    final int status = request.getStatus();
-                    if ((status != 200) && (status != 0)) {
-                        this.warn("Script at [" + scriptURI + "] failed to load; HTTP status: " + status + ".");
-                        return;
-                    }
-                    text = request.getResponseText();
-                    baseLineNumber = 1;
-                } catch (final MalformedURLException mfe) {
-                    throw new IllegalArgumentException(mfe);
-                }
-            }
-
-            final Window window = doc.getWindow();
-            if (text != null) {
-                final String textSub = text.substring(0, Math.min(50, text.length())).replaceAll("\n", "");
-                window.addJSTaskUnchecked(new JSRunnableTask(0, "script: " + textSub, new Runnable() {
-                    public void run() {
-                        // final Context ctx = Executor.createContext(HTMLScriptElementImpl.this.getDocumentURL(), bcontext);
-                        final Context ctx = Executor.createContext(HTMLScriptElementImpl.this.getDocumentURL(), bcontext, window.getContextFactory());
-                        try {
-                            final Scriptable scope = window.getWindowScope();
-                            if (scope == null) {
-                                throw new IllegalStateException("Scriptable (scope) instance was null");
-                            }
-                            try {
-                                ctx.evaluateString(scope, text, scriptURI, baseLineNumber, null);
-                                // Why catch this?
-                                // } catch (final EcmaError ecmaError) {
-                                // logger.log(Level.WARNING,
-                                // "Javascript error at " + ecmaError.sourceName() + ":" + ecmaError.lineNumber() + ": " + ecmaError.getMessage(),
-                                // ecmaError);
-                            } catch (final Exception err) {
-                                Executor.logJSException(err);
-                            }
-                        } finally {
-                            Context.exit();
-                            doc.markJobsFinished(1, false);
-                        }
-                    }
-                }));
-            } else {
-                doc.markJobsFinished(1, false);
-            }
-        } else {
-            doc.markJobsFinished(1, false);
-        }
-    }
-
-    @Override
-    protected void appendInnerTextImpl(final StringBuffer buffer) {
-        // nop
-    }
-
-    @Override
-    protected void handleDocumentAttachmentChanged() {
-        if (isAttachedToDocument()) {
-            ((HTMLDocumentImpl) document).addJob(() -> processScript(), false);
-        } else {
-            // TODO What does script element do when detached?
-        }
-        super.handleDocumentAttachmentChanged();
+        )
     }
 }

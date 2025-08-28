@@ -20,23 +20,21 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.github.remmerw.thor.cobra.io;
+package io.github.remmerw.thor.cobra.io
 
-import java.io.IOException;
+import java.io.IOException
 
 /**
- * This is an <code>IOException</code> thrown when the managed store quota would
+ * This is an `IOException` thrown when the managed store quota would
  * be exceeded after creating a managed file, a directory, or writing to a
  * managed file.
  */
-public class QuotaExceededException extends IOException {
-    private static final long serialVersionUID = -5762824325913845278L;
+class QuotaExceededException : IOException {
+    constructor() : super()
 
-    public QuotaExceededException() {
-        super();
-    }
+    constructor(message: String?) : super(message)
 
-    public QuotaExceededException(final String message) {
-        super(message);
+    companion object {
+        private val serialVersionUID = -5762824325913845278L
     }
 }

@@ -1,211 +1,212 @@
-package io.github.remmerw.thor.cobra.html.style;
+package io.github.remmerw.thor.cobra.html.style
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import java.util.Vector;
-
-import cz.vutbr.web.css.StyleSheet;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl;
+import cz.vutbr.web.css.StyleSheet
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
+import org.w3c.dom.Document
+import org.w3c.dom.Element
+import org.w3c.dom.Node
+import java.util.Locale
+import java.util.Vector
 
 /**
  * Borrowed from CSSBox HTMLNorm.java This class provides a mechanism of
  * converting some HTML presentation atributes to the CSS styles and other
  * methods related to HTML specifics.
  */
-public class StyleElements {
-
-    public static StyleSheet convertAttributesToStyles(final Node n) {
-        if (n.getNodeType() == Node.ELEMENT_NODE) {
-            final HTMLElementImpl el = (HTMLElementImpl) n;
+object StyleElements {
+    fun convertAttributesToStyles(n: Node): StyleSheet? {
+        if (n.nodeType == Node.ELEMENT_NODE) {
+            val el = n as HTMLElementImpl
             //Analyze HTML attributes
-            String attrs = "";
-            final String tagName = el.getTagName();
-            if ("TABLE".equalsIgnoreCase(tagName)) {
+            var attrs = ""
+            val tagName = el.tagName
+            if ("TABLE".equals(tagName, ignoreCase = true)) {
                 //setting table and cell borders
-                attrs = getTableElementStyle(el, attrs);
-            } else if ("FONT".equalsIgnoreCase(tagName)) {
+                attrs = getTableElementStyle(el, attrs)
+            } else if ("FONT".equals(tagName, ignoreCase = true)) {
                 //Text properties
-                attrs = getFontElementStyle(el, attrs);
-            } else if ("CANVAS".equalsIgnoreCase(tagName)) {
-                attrs = getCanvasElementStyle(el, attrs);
-            } else if ("IMG".equalsIgnoreCase(tagName)) {
-                attrs = getElementDimensionStyle(el, attrs);
+                attrs = getFontElementStyle(el, attrs)
+            } else if ("CANVAS".equals(tagName, ignoreCase = true)) {
+                attrs = getCanvasElementStyle(el, attrs)
+            } else if ("IMG".equals(tagName, ignoreCase = true)) {
+                attrs = getElementDimensionStyle(el, attrs)
             }
 
-            if (attrs.length() > 0) {
-                return CSSUtilities.jParseInlineStyle(attrs, null, el, false);
+            if (attrs.length > 0) {
+                return CSSUtilities.jParseInlineStyle(attrs, null, el, false)
             }
         }
-        return null;
+        return null
     }
 
-    private static String getCanvasElementStyle(HTMLElementImpl el, String attrs) {
-        final Node widthNode = el.getAttributes().getNamedItem("width");
+    private fun getCanvasElementStyle(el: HTMLElementImpl, attrs: String): String {
+        var attrs = attrs
+        val widthNode = el.attributes.getNamedItem("width")
         if (widthNode != null) {
-            attrs += "width: " + pixelise(widthNode.getNodeValue()) + ";";
+            attrs += "width: " + pixelise(widthNode.nodeValue) + ";"
         } else {
-            attrs += "width: 300px;";
+            attrs += "width: 300px;"
         }
 
-        final Node heightNode = el.getAttributes().getNamedItem("height");
+        val heightNode = el.attributes.getNamedItem("height")
         if (heightNode != null) {
-            attrs += "height: " + pixelise(heightNode.getNodeValue()) + ";";
+            attrs += "height: " + pixelise(heightNode.nodeValue) + ";"
         } else {
-            attrs += "height: 150px;";
+            attrs += "height: 150px;"
         }
 
-        return attrs;
+        return attrs
     }
 
-    private static String getElementDimensionStyle(HTMLElementImpl el, String attrs) {
-        final Node widthNode = el.getAttributes().getNamedItem("width");
+    private fun getElementDimensionStyle(el: HTMLElementImpl, attrs: String): String {
+        var attrs = attrs
+        val widthNode = el.attributes.getNamedItem("width")
         if (widthNode != null) {
-            attrs += "width: " + pixelise(widthNode.getNodeValue()) + ";";
+            attrs += "width: " + pixelise(widthNode.nodeValue) + ";"
         }
 
-        final Node heightNode = el.getAttributes().getNamedItem("height");
+        val heightNode = el.attributes.getNamedItem("height")
         if (heightNode != null) {
-            attrs += "height: " + pixelise(heightNode.getNodeValue()) + ";";
+            attrs += "height: " + pixelise(heightNode.nodeValue) + ";"
         }
 
-        return attrs;
+        return attrs
     }
 
-    private static String pixelise(final String value) {
+    private fun pixelise(value: String): String? {
         try {
-            @SuppressWarnings("unused") final int ignored = Integer.parseInt(value);
+            value.toInt()
 
-            return value + "px";
-        } catch (NumberFormatException e) {
-            return value;
+            return value + "px"
+        } catch (e: NumberFormatException) {
+            return value
         }
     }
 
-    private static String getTableElementStyle(final Element el, String attrs) {
-        String border = "0";
-        String frame = "void";
+    private fun getTableElementStyle(el: Element, attrs: String): String {
+        var attrs = attrs
+        var border = "0"
+        var frame = "void"
 
         //borders
-        if (el.getAttributes().getNamedItem("border") != null) {
-            border = el.getAttribute("border");
-            if (!border.equals("0")) {
-                frame = "border";
+        if (el.attributes.getNamedItem("border") != null) {
+            border = el.getAttribute("border")
+            if (border != "0") {
+                frame = "border"
             }
         }
-        if (el.getAttributes().getNamedItem("frame") != null) {
-            frame = el.getAttribute("frame").toLowerCase();
+        if (el.attributes.getNamedItem("frame") != null) {
+            frame = el.getAttribute("frame").lowercase(Locale.getDefault())
         }
 
-        if (!border.equals("0")) {
-            final String fstyle = "border-@-style:solid;border-@-width:" + border + "px;";
-            if (frame.equals("above")) {
-                attrs = attrs + applyBorders(fstyle, "top");
+        if (border != "0") {
+            val fstyle = "border-@-style:solid;border-@-width:" + border + "px;"
+            if (frame == "above") {
+                attrs = attrs + applyBorders(fstyle, "top")
             }
-            if (frame.equals("below")) {
-                attrs = attrs + applyBorders(fstyle, "bottom");
+            if (frame == "below") {
+                attrs = attrs + applyBorders(fstyle, "bottom")
             }
-            if (frame.equals("hsides")) {
-                attrs = attrs + applyBorders(fstyle, "left");
-                attrs = attrs + applyBorders(fstyle, "right");
+            if (frame == "hsides") {
+                attrs = attrs + applyBorders(fstyle, "left")
+                attrs = attrs + applyBorders(fstyle, "right")
             }
-            if (frame.equals("lhs")) {
-                attrs = attrs + applyBorders(fstyle, "left");
+            if (frame == "lhs") {
+                attrs = attrs + applyBorders(fstyle, "left")
             }
-            if (frame.equals("rhs")) {
-                attrs = attrs + applyBorders(fstyle, "right");
+            if (frame == "rhs") {
+                attrs = attrs + applyBorders(fstyle, "right")
             }
-            if (frame.equals("vsides")) {
-                attrs = attrs + applyBorders(fstyle, "top");
-                attrs = attrs + applyBorders(fstyle, "bottom");
+            if (frame == "vsides") {
+                attrs = attrs + applyBorders(fstyle, "top")
+                attrs = attrs + applyBorders(fstyle, "bottom")
             }
-            if (frame.equals("box")) {
-                attrs = appAllBorders(attrs, fstyle);
+            if (frame == "box") {
+                attrs = appAllBorders(attrs, fstyle)
             }
-            if (frame.equals("border")) {
-                attrs = appAllBorders(attrs, fstyle);
+            if (frame == "border") {
+                attrs = appAllBorders(attrs, fstyle)
             }
         }
-        return attrs;
+        return attrs
     }
 
-    private static String appAllBorders(String attrs, final String fstyle) {
-        attrs = attrs + applyBorders(fstyle, "left");
-        attrs = attrs + applyBorders(fstyle, "right");
-        attrs = attrs + applyBorders(fstyle, "top");
-        attrs = attrs + applyBorders(fstyle, "bottom");
-        return attrs;
+    private fun appAllBorders(attrs: String, fstyle: String): String {
+        var attrs = attrs
+        attrs = attrs + applyBorders(fstyle, "left")
+        attrs = attrs + applyBorders(fstyle, "right")
+        attrs = attrs + applyBorders(fstyle, "top")
+        attrs = attrs + applyBorders(fstyle, "bottom")
+        return attrs
     }
 
-    private static String getFontElementStyle(final Element el, String attrs) {
-        if (el.getAttributes().getNamedItem("color") != null) {
-            attrs = attrs + "color: " + el.getAttribute("color") + ";";
+    private fun getFontElementStyle(el: Element, attrs: String): String {
+        var attrs = attrs
+        if (el.attributes.getNamedItem("color") != null) {
+            attrs = attrs + "color: " + el.getAttribute("color") + ";"
         }
-        if (el.getAttributes().getNamedItem("face") != null) {
-            attrs = attrs + "font-family: " + el.getAttribute("face") + ";";
+        if (el.attributes.getNamedItem("face") != null) {
+            attrs = attrs + "font-family: " + el.getAttribute("face") + ";"
         }
-        if (el.getAttributes().getNamedItem("size") != null) {
-            final String sz = el.getAttribute("size");
-            String ret = "normal";
-            if (sz.equals("1")) {
-                ret = "xx-small";
-            } else if (sz.equals("2")) {
-                ret = "x-small";
-            } else if (sz.equals("3")) {
-                ret = "small";
-            } else if (sz.equals("4")) {
-                ret = "normal";
-            } else if (sz.equals("5")) {
-                ret = "large";
-            } else if (sz.equals("6")) {
-                ret = "x-large";
-            } else if (sz.equals("7")) {
-                ret = "xx-large";
+        if (el.attributes.getNamedItem("size") != null) {
+            val sz = el.getAttribute("size")
+            var ret = "normal"
+            if (sz == "1") {
+                ret = "xx-small"
+            } else if (sz == "2") {
+                ret = "x-small"
+            } else if (sz == "3") {
+                ret = "small"
+            } else if (sz == "4") {
+                ret = "normal"
+            } else if (sz == "5") {
+                ret = "large"
+            } else if (sz == "6") {
+                ret = "x-large"
+            } else if (sz == "7") {
+                ret = "xx-large"
             } else if (sz.startsWith("+")) {
-                final int sn = Integer.parseInt(sz.substring(1));
+                val sn = sz.substring(1).toInt()
                 if ((sn > 0) && (sn <= 7)) {
-                    ret = (100 + (sn * 20)) + "%";
+                    ret = (100 + (sn * 20)).toString() + "%"
                 }
             } else if (sz.startsWith("-")) {
-                final int sn = Integer.parseInt(sz.substring(1));
+                val sn = sz.substring(1).toInt()
                 if ((sn > 0) && (sn <= 7)) {
-                    ret = (100 - (sn * 10)) + "%";
+                    ret = (100 - (sn * 10)).toString() + "%"
                 }
             }
-            attrs = attrs + "font-size: " + ret;
+            attrs = attrs + "font-size: " + ret
         }
-        return attrs;
+        return attrs
     }
 
-    private static String applyBorders(final String template, final String dir) {
-        return template.replaceAll("@", dir);
+    private fun applyBorders(template: String, dir: String): String {
+        return template.replace("@".toRegex(), dir)
     }
 
     //======== Normalize the dom =============================
-
     /**
      * Provides a cleanup of a HTML DOM tree according to the HTML syntax
      * restrictions. Currently, following actions are implemented:
-     * <ul>
-     * <li>Table cleanup
-     * <ul>
-     * <li>elements that are not acceptable within a table are moved before the table</li>
-     * </ul>
-     * </li>
-     * </ul>
+     *
+     *  * Table cleanup
+     *
+     *  * elements that are not acceptable within a table are moved before the table
+     *
+     *
+     *
      *
      * @param doc the processed DOM Document.
      */
-    public static void normalizeHTMLTree(final Document doc) {
+    fun normalizeHTMLTree(doc: Document) {
         //normalize tables
-        final NodeList tables = doc.getElementsByTagName("table");
-        for (int i = 0; i < tables.getLength(); i++) {
-            final Vector<Node> nodes = new Vector<>();
-            recursiveFindBadNodesInTable(tables.item(i), null, nodes);
-            for (final Node n : nodes) {
-                moveSubtreeBefore(n, tables.item(i));
+        val tables = doc.getElementsByTagName("table")
+        for (i in 0..<tables.length) {
+            val nodes = Vector<Node>()
+            recursiveFindBadNodesInTable(tables.item(i), null, nodes)
+            for (n in nodes) {
+                moveSubtreeBefore(n, tables.item(i))
             }
         }
     }
@@ -218,41 +219,41 @@ public class StyleElements {
      * @param cellroot last cell root
      * @param nodes    resulting list of nodes
      */
-    private static void recursiveFindBadNodesInTable(final Node n, final Node cellroot, final Vector<Node> nodes) {
-        Node cell = cellroot;
+    private fun recursiveFindBadNodesInTable(n: Node, cellroot: Node?, nodes: Vector<Node>) {
+        var cell = cellroot
 
-        if (n.getNodeType() == Node.ELEMENT_NODE) {
-            final String tag = n.getNodeName().toLowerCase();
-            if (tag.equals("table")) {
+        if (n.nodeType == Node.ELEMENT_NODE) {
+            val tag = n.nodeName.lowercase(Locale.getDefault())
+            if (tag == "table") {
                 if (cell != null) { //do not enter nested tables
-                    return;
+                    return
                 }
-            } else if (tag.equals("tbody") || tag.equals("thead") || tag.equals("tfoot")
-                    || tag.equals("tr") || tag.equals("col") || tag.equals("colgroup")) {
-            } else if (tag.equals("td") || tag.equals("th") || tag.equals("caption")) {
-                cell = n;
+            } else if (tag == "tbody" || tag == "thead" || tag == "tfoot"
+                || tag == "tr" || tag == "col" || tag == "colgroup"
+            ) {
+            } else if (tag == "td" || tag == "th" || tag == "caption") {
+                cell = n
             } else { //other elements
                 if (cell == null) {
-                    nodes.add(n);
-                    return;
+                    nodes.add(n)
+                    return
                 }
             }
-        } else if (n.getNodeType() == Node.TEXT_NODE) { //other nodes
-            if ((cell == null) && (n.getNodeValue().trim().length() > 0)) {
-                nodes.add(n);
-                return;
+        } else if (n.nodeType == Node.TEXT_NODE) { //other nodes
+            if ((cell == null) && (n.nodeValue.trim { it <= ' ' }.length > 0)) {
+                nodes.add(n)
+                return
             }
         }
 
-        final NodeList child = n.getChildNodes();
-        for (int i = 0; i < child.getLength(); i++) {
-            recursiveFindBadNodesInTable(child.item(i), cell, nodes);
+        val child = n.childNodes
+        for (i in 0..<child.length) {
+            recursiveFindBadNodesInTable(child.item(i), cell, nodes)
         }
     }
 
-    private static void moveSubtreeBefore(final Node root, final Node ref) {
-        root.getParentNode().removeChild(root);
-        ref.getParentNode().insertBefore(root, ref);
+    private fun moveSubtreeBefore(root: Node, ref: Node) {
+        root.parentNode.removeChild(root)
+        ref.parentNode.insertBefore(root, ref)
     }
-
 }

@@ -1,216 +1,139 @@
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.EcmaError;
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.Scriptable;
-import org.w3c.dom.Document;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-
-import io.github.remmerw.thor.cobra.html.js.Executor;
-import io.github.remmerw.thor.cobra.html.js.Window;
-import io.github.remmerw.thor.cobra.js.JavaScript;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext;
+import io.github.remmerw.thor.cobra.html.js.Executor
+import io.github.remmerw.thor.cobra.js.JavaScript
+import org.mozilla.javascript.Context
+import org.mozilla.javascript.EcmaError
+import org.mozilla.javascript.Function
+import org.mozilla.javascript.Scriptable
+import java.util.logging.Level
 
 /**
  * Implements common functionality of most elements.
  */
-public class HTMLAbstractUIElement extends HTMLElementImpl {
-    private Function onfocus, onblur, onclick, ondblclick, onmousedown, onmouseup, onmouseover, onmousemove, onmouseout, onkeypress,
-            onkeydown, onkeyup, oncontextmenu;
-    private Map<String, Function> functionByAttribute = null;
+open class HTMLAbstractUIElement(name: String?) : HTMLElementImpl(name) {
+    var onfocus: Function? = null
+        get() = this.getEventFunction(field, "onfocus")
+    var onblur: Function? = null
+        get() = this.getEventFunction(field, "onblur")
+    var onclick: Function? = null
+        get() = this.getEventFunction(field, "onclick")
+    var ondblclick: Function? = null
+        get() = this.getEventFunction(field, "ondblclick")
+    var onmousedown: Function? = null
+        get() = this.getEventFunction(field, "onmousedown")
+    var onmouseup: Function? = null
+        get() = this.getEventFunction(field, "onmouseup")
+    var onmouseover: Function? = null
+        get() = this.getEventFunction(field, "onmouseover")
+    var onmousemove: Function? = null
+        get() = this.getEventFunction(field, "onmousemove")
+    var onmouseout: Function? = null
+        get() = this.getEventFunction(field, "onmouseout")
+    var onkeypress: Function? = null
+        get() = this.getEventFunction(field, "onkeypress")
+    var onkeydown: Function? = null
+        get() = this.getEventFunction(field, "onkeydown")
+    var onkeyup: Function? = null
+        get() = this.getEventFunction(field, "onkeyup")
+    var oncontextmenu: Function? = null
+        get() = this.getEventFunction(field, "oncontextmenu")
+    private var functionByAttribute: MutableMap<String?, Function?>? = null
 
-    public HTMLAbstractUIElement(final String name) {
-        super(name);
-    }
-
-    public Function getOnblur() {
-        return this.getEventFunction(onblur, "onblur");
-    }
-
-    public void setOnblur(final Function onblur) {
-        this.onblur = onblur;
-    }
-
-    public Function getOnclick() {
-        return this.getEventFunction(onclick, "onclick");
-    }
-
-    public void setOnclick(final Function onclick) {
-        this.onclick = onclick;
-    }
-
-    public Function getOndblclick() {
-        return this.getEventFunction(ondblclick, "ondblclick");
-    }
-
-    public void setOndblclick(final Function ondblclick) {
-        this.ondblclick = ondblclick;
-    }
-
-    public Function getOnfocus() {
-        return this.getEventFunction(onfocus, "onfocus");
-    }
-
-    public void setOnfocus(final Function onfocus) {
-        this.onfocus = onfocus;
-    }
-
-    public Function getOnkeydown() {
-        return this.getEventFunction(onkeydown, "onkeydown");
-    }
-
-    public void setOnkeydown(final Function onkeydown) {
-        this.onkeydown = onkeydown;
-    }
-
-    public Function getOnkeypress() {
-        return this.getEventFunction(onkeypress, "onkeypress");
-    }
-
-    public void setOnkeypress(final Function onkeypress) {
-        this.onkeypress = onkeypress;
-    }
-
-    public Function getOnkeyup() {
-        return this.getEventFunction(onkeyup, "onkeyup");
-    }
-
-    public void setOnkeyup(final Function onkeyup) {
-        this.onkeyup = onkeyup;
-    }
-
-    public Function getOnmousedown() {
-        return this.getEventFunction(onmousedown, "onmousedown");
-    }
-
-    public void setOnmousedown(final Function onmousedown) {
-        this.onmousedown = onmousedown;
-    }
-
-    public Function getOnmousemove() {
-        return this.getEventFunction(onmousemove, "onmousemove");
-    }
-
-    public void setOnmousemove(final Function onmousemove) {
-        this.onmousemove = onmousemove;
-    }
-
-    public Function getOnmouseout() {
-        return this.getEventFunction(onmouseout, "onmouseout");
-    }
-
-    public void setOnmouseout(final Function onmouseout) {
-        this.onmouseout = onmouseout;
-    }
-
-    public Function getOnmouseover() {
-        return this.getEventFunction(onmouseover, "onmouseover");
-    }
-
-    public void setOnmouseover(final Function onmouseover) {
-        this.onmouseover = onmouseover;
-    }
-
-    public Function getOnmouseup() {
-        return this.getEventFunction(onmouseup, "onmouseup");
-    }
-
-    public void setOnmouseup(final Function onmouseup) {
-        this.onmouseup = onmouseup;
-    }
-
-    public Function getOncontextmenu() {
-        return this.getEventFunction(oncontextmenu, "oncontextmenu");
-    }
-
-    public void setOncontextmenu(final Function oncontextmenu) {
-        this.oncontextmenu = oncontextmenu;
-    }
-
-    public void focus() {
-        final UINode node = this.getUINode();
+    open fun focus() {
+        val node = this.getUINode()
         if (node != null) {
-            node.focus();
+            node.focus()
         }
     }
 
-    public void blur() {
-        final UINode node = this.getUINode();
+    open fun blur() {
+        val node = this.getUINode()
         if (node != null) {
-            node.blur();
+            node.blur()
         }
     }
 
-    protected Function getEventFunction(final Function varValue, final String attributeName) {
+    protected fun getEventFunction(varValue: Function?, attributeName: String): Function? {
         if (varValue != null) {
-            return varValue;
+            return varValue
         }
-        final String normalAttributeName = normalizeAttributeName(attributeName);
-        synchronized (this) {
-            Map<String, Function> fba = this.functionByAttribute;
-            Function f = fba == null ? null : fba.get(normalAttributeName);
+        val normalAttributeName: String =
+            normalizeAttributeName(attributeName)
+        synchronized(this) {
+            var fba = this.functionByAttribute
+            var f = if (fba == null) null else fba.get(normalAttributeName)
             if (f != null) {
-                return f;
+                return f
             }
-            final UserAgentContext uac = this.getUserAgentContext();
-            if (uac == null) {
-                throw new IllegalStateException("No user agent context.");
-            }
+            val uac = this.getUserAgentContext()
+            checkNotNull(uac) { "No user agent context." }
             if (uac.isScriptingEnabled()) {
-                final String attributeValue = this.getAttribute(attributeName);
-                if ((attributeValue != null) && (attributeValue.length() != 0)) {
-                    final String functionCode = "function " + normalAttributeName + "_" + System.identityHashCode(this) + "() { " + attributeValue
-                            + " }";
-                    final Document doc = this.document;
-                    if (doc == null) {
-                        throw new IllegalStateException("Element does not belong to a document.");
-                    }
-                    final Window window = ((HTMLDocumentImpl) doc).getWindow();
-                    final Context ctx = Executor.createContext(this.getDocumentURL(), uac, window.getContextFactory());
+                val attributeValue = this.getAttribute(attributeName)
+                if ((attributeValue != null) && (attributeValue.length != 0)) {
+                    val functionCode =
+                        ("function " + normalAttributeName + "_" + System.identityHashCode(this) + "() { " + attributeValue
+                                + " }")
+                    val doc = this.document
+                    checkNotNull(doc) { "Element does not belong to a document." }
+                    val window = (doc as HTMLDocumentImpl).getWindow()
+                    val ctx = Executor.createContext(
+                        this.getDocumentURL(),
+                        uac,
+                        window.getContextFactory()
+                    )
                     try {
-                        final Scriptable scope = window.getWindowScope();
-                        if (scope == null) {
-                            throw new IllegalStateException("Scriptable (scope) instance was null");
-                        }
-                        final Scriptable thisScope = (Scriptable) JavaScript.getInstance().getJavascriptObject(this, scope);
+                        val scope = window.getWindowScope()
+                        checkNotNull(scope) { "Scriptable (scope) instance was null" }
+                        val thisScope =
+                            JavaScript.instance.getJavascriptObject(this, scope) as Scriptable?
                         try {
                             // TODO: Get right line number for script. //TODO: Optimize this
                             // in case it's called multiple times? Is that done?
-                            f = ctx.compileFunction(thisScope, functionCode, this.getTagName() + "[" + this.getId() + "]." + attributeName, 1, null);
-                        } catch (final EcmaError ecmaError) {
-                            logger.log(Level.WARNING, "Javascript error at " + ecmaError.sourceName() + ":" + ecmaError.lineNumber() + ": "
-                                    + ecmaError.getMessage(), ecmaError);
-                            f = null;
-                        } catch (final Exception err) {
-                            logger.log(Level.WARNING, "Unable to evaluate Javascript code", err);
-                            f = null;
+                            f = ctx.compileFunction(
+                                thisScope,
+                                functionCode,
+                                this.tagName + "[" + this.id + "]." + attributeName,
+                                1,
+                                null
+                            )
+                        } catch (ecmaError: EcmaError) {
+                            logger.log(
+                                Level.WARNING,
+                                ("Javascript error at " + ecmaError.sourceName() + ":" + ecmaError.lineNumber() + ": "
+                                        + ecmaError.message),
+                                ecmaError
+                            )
+                            f = null
+                        } catch (err: Exception) {
+                            logger.log(
+                                Level.WARNING,
+                                "Unable to evaluate Javascript code",
+                                err
+                            )
+                            f = null
                         }
                     } finally {
-                        Context.exit();
+                        Context.exit()
                     }
                 }
                 if (fba == null) {
-                    fba = new HashMap<>(1);
-                    this.functionByAttribute = fba;
+                    fba = HashMap<String?, Function?>(1)
+                    this.functionByAttribute = fba
                 }
-                fba.put(normalAttributeName, f);
+                fba.put(normalAttributeName, f)
             }
-            return f;
+            return f
         }
     }
 
-    @Override
-    protected void handleAttributeChanged(String name, String oldValue, String newValue) {
-        super.handleAttributeChanged(name, oldValue, newValue);
+    override fun handleAttributeChanged(name: String, oldValue: String?, newValue: String?) {
+        super.handleAttributeChanged(name, oldValue, newValue)
         if (name.startsWith("on")) {
-            synchronized (this) {
-                final Map<String, Function> fba = this.functionByAttribute;
+            synchronized(this) {
+                val fba = this.functionByAttribute
                 if (fba != null) {
-                    fba.remove(name);
+                    fba.remove(name)
                 }
             }
         }

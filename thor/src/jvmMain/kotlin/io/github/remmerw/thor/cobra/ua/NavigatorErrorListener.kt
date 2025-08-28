@@ -20,14 +20,16 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.github.remmerw.thor.cobra.ua;
+package io.github.remmerw.thor.cobra.ua
+
+import java.util.EventListener
 
 /**
  * A listener of navigator events.
  *
- * @see NavigatorExtensionContext#addNavigatorErrorListener(NavigatorErrorListener)
+ * @see NavigatorExtensionContext.addNavigatorErrorListener
  * @see NavigatorWindowListener
  */
-public interface NavigatorErrorListener extends java.util.EventListener {
-    void errorOcurred(NavigatorExceptionEvent event);
+interface NavigatorErrorListener : EventListener {
+    fun errorOcurred(event: NavigatorExceptionEvent?)
 }

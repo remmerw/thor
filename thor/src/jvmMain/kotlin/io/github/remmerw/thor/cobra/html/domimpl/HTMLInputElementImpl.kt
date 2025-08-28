@@ -21,60 +21,53 @@
 /*
  * Created on Jan 15, 2006
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.html.HTMLInputElement;
+import io.github.remmerw.thor.cobra.html.FormInput
+import org.w3c.dom.html.HTMLInputElement
+import java.util.Locale
+import java.util.logging.Level
 
-import java.util.logging.Level;
+class HTMLInputElementImpl(name: String?) : HTMLBaseInputElement(name), HTMLInputElement {
+    private var defaultChecked = false
 
-import io.github.remmerw.thor.cobra.html.FormInput;
-
-public class HTMLInputElementImpl extends HTMLBaseInputElement implements HTMLInputElement {
-    private boolean defaultChecked;
-
-    public HTMLInputElementImpl(final String name) {
-        super(name);
+    override fun getDefaultChecked(): Boolean {
+        return this.defaultChecked
     }
 
-    public boolean getDefaultChecked() {
-        return this.defaultChecked;
+    override fun setDefaultChecked(defaultChecked: Boolean) {
+        this.defaultChecked = defaultChecked
     }
 
-    public void setDefaultChecked(final boolean defaultChecked) {
-        this.defaultChecked = defaultChecked;
-    }
-
-    @Override
-    public boolean getChecked() {
-        final InputContext ic = this.inputContext;
+    override fun getChecked(): Boolean {
+        val ic = this.inputContext
         if (ic == null) {
-            return this.getAttributeAsBoolean("checked");
+            return this.getAttributeAsBoolean("checked")
         } else {
-            return ic.getChecked();
+            return ic.getChecked()
         }
     }
 
-    @Override
-    public void setChecked(final boolean checked) {
-        final InputContext ic = this.inputContext;
+    override fun setChecked(checked: Boolean) {
+        val ic = this.inputContext
         if (ic != null) {
-            ic.setChecked(checked);
+            ic.setChecked(checked)
         }
     }
 
-    public int getMaxLength() {
-        final InputContext ic = this.inputContext;
-        return ic == null ? 0 : ic.getMaxLength();
+    override fun getMaxLength(): Int {
+        val ic = this.inputContext
+        return if (ic == null) 0 else ic.getMaxLength()
     }
 
-    public void setMaxLength(final int maxLength) {
-        final InputContext ic = this.inputContext;
+    override fun setMaxLength(maxLength: Int) {
+        val ic = this.inputContext
         if (ic != null) {
-            ic.setMaxLength(maxLength);
+            ic.setMaxLength(maxLength)
         }
     }
 
-  /* public int getSize() {
+    /* public int getSize() {
     final InputContext ic = this.inputContext;
     return ic == null ? 0 : ic.getControlSize();
 
@@ -85,128 +78,130 @@ public class HTMLInputElementImpl extends HTMLBaseInputElement implements HTMLIn
     }
   }
   }*/
-
-    public String getSize() {
-        final InputContext ic = this.inputContext;
-        final int size = ic == null ? 0 : ic.getControlSize();
-        return String.valueOf(size);
+    override fun getSize(): String {
+        val ic = this.inputContext
+        val size = if (ic == null) 0 else ic.getControlSize()
+        return size.toString()
     }
 
-    public void setSize(final String size) {
-        final InputContext ic = this.inputContext;
+    override fun setSize(size: String) {
+        val ic = this.inputContext
         if (ic != null) {
-            ic.setControlSize(Integer.parseInt(size));
+            ic.setControlSize(size.toInt())
         }
     }
 
-    public String getSrc() {
-        return this.getAttribute("src");
+    override fun getSrc(): String? {
+        return this.getAttribute("src")
     }
 
-    public void setSrc(final String src) {
-        this.setAttribute("src", src);
+    override fun setSrc(src: String?) {
+        this.setAttribute("src", src)
     }
 
     /**
      * Gets input type in lowercase.
      */
-    public String getType() {
-        final String type = this.getAttribute("type");
-        return type == null ? null : type.toLowerCase();
+    override fun getType(): String? {
+        val type = this.getAttribute("type")
+        return if (type == null) null else type.lowercase(Locale.getDefault())
     }
 
-    public void setType(final String type) {
-        this.setAttribute("type", type);
+    fun setType(type: String?) {
+        this.setAttribute("type", type)
     }
 
-    public String getUseMap() {
-        return this.getAttribute("usemap");
+    override fun getUseMap(): String? {
+        return this.getAttribute("usemap")
     }
 
-    public void setUseMap(final String useMap) {
-        this.setAttribute("usemap", useMap);
+    override fun setUseMap(useMap: String?) {
+        this.setAttribute("usemap", useMap)
     }
 
-    public void click() {
-        final InputContext ic = this.inputContext;
+    override fun click() {
+        val ic = this.inputContext
         if (ic != null) {
-            ic.click();
+            ic.click()
         }
     }
 
-    public boolean isSubmittableWithEnterKey() {
-        final String type = this.getType();
-        return ((type == null) || "".equals(type) || "text".equals(type) || "password".equals(type));
-    }
+    val isSubmittableWithEnterKey: Boolean
+        get() {
+            val type = this.getType()
+            return ((type == null) || "" == type || "text" == type || "password" == type)
+        }
 
-    public boolean isSubmittableWithPress() {
-        final String type = this.getType();
-        return "submit".equals(type) || "image".equals(type);
-    }
+    val isSubmittableWithPress: Boolean
+        get() {
+            val type = this.getType()
+            return "submit" == type || "image" == type
+        }
 
-    public boolean isSubmitInput() {
-        final String type = this.getType();
-        return "submit".equals(type);
-    }
+    val isSubmitInput: Boolean
+        get() {
+            val type = this.getType()
+            return "submit" == type
+        }
 
-    public boolean isImageInput() {
-        final String type = this.getType();
-        return "image".equals(type);
-    }
+    val isImageInput: Boolean
+        get() {
+            val type = this.getType()
+            return "image" == type
+        }
 
-    public boolean isResetInput() {
-        final String type = this.getType();
-        return "reset".equals(type);
-    }
+    val isResetInput: Boolean
+        get() {
+            val type = this.getType()
+            return "reset" == type
+        }
 
-    @Override
-    void resetInput() {
-        final InputContext ic = this.inputContext;
+    override fun resetInput() {
+        val ic = this.inputContext
         if (ic != null) {
-            ic.resetInput();
+            ic.resetInput()
         }
     }
 
-    @Override
-    protected FormInput[] getFormInputs() {
-        final String type = this.getType();
-        final String name = this.getName();
+    protected override fun getFormInputs(): Array<FormInput?>? {
+        val type = this.getType()
+        val name = this.name
         if (name == null) {
-            return null;
+            return null
         }
         if (type == null) {
-            return new FormInput[]{new FormInput(name, this.getValue())};
+            return arrayOf<FormInput>(FormInput(name, this.value))
         } else {
-            if ("text".equals(type) || "password".equals(type) || "hidden".equals(type) || "url".equals(type) || "number".equals(type) || "search".equals(type) || "".equals(type)) {
-                return new FormInput[]{new FormInput(name, this.getValue())};
-            } else if ("submit".equals(type)) {
+            if ("text" == type || "password" == type || "hidden" == type || "url" == type || "number" == type || "search" == type || "" == type) {
+                return arrayOf<FormInput>(FormInput(name, this.value))
+            } else if ("submit" == type) {
                 // It's done as an "extra" form input
-                return null;
-            } else if ("radio".equals(type) || "checkbox".equals(type)) {
+                return null
+            } else if ("radio" == type || "checkbox" == type) {
                 if (this.getChecked()) {
-                    String value = this.getValue();
-                    if ((value == null) || (value.length() == 0)) {
-                        value = "on";
+                    var value = this.value
+                    if ((value == null) || (value.length == 0)) {
+                        value = "on"
                     }
-                    return new FormInput[]{new FormInput(name, value)};
+                    return arrayOf<FormInput>(FormInput(name, value))
                 } else {
-                    return null;
+                    return null
                 }
-            } else if ("image".equals(type)) {
+            } else if ("image" == type) {
                 // It's done as an "extra" form input
-                return null;
-            } else if ("file".equals(type)) {
-                final java.io.File file = this.getFileValue();
+                return null
+            } else if ("file" == type) {
+                val file = this.getFileValue()
                 if (file == null) {
                     if (logger.isLoggable(Level.INFO)) {
-                        logger.info("getFormInputs(): File input named " + name + " has null file.");
+                        logger.info("getFormInputs(): File input named " + name + " has null file.")
                     }
-                    return null;
+                    return null
                 } else {
-                    return new FormInput[]{new FormInput(name, file)};
+                    return arrayOf<FormInput>(FormInput(name, file))
                 }
             } else {
-                return null;
+                return null
             }
         }
     }

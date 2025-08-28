@@ -21,43 +21,38 @@
 /*
  * Created on Nov 5, 2005
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
+import cz.vutbr.web.css.CSSProperty.VerticalAlign
+import java.awt.Graphics
 
-import cz.vutbr.web.css.CSSProperty.VerticalAlign;
-
-interface UIControl {
-    void setRUIControl(RUIControl ruicontrol);
+internal interface UIControl {
+    fun setRUIControl(ruicontrol: RUIControl?)
 
     /**
      * Called as the control is layed out, either the first time HTML layout
      * occurs or when the DOM changes. This method should reset its state assuming
      * the element has changed, and change its preferred size if appropriate.
      */
-    void reset(int availWidth, int availHeight);
+    fun reset(availWidth: Int, availHeight: Int)
 
-    Dimension getPreferredSize();
+    val preferredSize: Dimension?
 
-    default VerticalAlign getVAlign() {
-        return VerticalAlign.BASELINE;
-    }
+    val vAlign: CSSProperty.VerticalAlign?
+        get() = VerticalAlign.BASELINE
 
-    void setBounds(int x, int y, int width, int height);
+    fun setBounds(x: Int, y: Int, width: Int, height: Int)
 
-    void invalidate();
+    fun invalidate()
 
-    Color getBackgroundColor();
+    val backgroundColor: Color?
 
     // public boolean paintSelection(Graphics g, boolean inSelection,
     // RenderableSpot startPoint, RenderableSpot endPoint);
-    void paint(Graphics g);
+    fun paint(g: Graphics?)
 
-    java.awt.Component getComponent();
+    val component: Component?
 
-    default boolean isReadyToPaint() {
-        return true;
-    }
+    val isReadyToPaint: Boolean
+        get() = true
 }

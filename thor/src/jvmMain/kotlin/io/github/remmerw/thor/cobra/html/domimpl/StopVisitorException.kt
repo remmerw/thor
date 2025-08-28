@@ -21,37 +21,32 @@
 /*
  * Created on Dec 3, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-class StopVisitorException extends RuntimeException {
-    private static final long serialVersionUID = -2910258563737355879L;
-    private final Object tag;
+internal class StopVisitorException : RuntimeException {
+    val tag: Any?
 
-    public StopVisitorException() {
-        super();
-        this.tag = null;
+    constructor() : super() {
+        this.tag = null
     }
 
-    public StopVisitorException(final String message) {
-        super(message);
-        this.tag = null;
+    constructor(message: String?) : super(message) {
+        this.tag = null
     }
 
-    public StopVisitorException(final String message, final Throwable cause) {
-        super(message, cause);
-        this.tag = null;
+    constructor(message: String?, cause: Throwable?) : super(message, cause) {
+        this.tag = null
     }
 
-    public StopVisitorException(final Throwable cause) {
-        super(cause);
-        this.tag = null;
+    constructor(cause: Throwable?) : super(cause) {
+        this.tag = null
     }
 
-    public StopVisitorException(final Object tag) {
-        this.tag = tag;
+    constructor(tag: Any?) {
+        this.tag = tag
     }
 
-    public final Object getTag() {
-        return this.tag;
+    companion object {
+        private val serialVersionUID = -2910258563737355879L
     }
 }

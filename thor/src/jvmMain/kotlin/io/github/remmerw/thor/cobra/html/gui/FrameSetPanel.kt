@@ -21,241 +21,263 @@
 /*
  * Created on Jan 29, 2006
  */
-package io.github.remmerw.thor.cobra.html.gui;
+package io.github.remmerw.thor.cobra.html.gui
 
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Insets;
-import java.util.ArrayList;
-import java.util.StringTokenizer;
-import java.util.logging.Logger;
-
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
-
-import io.github.remmerw.thor.cobra.html.BrowserFrame;
-import io.github.remmerw.thor.cobra.html.HtmlRendererContext;
-import io.github.remmerw.thor.cobra.html.domimpl.FrameNode;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl;
-import io.github.remmerw.thor.cobra.html.renderer.NodeRenderer;
-import io.github.remmerw.thor.cobra.html.style.HtmlLength;
-import io.github.remmerw.thor.cobra.util.gui.WrapperLayout;
+import io.github.remmerw.thor.cobra.html.HtmlRendererContext
+import io.github.remmerw.thor.cobra.html.domimpl.FrameNode
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
+import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
+import io.github.remmerw.thor.cobra.html.renderer.NodeRenderer
+import io.github.remmerw.thor.cobra.html.style.HtmlLength
+import io.github.remmerw.thor.cobra.util.gui.WrapperLayout
+import java.awt.Component
+import java.awt.Dimension
+import java.util.StringTokenizer
+import java.util.logging.Logger
+import javax.swing.JComponent
+import javax.swing.JPanel
+import javax.swing.JSplitPane
 
 /**
- * A Swing panel used to render FRAMESETs only. It is used by {@link HtmlPanel}
+ * A Swing panel used to render FRAMESETs only. It is used by [HtmlPanel]
  * when a document is determined to be a FRAMESET.
  *
  * @see HtmlPanel
+ *
  * @see HtmlBlockPanel
  */
-public class FrameSetPanel extends JComponent implements NodeRenderer {
-    private static final long serialVersionUID = 5048031593959987324L;
-    private static final Logger logger = Logger.getLogger(FrameSetPanel.class.getName());
-    private HTMLElementImpl rootNode;
-    private HtmlRendererContext htmlContext;
-    private Component[] frameComponents;
-    private boolean domInvalid = true;
+class FrameSetPanel : JComponent(), NodeRenderer {
+    private var rootNode: HTMLElementImpl? = null
+    private var htmlContext: HtmlRendererContext? = null
+    private var frameComponents: Array<Component?>?
+    private var domInvalid = true
 
-    public FrameSetPanel() {
-        super();
-        this.setLayout(WrapperLayout.getInstance());
+    init {
+        this.layout = WrapperLayout.instance
         // TODO: This should be a temporary preferred size
-        this.setPreferredSize(new Dimension(600, 400));
-    }
-
-    private static HtmlLength[] getLengths(final String spec) {
-        if (spec == null) {
-            return new HtmlLength[]{new HtmlLength("1*")};
-        }
-        final StringTokenizer tok = new StringTokenizer(spec, ",");
-        final ArrayList<HtmlLength> lengths = new ArrayList<>();
-        while (tok.hasMoreTokens()) {
-            final String token = tok.nextToken().trim();
-            try {
-                lengths.add(new HtmlLength(token));
-            } catch (final Exception err) {
-                logger.warning("Frame rows or cols value [" + spec + "] is invalid.");
-            }
-        }
-        return lengths.toArray(HtmlLength.EMPTY_ARRAY);
-    }
-
-    private static HTMLElementImpl[] getSubFrames(final HTMLElementImpl parent) {
-        final NodeImpl[] children = parent.getChildrenArray();
-        final ArrayList<NodeImpl> subFrames = new ArrayList<>();
-        for (final NodeImpl child : children) {
-            if (child instanceof HTMLElementImpl) {
-                final String nodeName = child.getNodeName();
-                if ("FRAME".equalsIgnoreCase(nodeName) || "FRAMESET".equalsIgnoreCase(nodeName)) {
-                    subFrames.add(child);
-                }
-            }
-        }
-        return subFrames.toArray(new HTMLElementImpl[0]);
-    }
-
-    private static int[] getAbsoluteLengths(final HtmlLength[] htmlLengths, final int totalSize) {
-        final int[] absLengths = new int[htmlLengths.length];
-        int totalSizeNonMulti = 0;
-        int sumMulti = 0;
-        for (int i = 0; i < htmlLengths.length; i++) {
-            final HtmlLength htmlLength = htmlLengths[i];
-            final int lengthType = htmlLength.getLengthType();
-            if (lengthType == HtmlLength.PIXELS) {
-                final int absLength = htmlLength.getRawValue();
-                totalSizeNonMulti += absLength;
-                absLengths[i] = absLength;
-            } else if (lengthType == HtmlLength.LENGTH) {
-                final int absLength = htmlLength.getLength(totalSize);
-                totalSizeNonMulti += absLength;
-                absLengths[i] = absLength;
-            } else {
-                sumMulti += htmlLength.getRawValue();
-            }
-        }
-        final int remaining = totalSize - totalSizeNonMulti;
-        if ((remaining > 0) && (sumMulti > 0)) {
-            for (int i = 0; i < htmlLengths.length; i++) {
-                final HtmlLength htmlLength = htmlLengths[i];
-                if (htmlLength.getLengthType() == HtmlLength.MULTI_LENGTH) {
-                    final int absLength = (remaining * htmlLength.getRawValue()) / sumMulti;
-                    absLengths[i] = absLength;
-                }
-            }
-        }
-        return absLengths;
+        this.preferredSize = Dimension(600, 400)
     }
 
     /**
      * Sets the FRAMESET node and invalidates the component so it can be rendered
      * immediately in the GUI thread.
      */
-    public void setRootNode(final NodeImpl node) {
+    override fun setRootNode(node: NodeImpl?) {
         // Method expected to be called in the GUI thread.
-        if (!(node instanceof HTMLElementImpl element)) {
-            throw new IllegalArgumentException("node=" + node);
-        }
-        this.rootNode = element;
-        final HtmlRendererContext context = element.getHtmlRendererContext();
-        this.htmlContext = context;
-        this.domInvalid = true;
-        this.invalidate();
-        this.validateAll();
-        this.repaint();
+        require(node is HTMLElementImpl) { "node=" + node }
+        this.rootNode = node
+        val context = node.htmlRendererContext
+        this.htmlContext = context
+        this.domInvalid = true
+        this.invalidate()
+        this.validateAll()
+        this.repaint()
     }
 
-    protected void validateAll() {
-        Component toValidate = this;
-        for (; ; ) {
-            final Container parent = toValidate.getParent();
-            if ((parent == null) || parent.isValid()) {
-                break;
+    protected fun validateAll() {
+        var toValidate: Component? = this
+        while (true) {
+            val parent = toValidate!!.getParent()
+            if ((parent == null) || parent.isValid) {
+                break
             }
-            toValidate = parent;
+            toValidate = parent
         }
-        toValidate.validate();
+        toValidate.validate()
     }
 
-    public final void processDocumentNotifications(final DocumentNotification[] notifications) {
+    fun processDocumentNotifications(notifications: Array<DocumentNotification?>) {
         // Called in the GUI thread.
-        if (notifications.length > 0) {
+        if (notifications.size > 0) {
             // Not very efficient, but it will do.
-            this.domInvalid = true;
-            this.invalidate();
-            if (this.isVisible()) {
-                this.validate();
-                this.repaint();
+            this.domInvalid = true
+            this.invalidate()
+            if (this.isVisible) {
+                this.validate()
+                this.repaint()
             }
         }
-    }
-
-    @Override
-    public void setBounds(final int x, final int y, final int w, final int h) {
-        super.setBounds(x, y, w, h);
     }
 
     /**
      * This method is invoked by AWT in the GUI thread to lay out the component.
      * This implementation is an override.
      */
-    @Override
-    public void doLayout() {
+    override fun doLayout() {
         if (this.domInvalid) {
-            this.domInvalid = false;
-            this.removeAll();
-            final HtmlRendererContext context = this.htmlContext;
+            this.domInvalid = false
+            this.removeAll()
+            val context = this.htmlContext
             if (context != null) {
-                final HTMLElementImpl element = this.rootNode;
-                final String rows = element.getAttribute("rows");
-                final String cols = element.getAttribute("cols");
-                final HtmlLength[] rowLengths = FrameSetPanel.getLengths(rows);
-                final HtmlLength[] colLengths = FrameSetPanel.getLengths(cols);
-                final HTMLElementImpl[] subframes = FrameSetPanel.getSubFrames(element);
-                final Component[] frameComponents = new Component[subframes.length];
-                this.frameComponents = frameComponents;
-                for (int i = 0; i < subframes.length; i++) {
-                    final HTMLElementImpl frameElement = subframes[i];
-                    if ((frameElement != null) && "FRAMESET".equalsIgnoreCase(frameElement.getTagName())) {
-                        final FrameSetPanel fsp = new FrameSetPanel();
-                        fsp.setRootNode(frameElement);
-                        frameComponents[i] = fsp;
+                val element = this.rootNode!!
+                val rows = element.getAttribute("rows")
+                val cols = element.getAttribute("cols")
+                val rowLengths: Array<HtmlLength> = getLengths(rows)
+                val colLengths: Array<HtmlLength> = getLengths(cols)
+                val subframes: Array<HTMLElementImpl?> = getSubFrames(element)
+                val frameComponents = arrayOfNulls<Component>(subframes.size)
+                this.frameComponents = frameComponents
+                for (i in subframes.indices) {
+                    val frameElement = subframes[i]
+                    if ((frameElement != null) && "FRAMESET".equals(
+                            frameElement.tagName,
+                            ignoreCase = true
+                        )
+                    ) {
+                        val fsp = FrameSetPanel()
+                        fsp.setRootNode(frameElement)
+                        frameComponents[i] = fsp
                     } else {
-                        if (frameElement instanceof FrameNode frameNode) {
-                            if (frameNode.getBrowserFrame() == null) {
-                                final BrowserFrame frame = context.createBrowserFrame();
-                                frameNode.setBrowserFrame(frame);
-                                frameComponents[i] = frame.getComponent();
+                        if (frameElement is FrameNode) {
+                            if (frameElement.browserFrame == null) {
+                                val frame = context.createBrowserFrame()
+                                frameElement.browserFrame = frame
+                                frameComponents[i] = frame.component
                             } else {
-                                frameComponents[i] = frameNode.getBrowserFrame().getComponent();
+                                frameComponents[i] = frameElement.browserFrame!!.component
                             }
                         } else {
-                            frameComponents[i] = new JPanel();
+                            frameComponents[i] = JPanel()
                         }
                     }
-
                 }
-                final HtmlLength[] rhl = rowLengths;
-                final HtmlLength[] chl = colLengths;
-                final Component[] fc = this.frameComponents;
+                val rhl = rowLengths
+                val chl = colLengths
+                val fc = this.frameComponents
                 if ((rhl != null) && (chl != null) && (fc != null)) {
-                    final Dimension size = this.getSize();
-                    final Insets insets = this.getInsets();
-                    final int width = size.width - insets.left - insets.right;
-                    final int height = size.height - insets.left - insets.right;
-                    final int[] absColLengths = getAbsoluteLengths(chl, width);
-                    final int[] absRowLengths = getAbsoluteLengths(rhl, height);
-                    this.add(this.getSplitPane(this.htmlContext, absColLengths, 0, absColLengths.length, absRowLengths, 0, absRowLengths.length, fc));
+                    val size = this.size
+                    val insets = this.insets
+                    val width = size.width - insets.left - insets.right
+                    val height = size.height - insets.left - insets.right
+                    val absColLengths: IntArray = getAbsoluteLengths(chl, width)
+                    val absRowLengths: IntArray = getAbsoluteLengths(rhl, height)
+                    this.add(
+                        this.getSplitPane(
+                            this.htmlContext,
+                            absColLengths,
+                            0,
+                            absColLengths.size,
+                            absRowLengths,
+                            0,
+                            absRowLengths.size,
+                            fc
+                        )
+                    )
                 }
             }
         }
-        super.doLayout();
+        super.doLayout()
     }
 
-    private Component getSplitPane(final HtmlRendererContext context, final int[] colLengths, final int firstCol, final int numCols,
-                                   final int[] rowLengths, final int firstRow,
-                                   final int numRows, final Component[] frameComponents) {
+    private fun getSplitPane(
+        context: HtmlRendererContext?, colLengths: IntArray, firstCol: Int, numCols: Int,
+        rowLengths: IntArray, firstRow: Int,
+        numRows: Int, frameComponents: Array<Component?>
+    ): Component? {
         if (numCols == 1) {
-            final int frameindex = (colLengths.length * firstRow) + firstCol;
-            final Component topComponent = frameindex < frameComponents.length ? frameComponents[frameindex] : null;
+            val frameindex = (colLengths.size * firstRow) + firstCol
+            val topComponent =
+                if (frameindex < frameComponents.size) frameComponents[frameindex] else null
             if (numRows == 1) {
-                return topComponent;
+                return topComponent
             } else {
-                final Component bottomComponent = this.getSplitPane(context, colLengths, firstCol, numCols, rowLengths, firstRow + 1, numRows - 1,
-                        frameComponents);
-                final JSplitPane sp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, topComponent, bottomComponent);
-                sp.setDividerLocation(rowLengths[firstRow]);
-                return sp;
+                val bottomComponent = this.getSplitPane(
+                    context, colLengths, firstCol, numCols, rowLengths, firstRow + 1, numRows - 1,
+                    frameComponents
+                )
+                val sp = JSplitPane(JSplitPane.VERTICAL_SPLIT, topComponent, bottomComponent)
+                sp.dividerLocation = rowLengths[firstRow]
+                return sp
             }
         } else {
-            final Component rightComponent = this.getSplitPane(context, colLengths, firstCol + 1, numCols - 1, rowLengths, firstRow, numRows,
-                    frameComponents);
-            final Component leftComponent = this.getSplitPane(context, colLengths, firstCol, 1, rowLengths, firstRow, numRows, frameComponents);
-            final JSplitPane sp = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftComponent, rightComponent);
-            sp.setDividerLocation(colLengths[firstCol]);
-            return sp;
+            val rightComponent = this.getSplitPane(
+                context, colLengths, firstCol + 1, numCols - 1, rowLengths, firstRow, numRows,
+                frameComponents
+            )
+            val leftComponent = this.getSplitPane(
+                context,
+                colLengths,
+                firstCol,
+                1,
+                rowLengths,
+                firstRow,
+                numRows,
+                frameComponents
+            )
+            val sp = JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftComponent, rightComponent)
+            sp.dividerLocation = colLengths[firstCol]
+            return sp
+        }
+    }
+
+    companion object {
+        private const val serialVersionUID = 5048031593959987324L
+        private val logger: Logger = Logger.getLogger(FrameSetPanel::class.java.name)
+        private fun getLengths(spec: String?): Array<HtmlLength> {
+            if (spec == null) {
+                return arrayOf<HtmlLength>(HtmlLength("1*"))
+            }
+            val tok = StringTokenizer(spec, ",")
+            val lengths = ArrayList<HtmlLength?>()
+            while (tok.hasMoreTokens()) {
+                val token = tok.nextToken().trim { it <= ' ' }
+                try {
+                    lengths.add(HtmlLength(token))
+                } catch (err: Exception) {
+                    logger.warning("Frame rows or cols value [" + spec + "] is invalid.")
+                }
+            }
+            return lengths.toArray<HtmlLength?>(HtmlLength.EMPTY_ARRAY)
+        }
+
+        private fun getSubFrames(parent: HTMLElementImpl): Array<HTMLElementImpl?> {
+            val children = parent.childrenArray
+            val subFrames = ArrayList<NodeImpl?>()
+            for (child in children!!) {
+                if (child is HTMLElementImpl) {
+                    val nodeName = child.nodeName
+                    if ("FRAME".equals(nodeName, ignoreCase = true) || "FRAMESET".equals(
+                            nodeName,
+                            ignoreCase = true
+                        )
+                    ) {
+                        subFrames.add(child)
+                    }
+                }
+            }
+            return subFrames.toTypedArray<HTMLElementImpl?>()
+        }
+
+        private fun getAbsoluteLengths(htmlLengths: Array<HtmlLength>, totalSize: Int): IntArray {
+            val absLengths = IntArray(htmlLengths.size)
+            var totalSizeNonMulti = 0
+            var sumMulti = 0
+            for (i in htmlLengths.indices) {
+                val htmlLength = htmlLengths[i]
+                val lengthType = htmlLength.lengthType
+                if (lengthType == HtmlLength.PIXELS) {
+                    val absLength = htmlLength.getRawValue()
+                    totalSizeNonMulti += absLength
+                    absLengths[i] = absLength
+                } else if (lengthType == HtmlLength.LENGTH) {
+                    val absLength = htmlLength.getLength(totalSize)
+                    totalSizeNonMulti += absLength
+                    absLengths[i] = absLength
+                } else {
+                    sumMulti += htmlLength.getRawValue()
+                }
+            }
+            val remaining = totalSize - totalSizeNonMulti
+            if ((remaining > 0) && (sumMulti > 0)) {
+                for (i in htmlLengths.indices) {
+                    val htmlLength = htmlLengths[i]
+                    if (htmlLength.lengthType == HtmlLength.MULTI_LENGTH) {
+                        val absLength = (remaining * htmlLength.getRawValue()) / sumMulti
+                        absLengths[i] = absLength
+                    }
+                }
+            }
+            return absLengths
         }
     }
 }

@@ -1,7 +1,7 @@
-package io.github.remmerw.thor.cobra.util.gui;
+package io.github.remmerw.thor.cobra.util.gui
 
-import java.util.concurrent.Future;
+import java.util.concurrent.Future
 
-public interface DefferedLayoutSupport {
-    Future<Boolean> layoutCompletion();
+interface DefferedLayoutSupport {
+    fun layoutCompletion(): Future<Boolean?>?
 }

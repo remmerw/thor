@@ -20,27 +20,27 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.github.remmerw.thor.cobra.ua;
+package io.github.remmerw.thor.cobra.ua
 
-import io.github.remmerw.thor.cobra.clientlet.ClientletResponse;
+import io.github.remmerw.thor.cobra.clientlet.ClientletResponse
 
 /**
  * A navigator event containing an exception.
  *
- * @see NavigatorErrorListener#errorOcurred(NavigatorExceptionEvent)
+ * @see NavigatorErrorListener.errorOcurred
  */
-public class NavigatorExceptionEvent extends NavigatorResponseEvent {
-    private static final long serialVersionUID = -8424617577849639539L;
-    private final Throwable exception;
+class NavigatorExceptionEvent(
+    source: Any?, eventType: NavigatorEventType?, clientletFrame: NavigatorFrame?,
+    response: ClientletResponse?,
+    exception: Throwable?, requestType: RequestType?
+) : NavigatorResponseEvent(source, eventType, clientletFrame, response, requestType) {
+    val exception: Throwable?
 
-    public NavigatorExceptionEvent(final Object source, final NavigatorEventType eventType, final NavigatorFrame clientletFrame,
-                                   final ClientletResponse response,
-                                   final Throwable exception, final RequestType requestType) {
-        super(source, eventType, clientletFrame, response, requestType);
-        this.exception = exception;
+    init {
+        this.exception = exception
     }
 
-    public Throwable getException() {
-        return exception;
+    companion object {
+        private val serialVersionUID = -8424617577849639539L
     }
 }

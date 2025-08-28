@@ -18,66 +18,72 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
 
-public class Html {
-    public static String textToHTML(final String text) {
+object Html {
+    fun textToHTML(text: String?): String? {
         if (text == null) {
-            return null;
+            return null
         }
-        final int length = text.length();
-        boolean prevSlashR = false;
-        final StringBuffer out = new StringBuffer();
-        for (int i = 0; i < length; i++) {
-            final char ch = text.charAt(i);
-            switch (ch) {
-                case '\r':
+        val length = text.length
+        var prevSlashR = false
+        val out = StringBuffer()
+        for (i in 0..<length) {
+            val ch = text.get(i)
+            when (ch) {
+                '\r' -> {
                     if (prevSlashR) {
-                        out.append("<br>");
+                        out.append("<br>")
                     }
-                    prevSlashR = true;
-                    break;
-                case '\n':
-                    prevSlashR = false;
-                    out.append("<br>");
-                    break;
-                case '"':
+                    prevSlashR = true
+                }
+
+                '\n' -> {
+                    prevSlashR = false
+                    out.append("<br>")
+                }
+
+                '"' -> {
                     if (prevSlashR) {
-                        out.append("<br>");
-                        prevSlashR = false;
+                        out.append("<br>")
+                        prevSlashR = false
                     }
-                    out.append("&quot;");
-                    break;
-                case '<':
+                    out.append("&quot;")
+                }
+
+                '<' -> {
                     if (prevSlashR) {
-                        out.append("<br>");
-                        prevSlashR = false;
+                        out.append("<br>")
+                        prevSlashR = false
                     }
-                    out.append("&lt;");
-                    break;
-                case '>':
+                    out.append("&lt;")
+                }
+
+                '>' -> {
                     if (prevSlashR) {
-                        out.append("<br>");
-                        prevSlashR = false;
+                        out.append("<br>")
+                        prevSlashR = false
                     }
-                    out.append("&gt;");
-                    break;
-                case '&':
+                    out.append("&gt;")
+                }
+
+                '&' -> {
                     if (prevSlashR) {
-                        out.append("<br>");
-                        prevSlashR = false;
+                        out.append("<br>")
+                        prevSlashR = false
                     }
-                    out.append("&amp;");
-                    break;
-                default:
+                    out.append("&amp;")
+                }
+
+                else -> {
                     if (prevSlashR) {
-                        out.append("<br>");
-                        prevSlashR = false;
+                        out.append("<br>")
+                        prevSlashR = false
                     }
-                    out.append(ch);
-                    break;
+                    out.append(ch)
+                }
             }
         }
-        return out.toString();
+        return out.toString()
     }
 }

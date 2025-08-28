@@ -21,75 +21,74 @@
 /*
  * Created on Nov 19, 2005
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
+import cz.vutbr.web.css.CSSProperty.VerticalAlign
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLImageElementImpl
+import io.github.remmerw.thor.cobra.html.domimpl.ImageEvent
+import io.github.remmerw.thor.cobra.html.domimpl.ImageListener
+import io.github.remmerw.thor.cobra.html.style.HtmlValues
+import io.github.remmerw.thor.cobra.ua.ImageResponse
+import java.awt.Dimension
+import java.awt.Graphics
+import java.awt.Graphics2D
+import java.awt.Image
+import java.awt.RenderingHints
+import java.awt.image.BufferedImage
+import javax.swing.SwingUtilities
+import kotlin.concurrent.Volatile
 
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Insets;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
+internal class ImgControl(modelNode: HTMLImageElementImpl) : BaseControl(modelNode), ImageListener {
+    @Volatile
+    private var imageResponse = ImageResponse()
 
-import javax.swing.SwingUtilities;
-
-import cz.vutbr.web.css.CSSProperty.VerticalAlign;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLImageElementImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.ImageEvent;
-import io.github.remmerw.thor.cobra.html.domimpl.ImageListener;
-import io.github.remmerw.thor.cobra.html.style.HtmlValues;
-import io.github.remmerw.thor.cobra.ua.ImageResponse;
-
-class ImgControl extends BaseControl implements ImageListener {
-    private static final long serialVersionUID = -1510794248068777990L;
-    private volatile ImageResponse imageResponse = new ImageResponse();
     // private final UserAgentContext browserContext;
-    private String lastSrc;
-    private Dimension preferredSize;
-    private int declaredWidth;
-    private int declaredHeight;
+    private val lastSrc: String? = null
+    private var preferredSize: Dimension? = null
+    private var declaredWidth = 0
+    private var declaredHeight = 0
 
-    public ImgControl(final HTMLImageElementImpl modelNode) {
-        super(modelNode);
+    init {
         // this.browserContext = pcontext;
-        modelNode.addImageListener(this);
+        modelNode.addImageListener(this)
     }
 
-    @Override
-    public void paintComponent(final Graphics g) {
-        super.paintComponent(g);
-        final ImageResponse imageResponse = this.imageResponse;
+    override fun paintComponent(g: Graphics) {
+        super.paintComponent(g)
+        val imageResponse = this.imageResponse
         if (imageResponse.isDecoded()) {
-            assert (imageResponse.img != null);
-            final Image image = imageResponse.img;
-            final Dimension size = this.getSize();
-            final Insets insets = this.getInsets();
-            final Graphics2D g2 = (Graphics2D) g;
-            final int width = size.width - insets.left - insets.right;
-            final int height = size.height - insets.top - insets.bottom;
+            checkNotNull(imageResponse.img)
+            val image: Image = imageResponse.img
+            val size = this.size
+            val insets = this.insets
+            val g2 = g as Graphics2D
+            val width = size.width - insets.left - insets.right
+            val height = size.height - insets.top - insets.bottom
 
-            final int imgWidth = image.getWidth(this);
-            final int imgHeight = image.getHeight(this);
+            val imgWidth = image.getWidth(this)
+            val imgHeight = image.getHeight(this)
             if (width < imgWidth || height < imgHeight) {
                 // down-sampling needs better handling
-                final Image scaledImg = getScaledInstance(image, width, height, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-                g.drawImage(scaledImg, insets.left, insets.top, width, height, this);
+                val scaledImg = getScaledInstance(
+                    image,
+                    width,
+                    height,
+                    RenderingHints.VALUE_INTERPOLATION_BICUBIC
+                )
+                g.drawImage(scaledImg, insets.left, insets.top, width, height, this)
             } else {
-                g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-                g.drawImage(image, insets.left, insets.top, width, height, this);
+                g2.setRenderingHint(
+                    RenderingHints.KEY_INTERPOLATION,
+                    RenderingHints.VALUE_INTERPOLATION_BICUBIC
+                )
+                g.drawImage(image, insets.left, insets.top, width, height, this)
             }
         } else {
             // TODO: show alt text
         }
     }
 
-    @Override
-    public void reset(final int availWidth, final int availHeight) {
+    override fun reset(availWidth: Int, availHeight: Int) {
         // Expected in the GUI thread.
         // final HTMLElementImpl element = this.controlElement;
 
@@ -98,75 +97,76 @@ class ImgControl extends BaseControl implements ImageListener {
 
         // final int dw = HtmlValues.getOldSyntaxPixelSize(element.getAttribute("width"), availWidth, -1);
         // final int dh = HtmlValues.getOldSyntaxPixelSize(element.getAttribute("height"), availHeight, -1);
-        final int dw = -1;
-        final int dh = -1;
-        this.declaredWidth = dw;
-        this.declaredHeight = dh;
-        this.preferredSize = this.createPreferredSize(dw, dh);
+
+        val dw = -1
+        val dh = -1
+        this.declaredWidth = dw
+        this.declaredHeight = dh
+        this.preferredSize = this.createPreferredSize(dw, dh)
     }
 
-    @Override
-    public VerticalAlign getVAlign() {
-        final HTMLElementImpl element = this.controlElement;
-        final @Nullable VerticalAlign verticalAlign = element.getRenderState().getVerticalAlign();
-        return verticalAlign == null ? VerticalAlign.BASELINE : verticalAlign;
+    override fun getVAlign(): VerticalAlign {
+        val element = this.controlElement
+        val verticalAlign = element.getRenderState().verticalAlign
+        return if (verticalAlign == null) VerticalAlign.BASELINE else verticalAlign
     }
 
-    @Override
-    public Dimension getPreferredSize() {
-        final Dimension ps = this.preferredSize;
-        return ps == null ? new Dimension(0, 0) : ps;
+    override fun getPreferredSize(): Dimension {
+        val ps = this.preferredSize
+        return if (ps == null) Dimension(0, 0) else ps
     }
 
-    public Dimension createPreferredSize(int dw, int dh) {
-        final ImageResponse imageResponseLocal = this.imageResponse;
+    fun createPreferredSize(dw: Int, dh: Int): Dimension {
+        var dw = dw
+        var dh = dh
+        val imageResponseLocal = this.imageResponse
         if (!imageResponseLocal.isDecoded()) {
-            return new Dimension(dw == -1 ? 0 : dw, dh == -1 ? 0 : dh);
+            return Dimension(if (dw == -1) 0 else dw, if (dh == -1) 0 else dh)
         }
 
-        assert (imageResponseLocal.img != null);
-        final @NonNull Image img = imageResponseLocal.img;
+        checkNotNull(imageResponseLocal.img)
+        val img: Image = imageResponseLocal.img
 
         if (dw == -1) {
             if (dh != -1) {
-                final int iw = HtmlValues.scaleToDevicePixels(img.getWidth(this));
-                final int ih = HtmlValues.scaleToDevicePixels(img.getHeight(this));
+                val iw = HtmlValues.scaleToDevicePixels(img.getWidth(this).toDouble())
+                val ih = HtmlValues.scaleToDevicePixels(img.getHeight(this).toDouble())
                 if (ih == 0) {
-                    dw = iw;
+                    dw = iw
                 } else {
-                    dw = (dh * iw) / ih;
+                    dw = (dh * iw) / ih
                 }
             } else {
-                dw = HtmlValues.scaleToDevicePixels(img.getWidth(this));
+                dw = HtmlValues.scaleToDevicePixels(img.getWidth(this).toDouble())
             }
         }
         if (dh == -1) {
             if (dw != -1) {
-                final int iw = HtmlValues.scaleToDevicePixels(img.getWidth(this));
-                final int ih = HtmlValues.scaleToDevicePixels(img.getHeight(this));
+                val iw = HtmlValues.scaleToDevicePixels(img.getWidth(this).toDouble())
+                val ih = HtmlValues.scaleToDevicePixels(img.getHeight(this).toDouble())
                 if (iw == 0) {
-                    dh = ih == -1 ? 0 : ih;
+                    dh = if (ih == -1) 0 else ih
                 } else {
-                    dh = (dw * ih) / iw;
+                    dh = (dw * ih) / iw
                 }
             } else {
-                dh = HtmlValues.scaleToDevicePixels(img.getHeight(this));
+                dh = HtmlValues.scaleToDevicePixels(img.getHeight(this).toDouble())
             }
         }
-        return new Dimension(dw, dh);
+        return Dimension(dw, dh)
     }
 
-    private final boolean checkPreferredSizeChange() {
-        final Dimension newPs = this.createPreferredSize(this.declaredWidth, this.declaredHeight);
-        final Dimension ps = this.preferredSize;
+    private fun checkPreferredSizeChange(): Boolean {
+        val newPs = this.createPreferredSize(this.declaredWidth, this.declaredHeight)
+        val ps = this.preferredSize
         if (ps == null) {
-            return true;
+            return true
         }
         if ((ps.width != newPs.width) || (ps.height != newPs.height)) {
-            this.preferredSize = newPs;
-            return true;
+            this.preferredSize = newPs
+            return true
         } else {
-            return false;
+            return false
         }
     }
 
@@ -176,18 +176,17 @@ class ImgControl extends BaseControl implements ImageListener {
      * @see java.awt.Component#imageUpdate(java.awt.Image, int, int, int, int,
      * int)
      */
-    @Override
-    public boolean imageUpdate(final Image img, final int infoflags, final int x, final int y, final int w, final int h) {
-        if (((infoflags & ImageObserver.ALLBITS) != 0) || ((infoflags & ImageObserver.FRAMEBITS) != 0)) {
-            SwingUtilities.invokeLater(() -> {
+    override fun imageUpdate(img: Image?, infoflags: Int, x: Int, y: Int, w: Int, h: Int): Boolean {
+        if (((infoflags and ALLBITS) != 0) || ((infoflags and FRAMEBITS) != 0)) {
+            SwingUtilities.invokeLater(Runnable {
                 if (!checkPreferredSizeChange()) {
-                    repaint();
+                    repaint()
                 } else {
-                    ruicontrol.preferredSizeInvalidated();
+                    ruicontrol.preferredSizeInvalidated()
                 }
-            });
+            })
         }
-        return true;
+        return true
     }
 
     /*
@@ -196,90 +195,100 @@ class ImgControl extends BaseControl implements ImageListener {
      * @see java.awt.Component#imageUpdate(java.awt.Image, int, int, int, int,
      * int)
      */
-    public void imageUpdate(final Image img, final int w, final int h) {
-        SwingUtilities.invokeLater(() -> {
+    fun imageUpdate(img: Image?, w: Int, h: Int) {
+        SwingUtilities.invokeLater(Runnable {
             if (!checkPreferredSizeChange()) {
-                repaint();
+                repaint()
             } else {
-                ruicontrol.preferredSizeInvalidated();
+                ruicontrol.preferredSizeInvalidated()
             }
-        });
+        })
     }
 
-    public boolean paintSelection(final Graphics g, final boolean inSelection, final RenderableSpot startPoint, final RenderableSpot endPoint) {
-        return inSelection;
+    fun paintSelection(
+        g: Graphics?,
+        inSelection: Boolean,
+        startPoint: RenderableSpot?,
+        endPoint: RenderableSpot?
+    ): Boolean {
+        return inSelection
     }
 
-    public void imageLoaded(final ImageEvent event) {
+    override fun imageLoaded(event: ImageEvent) {
         // Implementation of ImageListener. Invoked in a request thread most likely.
-        final ImageResponse imageResponseLocal = event.imageResponse;
-        this.imageResponse = imageResponseLocal;
+        val imageResponseLocal = event.imageResponse
+        this.imageResponse = imageResponseLocal
         if (imageResponseLocal.isDecoded()) {
-            assert (imageResponseLocal.img != null);
-            final Image image = imageResponseLocal.img;
-            final int width = image.getWidth(this);
-            final int height = image.getHeight(this);
-            this.imageUpdate(image, width, height);
+            checkNotNull(imageResponseLocal.img)
+            val image: Image = imageResponseLocal.img
+            val width = image.getWidth(this)
+            val height = image.getHeight(this)
+            this.imageUpdate(image, width, height)
         }
     }
 
-    public void imageAborted() {
+    override fun imageAborted() {
         // do nothing
     }
 
-    @Override
-    public String toString() {
-        return "ImgControl[src=" + this.lastSrc + "]";
+    override fun toString(): String {
+        return "ImgControl[src=" + this.lastSrc + "]"
     }
 
     // https://today.java.net/pub/a/today/2007/04/03/perils-of-image-getscaledinstance.html
-
     // Adapted from: https://today.java.net/pub/a/today/2007/04/03/perils-of-image-getscaledinstance.html
-
     /**
-     * Convenience method that returns a scaled instance of the provided {@code BufferedImage}.
+     * Convenience method that returns a scaled instance of the provided `BufferedImage`.
      *
      * @param img          the original image to be scaled
      * @param targetWidth  the desired width of the scaled instance, in pixels
      * @param targetHeight the desired height of the scaled instance, in pixels
-     * @param hint         one of the rendering hints that corresponds to {@code RenderingHints.KEY_INTERPOLATION}
-     * @return a scaled version of the original {@code BufferedImage}
+     * @param hint         one of the rendering hints that corresponds to `RenderingHints.KEY_INTERPOLATION`
+     * @return a scaled version of the original `BufferedImage`
      */
-    private Image getScaledInstance(final Image img, final int targetWidth, final int targetHeight, final Object hint) {
-        final int type = BufferedImage.TYPE_INT_ARGB;
-        Image ret = img;
-        int w = img.getWidth(this);
-        int h = img.getHeight(this);
+    private fun getScaledInstance(
+        img: Image,
+        targetWidth: Int,
+        targetHeight: Int,
+        hint: Any?
+    ): Image {
+        val type = BufferedImage.TYPE_INT_ARGB
+        var ret = img
+        var w = img.getWidth(this)
+        var h = img.getHeight(this)
 
         while (w != targetWidth || h != targetHeight) {
             if (w > targetWidth) {
-                w /= 2;
+                w /= 2
             }
             if (w < targetWidth) {
-                w = targetWidth;
+                w = targetWidth
             }
 
             if (h > targetHeight) {
-                h /= 2;
+                h /= 2
             }
             if (h < targetHeight) {
-                h = targetHeight;
+                h = targetHeight
             }
 
-            BufferedImage tmp = new BufferedImage(w, h, type);
-            Graphics2D g2 = tmp.createGraphics();
-            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, hint);
-            g2.drawImage(ret, 0, 0, w, h, null);
-            g2.dispose();
+            val tmp = BufferedImage(w, h, type)
+            val g2 = tmp.createGraphics()
+            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, hint)
+            g2.drawImage(ret, 0, 0, w, h, null)
+            g2.dispose()
 
-            ret = tmp;
+            ret = tmp
         }
 
-        return ret;
+        return ret
     }
 
-    @Override
-    public boolean isReadyToPaint() {
-        return imageResponse.isReadyToPaint();
+    override fun isReadyToPaint(): Boolean {
+        return imageResponse.isReadyToPaint()
+    }
+
+    companion object {
+        private val serialVersionUID = -1510794248068777990L
     }
 }

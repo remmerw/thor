@@ -13,50 +13,43 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+package io.github.remmerw.thor.cobra.css.domimpl
 
-package io.github.remmerw.thor.cobra.css.domimpl;
+import cz.vutbr.web.css.RuleBlock
+import org.w3c.dom.DOMException
+import org.w3c.dom.css.CSSImportRule
+import org.w3c.dom.css.CSSStyleSheet
+import org.w3c.dom.stylesheets.MediaList
 
-import org.w3c.dom.DOMException;
-import org.w3c.dom.css.CSSImportRule;
-import org.w3c.dom.css.CSSRule;
-import org.w3c.dom.css.CSSStyleSheet;
-import org.w3c.dom.stylesheets.MediaList;
-
-import cz.vutbr.web.css.RuleBlock;
-
-final class CSSImportRuleImpl extends AbstractCSSRule implements CSSImportRule {
-
-    CSSImportRuleImpl(final RuleBlock<?> rule, final JStyleSheetWrapper containingStyleSheet) {
-        super(containingStyleSheet);
+internal class CSSImportRuleImpl(rule: RuleBlock<*>?, containingStyleSheet: JStyleSheetWrapper?) :
+    AbstractCSSRule(containingStyleSheet), CSSImportRule {
+    override fun getType(): Short {
+        return IMPORT_RULE
     }
 
-    public short getType() {
-        return CSSRule.IMPORT_RULE;
-    }
-
-    public String getHref() {
+    override fun getHref(): String? {
         // TODO implement this method
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
 
-    public MediaList getMedia() {
+    override fun getMedia(): MediaList? {
         // TODO implement this method
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
 
-    public CSSStyleSheet getStyleSheet() {
+    override fun getStyleSheet(): CSSStyleSheet? {
         // TODO implement this method
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
 
-    public String getCssText() {
+    override fun getCssText(): String? {
         // TODO implement this method
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
 
-    public void setCssText(final String cssText) throws DOMException {
+    @Throws(DOMException::class)
+    override fun setCssText(cssText: String?) {
         // TODO implement this method
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
-
 }

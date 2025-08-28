@@ -21,284 +21,210 @@
 /*
  * Created on Apr 16, 2005
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
-import org.w3c.dom.html.HTMLHtmlElement;
-
-import java.awt.Adjustable;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
-import java.awt.event.MouseEvent;
-import java.util.Iterator;
-
-import javax.swing.JScrollBar;
-
-import io.github.remmerw.thor.cobra.html.HtmlRendererContext;
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode;
-import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl;
-import io.github.remmerw.thor.cobra.html.style.BlockRenderState;
-import io.github.remmerw.thor.cobra.html.style.RenderState;
-import io.github.remmerw.thor.cobra.html.style.RenderThreadState;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext;
-import io.github.remmerw.thor.cobra.util.CollectionUtilities;
+import io.github.remmerw.thor.cobra.html.HtmlRendererContext
+import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
+import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
+import io.github.remmerw.thor.cobra.html.style.BlockRenderState
+import io.github.remmerw.thor.cobra.html.style.RenderState
+import io.github.remmerw.thor.cobra.html.style.RenderThreadState
+import io.github.remmerw.thor.cobra.ua.UserAgentContext
+import io.github.remmerw.thor.cobra.util.CollectionUtilities
+import org.w3c.dom.html.HTMLHtmlElement
+import java.awt.Adjustable
+import java.awt.Color
+import java.awt.Graphics
+import java.awt.Insets
+import java.awt.Point
+import java.awt.Rectangle
+import java.awt.event.AdjustmentEvent
+import java.awt.event.AdjustmentListener
+import java.awt.event.MouseEvent
+import javax.swing.JScrollBar
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  * Represents a HTML block in a rendered document, typically a DIV. The root
  * renderer node is of this type as well.
- * <p>
- * Immediately below an <code>RBlock</code> you will find a node of type
- * {@link RBlockViewport}.
+ *
+ *
+ * Immediately below an `RBlock` you will find a node of type
+ * [RBlockViewport].
  */
-public class RBlock extends BaseBlockyRenderable {
-    // private static final int MAX_CACHE_SIZE = 10;
-
-    protected final FrameContext frameContext;
-    protected final int listNesting;
+open class RBlock(
+    modelNode: NodeImpl?,
+    protected val listNesting: Int,
+    pcontext: UserAgentContext?,
+    rcontext: HtmlRendererContext?,
+// private static final int MAX_CACHE_SIZE = 10;
+    protected val frameContext: FrameContext?,
+    parentContainer: RenderableContainer?
+) : BaseBlockyRenderable(parentContainer, modelNode, pcontext) {
     // protected final HtmlRendererContext rendererContext;
-    protected final @NonNull RBlockViewport bodyLayout;
+    val rBlockViewport: RBlockViewport
 
     // Used for relative positioning
     // private int relativeOffsetX = 0;
     // private int relativeOffsetY = 0;
-
     // protected final Map<LayoutKey, LayoutValue> cachedLayout = new Hashtable<>(5);
-
-    protected RenderableSpot startSelection;
-    protected RenderableSpot endSelection;
-    protected JScrollBar vScrollBar;
-    protected JScrollBar hScrollBar;
-    protected boolean hasHScrollBar = false;
-    protected boolean hasVScrollBar = false;
+    protected var startSelection: RenderableSpot? = null
+    protected var endSelection: RenderableSpot? = null
+    protected var vScrollBar: JScrollBar? = null
+    protected var hScrollBar: JScrollBar? = null
+    var hasHScrollBar: Boolean = false
+    var hasVScrollBar: Boolean = false
 
     // Validation-dependent variables...
     // private Dimension layoutSize = null;
-
-    protected int defaultOverflowX = RenderState.OVERFLOW_NONE;
-    protected int defaultOverflowY = RenderState.OVERFLOW_NONE;
+    var defaultOverflowX: Int = RenderState.OVERFLOW_NONE
+    var defaultOverflowY: Int = RenderState.OVERFLOW_NONE
 
     // private LayoutValue lastLayoutValue = null;
     // private LayoutKey lastLayoutKey = null;
-    private boolean resettingScrollBars = false;
-    private BoundableRenderable armedRenderable;
-    private boolean collapseTopMargin = false;
-    private boolean collapseBottomMargin = false;
-    private @Nullable Integer marginTopOriginal = null;
-    private @Nullable Integer marginBottomOriginal = null;
+    private var resettingScrollBars = false
+    private var armedRenderable: BoundableRenderable? = null
+    private var collapseTopMargin = false
+    private var collapseBottomMargin = false
+    var marginTopOriginal: Int? = null
+        private set
+    var marginBottomOriginal: Int? = null
+        private set
 
-    public RBlock(final NodeImpl modelNode, final int listNesting, final UserAgentContext pcontext, final HtmlRendererContext rcontext,
-                  final FrameContext frameContext,
-                  final RenderableContainer parentContainer) {
-        super(parentContainer, modelNode, pcontext);
-        this.listNesting = listNesting;
-        this.frameContext = frameContext;
+    init {
+        this.frameContext = frameContext
         // this.rendererContext = rcontext;
-        final RBlockViewport bl = new RBlockViewport(modelNode, this, this.getViewportListNesting(listNesting), pcontext, rcontext,
-                frameContext,
-                this);
-        this.bodyLayout = bl;
-        bl.setOriginalParent(this);
+        val bl = RBlockViewport(
+            modelNode, this, this.getViewportListNesting(
+                listNesting
+            ), pcontext, rcontext,
+            frameContext,
+            this
+        )
+        this.rBlockViewport = bl
+        bl.setOriginalParent(this)
         // Initialize origin of RBlockViewport to be as far top-left as possible.
         // This will be corrected on first layout.
-        bl.setX(Short.MAX_VALUE);
-        bl.setY(Short.MAX_VALUE);
+        bl.setX(Short.Companion.MAX_VALUE.toInt())
+        bl.setY(Short.Companion.MAX_VALUE.toInt())
     }
 
-    private static int getVUnitIncrement(final RenderState renderState) {
-        if (renderState != null) {
-            return renderState.getFontMetrics().getHeight();
-        } else {
-            return new BlockRenderState(null).getFontMetrics().getHeight();
-        }
-    }
+    val vScrollBarWidth: Int
+        /**
+         * Gets the width the vertical scrollbar has when shown.
+         */
+        get() = SCROLL_BAR_THICKNESS
 
-    private static boolean isSimpleLine(final Renderable r) {
-        if (r instanceof RLine rLine) {
-            for (Iterator<? extends Renderable> rends = rLine.getRenderables(); rends.hasNext(); ) {
-                Renderable rend = rends.next();
-                if (!(rend instanceof RWord || rend instanceof RBlank || rend instanceof RStyleChanger)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        return false;
-    }
-
-    public static void dumpRndTree(final String indentStr, final boolean isLast, final Renderable r, final boolean condense) {
-        final String nextIndentStr = indentStr + ((r instanceof RBlockViewport) ? "  " : (isLast ? "  " : "│ "));
-        final String selfIndentStr = (isLast ? "└ " : "├ ");
-        if (isSimpleLine(r)) {
-            System.out.println(indentStr + selfIndentStr + "─────");
-        } else {
-            if (r instanceof RBlockViewport) {
-                // System.out.println(indentStr + "^RBV");
-            } else {
-                final String selfStr = makeSelfStr(r);
-                System.out.println(indentStr + selfIndentStr + selfStr);
-            }
-            if (r instanceof RBlock rb) {
-                if ((!condense) || !rb.isDelegated()) {
-                    dumpRndTree(nextIndentStr, true, rb.bodyLayout, rb.isDelegated() || condense);
-                }
-            } else {
-                if (r instanceof RCollection rCollection) {
-                    if ((!condense) || !rCollection.isDelegated()) {
-                        final Iterator<@NonNull ? extends Renderable> rnds = rCollection.getRenderables();
-                        if (rnds == null) {
-                            System.out.println(indentStr + selfIndentStr + " [empty]");
-                        } else {
-                            final Iterator<? extends Renderable> filteredRnds = CollectionUtilities.filter(rnds, (fr) -> !isSimpleLine(fr));
-                            while (filteredRnds.hasNext()) {
-                                final Renderable rnd = filteredRnds.next();
-                                dumpRndTree(nextIndentStr, !filteredRnds.hasNext(), rnd, condense);
-                            }
-                        }
-                    }
-                } else if (r instanceof PositionedRenderable pr) {
-                    dumpRndTree(nextIndentStr, true, pr.renderable, false);
-                }
-            }
-        }
-
-    }
-
-    private static String makeSelfStr(final Renderable r) {
-        if (r instanceof PositionedRenderable pr) {
-            return "Pos-Rend: " + (pr.isFloat ? " <float> " : "") + (pr.isFixed() ? " <fixed> " : "");
-        } else if (r instanceof TranslatedRenderable) {
-            return "Trans-Rend";
-        } else {
-            final String delgStr = (r instanceof RCollection) ? (((RCollection) r).isDelegated() ? "<deleg> " : "") : "";
-            return delgStr + r.toString();
-        }
-    }
-
-    /**
-     * Gets the width the vertical scrollbar has when shown.
-     */
-    public int getVScrollBarWidth() {
-        return SCROLL_BAR_THICKNESS;
-    }
-
-    public void ensureVisible(final Point point) {
-        final RBlockViewport bodyLayout = this.bodyLayout;
-        final boolean hscroll = this.hasHScrollBar;
-        final boolean vscroll = this.hasVScrollBar;
-        final int origX = bodyLayout.x;
-        final int origY = bodyLayout.y;
-        final Insets insets = this.getInsetsMarginBorder(hscroll, vscroll);
+    fun ensureVisible(point: Point) {
+        val bodyLayout = this.rBlockViewport
+        val hscroll = this.hasHScrollBar
+        val vscroll = this.hasVScrollBar
+        val origX = bodyLayout.x
+        val origY = bodyLayout.y
+        val insets = this.getInsetsMarginBorder(hscroll, vscroll)
         if (hscroll) {
             if (point.x < insets.left) {
-                bodyLayout.x += (insets.left - point.x);
+                bodyLayout.x += (insets.left - point.x)
             } else if (point.x > (this.width - insets.right)) {
-                bodyLayout.x -= ((point.x - this.width) + insets.right);
+                bodyLayout.x -= ((point.x - this.width) + insets.right)
             }
         }
         if (vscroll) {
             if (point.y < insets.top) {
-                bodyLayout.y += (insets.top - point.y);
+                bodyLayout.y += (insets.top - point.y)
             } else if (point.y > (this.height - insets.bottom)) {
-                bodyLayout.y -= ((point.y - this.height) + insets.bottom);
+                bodyLayout.y -= ((point.y - this.height) + insets.bottom)
             }
         }
         if (hscroll || vscroll) {
-            this.correctViewportOrigin(insets, this.width, this.height);
+            this.correctViewportOrigin(insets, this.width, this.height)
             if ((origX != bodyLayout.x) || (origY != bodyLayout.y)) {
-                this.resetScrollBars(null);
+                this.resetScrollBars(null)
                 // TODO: This could be paintImmediately.
-                this.repaint();
+                this.repaint()
             }
         }
     }
 
-    private JScrollBar getHScrollBar() {
-        JScrollBar sb = this.hScrollBar;
+    private fun getHScrollBar(): JScrollBar {
+        var sb = this.hScrollBar
         if (sb == null) {
             // Should never go back to null
-            sb = new JScrollBar(Adjustable.HORIZONTAL);
-            sb.addAdjustmentListener(new LocalAdjustmentListener(Adjustable.HORIZONTAL));
-            this.hScrollBar = sb;
+            sb = JScrollBar(Adjustable.HORIZONTAL)
+            sb.addAdjustmentListener(LocalAdjustmentListener(Adjustable.HORIZONTAL))
+            this.hScrollBar = sb
         }
-        return sb;
+        return sb
     }
 
-    private JScrollBar getVScrollBar() {
-        JScrollBar sb = this.vScrollBar;
+    private fun getVScrollBar(): JScrollBar {
+        var sb = this.vScrollBar
         if (sb == null) {
             // Should never go back to null
-            sb = new JScrollBar(Adjustable.VERTICAL);
-            sb.addAdjustmentListener(new LocalAdjustmentListener(Adjustable.VERTICAL));
-            this.vScrollBar = sb;
+            sb = JScrollBar(Adjustable.VERTICAL)
+            sb.addAdjustmentListener(LocalAdjustmentListener(Adjustable.VERTICAL))
+            this.vScrollBar = sb
         }
-        return sb;
+        return sb
     }
 
-    // public final boolean couldBeScrollable() {
-    // int overflow = this.getOverflow();
-    // return overflow != OVERFLOW_NONE
-    // && (overflow == OVERFLOW_SCROLL
-    // || overflow == OVERFLOW_VERTICAL || overflow == OVERFLOW_AUTO);
-    // }
-    //
-    public final boolean isOverflowVisibleX() {
-        final int overflow = this.overflowX;
-        return (overflow == RenderState.OVERFLOW_NONE) || (overflow == RenderState.OVERFLOW_VISIBLE);
+    val isOverflowVisibleX: Boolean
+        // public final boolean couldBeScrollable() {
+        get() {
+            val overflow = this.overflowX
+            return (overflow == RenderState.OVERFLOW_NONE) || (overflow == RenderState.OVERFLOW_VISIBLE)
+        }
+
+    val isOverflowVisibleY: Boolean
+        get() {
+            val overflow = this.overflowY
+            return (overflow == RenderState.OVERFLOW_NONE) || (overflow == RenderState.OVERFLOW_VISIBLE)
+        }
+
+    val firstLineHeight: Int
+        get() = this.rBlockViewport.getFirstLineHeight()
+
+    val firstBaselineOffset: Int
+        get() = this.rBlockViewport.getFirstBaselineOffset()
+
+    fun setSelectionEnd(rpoint: RenderableSpot?) {
+        this.endSelection = rpoint
     }
 
-    public final boolean isOverflowVisibleY() {
-        final int overflow = this.overflowY;
-        return (overflow == RenderState.OVERFLOW_NONE) || (overflow == RenderState.OVERFLOW_VISIBLE);
+    fun setSelectionStart(rpoint: RenderableSpot?) {
+        this.startSelection = rpoint
     }
 
-    public int getFirstLineHeight() {
-        return this.bodyLayout.getFirstLineHeight();
+    open fun getViewportListNesting(blockNesting: Int): Int {
+        return blockNesting
     }
 
-    public int getFirstBaselineOffset() {
-        return this.bodyLayout.getFirstBaselineOffset();
-    }
-
-    public void setSelectionEnd(final RenderableSpot rpoint) {
-        this.endSelection = rpoint;
-    }
-
-    public void setSelectionStart(final RenderableSpot rpoint) {
-        this.startSelection = rpoint;
-    }
-
-    public int getViewportListNesting(final int blockNesting) {
-        return blockNesting;
-    }
-
-    @Override
-    public Rectangle getClipBounds() {
-        final Insets insets = this.getInsetsMarginBorder(this.hasHScrollBar, this.hasVScrollBar);
+    override fun getClipBounds(): Rectangle? {
+        val insets = this.getInsetsMarginBorder(this.hasHScrollBar, this.hasVScrollBar)
         // final Insets insets = this.getInsetsPadding(this.hasHScrollBar, this.hasVScrollBar);
         // final Insets insets = this.getInsets(this.hasHScrollBar, this.hasVScrollBar);
-        final int hInset = insets.left + insets.right;
-        final int vInset = insets.top + insets.bottom;
+        val hInset = insets.left + insets.right
+        val vInset = insets.top + insets.bottom
         // if (((overflowX == RenderState.OVERFLOW_NONE) || (overflowX == RenderState.OVERFLOW_VISIBLE))
         // && ((overflowY == RenderState.OVERFLOW_NONE) || (overflowY == RenderState.OVERFLOW_VISIBLE))
         if (!(this.hasHScrollBar || this.hasVScrollBar)) {
             // return new Rectangle(insets.left - relativeOffsetX, insets.top - relativeOffsetY, this.getVisualWidth() - hInset, this.getVisualHeight() - vInset);
             // return new Rectangle(insets.left - relativeOffsetX, insets.top - relativeOffsetY, this.width - hInset, this.height - vInset);
-            return null;
+            return null
             // return new Rectangle(0, 0, 100, 100);
         } else {
             // return new Rectangle(insets.left - relativeOffsetX, insets.top - relativeOffsetY, this.width - hInset, this.height - vInset);
-            return new Rectangle(-relativeOffsetX, -relativeOffsetY, this.width - hInset, this.height - vInset);
+            return Rectangle(
+                -relativeOffsetX,
+                -relativeOffsetY,
+                this.width - hInset,
+                this.height - vInset
+            )
         }
     }
 
-  /*
+    /*
   private void setupRelativePosition(final RenderState rs, final int availWidth) {
     if (rs.getPosition() == RenderState.POSITION_RELATIVE) {
       final String leftText = rs.getLeft();
@@ -337,8 +263,7 @@ public class RBlock extends BaseBlockyRenderable {
       this.relativeOffsetY = 0;
     }
   }*/
-
-  /*
+    /*
   @Override
   public int getVisualX() {
     return super.getX() + relativeOffsetX;
@@ -349,82 +274,99 @@ public class RBlock extends BaseBlockyRenderable {
     return super.getY() + relativeOffsetY;
   }
   */
-
-    @Override
-    public Rectangle getClipBoundsWithoutInsets() {
-        final int hInset = this.hasVScrollBar ? SCROLL_BAR_THICKNESS : 0;
-        final int vInset = this.hasHScrollBar ? SCROLL_BAR_THICKNESS : 0;
+    override fun getClipBoundsWithoutInsets(): Rectangle? {
+        val hInset =
+            if (this.hasVScrollBar) SCROLL_BAR_THICKNESS else 0
+        val vInset =
+            if (this.hasHScrollBar) SCROLL_BAR_THICKNESS else 0
         if (!(this.hasHScrollBar || this.hasVScrollBar)) {
-            return null;
+            return null
         } else {
             // return new Rectangle( - relativeOffsetX,  - relativeOffsetY, this.width, this.height);
-            return new Rectangle(-relativeOffsetX, -relativeOffsetY, this.width - hInset, this.height - vInset);
+            return Rectangle(
+                -relativeOffsetX,
+                -relativeOffsetY,
+                this.width - hInset,
+                this.height - vInset
+            )
         }
     }
 
-    @Override
-    public void paintShifted(final Graphics g) {
+    public override fun paintShifted(g: Graphics) {
         // TODO: Move this to common logic in BaseElementEenderable.pain();
-        final RenderState rs = this.modelNode.getRenderState();
-        if ((rs != null) && (rs.getVisibility() != RenderState.VISIBILITY_VISIBLE)) {
+        val rs = this.modelNode.renderState
+        if ((rs != null) && (rs.visibility != RenderState.VISIBILITY_VISIBLE)) {
             // Just don't paint it.
-            return;
+            return
         }
 
-        this.prePaint(g);
+        this.prePaint(g)
 
-        final Insets insets = this.getInsetsMarginBorder(this.hasHScrollBar, this.hasVScrollBar);
-        final RBlockViewport bodyLayout = this.bodyLayout;
-        final int overflowX = this.overflowX;
-        final int overflowY = this.overflowY;
-        final boolean isHtmlElem = (this.getModelNode() instanceof HTMLHtmlElement);
-        final boolean xVisible = (overflowX == RenderState.OVERFLOW_NONE) || (overflowX == RenderState.OVERFLOW_VISIBLE);
-        final boolean yVisible = (overflowY == RenderState.OVERFLOW_NONE) || (overflowY == RenderState.OVERFLOW_VISIBLE);
-        final boolean noScrolls = !(this.hasHScrollBar || this.hasVScrollBar);
+        val insets = this.getInsetsMarginBorder(this.hasHScrollBar, this.hasVScrollBar)
+        val bodyLayout = this.rBlockViewport
+        val overflowX = this.overflowX
+        val overflowY = this.overflowY
+        val isHtmlElem = (this.getModelNode() is HTMLHtmlElement)
+        val xVisible =
+            (overflowX == RenderState.OVERFLOW_NONE) || (overflowX == RenderState.OVERFLOW_VISIBLE)
+        val yVisible =
+            (overflowY == RenderState.OVERFLOW_NONE) || (overflowY == RenderState.OVERFLOW_VISIBLE)
+        val noScrolls = !(this.hasHScrollBar || this.hasVScrollBar)
         if (isHtmlElem || (xVisible && yVisible && noScrolls)) {
-            bodyLayout.paint(g);
+            bodyLayout.paint(g)
         } else {
             // Clip when there potential scrolling or hidden overflow  was requested.
-            final Graphics newG = g.create(insets.left, insets.top, this.width - insets.left - insets.right, this.height - insets.top
-                    - insets.bottom);
+            val newG = g.create(
+                insets.left,
+                insets.top,
+                this.width - insets.left - insets.right,
+                (this.height - insets.top
+                        - insets.bottom)
+            )
             try {
                 // Second, translate
-                newG.translate(-insets.left, -insets.top);
+                newG.translate(-insets.left, -insets.top)
                 // Third, paint in clipped + translated region.
-                bodyLayout.paint(newG, g);
+                bodyLayout.paint(newG, g)
             } finally {
-                newG.dispose();
+                newG.dispose()
             }
         }
 
         // Paint FrameContext selection.
         // This is only done by root RBlock.
-
-        final RenderableSpot start = this.startSelection;
-        final RenderableSpot end = this.endSelection;
-        final boolean inSelection = false;
-        if ((start != null) && (end != null) && !start.equals(end)) {
-            this.paintSelection(g, inSelection, start, end);
+        val start = this.startSelection
+        val end = this.endSelection
+        val inSelection = false
+        if ((start != null) && (end != null) && (start != end)) {
+            this.paintSelection(g, inSelection, start, end)
         }
         // Must paint scrollbars too.
-        final JScrollBar hsb = this.hScrollBar;
+        val hsb = this.hScrollBar
         if (hsb != null) {
-            final Graphics sbg = g.create(insets.left, this.height - insets.bottom, this.width - insets.left - insets.right,
-                    SCROLL_BAR_THICKNESS);
+            val sbg = g.create(
+                insets.left, this.height - insets.bottom, this.width - insets.left - insets.right,
+                SCROLL_BAR_THICKNESS
+            )
             try {
-                hsb.paint(sbg);
+                hsb.paint(sbg)
             } finally {
-                sbg.dispose();
+                sbg.dispose()
             }
         }
-        final JScrollBar vsb = this.vScrollBar;
+        val vsb = this.vScrollBar
         if (vsb != null) {
-            final Graphics sbg = g
-                    .create(this.width - insets.right, insets.top, SCROLL_BAR_THICKNESS, this.height - insets.top - insets.bottom);
+            val sbg = g
+                .create(
+                    this.width - insets.right,
+                    insets.top,
+                    SCROLL_BAR_THICKNESS,
+                    this.height - insets.top - insets.bottom
+                )
             try {
-                vsb.paint(sbg);
+                vsb.paint(sbg)
             } finally {
-                sbg.dispose();
+                sbg.dispose()
             }
         }
     }
@@ -719,40 +661,97 @@ public class RBlock extends BaseBlockyRenderable {
     // }
     // return new LayoutValue(resultingWidth, resultingHeight, hscroll, vscroll);
     // }
-
-    public final void layout(final int availWidth, final int availHeight, final boolean expandWidth, final boolean expandHeight,
-                             final int defaultOverflowX,
-                             final int defaultOverflowY, final boolean sizeOnly) {
-        this.layout(availWidth, availHeight, expandWidth, expandHeight, null, defaultOverflowX, defaultOverflowY, sizeOnly);
+    fun layout(
+        availWidth: Int, availHeight: Int, expandWidth: Boolean, expandHeight: Boolean,
+        defaultOverflowX: Int,
+        defaultOverflowY: Int, sizeOnly: Boolean
+    ) {
+        this.layout(
+            availWidth,
+            availHeight,
+            expandWidth,
+            expandHeight,
+            null,
+            defaultOverflowX,
+            defaultOverflowY,
+            sizeOnly
+        )
     }
 
-    public final void layout(final int availWidth, final int availHeight, final boolean expandWidth, final boolean expandHeight,
-                             final FloatingBoundsSource floatBoundsSource, final boolean sizeOnly) {
-        this.layout(availWidth, availHeight, expandWidth, expandHeight, floatBoundsSource, this.defaultOverflowX, this.defaultOverflowY,
-                sizeOnly);
+    override fun layout(
+        availWidth: Int, availHeight: Int, expandWidth: Boolean, expandHeight: Boolean,
+        floatBoundsSource: FloatingBoundsSource?, sizeOnly: Boolean
+    ) {
+        this.layout(
+            availWidth,
+            availHeight,
+            expandWidth,
+            expandHeight,
+            floatBoundsSource,
+            this.defaultOverflowX,
+            this.defaultOverflowY,
+            sizeOnly
+        )
     }
 
-    public final void layout(final int availWidth, final int availHeight, final boolean expandWidth, final boolean expandHeight,
-                             final FloatingBoundsSource floatBoundsSource, final int defaultOverflowX, final int defaultOverflowY, final boolean sizeOnly) {
+    fun layout(
+        availWidth: Int,
+        availHeight: Int,
+        expandWidth: Boolean,
+        expandHeight: Boolean,
+        floatBoundsSource: FloatingBoundsSource?,
+        defaultOverflowX: Int,
+        defaultOverflowY: Int,
+        sizeOnly: Boolean
+    ) {
         try {
-            this.doLayout(availWidth, availHeight, expandWidth, expandHeight, floatBoundsSource, defaultOverflowX, defaultOverflowY, sizeOnly);
+            this.doLayout(
+                availWidth,
+                availHeight,
+                expandWidth,
+                expandHeight,
+                floatBoundsSource,
+                defaultOverflowX,
+                defaultOverflowY,
+                sizeOnly
+            )
         } finally {
-            this.layoutUpTreeCanBeInvalidated = true;
-            this.layoutDeepCanBeInvalidated = true;
+            this.layoutUpTreeCanBeInvalidated = true
+            this.layoutDeepCanBeInvalidated = true
             // this.renderStyleCanBeInvalidated = true;
         }
     }
 
-    @Override
-    public final void doLayout(final int availWidth, final int availHeight, final boolean sizeOnly) {
+    public override fun doLayout(availWidth: Int, availHeight: Int, sizeOnly: Boolean) {
         // This is an override of an abstract method.
-        this.doLayout(availWidth, availHeight, true, false, null, this.defaultOverflowX, this.defaultOverflowY, sizeOnly);
+        this.doLayout(
+            availWidth,
+            availHeight,
+            true,
+            false,
+            null,
+            this.defaultOverflowX,
+            this.defaultOverflowY,
+            sizeOnly
+        )
     }
 
-    public void doLayout(final int availWidth, final int availHeight, final boolean expandWidth, final boolean expandHeight,
-                         final FloatingBoundsSource floatBoundsSource,
-                         final int defaultOverflowX, final int defaultOverflowY, final boolean sizeOnly) {
-        this.doLayout(availWidth, availHeight, expandWidth, expandHeight, floatBoundsSource, defaultOverflowX, defaultOverflowY, sizeOnly, true);
+    open fun doLayout(
+        availWidth: Int, availHeight: Int, expandWidth: Boolean, expandHeight: Boolean,
+        floatBoundsSource: FloatingBoundsSource?,
+        defaultOverflowX: Int, defaultOverflowY: Int, sizeOnly: Boolean
+    ) {
+        this.doLayout(
+            availWidth,
+            availHeight,
+            expandWidth,
+            expandHeight,
+            floatBoundsSource,
+            defaultOverflowX,
+            defaultOverflowY,
+            sizeOnly,
+            true
+        )
     }
 
     /**
@@ -764,12 +763,14 @@ public class RBlock extends BaseBlockyRenderable {
      * @param availHeight
      * @param useCache    For testing. Should always be true.
      */
-    public void doLayout(final int availWidth, final int availHeight, final boolean expandWidth, final boolean expandHeight,
-                         final FloatingBoundsSource floatBoundsSource,
-                         final int defaultOverflowX, final int defaultOverflowY, final boolean sizeOnly, final boolean useCache) {
+    fun doLayout(
+        availWidth: Int, availHeight: Int, expandWidth: Boolean, expandHeight: Boolean,
+        floatBoundsSource: FloatingBoundsSource?,
+        defaultOverflowX: Int, defaultOverflowY: Int, sizeOnly: Boolean, useCache: Boolean
+    ) {
         // Expected to be invoked in the GUI thread.
-        final RenderState renderState = this.modelNode.getRenderState();
-    /*
+        val renderState: RenderState = this.modelNode.renderState!!
+        /*
     final Font font = renderState == null ? null : renderState.getFont();
     final int whiteSpace = renderState == null ? RenderState.WS_NORMAL : renderState.getWhiteSpace();
     // Having whiteSpace == NOWRAP and having a NOWRAP override
@@ -779,8 +780,8 @@ public class RBlock extends BaseBlockyRenderable {
         defaultOverflowY, whiteSpace, font, overrideNoWrap);
     final Map<LayoutKey, LayoutValue> cachedLayout = this.cachedLayout;
     */
-        LayoutValue value;
-    /*
+        var value: LayoutValue?
+        /*
     if (sizeOnly) {
       value = useCache ? cachedLayout.get(key) : null;
     } else {
@@ -790,15 +791,24 @@ public class RBlock extends BaseBlockyRenderable {
         value = null;
       }
     }*/
-        value = null;
+        value = null
         if (value == null) {
-            value = this.forceLayout(renderState, availWidth, availHeight, expandWidth, expandHeight, floatBoundsSource, defaultOverflowX,
-                    defaultOverflowY, sizeOnly);
+            value = this.forceLayout(
+                renderState,
+                availWidth,
+                availHeight,
+                expandWidth,
+                expandHeight,
+                floatBoundsSource,
+                defaultOverflowX,
+                defaultOverflowY,
+                sizeOnly
+            )
             if (sizeOnly) {
                 // this.lastLayoutKey = null;
                 // this.lastLayoutValue = null;
 
-        /*
+                /*
         if (cachedLayout.size() > MAX_CACHE_SIZE) {
           // Unlikely, but we should keep it bounded.
           cachedLayout.clear();
@@ -810,7 +820,7 @@ public class RBlock extends BaseBlockyRenderable {
                 // this.lastLayoutValue = value;
             }
         } else {
-      /*
+            /*
       System.out.println("Cached layout for " + this);
       final FloatingInfo finfo = getExportableFloatingInfo();
       if (finfo != null) {
@@ -819,42 +829,43 @@ public class RBlock extends BaseBlockyRenderable {
         }
       }*/
         }
-        this.width = value.width;
-        this.height = value.height;
-        this.hasHScrollBar = value.hasHScrollBar;
-        this.hasVScrollBar = value.hasVScrollBar;
+        this.width = value.width
+        this.height = value.height
+        this.hasHScrollBar = value.hasHScrollBar
+        this.hasVScrollBar = value.hasVScrollBar
 
-        bodyLayout.positionDelayed();
+        rBlockViewport.positionDelayed()
 
         // Even if we didn't do layout, the parent is
         // expected to have removed its GUI components.
-        this.sendGUIComponentsToParent();
+        this.sendGUIComponentsToParent()
 
         // Even if we didn't do layout, the parent is
         // expected to have removed its delayed pairs.
-        this.sendDelayedPairsToParent();
+        this.sendDelayedPairsToParent()
     }
 
-    private final boolean correctViewportOrigin(final Insets insets, final int blockWidth, final int blockHeight) {
-        final RBlockViewport bodyLayout = this.bodyLayout;
-        final int viewPortX = bodyLayout.x;
-        final int viewPortY = bodyLayout.y;
-        boolean corrected = false;
+    private fun correctViewportOrigin(insets: Insets, blockWidth: Int, blockHeight: Int): Boolean {
+        val bodyLayout = this.rBlockViewport
+        val viewPortX = bodyLayout.x
+        val viewPortY = bodyLayout.y
+        var corrected = false
         if (viewPortX > insets.left) {
-            bodyLayout.x = insets.left;
-            corrected = true;
+            bodyLayout.x = insets.left
+            corrected = true
         } else if (viewPortX < (blockWidth - insets.right - bodyLayout.width)) {
-            bodyLayout.x = Math.min(insets.left, blockWidth - insets.right - bodyLayout.width);
-            corrected = true;
+            bodyLayout.x = min(insets.left, blockWidth - insets.right - bodyLayout.width)
+            corrected = true
         }
         if (viewPortY > insets.top) {
-            bodyLayout.y = insets.top;
-            corrected = true;
+            bodyLayout.y = insets.top
+            corrected = true
         } else if (viewPortY < (blockHeight - insets.bottom - bodyLayout.getVisualHeight())) {
-            bodyLayout.y = Math.min(insets.top, blockHeight - insets.bottom - bodyLayout.getVisualHeight());
-            corrected = true;
+            bodyLayout.y =
+                min(insets.top, blockHeight - insets.bottom - bodyLayout.getVisualHeight())
+            corrected = true
         }
-        return corrected;
+        return corrected
     }
 
     /*
@@ -864,7 +875,7 @@ public class RBlock extends BaseBlockyRenderable {
      * org.xamjwg.html.renderer.BoundableRenderable#onMouseClick(java.awt.event
      * .MouseEvent, int, int)
      */
-  /*
+    /*
   public boolean onMouseClick(final MouseEvent event, final int x, final int y) {
     final RBlockViewport bodyLayout = this.bodyLayout;
     if (bodyLayout != null) {
@@ -886,7 +897,6 @@ public class RBlock extends BaseBlockyRenderable {
     return true;
   }
   */
-
     /**
      * Lays out the block without checking for prior dimensions.
      *
@@ -896,16 +906,18 @@ public class RBlock extends BaseBlockyRenderable {
      * @param tentativeHeight
      * @return
      */
-    private final LayoutValue forceLayout(final RenderState renderState, final int availWidth, final int availHeight,
-                                          final boolean expandWidth,
-                                          final boolean expandHeight, final FloatingBoundsSource blockFloatBoundsSource, final int defaultOverflowX,
-                                          final int defaultOverflowY, final boolean sizeOnly) {
+    private fun forceLayout(
+        renderState: RenderState, availWidth: Int, availHeight: Int,
+        expandWidth: Boolean,
+        expandHeight: Boolean, blockFloatBoundsSource: FloatingBoundsSource?, defaultOverflowX: Int,
+        defaultOverflowY: Int, sizeOnly: Boolean
+    ): LayoutValue {
         // Expected to be invoked in the GUI thread.
         // TODO: Not necessary to do full layout if only expandWidth or
         // expandHeight change (specifically in tables).
-        RenderState rs = renderState;
+        var rs: RenderState? = renderState
         if (rs == null) {
-            rs = new BlockRenderState(null);
+            rs = BlockRenderState(null)
         }
 
         // // Clear adjust() cache.
@@ -913,336 +925,385 @@ public class RBlock extends BaseBlockyRenderable {
 
         // We reprocess the rendering state.
         // Probably doesn't need to be done in its entirety every time.
-        this.applyStyle(availWidth, availHeight);
+        this.applyStyle(availWidth, availHeight)
 
-        final RBlockViewport bodyLayout = this.bodyLayout;
-        final NodeImpl node = (NodeImpl) this.modelNode;
+        val bodyLayout = this.rBlockViewport
+        val node = this.modelNode as NodeImpl?
         if (node == null) {
-            final Insets insets = this.getInsetsMarginBorder(false, false);
-            return new LayoutValue(insets.left + insets.right, insets.bottom + insets.top, false, false);
+            val insets = this.getInsetsMarginBorder(false, false)
+            return LayoutValue(insets.left + insets.right, insets.bottom + insets.top, false, false)
         }
 
-        Insets paddingInsets = this.paddingInsets;
+        var paddingInsets = this.paddingInsets
         if (paddingInsets == null) {
-            paddingInsets = RBlockViewport.ZERO_INSETS;
+            paddingInsets = RBlockViewport.Companion.ZERO_INSETS
         }
-        Insets borderInsets = this.borderInsets;
+        var borderInsets: Insets? = this.borderInsets
         if (borderInsets == null) {
-            borderInsets = RBlockViewport.ZERO_INSETS;
+            borderInsets = RBlockViewport.Companion.ZERO_INSETS
         }
-        Insets marginInsets = this.marginInsets;
+        var marginInsets = this.marginInsets
         if (marginInsets == null) {
-            marginInsets = RBlockViewport.ZERO_INSETS;
+            marginInsets = RBlockViewport.Companion.ZERO_INSETS
 
             // This causes a single trivial regression. Keeping it disabled for now, but worth checking out later.
             // this.marginInsets = marginInsets;
         }
-        final int paddingTotalWidth = paddingInsets.left + paddingInsets.right;
-        final int paddingTotalHeight = paddingInsets.top + paddingInsets.bottom;
+        val paddingTotalWidth = paddingInsets!!.left + paddingInsets.right
+        val paddingTotalHeight = paddingInsets.top + paddingInsets.bottom
 
-        int overflowX = this.overflowX;
+        var overflowX = this.overflowX
         if (overflowX == RenderState.OVERFLOW_NONE) {
-            overflowX = defaultOverflowX;
+            overflowX = defaultOverflowX
         }
-        int overflowY = this.overflowY;
+        var overflowY = this.overflowY
         if (overflowY == RenderState.OVERFLOW_NONE) {
-            overflowY = defaultOverflowY;
+            overflowY = defaultOverflowY
         }
-        final boolean vauto = overflowY == RenderState.OVERFLOW_AUTO;
-        boolean hscroll = overflowX == RenderState.OVERFLOW_SCROLL;
-        final boolean hauto = overflowX == RenderState.OVERFLOW_AUTO;
-        boolean vscroll = overflowY == RenderState.OVERFLOW_SCROLL;
+        val vauto = overflowY == RenderState.OVERFLOW_AUTO
+        var hscroll = overflowX == RenderState.OVERFLOW_SCROLL
+        val hauto = overflowX == RenderState.OVERFLOW_AUTO
+        var vscroll = overflowY == RenderState.OVERFLOW_SCROLL
 
-        Insets insets = this.getInsetsMarginBorder(hscroll, vscroll);
-        int insetsTotalWidth = insets.left + insets.right;
-        int insetsTotalHeight = insets.top + insets.bottom;
-        int tentativeAvailWidth = availWidth - paddingTotalWidth - insetsTotalWidth;
-        int tentativeAvailHeight = availHeight - paddingTotalHeight - insetsTotalHeight;
+        var insets = this.getInsetsMarginBorder(hscroll, vscroll)
+        var insetsTotalWidth = insets.left + insets.right
+        var insetsTotalHeight = insets.top + insets.bottom
+        var tentativeAvailWidth = availWidth - paddingTotalWidth - insetsTotalWidth
+        val tentativeAvailHeight = availHeight - paddingTotalHeight - insetsTotalHeight
 
-        final Integer declaredMaxWidth = getDeclaredMaxWidth(renderState, tentativeAvailWidth);
-        final Integer declaredMaxHeight = getDeclaredMaxHeight(renderState, tentativeAvailHeight);
+        val declaredMaxWidth = getDeclaredMaxWidth(renderState, tentativeAvailWidth)
+        val declaredMaxHeight = getDeclaredMaxHeight(renderState, tentativeAvailHeight)
         if (declaredMaxWidth != null) {
-            tentativeAvailWidth = Math.min(tentativeAvailWidth, declaredMaxWidth);
+            tentativeAvailWidth = min(tentativeAvailWidth, declaredMaxWidth)
         }
 
-    /* Has no effect apparently, but worth checking out again, later.
+        /* Has no effect apparently, but worth checking out again, later.
     if (declaredMaxHeight != null) {
       tentativeAvailHeight = Math.min(tentativeAvailHeight, declaredMaxHeight);
     }
     */
+        val isHtmlElem = getModelNode() is HTMLHtmlElement
+        var actualAvailWidth = tentativeAvailWidth
 
-        final boolean isHtmlElem = getModelNode() instanceof HTMLHtmlElement;
-        int actualAvailWidth = tentativeAvailWidth;
-
-        final int actualAvailHeight = tentativeAvailHeight;
-        final Integer dw = this.getDeclaredWidth(renderState, actualAvailWidth);
+        val actualAvailHeight = tentativeAvailHeight
+        val dw = this.getDeclaredWidth(renderState, actualAvailWidth)
         // final Integer dw = isHtmlElem ? (Integer) actualAvailWidth : this.getDeclaredWidth(renderState, actualAvailWidth);
-        final Integer dh = this.getDeclaredHeight(renderState, actualAvailHeight);
+        val dh = this.getDeclaredHeight(renderState, actualAvailHeight)
         // final Integer dh = isHtmlElem ? (Integer) actualAvailHeight : this.getDeclaredHeight(renderState, actualAvailHeight);
-        int declaredWidth = dw == null ? -1 : dw.intValue();
-        int declaredHeight = dh == null ? -1 : dh.intValue();
+        var declaredWidth = if (dw == null) -1 else dw
+        var declaredHeight = if (dh == null) -1 else dh
 
-        final Integer declaredMinWidth = getDeclaredMinWidth(renderState, tentativeAvailWidth);
+        val declaredMinWidth = getDeclaredMinWidth(renderState, tentativeAvailWidth)
         if ((declaredMinWidth != null) && declaredMinWidth > 0) {
-            declaredWidth = dw == null ? declaredMinWidth : Math.max(declaredWidth, declaredMinWidth);
+            declaredWidth =
+                if (dw == null) declaredMinWidth else max(declaredWidth, declaredMinWidth)
         }
 
-        final Integer declaredMinHeight = getDeclaredMinHeight(renderState, tentativeAvailHeight);
+        val declaredMinHeight = getDeclaredMinHeight(renderState, tentativeAvailHeight)
         if ((declaredMinHeight != null) && declaredMinHeight > 0) {
-            declaredHeight = dh == null ? declaredMinHeight : Math.max(declaredHeight, declaredMinHeight);
+            declaredHeight =
+                if (dh == null) declaredMinHeight else max(declaredHeight, declaredMinHeight)
         }
 
 
         // Remove all GUI components previously added by descendents
         // The RBlockViewport.layout() method is expected to add all of them
         // back.
-        this.clearGUIComponents();
+        this.clearGUIComponents()
 
-        int tentativeWidth;
-        int tentativeHeight;
+        var tentativeWidth: Int
+        var tentativeHeight: Int
 
         // Step # 1: If there's no declared width and no width
         // expansion has been requested, do a preliminary layout
         // assuming that the scrollable region has width=0 and
         // there's no wrapping.
-        tentativeWidth = declaredWidth == -1 ? availWidth : declaredWidth + insetsTotalWidth + paddingTotalWidth;
-        tentativeHeight = declaredHeight == -1 ? availHeight : declaredHeight + insetsTotalHeight + paddingTotalHeight;
+        tentativeWidth =
+            if (declaredWidth == -1) availWidth else declaredWidth + insetsTotalWidth + paddingTotalWidth
+        tentativeHeight =
+            if (declaredHeight == -1) availHeight else declaredHeight + insetsTotalHeight + paddingTotalHeight
 
         if ((declaredWidth == -1) && !expandWidth && (availWidth > (insetsTotalWidth + paddingTotalWidth))) {
-            final RenderThreadState state = RenderThreadState.getState();
-            final boolean prevOverrideNoWrap = state.overrideNoWrap;
+            val state = RenderThreadState.getState()
+            val prevOverrideNoWrap = state.overrideNoWrap
             if (!prevOverrideNoWrap) {
-                state.overrideNoWrap = true;
+                state.overrideNoWrap = true
                 try {
-                    final int desiredViewportWidth = paddingTotalWidth;
-                    final int desiredViewportHeight = paddingTotalHeight;
-                    bodyLayout.layout(desiredViewportWidth, desiredViewportHeight, paddingInsets, -1, null, true);
+                    val desiredViewportWidth = paddingTotalWidth
+                    val desiredViewportHeight = paddingTotalHeight
+                    bodyLayout.layout(
+                        desiredViewportWidth,
+                        desiredViewportHeight,
+                        paddingInsets,
+                        -1,
+                        null,
+                        true
+                    )
                     // If we find that the viewport is not as wide as we
                     // presumed, then we'll use that as a new tentative width.
                     if ((bodyLayout.width + insetsTotalWidth) < tentativeWidth) {
-                        tentativeWidth = bodyLayout.width + insetsTotalWidth;
-                        tentativeHeight = bodyLayout.height + insetsTotalHeight;
+                        tentativeWidth = bodyLayout.width + insetsTotalWidth
+                        tentativeHeight = bodyLayout.height + insetsTotalHeight
                     }
                 } finally {
-                    state.overrideNoWrap = false;
+                    state.overrideNoWrap = false
                 }
             }
         }
 
         // Step # 2: Do a layout with the tentativeWidth (adjusted if Step # 1 was done),
         // but in case overflow-y is "auto", then we check for possible overflow.
-
         if (declaredMinWidth != null) {
-            tentativeWidth = Math.max(tentativeWidth, declaredMinWidth);
+            tentativeWidth = max(tentativeWidth, declaredMinWidth)
         }
 
         if (declaredMinHeight != null) {
-            tentativeHeight = Math.max(tentativeHeight, declaredMinHeight);
+            tentativeHeight = max(tentativeHeight, declaredMinHeight)
         }
 
-        FloatingBounds viewportFloatBounds = null;
-        FloatingBounds blockFloatBounds = null;
+        var viewportFloatBounds: FloatingBounds? = null
+        var blockFloatBounds: FloatingBounds? = null
         if (blockFloatBoundsSource != null) {
-            blockFloatBounds = blockFloatBoundsSource.getChildBlockFloatingBounds(tentativeWidth);
-            viewportFloatBounds = new ShiftedFloatingBounds(blockFloatBounds, -insets.left, -insets.right, -insets.top);
+            blockFloatBounds = blockFloatBoundsSource.getChildBlockFloatingBounds(tentativeWidth)
+            viewportFloatBounds =
+                ShiftedFloatingBounds(blockFloatBounds, -insets.left, -insets.right, -insets.top)
         }
         if (declaredMaxWidth != null) {
-            tentativeWidth = Math.min(tentativeWidth, declaredMaxWidth + insetsTotalWidth + paddingTotalWidth);
+            tentativeWidth =
+                min(tentativeWidth, declaredMaxWidth + insetsTotalWidth + paddingTotalWidth)
         }
-        int desiredViewportWidth = tentativeWidth - insetsTotalWidth;
-        final int desiredViewportHeight = tentativeHeight - insets.top - insets.bottom;
-        final int maxY = vauto ? (declaredHeight == -1 ? availHeight : declaredHeight + paddingInsets.top) : -1;
+        var desiredViewportWidth = tentativeWidth - insetsTotalWidth
+        val desiredViewportHeight = tentativeHeight - insets.top - insets.bottom
+        val maxY =
+            if (vauto) (if (declaredHeight == -1) availHeight else declaredHeight + paddingInsets.top) else -1
         try {
-            bodyLayout.layout(desiredViewportWidth, desiredViewportHeight, paddingInsets, maxY, viewportFloatBounds, sizeOnly);
-        } catch (final SizeExceededException see) {
+            bodyLayout.layout(
+                desiredViewportWidth,
+                desiredViewportHeight,
+                paddingInsets,
+                maxY,
+                viewportFloatBounds,
+                sizeOnly
+            )
+        } catch (see: SizeExceededException) {
             // Getting this exception means that we need to add a vertical scrollbar.
             // We need to relayout and adjust insets and widths for scrollbar.
-            vscroll = true;
-            insets = this.getInsetsMarginBorder(hscroll, vscroll);
-            insetsTotalWidth = insets.left + insets.right;
-            actualAvailWidth = availWidth - paddingTotalWidth - insetsTotalWidth;
-            final Integer dwNew = this.getDeclaredWidth(renderState, actualAvailWidth);
-            declaredWidth = dwNew == null ? -1 : dwNew.intValue();
-            desiredViewportWidth = tentativeWidth - insetsTotalWidth;
+            vscroll = true
+            insets = this.getInsetsMarginBorder(hscroll, vscroll)
+            insetsTotalWidth = insets.left + insets.right
+            actualAvailWidth = availWidth - paddingTotalWidth - insetsTotalWidth
+            val dwNew = this.getDeclaredWidth(renderState, actualAvailWidth)
+            declaredWidth = if (dwNew == null) -1 else dwNew
+            desiredViewportWidth = tentativeWidth - insetsTotalWidth
             if (blockFloatBounds != null) {
-                viewportFloatBounds = new ShiftedFloatingBounds(blockFloatBounds, -insets.left, -insets.right, -insets.top);
+                viewportFloatBounds = ShiftedFloatingBounds(
+                    blockFloatBounds,
+                    -insets.left,
+                    -insets.right,
+                    -insets.top
+                )
             }
-            bodyLayout.layout(desiredViewportWidth, desiredViewportHeight, paddingInsets, -1, viewportFloatBounds, sizeOnly);
+            bodyLayout.layout(
+                desiredViewportWidth,
+                desiredViewportHeight,
+                paddingInsets,
+                -1,
+                viewportFloatBounds,
+                sizeOnly
+            )
         }
 
-        if (marginInsets != this.marginInsets) {
+        if (marginInsets !== this.marginInsets) {
             // Can happen because of margin top being absorbed from child
-            insets = this.getInsetsMarginBorder(hscroll, vscroll);
-            insetsTotalHeight = insets.top + insets.bottom;
+            insets = this.getInsetsMarginBorder(hscroll, vscroll)
+            insetsTotalHeight = insets.top + insets.bottom
         }
 
-        final int bodyWidth = bodyLayout.width;
-        final int bodyHeight = bodyLayout.height;
+        val bodyWidth = bodyLayout.width
+        val bodyHeight = bodyLayout.height
 
         if ((declaredHeight == -1) && (bodyHeight == 0) && !(collapseTopMargin || collapseBottomMargin)) {
-            if ((paddingInsets.top == 0) && (paddingInsets.bottom == 0) && (borderInsets.top == 0) && (borderInsets.bottom == 0)) {
-                final Insets mi = this.marginInsets;
+            if ((paddingInsets.top == 0) && (paddingInsets.bottom == 0) && (borderInsets!!.top == 0) && (borderInsets.bottom == 0)) {
+                val mi = this.marginInsets
                 if (mi != null) {
-                    mi.top = Math.max(mi.top, mi.bottom);
-                    mi.bottom = 0;
-                    insets = this.getInsetsMarginBorder(hscroll, vscroll);
-                    insetsTotalHeight = insets.top + insets.bottom;
+                    mi.top = max(mi.top, mi.bottom)
+                    mi.bottom = 0
+                    insets = this.getInsetsMarginBorder(hscroll, vscroll)
+                    insetsTotalHeight = insets.top + insets.bottom
                 }
             }
         }
 
-        int prelimBlockWidth = bodyWidth + insetsTotalWidth;
-        int prelimBlockHeight = bodyHeight + insetsTotalHeight;
-        final int adjDeclaredWidth = declaredWidth == -1 ? -1 : declaredWidth + insets.left + insets.right + paddingInsets.left
-                + paddingInsets.right;
-        final int adjDeclaredHeight = declaredHeight == -1 ? -1 : declaredHeight + insets.top + insets.bottom + paddingInsets.top
-                + paddingInsets.bottom;
+        val prelimBlockWidth = bodyWidth + insetsTotalWidth
+        var prelimBlockHeight = bodyHeight + insetsTotalHeight
+        val adjDeclaredWidth =
+            if (declaredWidth == -1) -1 else (declaredWidth + insets.left + insets.right + paddingInsets.left
+                    + paddingInsets.right)
+        val adjDeclaredHeight =
+            if (declaredHeight == -1) -1 else (declaredHeight + insets.top + insets.bottom + paddingInsets.top
+                    + paddingInsets.bottom)
 
         // Adjust insets and other dimensions base on overflow-y=auto.
         if (hauto && (((adjDeclaredWidth != -1) && (prelimBlockWidth > adjDeclaredWidth)) || (prelimBlockWidth > tentativeWidth))) {
-            hscroll = true;
-            insets = this.getInsetsMarginBorder(hscroll, vscroll);
-            insetsTotalHeight = insets.top + insets.bottom;
-            prelimBlockHeight = bodyHeight + insetsTotalHeight;
+            hscroll = true
+            insets = this.getInsetsMarginBorder(hscroll, vscroll)
+            insetsTotalHeight = insets.top + insets.bottom
+            prelimBlockHeight = bodyHeight + insetsTotalHeight
         }
 
         if ((vauto || vscroll) && ((prelimBlockHeight - insetsTotalHeight) < bodyLayout.getVisualHeight())) {
             if (isHtmlElem) {
-                prelimBlockHeight = bodyLayout.getVisualHeight() + insetsTotalHeight;
+                prelimBlockHeight = bodyLayout.getVisualHeight() + insetsTotalHeight
             } else {
-                vscroll = true;
-                insets = this.getInsetsMarginBorder(hscroll, vscroll);
-                insetsTotalWidth = insets.left + insets.right;
+                vscroll = true
+                insets = this.getInsetsMarginBorder(hscroll, vscroll)
+                insetsTotalWidth = insets.left + insets.right
             }
         }
 
         // final boolean visibleX = (overflowX == RenderState.OVERFLOW_VISIBLE) || (overflowX == RenderState.OVERFLOW_NONE);
         // final boolean visibleY = (overflowY == RenderState.OVERFLOW_VISIBLE) || (overflowY == RenderState.OVERFLOW_NONE);
-        int resultingWidth;
-        int resultingHeight;
+        var resultingWidth: Int
+        var resultingHeight: Int
         if (adjDeclaredWidth == -1) {
-            resultingWidth = expandWidth ? Math.max(prelimBlockWidth, tentativeWidth) : prelimBlockWidth;
+            resultingWidth =
+                if (expandWidth) max(prelimBlockWidth, tentativeWidth) else prelimBlockWidth
             if ((tentativeWidth > 0) && hscroll && (resultingWidth > tentativeWidth)) {
-                resultingWidth = Math.max(tentativeWidth, SCROLL_BAR_THICKNESS);
+                resultingWidth =
+                    max(tentativeWidth, SCROLL_BAR_THICKNESS)
             }
         } else {
             // resultingWidth = visibleX ? Math.max(prelimBlockWidth, adjDeclaredWidth) : adjDeclaredWidth;
-            resultingWidth = adjDeclaredWidth;
+            resultingWidth = adjDeclaredWidth
         }
         if (!sizeOnly) {
             // Align horizontally now. This may change canvas height.
-            final int alignmentXPercent = rs.getAlignXPercent();
+            val alignmentXPercent = rs.alignXPercent
             if (alignmentXPercent > 0) {
                 // TODO: OPTIMIZATION: alignment should not be done in table cell
                 // sizing determination.
-                final int canvasWidth = Math.max(bodyLayout.width, resultingWidth - insets.left - insets.right);
+                val canvasWidth = max(bodyLayout.width, resultingWidth - insets.left - insets.right)
                 // Alignment is done afterwards because canvas dimensions might have
                 // changed.
-                bodyLayout.alignX(alignmentXPercent, canvasWidth, paddingInsets);
+                bodyLayout.alignX(alignmentXPercent, canvasWidth, paddingInsets)
             }
         }
 
         if (adjDeclaredHeight == -1) {
-            resultingHeight = expandHeight ? Math.max(prelimBlockHeight, tentativeHeight) : prelimBlockHeight;
+            resultingHeight =
+                if (expandHeight) max(prelimBlockHeight, tentativeHeight) else prelimBlockHeight
             if (vscroll && (resultingHeight > tentativeHeight)) {
-                resultingHeight = Math.max(tentativeHeight, SCROLL_BAR_THICKNESS);
+                resultingHeight =
+                    max(tentativeHeight, SCROLL_BAR_THICKNESS)
             }
         } else {
             // resultingHeight = visibleY ? Math.max(prelimBlockHeight, adjDeclaredHeight) : adjDeclaredHeight;
-            resultingHeight = adjDeclaredHeight;
+            resultingHeight = adjDeclaredHeight
         }
         if (!sizeOnly) {
             // Align vertically now
-            final int alignmentYPercent = rs.getAlignYPercent();
+            val alignmentYPercent = rs.alignYPercent
             if (alignmentYPercent > 0) {
                 // TODO: OPTIMIZATION: alignment should not be done in table cell
                 // sizing determination.
-                final int canvasHeight = Math.max(bodyLayout.height, resultingHeight - insets.top - insets.bottom);
+                val canvasHeight =
+                    max(bodyLayout.height, resultingHeight - insets.top - insets.bottom)
                 // Alignment is done afterwards because canvas dimensions might have
                 // changed.
-                bodyLayout.alignY(alignmentYPercent, canvasHeight, paddingInsets);
+                bodyLayout.alignY(alignmentYPercent, canvasHeight, paddingInsets)
             }
         }
 
-        final int scrollWidth = vscroll ? SCROLL_BAR_THICKNESS : 0;
+        val scrollWidth = if (vscroll) SCROLL_BAR_THICKNESS else 0
         if (declaredWidth >= 0) {
-            resultingWidth = Math.min(resultingWidth, declaredWidth + paddingTotalWidth + insetsTotalWidth - scrollWidth);
+            resultingWidth = min(
+                resultingWidth,
+                declaredWidth + paddingTotalWidth + insetsTotalWidth - scrollWidth
+            )
         }
 
         if (declaredMaxWidth != null) {
-            resultingWidth = Math.min(resultingWidth, declaredMaxWidth + paddingTotalWidth + insetsTotalWidth - scrollWidth);
+            resultingWidth = min(
+                resultingWidth,
+                declaredMaxWidth + paddingTotalWidth + insetsTotalWidth - scrollWidth
+            )
         }
 
-        final int scrollHeight = hscroll ? SCROLL_BAR_THICKNESS : 0;
+        val scrollHeight = if (hscroll) SCROLL_BAR_THICKNESS else 0
         if (declaredHeight >= 0) {
-            resultingHeight = Math.min(resultingHeight, declaredHeight + paddingTotalHeight + insetsTotalHeight - scrollHeight);
+            resultingHeight = min(
+                resultingHeight,
+                declaredHeight + paddingTotalHeight + insetsTotalHeight - scrollHeight
+            )
         }
 
         if (declaredMaxHeight != null) {
-            resultingHeight = Math.min(resultingHeight, declaredMaxHeight + paddingTotalHeight + insetsTotalHeight - scrollHeight);
+            resultingHeight = min(
+                resultingHeight,
+                declaredMaxHeight + paddingTotalHeight + insetsTotalHeight - scrollHeight
+            )
         }
 
-        if (renderState.getPosition() == RenderState.POSITION_STATIC || renderState.getPosition() == RenderState.POSITION_RELATIVE) {
-            final Dimension changes = this.applyAutoStyles(availWidth - resultingWidth, availHeight - resultingHeight);
+        if (renderState.position == RenderState.POSITION_STATIC || renderState.position == RenderState.POSITION_RELATIVE) {
+            val changes =
+                this.applyAutoStyles(availWidth - resultingWidth, availHeight - resultingHeight)
             if (changes != null) {
-                resultingWidth += changes.width;
-                resultingHeight += changes.height;
+                resultingWidth += changes.width
+                resultingHeight += changes.height
             }
         }
 
-        insets = getInsetsMarginBorder(hscroll, vscroll);
+        insets = getInsetsMarginBorder(hscroll, vscroll)
 
         if (vscroll) {
-            final JScrollBar sb = this.getVScrollBar();
-            this.addComponent(sb);
+            val sb = this.getVScrollBar()
+            this.addComponent(sb)
             // Bounds set by updateWidgetBounds
         } else {
-            this.vScrollBar = null;
+            this.vScrollBar = null
         }
         if (hscroll) {
-            final JScrollBar sb = this.getHScrollBar();
-            this.addComponent(sb);
+            val sb = this.getHScrollBar()
+            this.addComponent(sb)
             // Bounds set by updateWidgetBounds
         } else {
-            this.hScrollBar = null;
+            this.hScrollBar = null
         }
 
         if (hscroll || vscroll) {
             // In this case, viewport origin should not be reset.
             // We don't want to cause the document to scroll back
             // up while rendering.
-            this.correctViewportOrigin(insets, resultingWidth, resultingHeight);
+            this.correctViewportOrigin(insets, resultingWidth, resultingHeight)
             // Now reset the scrollbar state. Depends
             // on block width and height.
-            this.width = resultingWidth;
-            this.height = resultingHeight;
-            this.resetScrollBars(rs);
+            this.width = resultingWidth
+            this.height = resultingHeight
+            this.resetScrollBars(rs)
         } else {
-            bodyLayout.x = insets.left;
-            bodyLayout.y = insets.top;
-            this.width = resultingWidth;
-            this.height = resultingHeight;
+            bodyLayout.x = insets.left
+            bodyLayout.y = insets.top
+            this.width = resultingWidth
+            this.height = resultingHeight
         }
 
         // setupRelativePosition(rs, availWidth);
-        return new LayoutValue(resultingWidth, resultingHeight, hscroll, vscroll);
+        return LayoutValue(resultingWidth, resultingHeight, hscroll, vscroll)
     }
 
-    @Override
-    public int getVisualWidth() {
+    override fun getVisualWidth(): Int {
         if (hasHScrollBar) {
-            return super.getVisualWidth();
+            return super.getVisualWidth()
         } else {
-            return Math.max(super.getVisualWidth(), bodyLayout.getVisualWidth());
+            return max(super.getVisualWidth(), rBlockViewport.getVisualWidth())
         }
     }
 
-    @Override
-    public int getVisualHeight() {
+    override fun getVisualHeight(): Int {
         if (hasVScrollBar) {
-            return super.getVisualHeight();
+            return super.getVisualHeight()
         } else {
-            return Math.max(super.getVisualHeight(), bodyLayout.getVisualHeight());
+            return max(super.getVisualHeight(), rBlockViewport.getVisualHeight())
         }
     }
 
@@ -1253,7 +1314,7 @@ public class RBlock extends BaseBlockyRenderable {
      * org.xamjwg.html.renderer.BoundableRenderable#onMousePressed(java.awt.event
      * .MouseEvent, int, int)
      */
-  /*
+    /*
   public boolean onMousePressed(final MouseEvent event, final int x, final int y) {
     final RBlockViewport bodyLayout = this.bodyLayout;
     if (bodyLayout != null) {
@@ -1279,36 +1340,35 @@ public class RBlock extends BaseBlockyRenderable {
     return true;
   }
   */
-
     /**
      * Changes scroll bar state to match viewport origin.
      */
-    private void resetScrollBars(final RenderState renderState) {
+    private fun resetScrollBars(renderState: RenderState?) {
         // Expected to be called only in the GUI thread.
-        this.resettingScrollBars = true;
+        this.resettingScrollBars = true
         try {
-            final RBlockViewport bodyLayout = this.bodyLayout;
-            final Insets insets = this.getInsetsMarginBorder(this.hasHScrollBar, this.hasVScrollBar);
-            final JScrollBar vsb = this.vScrollBar;
+            val bodyLayout = this.rBlockViewport
+            val insets = this.getInsetsMarginBorder(this.hasHScrollBar, this.hasVScrollBar)
+            val vsb = this.vScrollBar
             if (vsb != null) {
-                final int newValue = insets.top - bodyLayout.y;
-                final int newExtent = this.height - insets.top - insets.bottom;
-                final int newMin = 0;
-                final int newMax = bodyLayout.getVisualHeight();
-                vsb.setValues(newValue, newExtent, newMin, newMax);
-                vsb.setUnitIncrement(getVUnitIncrement(renderState));
-                vsb.setBlockIncrement(newExtent);
+                val newValue = insets.top - bodyLayout.y
+                val newExtent = this.height - insets.top - insets.bottom
+                val newMin = 0
+                val newMax = bodyLayout.getVisualHeight()
+                vsb.setValues(newValue, newExtent, newMin, newMax)
+                vsb.setUnitIncrement(getVUnitIncrement(renderState))
+                vsb.setBlockIncrement(newExtent)
             }
-            final JScrollBar hsb = this.hScrollBar;
+            val hsb = this.hScrollBar
             if (hsb != null) {
-                final int newValue = insets.left - bodyLayout.x;
-                final int newExtent = this.width - insets.left - insets.right;
-                final int newMin = 0;
-                final int newMax = bodyLayout.getVisualWidth();
-                hsb.setValues(newValue, newExtent, newMin, newMax);
+                val newValue = insets.left - bodyLayout.x
+                val newExtent = this.width - insets.left - insets.right
+                val newMin = 0
+                val newMax = bodyLayout.getVisualWidth()
+                hsb.setValues(newValue, newExtent, newMin, newMax)
             }
         } finally {
-            this.resettingScrollBars = false;
+            this.resettingScrollBars = false
         }
     }
 
@@ -1319,16 +1379,25 @@ public class RBlock extends BaseBlockyRenderable {
      * boolean, org.xamjwg.html.renderer.RenderablePoint,
      * org.xamjwg.html.renderer.RenderablePoint)
      */
-    @Override
-    public boolean paintSelection(final Graphics g, final boolean inSelection, final RenderableSpot startPoint, final RenderableSpot endPoint) {
-        final Graphics newG = g.create();
+    override fun paintSelection(
+        g: Graphics,
+        inSelection: Boolean,
+        startPoint: RenderableSpot?,
+        endPoint: RenderableSpot?
+    ): Boolean {
+        val newG = g.create()
         try {
-            final Insets insets = this.getInsetsMarginBorder(this.hasHScrollBar, this.hasVScrollBar);
+            val insets = this.getInsetsMarginBorder(this.hasHScrollBar, this.hasVScrollBar)
             // Just clip, don't translate.
-            newG.clipRect(insets.left, insets.top, this.width - insets.left - insets.right, this.height - insets.top - insets.bottom);
-            return super.paintSelection(newG, inSelection, startPoint, endPoint);
+            newG.clipRect(
+                insets.left,
+                insets.top,
+                this.width - insets.left - insets.right,
+                this.height - insets.top - insets.bottom
+            )
+            return super.paintSelection(newG, inSelection, startPoint, endPoint)
         } finally {
-            newG.dispose();
+            newG.dispose()
         }
         // boolean endSelectionLater = false;
         // if(inSelection) {
@@ -1378,14 +1447,18 @@ public class RBlock extends BaseBlockyRenderable {
      * @see org.xamjwg.html.renderer.BoundableRenderable#getRenderablePoint(int,
      * int)
      */
-    public RenderableSpot getLowestRenderableSpot(final int x, final int y) {
-        final RBlockViewport bodyLayout = this.bodyLayout;
-        final Insets insets = this.getInsetsMarginBorder(this.hasHScrollBar, this.hasVScrollBar);
+    override fun getLowestRenderableSpot(x: Int, y: Int): RenderableSpot? {
+        val bodyLayout = this.rBlockViewport
+        val insets = this.getInsetsMarginBorder(this.hasHScrollBar, this.hasVScrollBar)
         if ((x - relativeOffsetX > insets.left) && (x - relativeOffsetX < (this.width - insets.right)) && (y - relativeOffsetY > insets.top)
-                && (y - relativeOffsetY < (this.height - insets.bottom))) {
-            return bodyLayout.getLowestRenderableSpot(x - relativeOffsetX - bodyLayout.x, y - relativeOffsetY - bodyLayout.y);
+            && (y - relativeOffsetY < (this.height - insets.bottom))
+        ) {
+            return bodyLayout.getLowestRenderableSpot(
+                x - relativeOffsetX - bodyLayout.x,
+                y - relativeOffsetY - bodyLayout.y
+            )
         } else {
-            return new RenderableSpot(this, x - relativeOffsetX, y - relativeOffsetY);
+            return RenderableSpot(this, x - relativeOffsetX, y - relativeOffsetY)
         }
     }
 
@@ -1394,23 +1467,22 @@ public class RBlock extends BaseBlockyRenderable {
      * a descendent changes, or if a style property of an ancestor is such that it
      * could produce layout changes in this RBlock.
      */
-    @Override
-    public void invalidateLayoutLocal() {
+    override fun invalidateLayoutLocal() {
         // Threads.dumpStack(4);
-        this.delayedPairs = null;
-        super.invalidateLayoutLocal();
+        this.delayedPairs = null
+        super.invalidateLayoutLocal()
         // this.cachedLayout.clear();
         // this.lastLayoutKey = null;
         // this.lastLayoutValue = null;
-        final JScrollBar hScrollBar = this.hScrollBar;
+        val hScrollBar = this.hScrollBar
         if (hScrollBar != null) {
             // Necessary
-            hScrollBar.invalidate();
+            hScrollBar.invalidate()
         }
-        final JScrollBar vScrollBar = this.vScrollBar;
+        val vScrollBar = this.vScrollBar
         if (vScrollBar != null) {
             // Necessary
-            vScrollBar.invalidate();
+            vScrollBar.invalidate()
         }
     }
 
@@ -1427,21 +1499,19 @@ public class RBlock extends BaseBlockyRenderable {
     // return inSelection;
     // }
     // }
+    override fun clearStyle(isRootBlock: Boolean) {
+        super.clearStyle(isRootBlock)
 
-    @Override
-    protected void clearStyle(final boolean isRootBlock) {
-        super.clearStyle(isRootBlock);
-
-        this.overflowX = this.defaultOverflowX;
-        this.overflowY = this.defaultOverflowY;
+        this.overflowX = this.defaultOverflowX
+        this.overflowY = this.defaultOverflowY
     }
 
-    public boolean onDoubleClick(final MouseEvent event, final int x, final int y) {
-        final RBlockViewport bodyLayout = this.bodyLayout;
+    override fun onDoubleClick(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val bodyLayout = this.rBlockViewport
         if (!bodyLayout.onDoubleClick(event, x - bodyLayout.x, y - bodyLayout.y)) {
-            return false;
+            return false
         }
-        return this.backgroundColor == null;
+        return this.backgroundColor == null
     }
 
     /*
@@ -1451,16 +1521,16 @@ public class RBlock extends BaseBlockyRenderable {
      * org.xamjwg.html.renderer.BoundableRenderable#onMouseDisarmed(java.awt.event
      * .MouseEvent)
      */
-    public boolean onMouseDisarmed(final MouseEvent event) {
-        final BoundableRenderable br = this.armedRenderable;
+    override fun onMouseDisarmed(event: MouseEvent?): Boolean {
+        val br = this.armedRenderable
         if (br != null) {
             try {
-                return br.onMouseDisarmed(event);
+                return br.onMouseDisarmed(event)
             } finally {
-                this.armedRenderable = null;
+                this.armedRenderable = null
             }
         } else {
-            return true;
+            return true
         }
     }
 
@@ -1471,29 +1541,29 @@ public class RBlock extends BaseBlockyRenderable {
      * org.xamjwg.html.renderer.BoundableRenderable#onMouseReleased(java.awt.event
      * .MouseEvent, int, int)
      */
-    public boolean onMouseReleased(final MouseEvent event, final int x, final int y) {
-        final RBlockViewport bodyLayout = this.bodyLayout;
-        final int newX = x - bodyLayout.x;
-        final int newY = y - bodyLayout.y;
+    override fun onMouseReleased(event: MouseEvent?, x: Int, y: Int): Boolean {
+        val bodyLayout = this.rBlockViewport
+        val newX = x - bodyLayout.x
+        val newY = y - bodyLayout.y
         if (bodyLayout.contains(newX, newY)) {
-            this.armedRenderable = null;
+            this.armedRenderable = null
             if (!bodyLayout.onMouseReleased(event, newX, newY)) {
-                return false;
+                return false
             }
         } else {
-            final BoundableRenderable br = this.armedRenderable;
+            val br = this.armedRenderable
             if (br != null) {
-                br.onMouseDisarmed(event);
+                br.onMouseDisarmed(event)
             }
         }
-        if (!HtmlController.getInstance().onMouseUp(this.modelNode, event, x, y)) {
-            return false;
+        if (!HtmlController.Companion.getInstance().onMouseUp(this.modelNode, event, x, y)) {
+            return false
         }
-        return this.backgroundColor == null;
+        return this.backgroundColor == null
     }
 
-    public Color getPaintedBackgroundColor() {
-        return this.backgroundColor;
+    override fun getPaintedBackgroundColor(): Color? {
+        return this.backgroundColor
     }
 
     /*
@@ -1501,8 +1571,8 @@ public class RBlock extends BaseBlockyRenderable {
      *
      * @see org.xamjwg.html.renderer.RCollection#getRenderables()
      */
-    public Iterator<@NonNull Renderable> getRenderables(final boolean topFirst) {
-        return CollectionUtilities.singletonIterator(this.bodyLayout);
+    override fun getRenderables(topFirst: Boolean): MutableIterator<Renderable> {
+        return CollectionUtilities.singletonIterator<Renderable>(this.rBlockViewport)
     }
 
     /*
@@ -1512,84 +1582,94 @@ public class RBlock extends BaseBlockyRenderable {
      * org.xamjwg.html.domimpl.ContainingBlockContext#repaint(org.xamjwg.html.
      * domimpl.RenderableContext)
      */
-    public void repaint(final ModelNode modelNode) {
+    override fun repaint(modelNode: ModelNode?) {
         // this.invalidateRenderStyle();
-        this.repaint();
+        this.repaint()
     }
 
-    @Override
-    public void updateWidgetBounds(final int guiX, final int guiY) {
-        super.updateWidgetBounds(guiX, guiY);
-        final boolean hscroll = this.hasHScrollBar;
-        final boolean vscroll = this.hasVScrollBar;
+    override fun updateWidgetBounds(guiX: Int, guiY: Int) {
+        super.updateWidgetBounds(guiX, guiY)
+        val hscroll = this.hasHScrollBar
+        val vscroll = this.hasVScrollBar
         if (hscroll || vscroll) {
-            final Insets insets = this.getInsetsMarginBorder(hscroll, vscroll);
+            val insets = this.getInsetsMarginBorder(hscroll, vscroll)
             if (hscroll) {
-                final JScrollBar hsb = this.hScrollBar;
+                val hsb = this.hScrollBar
                 if (hsb != null) {
-                    hsb.setBounds(guiX + insets.left, (guiY + this.height) - insets.bottom, this.width - insets.left - insets.right,
-                            SCROLL_BAR_THICKNESS);
+                    hsb.setBounds(
+                        guiX + insets.left,
+                        (guiY + this.height) - insets.bottom,
+                        this.width - insets.left - insets.right,
+                        SCROLL_BAR_THICKNESS
+                    )
                 }
             }
             if (vscroll) {
-                final JScrollBar vsb = this.vScrollBar;
+                val vsb = this.vScrollBar
                 if (vsb != null) {
-                    vsb.setBounds((guiX + this.width) - insets.right, guiY + insets.top, SCROLL_BAR_THICKNESS, this.height - insets.top
-                            - insets.bottom);
+                    vsb.setBounds(
+                        (guiX + this.width) - insets.right,
+                        guiY + insets.top,
+                        SCROLL_BAR_THICKNESS,
+                        (this.height - insets.top
+                                - insets.bottom)
+                    )
                 }
             }
         }
     }
 
-    public boolean scrollHorizontalTo(final int newX) {
-        final RBlockViewport bodyLayout = this.bodyLayout;
+    fun scrollHorizontalTo(newX: Int): Boolean {
+        val bodyLayout = this.rBlockViewport
         // if (this.overflowX == RenderState.OVERFLOW_SCROLL || this.overflowX == RenderState.OVERFLOW_AUTO) {
         if (hasHScrollBar) {
-            final Insets insets = this.getInsetsMarginBorder(this.hasHScrollBar, this.hasVScrollBar);
-            final int viewPortX = newX;
-            final int prevX = bodyLayout.x;
+            val insets = this.getInsetsMarginBorder(this.hasHScrollBar, this.hasVScrollBar)
+            val viewPortX = newX
+            val prevX = bodyLayout.x
             if (viewPortX > insets.left) {
-                bodyLayout.x = insets.left;
+                bodyLayout.x = insets.left
             } else if (viewPortX < (this.width - insets.right - bodyLayout.getVisualWidth())) {
-                bodyLayout.x = Math.min(insets.left, this.width - insets.right - bodyLayout.getVisualWidth());
+                bodyLayout.x =
+                    min(insets.left, this.width - insets.right - bodyLayout.getVisualWidth())
             } else {
-                bodyLayout.x = viewPortX;
+                bodyLayout.x = viewPortX
             }
-            final int diff = bodyLayout.x - prevX;
-            bodyLayout.scrollX += diff;
-            this.resetScrollBars(null);
-            this.updateWidgetBounds();
-            this.repaint();
+            val diff = bodyLayout.x - prevX
+            bodyLayout.scrollX += diff
+            this.resetScrollBars(null)
+            this.updateWidgetBounds()
+            this.repaint()
 
-            return diff != 0;
+            return diff != 0
         }
 
-        return false;
+        return false
     }
 
-    public boolean scrollVerticalTo(final int newY) {
-        final RBlockViewport bodyLayout = this.bodyLayout;
+    fun scrollVerticalTo(newY: Int): Boolean {
+        val bodyLayout = this.rBlockViewport
         // if (this.overflowY == RenderState.OVERFLOW_SCROLL || this.overflowY == RenderState.OVERFLOW_AUTO) {
         if (hasVScrollBar) {
-            final Insets insets = this.getInsetsMarginBorder(this.hasHScrollBar, this.hasVScrollBar);
-            final int viewPortY = newY;
-            final int prevY = bodyLayout.y;
+            val insets = this.getInsetsMarginBorder(this.hasHScrollBar, this.hasVScrollBar)
+            val viewPortY = newY
+            val prevY = bodyLayout.y
             if (viewPortY > insets.top) {
-                bodyLayout.y = insets.top;
+                bodyLayout.y = insets.top
             } else if (viewPortY < (this.height - insets.bottom - bodyLayout.getVisualHeight())) {
-                bodyLayout.y = Math.min(insets.top, this.height - insets.bottom - bodyLayout.getVisualHeight());
+                bodyLayout.y =
+                    min(insets.top, this.height - insets.bottom - bodyLayout.getVisualHeight())
             } else {
-                bodyLayout.y = viewPortY;
+                bodyLayout.y = viewPortY
             }
-            final int diff = bodyLayout.y - prevY;
-            bodyLayout.scrollY += diff;
-            this.resetScrollBars(null);
-            this.updateWidgetBounds();
-            this.repaint();
-            return diff != 0;
+            val diff = bodyLayout.y - prevY
+            bodyLayout.scrollY += diff
+            this.resetScrollBars(null)
+            this.updateWidgetBounds()
+            this.repaint()
+            return diff != 0
         }
 
-        return false;
+        return false
     }
 
     // public FloatingBounds getExportableFloatingBounds() {
@@ -1602,102 +1682,98 @@ public class RBlock extends BaseBlockyRenderable {
     // return new ShiftedFloatingBounds(viewportBounds, insets.left,
     // insets.right, viewport.y);
     // }
-
-    public boolean scrollByUnits(final int orientation, final int units) {
-        final int offset = orientation == Adjustable.VERTICAL ? getVUnitIncrement(null) * units : units;
-        return this.scrollBy(orientation, offset);
+    fun scrollByUnits(orientation: Int, units: Int): Boolean {
+        val offset =
+            if (orientation == Adjustable.VERTICAL) getVUnitIncrement(null) * units else units
+        return this.scrollBy(orientation, offset)
     }
 
-    public boolean scrollBy(final int orientation, final int offset) {
-        final RBlockViewport bodyLayout = this.bodyLayout;
-        switch (orientation) {
-            case Adjustable.HORIZONTAL:
-                return this.scrollHorizontalTo(bodyLayout.x - offset);
-            case Adjustable.VERTICAL:
-                return this.scrollVerticalTo(bodyLayout.y - offset);
+    fun scrollBy(orientation: Int, offset: Int): Boolean {
+        val bodyLayout = this.rBlockViewport
+        when (orientation) {
+            Adjustable.HORIZONTAL -> return this.scrollHorizontalTo(bodyLayout.x - offset)
+            Adjustable.VERTICAL -> return this.scrollVerticalTo(bodyLayout.y - offset)
         }
 
-        return false;
+        return false
     }
 
-  /*
+    /*
   private static class BodyFilter implements NodeFilter {
     public boolean accept(final Node node) {
       return node instanceof HTMLBodyElement;
     }
   }*/
-
     /**
      * Scrolls the viewport's origin to the given location, or as close to it as
      * possible.
-     * <p>
+     *
+     *
      * This method should be invoked in the GUI thread.
      *
      * @param bounds    The bounds of the scrollable area that should become visible.
-     * @param xIfNeeded If this parameter is <code>true</code> the x coordinate is changed
-     *                  only if the horizontal bounds are not currently visible.
-     * @param yIfNeeded If this parameter is <code>true</code> the y coordinate is changed
-     *                  only if the vertical bounds are not currently visible.
+     * @param xIfNeeded If this parameter is `true` the x coordinate is changed
+     * only if the horizontal bounds are not currently visible.
+     * @param yIfNeeded If this parameter is `true` the y coordinate is changed
+     * only if the vertical bounds are not currently visible.
      */
-    public void scrollTo(final Rectangle bounds, final boolean xIfNeeded, final boolean yIfNeeded) {
-        final boolean hscroll = this.hasHScrollBar;
-        final boolean vscroll = this.hasVScrollBar;
+    fun scrollTo(bounds: Rectangle, xIfNeeded: Boolean, yIfNeeded: Boolean) {
+        val hscroll = this.hasHScrollBar
+        val vscroll = this.hasVScrollBar
         if (hscroll || vscroll) {
-            final RBlockViewport bv = this.bodyLayout;
-            final Insets insets = this.getInsetsMarginBorder(hscroll, vscroll);
-            final int vpheight = this.height - insets.top - insets.bottom;
-            final int vpwidth = this.width - insets.left - insets.right;
-            final int tentativeX = insets.left - bounds.x;
-            final int tentativeY = insets.top - bounds.y;
-            boolean needCorrection = false;
+            val bv = this.rBlockViewport
+            val insets = this.getInsetsMarginBorder(hscroll, vscroll)
+            val vpheight = this.height - insets.top - insets.bottom
+            val vpwidth = this.width - insets.left - insets.right
+            val tentativeX = insets.left - bounds.x
+            val tentativeY = insets.top - bounds.y
+            var needCorrection = false
             if (!(xIfNeeded && (tentativeX <= bv.x) && ((-tentativeX + bv.x + bounds.width) <= vpwidth))) {
-                bv.setX(tentativeX);
-                needCorrection = true;
+                bv.setX(tentativeX)
+                needCorrection = true
             }
             if (!(yIfNeeded && (tentativeY <= bv.y) && ((-tentativeY + bv.y + bounds.height) <= vpheight))) {
-                bv.setY(tentativeY);
-                needCorrection = true;
+                bv.setY(tentativeY)
+                needCorrection = true
             }
             if (needCorrection) {
-                this.correctViewportOrigin(insets, this.width, this.height);
-                this.resetScrollBars(null);
+                this.correctViewportOrigin(insets, this.width, this.height)
+                this.resetScrollBars(null)
             }
         }
     }
 
-    private void scrollToSBValue(final int orientation, final int value) {
-        final Insets insets = this.getInsetsMarginBorder(this.hasHScrollBar, this.hasVScrollBar);
-        switch (orientation) {
-            case Adjustable.HORIZONTAL:
-                final int xOrigin = insets.left - value;
-                this.scrollHorizontalTo(xOrigin);
-                break;
-            case Adjustable.VERTICAL:
-                final int yOrigin = insets.top - value;
-                this.scrollVerticalTo(yOrigin);
-                break;
+    private fun scrollToSBValue(orientation: Int, value: Int) {
+        val insets = this.getInsetsMarginBorder(this.hasHScrollBar, this.hasVScrollBar)
+        when (orientation) {
+            Adjustable.HORIZONTAL -> {
+                val xOrigin = insets.left - value
+                this.scrollHorizontalTo(xOrigin)
+            }
+
+            Adjustable.VERTICAL -> {
+                val yOrigin = insets.top - value
+                this.scrollVerticalTo(yOrigin)
+            }
         }
     }
 
-    public RBlockViewport getRBlockViewport() {
-        return this.bodyLayout;
-    }
-
-    @Override
-    public boolean extractSelectionText(final StringBuffer buffer, final boolean inSelection, final RenderableSpot startPoint,
-                                        final RenderableSpot endPoint) {
-        final boolean result = super.extractSelectionText(buffer, inSelection, startPoint, endPoint);
-        final String br = System.getProperty("line.separator");
+    override fun extractSelectionText(
+        buffer: StringBuffer, inSelection: Boolean, startPoint: RenderableSpot?,
+        endPoint: RenderableSpot?
+    ): Boolean {
+        val result = super.extractSelectionText(buffer, inSelection, startPoint, endPoint)
+        val br = System.getProperty("line.separator")
         if (inSelection) {
-            buffer.insert(0, br);
+            buffer.insert(0, br)
         }
         if (result) {
-            buffer.append(br);
+            buffer.append(br)
         }
-        return result;
+        return result
     }
 
-  /*
+    /*
   private static class LayoutKey {
     public final int availWidth;
     public final int availHeight;
@@ -1751,174 +1827,209 @@ public class RBlock extends BaseBlockyRenderable {
           ^ (this.expandHeight ? 1 : 0) ^ (this.whitespace << 2);
     }
   } */
-
-    @Override
-    public String toString() {
-        return "RBlock[node=" + this.modelNode + "]";
+    override fun toString(): String {
+        return "RBlock[node=" + this.modelNode + "]"
     }
 
-    public FloatingInfo getExportableFloatingInfo() {
-        final FloatingInfo info = this.bodyLayout.getExportableFloatingInfo();
-        if (info == null) {
-            return null;
+    val exportableFloatingInfo: FloatingInfo?
+        get() {
+            val info = this.rBlockViewport.getExportableFloatingInfo()
+            if (info == null) {
+                return null
+            }
+            val insets =
+                this.getInsetsMarginBorder(this.hasHScrollBar, this.hasVScrollBar)
+            return FloatingInfo(info.shiftX + insets.left, info.shiftY + insets.top, info.floats)
         }
-        final Insets insets = this.getInsetsMarginBorder(this.hasHScrollBar, this.hasVScrollBar);
-        return new FloatingInfo(info.shiftX + insets.left, info.shiftY + insets.top, info.floats);
+
+    override fun setInnerWidth(newWidth: Int) {
+        val insets = getInsets(hasHScrollBar, hasVScrollBar)
+        val hInset = insets.left + insets.right
+        rBlockViewport.setWidth(newWidth)
+        width = newWidth + hInset
     }
 
-    public int getDefaultOverflowX() {
-        return defaultOverflowX;
+    override fun setInnerHeight(newHeight: Int) {
+        val insets = getInsets(hasHScrollBar, hasVScrollBar)
+        val vInset = insets.top + insets.bottom
+        rBlockViewport.setHeight(newHeight)
+        height = newHeight + vInset
     }
 
-    public void setDefaultOverflowX(final int defaultOverflowX) {
-        this.defaultOverflowX = defaultOverflowX;
+    fun setCollapseTop(set: Boolean) {
+        collapseTopMargin = set
     }
 
-    public int getDefaultOverflowY() {
-        return defaultOverflowY;
+    fun setCollapseBottom(set: Boolean) {
+        collapseBottomMargin = set
     }
 
-    public void setDefaultOverflowY(final int defaultOverflowY) {
-        this.defaultOverflowY = defaultOverflowY;
-    }
-
-    @Override
-    public void setInnerWidth(final Integer newWidth) {
-        final Insets insets = getInsets(hasHScrollBar, hasVScrollBar);
-        final int hInset = insets.left + insets.right;
-        bodyLayout.setWidth(newWidth);
-        width = newWidth + hInset;
-    }
-
-    @Override
-    public void setInnerHeight(final Integer newHeight) {
-        final Insets insets = getInsets(hasHScrollBar, hasVScrollBar);
-        final int vInset = insets.top + insets.bottom;
-        bodyLayout.setHeight(newHeight);
-        height = newHeight + vInset;
-    }
-
-    void setCollapseTop(final boolean set) {
-        collapseTopMargin = set;
-    }
-
-    void setCollapseBottom(final boolean set) {
-        collapseBottomMargin = set;
-    }
-
-    @Nullable
-    Integer getMarginTopOriginal() {
-        return marginTopOriginal;
-    }
-
-    @Nullable
-    Integer getMarginBottomOriginal() {
-        return marginBottomOriginal;
-    }
-
-    @Override
-    protected void applyStyle(int availWidth, int availHeight, boolean updateLayout) {
-        super.applyStyle(availWidth, availHeight, updateLayout);
+    protected override fun applyStyle(availWidth: Int, availHeight: Int, updateLayout: Boolean) {
+        super.applyStyle(availWidth, availHeight, updateLayout)
 
         if (collapseTopMargin) {
-            final Insets mi = this.marginInsets;
-            this.marginTopOriginal = mi.top;
-            this.marginInsets = new Insets(0, mi.left, mi.bottom, mi.right);
+            val mi = this.marginInsets
+            this.marginTopOriginal = mi.top
+            this.marginInsets = Insets(0, mi.left, mi.bottom, mi.right)
         }
         if (collapseBottomMargin) {
-            final Insets mi = this.marginInsets;
-            this.marginBottomOriginal = mi.bottom;
-            this.marginInsets = new Insets(mi.top, mi.left, 0, mi.right);
+            val mi = this.marginInsets
+            this.marginBottomOriginal = mi.bottom
+            this.marginInsets = Insets(mi.top, mi.left, 0, mi.right)
         }
     }
 
-    void absorbMarginTopChild(@Nullable Integer marginTopChild) {
+    fun absorbMarginTopChild(marginTopChild: Int?) {
         if (marginTopChild != null) {
             // System.out.println("In: " + this);
             // System.out.println("  Absorbing: " + marginTopChild);
-            final Insets mi = this.marginInsets;
+            val mi = this.marginInsets
             if (mi != null) {
                 if (marginTopChild > mi.top) {
                     if (!collapseTopMargin) {
-                        this.marginInsets = new Insets(marginTopChild, mi.left, mi.bottom, mi.right);
+                        this.marginInsets = Insets(marginTopChild, mi.left, mi.bottom, mi.right)
                     }
-                    this.marginTopOriginal = marginTopChild;
+                    this.marginTopOriginal = marginTopChild
                 }
             } else {
                 if (!collapseTopMargin) {
-                    this.marginInsets = new Insets(marginTopChild, 0, 0, 0);
+                    this.marginInsets = Insets(marginTopChild, 0, 0, 0)
                 }
-                this.marginTopOriginal = marginTopChild;
+                this.marginTopOriginal = marginTopChild
             }
         }
     }
 
-    void absorbMarginBottomChild(@Nullable Integer marginBottomChild) {
+    fun absorbMarginBottomChild(marginBottomChild: Int?) {
         if (marginBottomChild != null) {
-            final Insets mi = this.marginInsets;
+            val mi = this.marginInsets
             if (mi != null) {
                 if (marginBottomChild > mi.bottom) {
                     if (!collapseBottomMargin) {
-                        this.marginInsets = new Insets(mi.top, mi.left, marginBottomChild, mi.right);
+                        this.marginInsets = Insets(mi.top, mi.left, marginBottomChild, mi.right)
                     }
-                    this.marginBottomOriginal = marginBottomChild;
+                    this.marginBottomOriginal = marginBottomChild
                 }
             } else {
                 if (!collapseBottomMargin) {
-                    this.marginInsets = new Insets(0, 0, marginBottomChild, 0);
+                    this.marginInsets = Insets(0, 0, marginBottomChild, 0)
                 }
-                this.marginBottomOriginal = marginBottomChild;
+                this.marginBottomOriginal = marginBottomChild
             }
         }
     }
 
-    public int getHorizontalScrollBarHeight() {
-        return hasHScrollBar ? SCROLL_BAR_THICKNESS : 0;
+    override fun getHorizontalScrollBarHeight(): Int {
+        return if (hasHScrollBar) SCROLL_BAR_THICKNESS else 0
     }
 
-    public int getVerticalScrollBarHeight() {
-        return hasVScrollBar ? SCROLL_BAR_THICKNESS : 0;
+    override fun getVerticalScrollBarHeight(): Int {
+        return if (hasVScrollBar) SCROLL_BAR_THICKNESS else 0
     }
 
-    private static class LayoutValue {
-        public final int width;
-        public final int height;
-        public final boolean hasHScrollBar;
-        public final boolean hasVScrollBar;
+    private class LayoutValue(
+        val width: Int,
+        val height: Int,
+        val hasHScrollBar: Boolean,
+        val hasVScrollBar: Boolean
+    )
 
-        public LayoutValue(final int width, final int height, final boolean hasHScrollBar, final boolean hasVScrollBar) {
-            this.width = width;
-            this.height = height;
-            this.hasHScrollBar = hasHScrollBar;
-            this.hasVScrollBar = hasVScrollBar;
-        }
-    }
-
-    private class LocalAdjustmentListener implements AdjustmentListener {
-        private final int orientation;
-
-        public LocalAdjustmentListener(final int orientation) {
-            this.orientation = orientation;
-        }
-
-        public void adjustmentValueChanged(final AdjustmentEvent e) {
-            if (RBlock.this.resettingScrollBars) {
-                return;
+    private inner class LocalAdjustmentListener(private val orientation: Int) : AdjustmentListener {
+        override fun adjustmentValueChanged(e: AdjustmentEvent) {
+            if (this@RBlock.resettingScrollBars) {
+                return
             }
-            switch (e.getAdjustmentType()) {
-                case AdjustmentEvent.UNIT_INCREMENT:
-                    // fall through
-                case AdjustmentEvent.UNIT_DECREMENT:
-                    // fall through
-                case AdjustmentEvent.BLOCK_INCREMENT:
-                    // fall through
-                case AdjustmentEvent.BLOCK_DECREMENT:
-                    // fall through
-                case AdjustmentEvent.TRACK: {
-                    final int value = e.getValue();
-                    RBlock.this.scrollToSBValue(this.orientation, value);
-                    break;
+            when (e.getAdjustmentType()) {
+                AdjustmentEvent.UNIT_INCREMENT, AdjustmentEvent.UNIT_DECREMENT, AdjustmentEvent.BLOCK_INCREMENT, AdjustmentEvent.BLOCK_DECREMENT, AdjustmentEvent.TRACK -> {
+                    val value = e.getValue()
+                    this@RBlock.scrollToSBValue(this.orientation, value)
                 }
+            }
+        }
+    }
+
+    companion object {
+        private fun getVUnitIncrement(renderState: RenderState?): Int {
+            if (renderState != null) {
+                return renderState.fontMetrics.getHeight()
+            } else {
+                return BlockRenderState(null).getFontMetrics().height
+            }
+        }
+
+        private fun isSimpleLine(r: Renderable?): Boolean {
+            if (r is RLine) {
+                val rends = r.getRenderables()
+                while (rends.hasNext()) {
+                    val rend: Renderable? = rends.next()
+                    if (!(rend is RWord || rend is RBlank || rend is RStyleChanger)) {
+                        return false
+                    }
+                }
+                return true
+            }
+            return false
+        }
+
+        fun dumpRndTree(indentStr: String?, isLast: Boolean, r: Renderable, condense: Boolean) {
+            val nextIndentStr =
+                indentStr + (if (r is RBlockViewport) "  " else (if (isLast) "  " else "│ "))
+            val selfIndentStr = (if (isLast) "└ " else "├ ")
+            if (isSimpleLine(r)) {
+                println(indentStr + selfIndentStr + "─────")
+            } else {
+                if (r is RBlockViewport) {
+                    // System.out.println(indentStr + "^RBV");
+                } else {
+                    val selfStr: String = makeSelfStr(r)
+                    println(indentStr + selfIndentStr + selfStr)
+                }
+                if (r is RBlock) {
+                    if ((!condense) || !r.isDelegated()) {
+                        dumpRndTree(
+                            nextIndentStr,
+                            true,
+                            r.rBlockViewport,
+                            r.isDelegated() || condense
+                        )
+                    }
+                } else {
+                    if (r is RCollection) {
+                        if ((!condense) || !r.isDelegated()) {
+                            val rnds = r.getRenderables()
+                            if (rnds == null) {
+                                println(indentStr + selfIndentStr + " [empty]")
+                            } else {
+                                val filteredRnds = CollectionUtilities.filter(
+                                    rnds,
+                                    { fr: Renderable -> !isSimpleLine(fr) })
+                                while (filteredRnds.hasNext()) {
+                                    val rnd = filteredRnds.next()
+                                    dumpRndTree(
+                                        nextIndentStr,
+                                        !filteredRnds.hasNext(),
+                                        rnd,
+                                        condense
+                                    )
+                                }
+                            }
+                        }
+                    } else if (r is PositionedRenderable) {
+                        dumpRndTree(nextIndentStr, true, r.renderable, false)
+                    }
+                }
+            }
+        }
+
+        private fun makeSelfStr(r: Renderable): String {
+            if (r is PositionedRenderable) {
+                return "Pos-Rend: " + (if (r.isFloat) " <float> " else "") + (if (r.isFixed()) " <fixed> " else "")
+            } else if (r is TranslatedRenderable) {
+                return "Trans-Rend"
+            } else {
+                val delgStr =
+                    if (r is RCollection) (if (r.isDelegated()) "<deleg> " else "") else ""
+                return delgStr + r.toString()
             }
         }
     }

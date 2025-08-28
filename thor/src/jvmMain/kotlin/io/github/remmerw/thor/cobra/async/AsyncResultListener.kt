@@ -21,9 +21,9 @@
 /*
  * Created on Mar 31, 2005
  */
-package io.github.remmerw.thor.cobra.async;
+package io.github.remmerw.thor.cobra.async
 
-import java.util.EventListener;
+import java.util.EventListener
 
 /**
  * Listener of asynchronous results.
@@ -31,14 +31,14 @@ import java.util.EventListener;
  * @author J. H. S.
  * @see AsyncResult
  */
-public interface AsyncResultListener<TResult> extends EventListener {
+interface AsyncResultListener<TResult> : EventListener {
     /**
      * Receives an asynchronous result. This method is invoked in the event
      * dispatch thread.
      *
      * @param event Event containing asynchronous result.
      */
-    void resultReceived(AsyncResultEvent<TResult> event);
+    fun resultReceived(event: AsyncResultEvent<TResult?>?)
 
     /**
      * Called when an exception has occurred trying to obtain an asynchronous
@@ -46,5 +46,5 @@ public interface AsyncResultListener<TResult> extends EventListener {
      *
      * @param event Event containing the exception.
      */
-    void exceptionReceived(AsyncResultEvent<Throwable> event);
+    fun exceptionReceived(event: AsyncResultEvent<Throwable?>?)
 }

@@ -21,64 +21,59 @@
 /*
  * Created on Apr 15, 2005
  */
-package io.github.remmerw.thor.cobra.util.io;
+package io.github.remmerw.thor.cobra.util.io
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.ByteArrayOutputStream
+import java.io.IOException
+import java.io.InputStream
+import java.io.UnsupportedEncodingException
+import kotlin.math.min
 
 /**
  * Wraps an InputStream and records all of the bytes read. This stream supports
  * mark() and reset().
- * <p>
+ *
+ *
  * Note: Buffered streams should wrap this class as opposed to the other way
  * around.
  *
  * @author J. H. S.
  */
-public class RecordedInputStream extends InputStream {
-    private final InputStream delegate;
-    private final ByteArrayOutputStream store = new ByteArrayOutputStream();
-    private final int maxBufferSize;
-    private boolean hasReachedEOF = false;
-    private boolean hasReachedMaxBufferSize = false;
-    private int markPosition = -1;
-    private int readPosition = -1;
-    private byte[] resetBuffer = null;
-
-    /**
-     *
-     */
-    public RecordedInputStream(final InputStream delegate, final int maxBufferSize) {
-        super();
-        this.delegate = delegate;
-        this.maxBufferSize = maxBufferSize;
-    }
+class RecordedInputStream
+/**
+ *
+ */(private val delegate: InputStream, private val maxBufferSize: Int) : InputStream() {
+    private val store = ByteArrayOutputStream()
+    private var hasReachedEOF = false
+    private var hasReachedMaxBufferSize = false
+    private var markPosition = -1
+    private var readPosition = -1
+    private var resetBuffer: ByteArray? = null
 
     /*
      * (non-Javadoc)
      *
      * @see java.io.InputStream#read()
      */
-    @Override
-    public int read() throws IOException {
-        if ((this.readPosition != -1) && (this.readPosition < this.resetBuffer.length)) {
-            final int b = this.resetBuffer[this.readPosition];
-            this.readPosition++;
-            return b;
+    @Throws(IOException::class)
+    override fun read(): Int {
+        if ((this.readPosition != -1) && (this.readPosition < this.resetBuffer!!.size)) {
+            val b = this.resetBuffer!![this.readPosition].toInt()
+            this.readPosition++
+            return b
         } else {
-            final int b = this.delegate.read();
+            val b = this.delegate.read()
             if (b != -1) {
                 if (!this.hasReachedMaxBufferSize) {
-                    this.store.write(b);
+                    this.store.write(b)
                     if (this.store.size() > this.maxBufferSize) {
-                        this.hasReachedMaxBufferSize = true;
+                        this.hasReachedMaxBufferSize = true
                     }
                 }
             } else {
-                this.hasReachedEOF = true;
+                this.hasReachedEOF = true
             }
-            return b;
+            return b
         }
     }
 
@@ -87,9 +82,9 @@ public class RecordedInputStream extends InputStream {
      *
      * @see java.io.InputStream#available()
      */
-    @Override
-    public int available() throws IOException {
-        return this.delegate.available();
+    @Throws(IOException::class)
+    override fun available(): Int {
+        return this.delegate.available()
     }
 
     /*
@@ -97,9 +92,9 @@ public class RecordedInputStream extends InputStream {
      *
      * @see java.io.InputStream#close()
      */
-    @Override
-    public void close() throws IOException {
-        this.delegate.close();
+    @Throws(IOException::class)
+    override fun close() {
+        this.delegate.close()
     }
 
     /*
@@ -107,30 +102,26 @@ public class RecordedInputStream extends InputStream {
      *
      * @see java.io.InputStream#markSupported()
      */
-    @Override
-    public boolean markSupported() {
-        return true;
+    override fun markSupported(): Boolean {
+        return true
     }
 
-    @Override
-    public synchronized void mark(final int readlimit) {
-        if (this.hasReachedMaxBufferSize) {
-            throw new IllegalStateException("Maximum buffer size was already reached.");
-        }
-        this.markPosition = this.store.size();
+    @Synchronized
+    override fun mark(readlimit: Int) {
+        check(!this.hasReachedMaxBufferSize) { "Maximum buffer size was already reached." }
+        this.markPosition = this.store.size()
     }
 
-    @Override
-    public synchronized void reset() throws IOException {
-        if (this.hasReachedMaxBufferSize) {
-            throw new IllegalStateException("Maximum buffer size was already reached.");
-        }
-        final int mp = this.markPosition;
-        final byte[] wholeBuffer = this.store.toByteArray();
-        final byte[] resetBuffer = new byte[wholeBuffer.length - mp];
-        System.arraycopy(wholeBuffer, mp, resetBuffer, 0, resetBuffer.length);
-        this.resetBuffer = resetBuffer;
-        this.readPosition = 0;
+    @Synchronized
+    @Throws(IOException::class)
+    override fun reset() {
+        check(!this.hasReachedMaxBufferSize) { "Maximum buffer size was already reached." }
+        val mp = this.markPosition
+        val wholeBuffer = this.store.toByteArray()
+        val resetBuffer = ByteArray(wholeBuffer.size - mp)
+        System.arraycopy(wholeBuffer, mp, resetBuffer, 0, resetBuffer.size)
+        this.resetBuffer = resetBuffer
+        this.readPosition = 0
     }
 
     /*
@@ -138,51 +129,55 @@ public class RecordedInputStream extends InputStream {
      *
      * @see java.io.InputStream#read(byte[], int, int)
      */
-    @Override
-    public int read(final byte[] buffer, final int offset, final int length) throws IOException {
-        if ((this.readPosition != -1) && (this.readPosition < this.resetBuffer.length)) {
-            final int minLength = Math.min(this.resetBuffer.length - this.readPosition, length);
-            System.arraycopy(this.resetBuffer, this.readPosition, buffer, offset, minLength);
-            this.readPosition += minLength;
-            return minLength;
+    @Throws(IOException::class)
+    override fun read(buffer: ByteArray, offset: Int, length: Int): Int {
+        if ((this.readPosition != -1) && (this.readPosition < this.resetBuffer!!.size)) {
+            val minLength = min(this.resetBuffer!!.size - this.readPosition, length)
+            System.arraycopy(this.resetBuffer, this.readPosition, buffer, offset, minLength)
+            this.readPosition += minLength
+            return minLength
         } else {
-            final int numRead = this.delegate.read(buffer, offset, length);
+            val numRead = this.delegate.read(buffer, offset, length)
             if (numRead != -1) {
                 if (!this.hasReachedMaxBufferSize) {
-                    this.store.write(buffer, offset, numRead);
+                    this.store.write(buffer, offset, numRead)
                     if (this.store.size() > this.maxBufferSize) {
-                        this.hasReachedMaxBufferSize = true;
+                        this.hasReachedMaxBufferSize = true
                     }
                 }
             } else {
-                this.hasReachedEOF = true;
+                this.hasReachedEOF = true
             }
-            return numRead;
+            return numRead
         }
     }
 
-    public void consumeToEOF() throws IOException {
-        final byte[] buffer = new byte[8192];
+    @Throws(IOException::class)
+    fun consumeToEOF() {
+        val buffer = ByteArray(8192)
         while (this.read(buffer) != -1) {
             // EMPTY LOOP
         }
     }
 
-    public byte[] getBytesRead() throws BufferExceededException {
-        if (this.hasReachedMaxBufferSize) {
-            throw new BufferExceededException();
+    @get:Throws(BufferExceededException::class)
+    val bytesRead: ByteArray
+        get() {
+            if (this.hasReachedMaxBufferSize) {
+                throw BufferExceededException()
+            }
+            return this.store.toByteArray()
         }
-        return this.store.toByteArray();
+
+    @Throws(UnsupportedEncodingException::class, BufferExceededException::class)
+    fun getString(encoding: String?): String? {
+        if (this.hasReachedMaxBufferSize) {
+            throw BufferExceededException()
+        }
+        return this.store.toString(encoding)
     }
 
-    public String getString(final String encoding) throws java.io.UnsupportedEncodingException, BufferExceededException {
-        if (this.hasReachedMaxBufferSize) {
-            throw new BufferExceededException();
-        }
-        return this.store.toString(encoding);
-    }
-
-    public boolean hasReachedEOF() {
-        return this.hasReachedEOF;
+    fun hasReachedEOF(): Boolean {
+        return this.hasReachedEOF
     }
 }

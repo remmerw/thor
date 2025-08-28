@@ -18,239 +18,227 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.js;
+package io.github.remmerw.thor.cobra.js
 
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.Scriptable;
+import io.github.remmerw.thor.cobra.html.js.NotGetterSetter
+import io.github.remmerw.thor.cobra.html.js.PropertyName
+import org.mozilla.javascript.Function
+import org.mozilla.javascript.Scriptable
+import java.lang.reflect.Field
+import java.lang.reflect.Method
+import java.lang.reflect.Modifier
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.Map;
+class JavaClassWrapper(private val javaClass: Class<*>) {
+    private val functions: MutableMap<String?, JavaFunctionObject?> =
+        HashMap<String?, JavaFunctionObject?>()
+    val properties: MutableMap<String?, PropertyInfo?> = HashMap<String?, PropertyInfo?>()
 
-import io.github.remmerw.thor.cobra.html.js.NotGetterSetter;
-import io.github.remmerw.thor.cobra.html.js.PropertyName;
+    val staticFinalProperties: MutableMap<String?, Field?> = HashMap<String?, Field?>()
 
-public class JavaClassWrapper {
-    private final Class<?> javaClass;
-    private final Map<String, JavaFunctionObject> functions = new HashMap<>();
-    private final Map<String, PropertyInfo> properties = new HashMap<>();
+    var nameIndexer: PropertyInfo? = null
+        private set
+    var integerIndexer: PropertyInfo? = null
+        private set
 
-    private final Map<String, Field> staticFinalProperties = new HashMap<>();
-
-    private PropertyInfo nameIndexer;
-    private PropertyInfo integerIndexer;
-
-    public JavaClassWrapper(final Class<?> class1) {
-        super();
-        this.javaClass = class1;
-        this.scanMethods();
+    init {
+        this.scanMethods()
     }
 
-    private static Field[] extractFields(final Class<?> jClass) {
-        try {
-            return jClass.getFields();
-        } catch (final Throwable ace) {
-            // TODO: Try looking at individual interfaces implemented by the class
-            //return new Field[0];
-            throw new RuntimeException("Couldn't access fields of a class");
+    @Throws(InstantiationException::class, IllegalAccessException::class)
+    fun newInstance(): Any {
+        return this.javaClass.newInstance()
+    }
+
+    val className: String
+        get() {
+            val className = this.javaClass.name
+            val lastDotIdx = className.lastIndexOf('.')
+            return if (lastDotIdx == -1) className else className.substring(lastDotIdx + 1)
         }
+
+    val canonicalClassName: String?
+        get() = this.javaClass.canonicalName
+
+    fun getFunction(name: String?): Function? {
+        return this.functions.get(name)
     }
 
-    private static Method[] extractMethods(final Class<?> jClass) {
-        try {
-            return jClass.getMethods();
-        } catch (final Throwable ace) {
-            // TODO: Try looking at individual interfaces implemented by the class
-            // return new Method[0];
-            throw new RuntimeException("Couldn't access methods of a class");
-        }
+    fun getProperty(name: String?): PropertyInfo? {
+        return this.properties.get(name)
     }
 
-    private static boolean isNameIndexer(final String name, final Method method) {
-        return ("namedItem".equals(name) && (method.getParameterTypes().length == 1))
-                || ("setNamedItem".equals(name) && (method.getParameterTypes().length == 2));
-    }
-
-    private static boolean isIntegerIndexer(final String name, final Method method) {
-        return ("item".equals(name) && (method.getParameterTypes().length == 1))
-                || ("setItem".equals(name) && (method.getParameterTypes().length == 2));
-    }
-
-    private static boolean isPropertyMethod(final String name, final Method method) {
-        if (method.isAnnotationPresent(NotGetterSetter.class)) {
-            return false;
-        } else {
-            if (name.startsWith("get") || name.startsWith("is")) {
-                return method.getParameterTypes().length == 0;
-            } else if (name.startsWith("set")) {
-                return method.getParameterTypes().length == 1;
-            } else {
-                return false;
-            }
-        }
-    }
-
-    private static String propertyUncapitalize(final String text) {
-        try {
-            if ((text.length() > 1) && Character.isUpperCase(text.charAt(1))) {
-                // If second letter is capitalized, don't uncapitalize,
-                // e.g. getURL.
-                return text;
-            }
-            return Character.toLowerCase(text.charAt(0)) + text.substring(1);
-        } catch (final IndexOutOfBoundsException iob) {
-            return text;
-        }
-    }
-
-    public Object newInstance() throws InstantiationException, IllegalAccessException {
-        return this.javaClass.newInstance();
-    }
-
-    public String getClassName() {
-        final String className = this.javaClass.getName();
-        final int lastDotIdx = className.lastIndexOf('.');
-        return lastDotIdx == -1 ? className : className.substring(lastDotIdx + 1);
-    }
-
-    public String getCanonicalClassName() {
-        return this.javaClass.getCanonicalName();
-    }
-
-    public Function getFunction(final String name) {
-        return this.functions.get(name);
-    }
-
-    public PropertyInfo getProperty(final String name) {
-        return this.properties.get(name);
-    }
-
-    private void scanMethods() {
-        final Field[] fields = extractFields(javaClass);
-        for (final Field f : fields) {
-            final int modifiers = f.getModifiers();
-            if (Modifier.isPublic(modifiers) && Modifier.isStatic(modifiers) && Modifier.isFinal(modifiers)) {
-                staticFinalProperties.put(f.getName(), f);
+    private fun scanMethods() {
+        val fields: Array<Field> = extractFields(javaClass)
+        for (f in fields) {
+            val modifiers = f.modifiers
+            if (Modifier.isPublic(modifiers) && Modifier.isStatic(modifiers) && Modifier.isFinal(
+                    modifiers
+                )
+            ) {
+                staticFinalProperties.put(f.name, f)
             }
         }
 
-        final Method[] methods = extractMethods(javaClass);
-        final int len = methods.length;
-        for (int i = 0; i < len; i++) {
-            final Method method = methods[i];
+        val methods: Array<Method> = extractMethods(javaClass)
+        val len = methods.size
+        for (i in 0..<len) {
+            val method = methods[i]
             // TODO: Need a more robust blocking mechanism. GH #125
-            final boolean blocked = method.getDeclaringClass().getCanonicalName().startsWith("java");
-            if (!(blocked || method.isAnnotationPresent(HideFromJS.class))) {
-                final String name = method.getName();
+            val blocked = method.declaringClass.canonicalName.startsWith("java")
+            if (!(blocked || method.isAnnotationPresent(HideFromJS::class.java))) {
+                val name = method.name
                 if (isPropertyMethod(name, method)) {
-                    this.ensurePropertyKnown(name, method);
+                    this.ensurePropertyKnown(name, method)
                 } else {
                     if (isNameIndexer(name, method)) {
-                        this.updateNameIndexer(name, method);
+                        this.updateNameIndexer(name, method)
                     } else if (isIntegerIndexer(name, method)) {
-                        this.updateIntegerIndexer(name, method);
+                        this.updateIntegerIndexer(name, method)
                     }
-                    JavaFunctionObject f = this.functions.get(name);
+                    var f = this.functions.get(name)
                     if (f == null) {
-                        f = new JavaFunctionObject(name, javaClass.getName());
-                        this.functions.put(name, f);
+                        f = JavaFunctionObject(name, javaClass.name)
+                        this.functions.put(name, f)
                     }
-                    f.addMethod(method);
+                    f.addMethod(method)
                 }
             }
         }
     }
 
-    private void updateNameIndexer(final String methodName, final Method method) {
-        final boolean getter = !methodName.startsWith("set");
-        PropertyInfo indexer = this.nameIndexer;
+    private fun updateNameIndexer(methodName: String, method: Method?) {
+        val getter = !methodName.startsWith("set")
+        var indexer = this.nameIndexer
         if (indexer == null) {
-            indexer = new PropertyInfo("$item", Object.class);
-            this.nameIndexer = indexer;
+            indexer = PropertyInfo("\$item", Any::class.java)
+            this.nameIndexer = indexer
         }
         if (getter) {
-            indexer.setGetter(method);
+            indexer.setGetter(method)
         } else {
-            indexer.setSetter(method);
+            indexer.setSetter(method)
         }
     }
 
-    private void updateIntegerIndexer(final String methodName, final Method method) {
-        final boolean getter = !methodName.startsWith("set");
-        PropertyInfo indexer = this.integerIndexer;
+    private fun updateIntegerIndexer(methodName: String, method: Method) {
+        val getter = !methodName.startsWith("set")
+        var indexer = this.integerIndexer
         if (indexer == null) {
-            final Class<?> pt = getter ? method.getReturnType() : method.getParameterTypes()[1];
-            indexer = new PropertyInfo("$item", pt);
-            this.integerIndexer = indexer;
+            val pt = if (getter) method.returnType else method.parameterTypes[1]
+            indexer = PropertyInfo("\$item", pt)
+            this.integerIndexer = indexer
         }
         if (getter) {
-            indexer.setGetter(method);
+            indexer.setGetter(method)
         } else {
-            indexer.setSetter(method);
+            indexer.setSetter(method)
         }
     }
 
-    public PropertyInfo getIntegerIndexer() {
-        return this.integerIndexer;
-    }
-
-    public PropertyInfo getNameIndexer() {
-        return this.nameIndexer;
-    }
-
-    private void ensurePropertyKnown(final String methodName, final Method method) {
-        String capPropertyName;
-        boolean getter = false;
-        boolean setter = false;
+    private fun ensurePropertyKnown(methodName: String, method: Method) {
+        val capPropertyName: String?
+        var getter = false
+        var setter = false
         if (methodName.startsWith("get")) {
-            capPropertyName = methodName.substring(3);
-            getter = true;
+            capPropertyName = methodName.substring(3)
+            getter = true
         } else if (methodName.startsWith("set")) {
-            capPropertyName = methodName.substring(3);
-            setter = method.getReturnType() == Void.TYPE;
+            capPropertyName = methodName.substring(3)
+            setter = method.returnType == Void.TYPE
         } else if (methodName.startsWith("is")) {
-            capPropertyName = methodName.substring(2);
-            getter = true;
+            capPropertyName = methodName.substring(2)
+            getter = true
         } else {
-            throw new IllegalArgumentException("methodName=" + methodName);
+            throw IllegalArgumentException("methodName=" + methodName)
         }
 
-        final PropertyName propertyNameAnnotation = method.getAnnotation(PropertyName.class);
-        final String propertyName = (propertyNameAnnotation != null) ? propertyNameAnnotation.value() : propertyUncapitalize(capPropertyName);
+        val propertyNameAnnotation = method.getAnnotation<PropertyName?>(PropertyName::class.java)
+        val propertyName =
+            if (propertyNameAnnotation != null) propertyNameAnnotation.value else propertyUncapitalize(
+                capPropertyName
+            )
 
-        PropertyInfo pinfo = this.properties.get(propertyName);
+        var pinfo = this.properties.get(propertyName)
         if (pinfo == null) {
-            final Class<?> pt = getter ? method.getReturnType() : method.getParameterTypes()[0];
-            pinfo = new PropertyInfo(propertyName, pt);
-            this.properties.put(propertyName, pinfo);
+            val pt = if (getter) method.returnType else method.parameterTypes[0]
+            pinfo = PropertyInfo(propertyName, pt)
+            this.properties.put(propertyName, pinfo)
         }
         if (getter) {
-            pinfo.setGetter(method);
+            pinfo.setGetter(method)
         }
         if (setter) {
-            pinfo.setSetter(method);
+            pinfo.setSetter(method)
         }
     }
 
-    @Override
-    public String toString() {
-        return this.javaClass.getName();
+    override fun toString(): String {
+        return this.javaClass.name
     }
 
-    Map<String, PropertyInfo> getProperties() {
-        return properties;
-    }
-
-    boolean hasInstance(final Scriptable instance) {
-        if (instance instanceof JavaObjectWrapper javaObjectWrapper) {
-            return javaClass.isInstance(javaObjectWrapper.getJavaObject());
+    fun hasInstance(instance: Scriptable?): Boolean {
+        if (instance is JavaObjectWrapper) {
+            return javaClass.isInstance(instance.getJavaObject())
         }
-        return javaClass.isInstance(instance);
+        return javaClass.isInstance(instance)
     }
 
-    Map<String, Field> getStaticFinalProperties() {
-        return staticFinalProperties;
+    companion object {
+        private fun extractFields(jClass: Class<*>): Array<Field> {
+            try {
+                return jClass.fields
+            } catch (ace: Throwable) {
+                // TODO: Try looking at individual interfaces implemented by the class
+                //return new Field[0];
+                throw RuntimeException("Couldn't access fields of a class")
+            }
+        }
+
+        private fun extractMethods(jClass: Class<*>): Array<Method> {
+            try {
+                return jClass.methods
+            } catch (ace: Throwable) {
+                // TODO: Try looking at individual interfaces implemented by the class
+                // return new Method[0];
+                throw RuntimeException("Couldn't access methods of a class")
+            }
+        }
+
+        private fun isNameIndexer(name: String?, method: Method): Boolean {
+            return ("namedItem" == name && (method.parameterTypes.size == 1))
+                    || ("setNamedItem" == name && (method.parameterTypes.size == 2))
+        }
+
+        private fun isIntegerIndexer(name: String?, method: Method): Boolean {
+            return ("item" == name && (method.parameterTypes.size == 1))
+                    || ("setItem" == name && (method.parameterTypes.size == 2))
+        }
+
+        private fun isPropertyMethod(name: String, method: Method): Boolean {
+            if (method.isAnnotationPresent(NotGetterSetter::class.java)) {
+                return false
+            } else {
+                if (name.startsWith("get") || name.startsWith("is")) {
+                    return method.parameterTypes.size == 0
+                } else if (name.startsWith("set")) {
+                    return method.parameterTypes.size == 1
+                } else {
+                    return false
+                }
+            }
+        }
+
+        private fun propertyUncapitalize(text: String): String {
+            try {
+                if ((text.length > 1) && Character.isUpperCase(text.get(1))) {
+                    // If second letter is capitalized, don't uncapitalize,
+                    // e.g. getURL.
+                    return text
+                }
+                return text.get(0).lowercaseChar().toString() + text.substring(1)
+            } catch (iob: IndexOutOfBoundsException) {
+                return text
+            }
+        }
     }
 }

@@ -21,96 +21,84 @@
 /*
  * Created on Dec 3, 2005
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import io.github.remmerw.thor.cobra.html.style.HtmlLength;
-import io.github.remmerw.thor.cobra.html.style.HtmlValues;
+import io.github.remmerw.thor.cobra.html.style.HtmlLength
+import io.github.remmerw.thor.cobra.html.style.HtmlValues
 
-class VirtualCell {
-    private final RAbstractCell actualCell;
-    private final boolean isTopLeft;
-    private int column;
-    private int row;
+internal class VirtualCell(cell: RAbstractCell, isTopLeft: Boolean) {
+    /**
+     * @return Returns the actualCell.
+     */
+    val actualCell: RAbstractCell
+    val isTopLeft: Boolean
+    /**
+     * @return Returns the column.
+     */
+    /**
+     * @param column The column to set.
+     */
+    var column: Int = 0
+    /**
+     * @return Returns the row.
+     */
+    /**
+     * @param row The row to set.
+     */
+    var row: Int = 0
 
     /**
      * @param cell
      */
-    public VirtualCell(final RAbstractCell cell, final boolean isTopLeft) {
-        actualCell = cell;
-        this.isTopLeft = isTopLeft;
+    init {
+        actualCell = cell
+        this.isTopLeft = isTopLeft
     }
 
-    public boolean isTopLeft() {
-        return this.isTopLeft;
-    }
-
-    /**
-     * @return Returns the column.
-     */
-    public int getColumn() {
-        return column;
-    }
-
-    /**
-     * @param column The column to set.
-     */
-    public void setColumn(final int column) {
-        this.column = column;
-    }
-
-    /**
-     * @return Returns the row.
-     */
-    public int getRow() {
-        return row;
-    }
-
-    /**
-     * @param row The row to set.
-     */
-    public void setRow(final int row) {
-        this.row = row;
-    }
-
-    /**
-     * @return Returns the actualCell.
-     */
-    public RAbstractCell getActualCell() {
-        return actualCell;
-    }
-
-    public HtmlLength getHeightLength() {
-        // TODO: Does not consider cellpadding and border
-        final RAbstractCell cell = this.actualCell;
-        final String heightText = cell.getHeightText();
-        HtmlLength length;
-        try {
-            length = heightText == null ? null : new HtmlLength(HtmlValues.getPixelSize(heightText, cell.getModelNode().getRenderState(), 0));
-        } catch (final NumberFormatException err) {
-            length = null;
+    val heightLength: HtmlLength?
+        get() {
+            // TODO: Does not consider cellpadding and border
+            val cell = this.actualCell
+            val heightText = cell.getHeightText()
+            var length: HtmlLength?
+            try {
+                length = if (heightText == null) null else HtmlLength(
+                    HtmlValues.getPixelSize(
+                        heightText,
+                        cell.getModelNode().renderState,
+                        0
+                    )
+                )
+            } catch (err: NumberFormatException) {
+                length = null
+            }
+            if (length != null) {
+                length.divideBy(cell.getRowSpan())
+            }
+            return length
         }
-        if (length != null) {
-            length.divideBy(cell.getRowSpan());
-        }
-        return length;
-    }
 
-    public HtmlLength getWidthLength() {
-        final RAbstractCell cell = this.actualCell;
-        final String widthText = cell.getWidthText();
-        HtmlLength length;
-        try {
-            length = widthText == null ? null : new HtmlLength(HtmlValues.getPixelSize(widthText, cell.getModelNode().getRenderState(), 0));
-        } catch (final NumberFormatException err) {
-            length = null;
-        }
-        if (length != null) {
-            length.divideBy(cell.getColSpan());
-        }
-        return length;
-    }
-
-    // public Dimension layoutMinWidth() {
+    val widthLength: HtmlLength?
+        get() {
+            val cell = this.actualCell
+            val widthText = cell.getWidthText()
+            var length: HtmlLength?
+            try {
+                length = if (widthText == null) null else HtmlLength(
+                    HtmlValues.getPixelSize(
+                        widthText,
+                        cell.getModelNode().renderState,
+                        0
+                    )
+                )
+            } catch (err: NumberFormatException) {
+                length = null
+            }
+            if (length != null) {
+                length.divideBy(cell.getColSpan())
+            }
+            return length
+        } // public Dimension layoutMinWidth() {
     //
     // ActualCell cell = this.actualCell;
     //

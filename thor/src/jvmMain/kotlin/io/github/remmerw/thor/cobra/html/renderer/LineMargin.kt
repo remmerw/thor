@@ -18,48 +18,24 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-class LineMargin {
-    private final int clearX;
-    private final int clearY;
-    private final LineMargin next;
-
-    public LineMargin(final LineMargin next, final int cleary, final int totalXOffset) {
-        super();
-        this.next = next;
-        this.clearY = cleary;
-        this.clearX = totalXOffset;
-    }
-
-    public int getClearY() {
-        return clearY;
-    }
-
-    public LineMargin getNext() {
-        return next;
-    }
-
-    public int getOffset() {
-        return clearX;
-    }
-
-    @Override
-    public boolean equals(final Object other) {
-        if (!(other instanceof LineMargin olm)) {
-            return false;
+internal class LineMargin(val next: LineMargin?, val clearY: Int, val offset: Int) {
+    override fun equals(other: Any?): Boolean {
+        if (other !is LineMargin) {
+            return false
         }
-        return (olm.clearX == this.clearX) && (olm.clearY == this.clearY) && java.util.Objects.equals(olm.next, this.next);
+        return (other.offset == this.offset) && (other.clearY == this.clearY) && other.next == this.next
     }
 
-    public LineMargin translated(final int yoffset, final int xoffset) {
-        final int newClearY = this.clearY - yoffset;
-        int newOffsetX = this.clearX - xoffset;
+    fun translated(yoffset: Int, xoffset: Int): LineMargin {
+        val newClearY = this.clearY - yoffset
+        var newOffsetX = this.offset - xoffset
         if (newOffsetX < 0) {
-            newOffsetX = 0;
+            newOffsetX = 0
         }
-        final LineMargin oldNext = this.next;
-        final LineMargin newNext = oldNext == null ? null : oldNext.translated(yoffset, xoffset);
-        return new LineMargin(newNext, newClearY, newOffsetX);
+        val oldNext = this.next
+        val newNext = if (oldNext == null) null else oldNext.translated(yoffset, xoffset)
+        return LineMargin(newNext, newClearY, newOffsetX)
     }
 }

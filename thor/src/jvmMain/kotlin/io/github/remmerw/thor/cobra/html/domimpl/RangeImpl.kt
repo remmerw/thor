@@ -17,159 +17,157 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Document;
-import org.w3c.dom.DocumentFragment;
-import org.w3c.dom.Node;
-import org.w3c.dom.ranges.Range;
-import org.w3c.dom.ranges.RangeException;
+import io.github.remmerw.thor.cobra.util.NotImplementedYetException
+import org.w3c.dom.DOMException
+import org.w3c.dom.Document
+import org.w3c.dom.DocumentFragment
+import org.w3c.dom.Node
+import org.w3c.dom.ranges.Range
+import org.w3c.dom.ranges.RangeException
 
-import io.github.remmerw.thor.cobra.util.NotImplementedYetException;
+class RangeImpl(doc: Document?) : Range {
+    private var startContainer: Node? = null
+    private var endContainer: Node? = null
+    private var startOffset = 0
+    private var endOffset = 0
 
-public class RangeImpl implements Range {
-    private Node startContainer = null;
-    private Node endContainer = null;
-    private int startOffset = 0;
-    private int endOffset = 0;
-
-    public RangeImpl(final Document doc) {
-        this.startContainer = doc;
-        this.endContainer = doc;
+    init {
+        this.startContainer = doc
+        this.endContainer = doc
     }
 
-    @Override
-    public Node getStartContainer() throws DOMException {
-        return startContainer;
+    @Throws(DOMException::class)
+    override fun getStartContainer(): Node? {
+        return startContainer
     }
 
-    @Override
-    public int getStartOffset() throws DOMException {
-        return startOffset;
+    @Throws(DOMException::class)
+    override fun getStartOffset(): Int {
+        return startOffset
     }
 
-    @Override
-    public Node getEndContainer() throws DOMException {
-        return endContainer;
+    @Throws(DOMException::class)
+    override fun getEndContainer(): Node? {
+        return endContainer
     }
 
-    @Override
-    public int getEndOffset() throws DOMException {
-        return endOffset;
+    @Throws(DOMException::class)
+    override fun getEndOffset(): Int {
+        return endOffset
     }
 
-    @Override
-    public boolean getCollapsed() throws DOMException {
-        return startContainer == endContainer && startOffset == endOffset;
+    @Throws(DOMException::class)
+    override fun getCollapsed(): Boolean {
+        return startContainer === endContainer && startOffset == endOffset
     }
 
-    @Override
-    public Node getCommonAncestorContainer() throws DOMException {
+    @Throws(DOMException::class)
+    override fun getCommonAncestorContainer(): Node? {
         // TODO Auto-generated method stub
-        return null;
+        return null
     }
 
-    @Override
-    public void setStart(Node refNode, int offset) throws RangeException, DOMException {
-        startContainer = refNode;
-        startOffset = offset;
+    @Throws(RangeException::class, DOMException::class)
+    override fun setStart(refNode: Node?, offset: Int) {
+        startContainer = refNode
+        startOffset = offset
     }
 
-    @Override
-    public void setEnd(Node refNode, int offset) throws RangeException, DOMException {
-        endContainer = refNode;
-        endOffset = offset;
+    @Throws(RangeException::class, DOMException::class)
+    override fun setEnd(refNode: Node?, offset: Int) {
+        endContainer = refNode
+        endOffset = offset
     }
 
-    @Override
-    public void setStartBefore(Node refNode) throws RangeException, DOMException {
+    @Throws(RangeException::class, DOMException::class)
+    override fun setStartBefore(refNode: Node?) {
         // TODO Auto-generated method stub
-        throw new NotImplementedYetException();
+        throw NotImplementedYetException()
     }
 
-    @Override
-    public void setStartAfter(Node refNode) throws RangeException, DOMException {
+    @Throws(RangeException::class, DOMException::class)
+    override fun setStartAfter(refNode: Node?) {
         // TODO Auto-generated method stub
-        throw new NotImplementedYetException();
+        throw NotImplementedYetException()
     }
 
-    @Override
-    public void setEndBefore(Node refNode) throws RangeException, DOMException {
+    @Throws(RangeException::class, DOMException::class)
+    override fun setEndBefore(refNode: Node?) {
         // TODO Auto-generated method stub
-        throw new NotImplementedYetException();
+        throw NotImplementedYetException()
     }
 
-    @Override
-    public void setEndAfter(Node refNode) throws RangeException, DOMException {
+    @Throws(RangeException::class, DOMException::class)
+    override fun setEndAfter(refNode: Node?) {
         // TODO Auto-generated method stub
-        throw new NotImplementedYetException();
+        throw NotImplementedYetException()
     }
 
-    @Override
-    public void collapse(boolean toStart) throws DOMException {
+    @Throws(DOMException::class)
+    override fun collapse(toStart: Boolean) {
         // TODO Auto-generated method stub
-        throw new NotImplementedYetException();
+        throw NotImplementedYetException()
     }
 
-    @Override
-    public void selectNode(Node refNode) throws RangeException, DOMException {
+    @Throws(RangeException::class, DOMException::class)
+    override fun selectNode(refNode: Node?) {
         // TODO Auto-generated method stub
-        throw new NotImplementedYetException();
+        throw NotImplementedYetException()
     }
 
-    @Override
-    public void selectNodeContents(Node refNode) throws RangeException, DOMException {
+    @Throws(RangeException::class, DOMException::class)
+    override fun selectNodeContents(refNode: Node?) {
         // TODO Auto-generated method stub
-        throw new NotImplementedYetException();
+        throw NotImplementedYetException()
     }
 
-    @Override
-    public short compareBoundaryPoints(short how, Range sourceRange) throws DOMException {
+    @Throws(DOMException::class)
+    override fun compareBoundaryPoints(how: Short, sourceRange: Range?): Short {
         // TODO Auto-generated method stub
-        throw new NotImplementedYetException();
+        throw NotImplementedYetException()
         // return 0;
     }
 
-    @Override
-    public void deleteContents() throws DOMException {
+    @Throws(DOMException::class)
+    override fun deleteContents() {
         // TODO Auto-generated method stub
-        throw new NotImplementedYetException();
+        throw NotImplementedYetException()
     }
 
-    @Override
-    public DocumentFragment extractContents() throws DOMException {
+    @Throws(DOMException::class)
+    override fun extractContents(): DocumentFragment? {
         // TODO Auto-generated method stub
-        throw new NotImplementedYetException();
+        throw NotImplementedYetException()
     }
 
-    @Override
-    public DocumentFragment cloneContents() throws DOMException {
+    @Throws(DOMException::class)
+    override fun cloneContents(): DocumentFragment? {
         // TODO Auto-generated method stub
-        throw new NotImplementedYetException();
+        throw NotImplementedYetException()
     }
 
-    @Override
-    public void insertNode(Node newNode) throws DOMException, RangeException {
+    @Throws(DOMException::class, RangeException::class)
+    override fun insertNode(newNode: Node?) {
         // TODO Auto-generated method stub
-        throw new NotImplementedYetException();
+        throw NotImplementedYetException()
     }
 
-    @Override
-    public void surroundContents(Node newParent) throws DOMException, RangeException {
+    @Throws(DOMException::class, RangeException::class)
+    override fun surroundContents(newParent: Node?) {
         // TODO Auto-generated method stub
-        throw new NotImplementedYetException();
+        throw NotImplementedYetException()
     }
 
-    @Override
-    public Range cloneRange() throws DOMException {
+    @Throws(DOMException::class)
+    override fun cloneRange(): Range? {
         // TODO Auto-generated method stub
-        throw new NotImplementedYetException();
+        throw NotImplementedYetException()
     }
 
-    @Override
-    public void detach() throws DOMException {
+    @Throws(DOMException::class)
+    override fun detach() {
         // TODO Auto-generated method stub
     }
-
 }

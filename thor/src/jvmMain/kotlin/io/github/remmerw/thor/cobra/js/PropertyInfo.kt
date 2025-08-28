@@ -18,42 +18,11 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.js;
+package io.github.remmerw.thor.cobra.js
 
-import java.lang.reflect.Method;
+import java.lang.reflect.Method
 
-public class PropertyInfo {
-    private final String name;
-    private final Class<?> propertyType;
-    private Method getter, setter;
-
-    public PropertyInfo(final String name, final Class<?> propType) {
-        super();
-        this.name = name;
-        this.propertyType = propType;
-    }
-
-    public Method getGetter() {
-        return getter;
-    }
-
-    public void setGetter(final Method getter) {
-        this.getter = getter;
-    }
-
-    public Method getSetter() {
-        return setter;
-    }
-
-    public void setSetter(final Method setter) {
-        this.setter = setter;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public Class<?> getPropertyType() {
-        return propertyType;
-    }
+class PropertyInfo(val name: String?, val propertyType: Class<*>?) {
+    var getter: Method? = null
+    var setter: Method? = null
 }

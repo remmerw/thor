@@ -1,16 +1,15 @@
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
+import java.security.AccessController
+import java.security.PrivilegedAction
 
-public class SecurityUtil {
-
-    public static <T> T doPrivileged(final PrivilegedAction<T> action) {
-        final SecurityManager sm = System.getSecurityManager();
+object SecurityUtil {
+    fun <T> doPrivileged(action: PrivilegedAction<T?>): T? {
+        val sm = System.getSecurityManager()
         if (sm == null) {
-            return action.run();
+            return action.run()
         } else {
-            return AccessController.doPrivileged(action);
+            return AccessController.doPrivileged<T?>(action)
         }
     }
 }

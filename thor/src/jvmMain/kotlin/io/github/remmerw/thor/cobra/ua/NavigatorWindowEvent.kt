@@ -20,31 +20,32 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.github.remmerw.thor.cobra.ua;
+package io.github.remmerw.thor.cobra.ua
 
-import io.github.remmerw.thor.cobra.clientlet.ClientletResponse;
+import io.github.remmerw.thor.cobra.clientlet.ClientletResponse
 
 /**
  * An event containing information about navigation.
  */
-public class NavigatorWindowEvent extends NavigatorResponseEvent {
-    private static final long serialVersionUID = -7761109600834439651L;
-    private final String message;
+class NavigatorWindowEvent : NavigatorResponseEvent {
+    val message: String?
 
-    public NavigatorWindowEvent(final Object source, final NavigatorEventType eventType, final NavigatorFrame clientletFrame,
-                                final ClientletResponse response, final RequestType requestType) {
-        super(source, eventType, clientletFrame, response, requestType);
-        this.message = null;
+    constructor(
+        source: Any?, eventType: NavigatorEventType?, clientletFrame: NavigatorFrame?,
+        response: ClientletResponse?, requestType: RequestType?
+    ) : super(source, eventType, clientletFrame, response, requestType) {
+        this.message = null
     }
 
-    public NavigatorWindowEvent(final Object source, final NavigatorEventType eventType, final NavigatorFrame clientletFrame,
-                                final String message,
-                                final RequestType requestType) {
-        super(source, eventType, clientletFrame, null, requestType);
-        this.message = message;
+    constructor(
+        source: Any?, eventType: NavigatorEventType?, clientletFrame: NavigatorFrame?,
+        message: String?,
+        requestType: RequestType?
+    ) : super(source, eventType, clientletFrame, null, requestType) {
+        this.message = message
     }
 
-    public String getMessage() {
-        return message;
+    companion object {
+        private val serialVersionUID = -7761109600834439651L
     }
 }

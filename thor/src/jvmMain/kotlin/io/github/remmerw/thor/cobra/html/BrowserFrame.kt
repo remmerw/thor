@@ -21,67 +21,59 @@
 /*
  * Created on Jan 29, 2006
  */
-package io.github.remmerw.thor.cobra.html;
+package io.github.remmerw.thor.cobra.html
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.w3c.dom.Document;
-
-import java.awt.Component;
-import java.net.URL;
-
-import io.github.remmerw.thor.cobra.html.gui.HtmlPanel;
-import io.github.remmerw.thor.cobra.html.style.RenderState;
+import java.awt.Insets
+import java.net.URL
 
 /**
- * The <code>BrowserFrame</code> interface represents a browser frame. A simple
+ * The `BrowserFrame` interface represents a browser frame. A simple
  * implementation of this interface is provided in
- * {@link org.cobraparser.html.test.SimpleBrowserFrame}.
+ * [org.cobraparser.html.test.SimpleBrowserFrame].
  */
-public interface BrowserFrame {
+interface BrowserFrame {
     /**
      * Gets the component that renders the frame. This can be a
-     * {@link HtmlPanel}.
+     * [HtmlPanel].
      */
-    Component getComponent();
+    val component: Component?
 
     /**
      * Loads a URL in the frame.
      */
-    void loadURL(@NonNull URL url);
+    fun loadURL(url: URL)
 
     /**
      * Gets the content document.
      */
-    Document getContentDocument();
-
     /**
      * Sets the content document.
      */
-    void setContentDocument(Document d);
+    var contentDocument: Document?
 
     /**
-     * Gets the {@link HtmlRendererContext} of the frame.
+     * Gets the [HtmlRendererContext] of the frame.
      */
-    HtmlRendererContext getHtmlRendererContext();
+    val htmlRendererContext: HtmlRendererContext?
 
     /**
      * Sets the default margin insets of the browser frame.
      *
      * @param insets The margin insets.
      */
-    void setDefaultMarginInsets(java.awt.Insets insets);
+    fun setDefaultMarginInsets(insets: Insets?)
 
     /**
      * Sets the default horizontal overflow of the browser frame.
      *
-     * @param overflowX See constants in {@link RenderState}.
+     * @param overflowX See constants in [RenderState].
      */
-    void setDefaultOverflowX(int overflowX);
+    fun setDefaultOverflowX(overflowX: Int)
 
     /**
      * Sets the default vertical overflow of the browser frame.
      *
-     * @param overflowY See constants in {@link RenderState}.
+     * @param overflowY See constants in [RenderState].
      */
-    void setDefaultOverflowY(int overflowY);
+    fun setDefaultOverflowY(overflowY: Int)
 }

@@ -21,37 +21,36 @@
 /*
  * Created on Sep 3, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.CharacterData;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Node;
+import org.w3c.dom.CharacterData
+import org.w3c.dom.DOMException
+import org.w3c.dom.Node
+import kotlin.concurrent.Volatile
 
-public abstract class CharacterDataImpl extends NodeImpl implements CharacterData {
-    protected volatile String text;
+abstract class CharacterDataImpl : NodeImpl, CharacterData {
+    @Volatile
+    protected var text: String? = null
 
-    public CharacterDataImpl() {
-        super();
+    constructor() : super()
+
+    constructor(text: String) {
+        this.text = text
     }
 
-    public CharacterDataImpl(final String text) {
-        this.text = text;
+    val className: String
+        get() = "HTMLCharacterData"
+
+    @Throws(DOMException::class)
+    override fun getTextContent(): String {
+        return this.text!!
     }
 
-    public String getClassName() {
-        return "HTMLCharacterData";
-    }
-
-    @Override
-    public String getTextContent() throws DOMException {
-        return this.text;
-    }
-
-    @Override
-    public void setTextContent(final String textContent) throws DOMException {
-        this.text = textContent;
+    @Throws(DOMException::class)
+    override fun setTextContent(textContent: String) {
+        this.text = textContent
         if (!this.notificationsSuspended) {
-            this.informInvalid();
+            this.informInvalid()
         }
     }
 
@@ -60,74 +59,78 @@ public abstract class CharacterDataImpl extends NodeImpl implements CharacterDat
      *
      * @see org.xamjwg.html.domimpl.NodeImpl#cloneNode(boolean)
      */
-    @Override
-    public Node cloneNode(final boolean deep) {
-        final CharacterDataImpl newNode = (CharacterDataImpl) super.cloneNode(deep);
-        newNode.setData(this.getData());
-        return newNode;
+    override fun cloneNode(deep: Boolean): Node {
+        val newNode = super.cloneNode(deep) as CharacterDataImpl
+        newNode.setData(this.data)
+        return newNode
     }
 
-    public void appendData(final String arg) throws DOMException {
-        this.text += arg;
+    @Throws(DOMException::class)
+    override fun appendData(arg: String) {
+        this.text += arg
         if (!this.notificationsSuspended) {
-            this.informInvalid();
+            this.informInvalid()
         }
     }
 
-    public void deleteData(final int offset, final int count) throws DOMException {
-        final StringBuffer buffer = new StringBuffer(this.text);
-        final StringBuffer result = buffer.delete(offset, offset + count);
-        this.text = result.toString();
+    @Throws(DOMException::class)
+    override fun deleteData(offset: Int, count: Int) {
+        val buffer = StringBuffer(this.text)
+        val result = buffer.delete(offset, offset + count)
+        this.text = result.toString()
         if (!this.notificationsSuspended) {
-            this.informInvalid();
+            this.informInvalid()
         }
     }
 
-    public String getData() throws DOMException {
-        return this.text;
+    @Throws(DOMException::class)
+    override fun getData(): String {
+        return this.text!!
     }
 
-    public void setData(final String data) throws DOMException {
-        this.text = data;
+    @Throws(DOMException::class)
+    override fun setData(data: String) {
+        this.text = data
         if (!this.notificationsSuspended) {
-            this.informInvalid();
+            this.informInvalid()
         }
     }
 
-    public int getLength() {
-        return this.text.length();
+    override fun getLength(): Int {
+        return this.text!!.length
     }
 
-    public void insertData(final int offset, final String arg) throws DOMException {
-        final StringBuffer buffer = new StringBuffer(this.text);
-        final StringBuffer result = buffer.insert(offset, arg);
-        this.text = result.toString();
+    @Throws(DOMException::class)
+    override fun insertData(offset: Int, arg: String?) {
+        val buffer = StringBuffer(this.text)
+        val result = buffer.insert(offset, arg)
+        this.text = result.toString()
         if (!this.notificationsSuspended) {
-            this.informInvalid();
+            this.informInvalid()
         }
     }
 
-    public void replaceData(final int offset, final int count, final String arg) throws DOMException {
-        final StringBuffer buffer = new StringBuffer(this.text);
-        final StringBuffer result = buffer.replace(offset, offset + count, arg);
-        this.text = result.toString();
+    @Throws(DOMException::class)
+    override fun replaceData(offset: Int, count: Int, arg: String) {
+        val buffer = StringBuffer(this.text)
+        val result = buffer.replace(offset, offset + count, arg)
+        this.text = result.toString()
         if (!this.notificationsSuspended) {
-            this.informInvalid();
+            this.informInvalid()
         }
     }
 
-    public String substringData(final int offset, final int count) throws DOMException {
-        return this.text.substring(offset, offset + count);
+    @Throws(DOMException::class)
+    override fun substringData(offset: Int, count: Int): String {
+        return this.text!!.substring(offset, offset + count)
     }
 
-    @Override
-    public String toString() {
-        String someText = this.text;
-        if ((someText != null) && (someText.length() > 32)) {
-            someText = someText.substring(0, 29) + "...";
+    override fun toString(): String {
+        var someText = this.text
+        if ((someText != null) && (someText.length > 32)) {
+            someText = someText.substring(0, 29) + "..."
         }
-        final int length = someText == null ? 0 : someText.length();
-        return this.getNodeName() + "[length=" + length + ",text=" + someText + "]";
+        val length = if (someText == null) 0 else someText.length
+        return this.getNodeName() + "[length=" + length + ",text=" + someText + "]"
     }
-
 }

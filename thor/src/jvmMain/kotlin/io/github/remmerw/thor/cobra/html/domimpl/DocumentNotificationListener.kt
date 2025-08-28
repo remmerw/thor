@@ -1,15 +1,15 @@
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
 /**
  * A listener of document changes.
  */
-public interface DocumentNotificationListener {
+interface DocumentNotificationListener {
     /**
      * Called if a property related to the node's size has changed.
      *
      * @param node
      */
-    void sizeInvalidated(NodeImpl node);
+    fun sizeInvalidated(node: NodeImpl?)
 
     /**
      * Called if something such as a color or decoration has changed. This would
@@ -17,14 +17,14 @@ public interface DocumentNotificationListener {
      *
      * @param node
      */
-    void lookInvalidated(NodeImpl node);
+    fun lookInvalidated(node: NodeImpl?)
 
     /**
      * Changed if the position of the node in a parent has changed.
      *
      * @param node
      */
-    void positionInvalidated(NodeImpl node);
+    fun positionInvalidated(node: NodeImpl?)
 
     /**
      * This is called when the node has changed, but it is unclear if it's a size
@@ -33,7 +33,7 @@ public interface DocumentNotificationListener {
      *
      * @param node
      */
-    void invalidated(NodeImpl node);
+    fun invalidated(node: NodeImpl?)
 
     /**
      * Called when the node (with all its contents) is first created by the
@@ -41,14 +41,14 @@ public interface DocumentNotificationListener {
      *
      * @param node
      */
-    void nodeLoaded(NodeImpl node);
+    fun nodeLoaded(node: NodeImpl?)
 
     /**
      * The children of the node might have changed.
      *
      * @param node
      */
-    void structureInvalidated(NodeImpl node);
+    fun structureInvalidated(node: NodeImpl?)
 
     /**
      * Called when a external script (a SCRIPT tag with a src attribute) is about
@@ -56,11 +56,11 @@ public interface DocumentNotificationListener {
      *
      * @param node
      */
-    void externalScriptLoading(NodeImpl node);
+    fun externalScriptLoading(node: NodeImpl?)
 
     /**
      * This is called when the whole document is potentially invalid, e.g. when a
      * new style sheet has been added.
      */
-    void allInvalidated();
+    fun allInvalidated()
 }

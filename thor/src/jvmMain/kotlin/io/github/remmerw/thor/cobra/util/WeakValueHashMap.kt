@@ -21,118 +21,93 @@
 /*
  * Created on Oct 8, 2005
  */
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
 
-import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jdt.annotation.Nullable
+import java.lang.ref.ReferenceQueue
+import java.lang.ref.WeakReference
+import java.util.stream.Collectors
 
-import java.lang.ref.ReferenceQueue;
-import java.lang.ref.WeakReference;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+class WeakValueHashMap<K, @Nullable V> : MutableMap<K?, V?> {
+    private val map: MutableMap<K?, LocalWeakReference?> = HashMap<K?, LocalWeakReference?>()
+    private val queue = ReferenceQueue<V?>()
 
-public class WeakValueHashMap<K, @Nullable V> implements Map<K, V> {
-    private final Map<K, LocalWeakReference> map = new HashMap<>();
-    private final ReferenceQueue<V> queue = new ReferenceQueue<>();
-
-    public WeakValueHashMap() {
-        super();
+    override fun size(): Int {
+        return this.map.size
     }
 
-    public int size() {
-        return this.map.size();
+    override fun isEmpty(): Boolean {
+        return this.map.isEmpty()
     }
 
-    public boolean isEmpty() {
-        return this.map.isEmpty();
+    override fun containsKey(key: Any?): Boolean {
+        return map.containsKey(key)
     }
 
-    public boolean containsKey(final Object key) {
-        return map.containsKey(key);
+    override fun containsValue(value: Any?): Boolean {
+        throw UnsupportedOperationException()
     }
 
-    public boolean containsValue(final Object value) {
-        throw new UnsupportedOperationException();
+    override fun get(key: Any?): V? {
+        this.checkQueue()
+        val wf = this.map.get(key)
+        return if (wf == null) null else wf.get()
     }
 
-    public V get(final Object key) {
-        this.checkQueue();
-        final LocalWeakReference wf = this.map.get(key);
-        return wf == null ? null : wf.get();
+    override fun put(key: K?, value: V?): V? {
+        this.checkQueue()
+        return this.putImpl(key, value)
     }
 
-    public V put(final K key, final V value) {
-        this.checkQueue();
-        return this.putImpl(key, value);
+    private fun putImpl(key: K?, value: V?): V? {
+        requireNotNull(value) { "null values not accepted" }
+        val ref = LocalWeakReference(key, value)
+        val oldWf = this.map.put(key, ref)
+        return if (oldWf == null) null else oldWf.get()
     }
 
-    private final V putImpl(final K key, final V value) {
-        if (value == null) {
-            throw new IllegalArgumentException("null values not accepted");
-        }
-        final LocalWeakReference ref = new LocalWeakReference(key, value);
-        final LocalWeakReference oldWf = this.map.put(key, ref);
-        return oldWf == null ? null : oldWf.get();
+    override fun remove(key: Any?): V? {
+        this.checkQueue()
+        val wf = this.map.remove(key)
+        return if (wf == null) null else wf.get()
     }
 
-    public V remove(final Object key) {
-        this.checkQueue();
-        final LocalWeakReference wf = this.map.remove(key);
-        return wf == null ? null : wf.get();
+    override fun putAll(t: MutableMap<out K?, out V?>) {
+        this.checkQueue()
+        t.forEach { (k: K?, v: V?) -> this.putImpl(k, v) }
     }
 
-    public void putAll(final Map<? extends K, ? extends V> t) {
-        this.checkQueue();
-        t.forEach((k, v) -> this.putImpl(k, v));
+    override fun clear() {
+        this.checkQueue()
+        this.map.clear()
     }
 
-    public void clear() {
-        this.checkQueue();
-        this.map.clear();
+    override fun keySet(): MutableSet<K?> {
+        return this.map.keys
     }
 
-    public Set<K> keySet() {
-        return this.map.keySet();
-    }
-
-    @SuppressWarnings("unchecked")
-    private final void checkQueue() {
-        final ReferenceQueue<V> queue = this.queue;
-        LocalWeakReference ref;
-        while ((ref = (LocalWeakReference) queue.poll()) != null) {
-            this.map.remove(ref.getKey());
+    private fun checkQueue() {
+        val queue = this.queue
+        var ref: LocalWeakReference?
+        while (((queue.poll() as LocalWeakReference?).also { ref = it }) != null) {
+            this.map.remove(ref!!.key)
         }
     }
 
-    public Collection<V> values() {
-        checkQueue();
-        final Stream<V> m =
-                this.map.values().stream()
-                        .map(t -> t == null ? null : t.get())
-                        .filter(t -> t != null);
-        return m.collect(Collectors.toList());
+    override fun values(): MutableCollection<V?> {
+        checkQueue()
+        val m =
+            this.map.values.stream()
+                .map<V?> { t: LocalWeakReference? -> if (t == null) null else t.get() }
+                .filter { t: V? -> t != null }
+        return m!!.collect(Collectors.toList())
     }
 
-    public Set<Entry<K, V>> entrySet() {
-        throw new UnsupportedOperationException();
+    override fun entrySet(): MutableSet<MutableMap.MutableEntry<K?, V?>?> {
+        throw UnsupportedOperationException()
     }
 
-    private class LocalWeakReference extends WeakReference<V> {
-        private final K key;
-
-        public LocalWeakReference(final K key, final V target) {
-            super(target, queue);
-            this.key = key;
-        }
-
-        public K getKey() {
-            return key;
-        }
-
-    /*
+    private inner class LocalWeakReference(/*
     public boolean equals(final Object other) {
       final K target1 = this.get();
       final Object target2 = other instanceof LocalWeakReference ? ((LocalWeakReference) other).get() : null;
@@ -142,6 +117,6 @@ public class WeakValueHashMap<K, @Nullable V> implements Map<K, V> {
     public int hashCode() {
       final Object target = this.get();
       return target == null ? 0 : target.hashCode();
-    }*/
-    }
+    }*/val key: K?, target: V?
+    ) : WeakReference<V?>(target, queue)
 }

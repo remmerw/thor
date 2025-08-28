@@ -1,7 +1,3 @@
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-public class HTMLGenericMarkupElement extends HTMLAbstractUIElement {
-    public HTMLGenericMarkupElement(final String name) {
-        super(name);
-    }
-}
+class HTMLGenericMarkupElement(name: String?) : HTMLAbstractUIElement(name)

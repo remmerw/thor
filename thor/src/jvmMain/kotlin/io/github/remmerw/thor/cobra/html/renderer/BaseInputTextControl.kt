@@ -21,129 +21,103 @@
 /*
  * Created on Jan 15, 2006
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Insets;
+import io.github.remmerw.thor.cobra.html.domimpl.ElementImpl
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement
+import io.github.remmerw.thor.cobra.util.gui.WrapperLayout
+import java.awt.Dimension
+import javax.swing.text.AttributeSet
+import javax.swing.text.BadLocationException
+import javax.swing.text.JTextComponent
+import javax.swing.text.PlainDocument
 
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.JTextComponent;
-
-import io.github.remmerw.thor.cobra.html.domimpl.ElementImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement;
-import io.github.remmerw.thor.cobra.util.gui.WrapperLayout;
-
-abstract class BaseInputTextControl extends BaseInputControl {
-    private static final long serialVersionUID = -4852316720577045230L;
-    private static final float DEFAULT_FONT_SIZE = 14.0f;
-    protected final JTextComponent widget;
-    private int maxLength = -1;
-
-    public BaseInputTextControl(final HTMLBaseInputElement modelNode) {
-        super(modelNode);
-        this.setLayout(WrapperLayout.getInstance());
-        final JTextComponent widget = this.createTextField();
-        final Font font = widget.getFont();
-        widget.setFont(font.deriveFont(DEFAULT_FONT_SIZE));
-        widget.setDocument(new LimitedDocument());
-
-        // Note: Value attribute cannot be set in reset() method.
-        // Otherwise, layout revalidation causes typed values to
-        // be lost (including revalidation due to hover.)
-        final ElementImpl element = this.controlElement;
-        final String value = element.getAttribute("value");
-        widget.setText(value);
-
-        this.widget = widget;
-        this.add(widget);
-    }
-
-    @Override
-    public void reset(final int availWidth, final int availHeight) {
-        super.reset(availWidth, availHeight);
-        final String maxLengthText = this.controlElement.getAttribute("maxlength");
-        if (maxLengthText != null) {
-            try {
-                this.maxLength = Integer.parseInt(maxLengthText);
-            } catch (final NumberFormatException nfe) {
-                // ignore
-            }
-        }
-
-    }
-
-    protected abstract JTextComponent createTextField();
+internal abstract class BaseInputTextControl(modelNode: HTMLBaseInputElement?) :
+    BaseInputControl(modelNode) {
+    protected val widget: JTextComponent
 
     /*
      * (non-Javadoc)
      *
      * @see org.xamjwg.html.domimpl.InputContext#getMaxLength()
-     */
-    @Override
-    public int getMaxLength() {
-        return this.maxLength;
-    }
-
-    /*
+     *//*
      * (non-Javadoc)
      *
      * @see org.xamjwg.html.domimpl.InputContext#setMaxLength(int)
      */
-    @Override
-    public void setMaxLength(final int maxLength) {
-        this.maxLength = maxLength;
+    var maxLength: Int = -1
+
+    init {
+        this.layout = WrapperLayout.instance
+        val widget = this.createTextField()
+        val font = widget.getFont()
+        widget.setFont(font.deriveFont(DEFAULT_FONT_SIZE))
+        widget.document = LimitedDocument()
+
+        // Note: Value attribute cannot be set in reset() method.
+        // Otherwise, layout revalidation causes typed values to
+        // be lost (including revalidation due to hover.)
+        val element: ElementImpl = this.controlElement
+        val value = element.getAttribute("value")
+        widget.text = value
+
+        this.widget = widget
+        this.add(widget)
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#getReadOnly()
-     */
-    @Override
-    public boolean getReadOnly() {
-        return !this.widget.isEditable();
+    override fun reset(availWidth: Int, availHeight: Int) {
+        super.reset(availWidth, availHeight)
+        val maxLengthText = this.controlElement.getAttribute("maxlength")
+        if (maxLengthText != null) {
+            try {
+                this.maxLength = maxLengthText.toInt()
+            } catch (nfe: NumberFormatException) {
+                // ignore
+            }
+        }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#setReadOnly(boolean)
-     */
-    @Override
-    public void setReadOnly(final boolean readOnly) {
-        this.widget.setEditable(!readOnly);
-    }
+    protected abstract fun createTextField(): JTextComponent
+
+    var readOnly: Boolean
+        /*
+             * (non-Javadoc)
+             *
+             * @see org.xamjwg.html.domimpl.InputContext#getReadOnly()
+             */
+        get() = !this.widget.isEditable
+        /*
+             * (non-Javadoc)
+             *
+             * @see org.xamjwg.html.domimpl.InputContext#setReadOnly(boolean)
+             */
+        set(readOnly) {
+            this.widget.setEditable(!readOnly)
+        }
+
+    var value: String?
+        /*
+             * (non-Javadoc)
+             *
+             * @see org.xamjwg.html.domimpl.InputContext#getValue()
+             */
+        get() = this.widget.text
+        /*
+             * (non-Javadoc)
+             *
+             * @see org.xamjwg.html.domimpl.InputContext#setValue(java.lang.String)
+             */
+        set(value) {
+            this.widget.setText(value)
+        }
 
     /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#getValue()
-     */
-    @Override
-    public String getValue() {
-        return this.widget.getText();
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#setValue(java.lang.String)
-     */
-    @Override
-    public void setValue(final String value) {
-        this.widget.setText(value);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#select()
-     */
-    @Override
-    public void select() {
-        this.widget.selectAll();
+    * (non-Javadoc)
+    *
+    * @see org.xamjwg.html.domimpl.InputContext#select()
+    */
+    override fun select() {
+        this.widget.selectAll()
     }
 
     /*
@@ -151,62 +125,68 @@ abstract class BaseInputTextControl extends BaseInputControl {
      *
      * @see org.xamjwg.html.domimpl.InputContext#setDisabled(boolean)
      */
-    @Override
-    public void setDisabled(final boolean disabled) {
-        super.setDisabled(disabled);
-        this.widget.setEnabled(!disabled);
+    override fun setDisabled(disabled: Boolean) {
+        super.disabled = disabled
+        this.widget.isEnabled = !disabled
     }
 
-    @Override
-    public java.awt.Dimension getPreferredSize() {
-        final int size = this.size;
-        final JTextComponent widget = this.widget;
-        final FontMetrics fm = widget.getFontMetrics(widget.getFont());
-        final Insets insets = widget.getInsets();
-        int pw, ph;
+    override fun getPreferredSize(): Dimension {
+        val size = this.size
+        val widget = this.widget
+        val fm = widget.getFontMetrics(widget.getFont())
+        val insets = widget.insets
+        val pw: Int
+        val ph: Int
         if (size == -1) {
-            pw = 100;
+            pw = 100
         } else {
-            pw = insets.left + insets.right + (fm.charWidth('0') * size);
+            pw = insets.left + insets.right + (fm.charWidth('0') * size)
         }
-        ph = fm.getHeight() + insets.top + insets.bottom;
-        return new java.awt.Dimension(pw, ph);
+        ph = fm.height + insets.top + insets.bottom
+        return Dimension(pw, ph)
     }
 
-    public void resetInput() {
-        this.widget.setText("");
+    override fun resetInput() {
+        this.widget.text = ""
     }
 
     /**
      * Implements maxlength functionality.
      */
-    private class LimitedDocument extends javax.swing.text.PlainDocument {
-        private static final long serialVersionUID = 5095817476961455383L;
-
+    private inner class LimitedDocument : PlainDocument() {
         /*
          * (non-Javadoc)
          *
          * @see javax.swing.text.PlainDocument#insertString(int, java.lang.String,
          * javax.swing.text.AttributeSet)
          */
-        @Override
-        public void insertString(final int offs, final String str, final AttributeSet a) throws BadLocationException {
-            final int max = BaseInputTextControl.this.maxLength;
+        @Throws(BadLocationException::class)
+        override fun insertString(offs: Int, str: String, a: AttributeSet?) {
+            val max = this@BaseInputTextControl.maxLength
             if (max != -1) {
-                final int docLength = this.getLength();
+                val docLength = this.length
                 if (docLength >= max) {
-                    return;
+                    return
                 }
-                final int strLen = str.length();
+                val strLen = str.length
                 if ((docLength + strLen) > max) {
-                    final String shorterStr = str.substring(0, max - docLength);
-                    super.insertString(offs, shorterStr, a);
+                    val shorterStr = str.substring(0, max - docLength)
+                    super.insertString(offs, shorterStr, a)
                 } else {
-                    super.insertString(offs, str, a);
+                    super.insertString(offs, str, a)
                 }
             } else {
-                super.insertString(offs, str, a);
+                super.insertString(offs, str, a)
             }
         }
+
+        companion object {
+            private const val serialVersionUID = 5095817476961455383L
+        }
+    }
+
+    companion object {
+        private val serialVersionUID = -4852316720577045230L
+        private const val DEFAULT_FONT_SIZE = 14.0f
     }
 }

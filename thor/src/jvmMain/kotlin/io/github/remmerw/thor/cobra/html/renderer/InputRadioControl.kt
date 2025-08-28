@@ -21,57 +21,47 @@
 /*
  * Created on Jan 15, 2006
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import javax.swing.ButtonGroup;
-import javax.swing.JRadioButton;
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement
+import io.github.remmerw.thor.cobra.util.gui.WrapperLayout
+import javax.swing.ButtonGroup
+import javax.swing.JRadioButton
 
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl;
-import io.github.remmerw.thor.cobra.util.gui.WrapperLayout;
+internal class InputRadioControl(modelNode: HTMLBaseInputElement?) : BaseInputControl(modelNode) {
+    private val widget: JRadioButton
+    private var buttonGroup: ButtonGroup? = null
 
-class InputRadioControl extends BaseInputControl {
-    private static final long serialVersionUID = 8518656510826949865L;
-    private final JRadioButton widget;
-    private ButtonGroup buttonGroup;
-
-    public InputRadioControl(final HTMLBaseInputElement modelNode) {
-        super(modelNode);
-        this.setLayout(WrapperLayout.getInstance());
-        final JRadioButton radio = new JRadioButton();
-        radio.setOpaque(false);
-        this.widget = radio;
+    init {
+        this.layout = WrapperLayout.instance
+        val radio = JRadioButton()
+        radio.isOpaque = false
+        this.widget = radio
 
         // Note: Value attribute cannot be set in reset() method.
         // Otherwise, layout revalidation causes typed values to
         // be lost (including revalidation due to hover.)
-
-        final HTMLElementImpl controlElement = this.controlElement;
-        final String name = controlElement.getAttribute("name");
-        final ButtonGroup prevGroup = this.buttonGroup;
+        val controlElement = this.controlElement
+        val name = controlElement.getAttribute("name")
+        val prevGroup = this.buttonGroup
         if (prevGroup != null) {
-            prevGroup.remove(radio);
+            prevGroup.remove(radio)
         }
         if (name != null) {
-            final String key = "cobra.radio.group." + name;
-            ButtonGroup group = (ButtonGroup) controlElement.getDocumentItem(key);
+            val key = "cobra.radio.group." + name
+            var group = controlElement.getDocumentItem(key) as ButtonGroup?
             if (group == null) {
-                group = new ButtonGroup();
-                controlElement.setDocumentItem(key, group);
+                group = ButtonGroup()
+                controlElement.setDocumentItem(key, group)
             }
-            group.add(radio);
-            this.buttonGroup = group;
+            group.add(radio)
+            this.buttonGroup = group
         } else {
-            this.buttonGroup = null;
+            this.buttonGroup = null
         }
-        radio.setSelected(controlElement.getAttributeAsBoolean("checked"));
+        radio.isSelected = controlElement.getAttributeAsBoolean("checked")
 
-        this.add(radio);
-    }
-
-    @Override
-    public void reset(final int availWidth, final int availHeight) {
-        super.reset(availWidth, availHeight);
+        this.add(radio)
     }
 
     /*
@@ -79,48 +69,44 @@ class InputRadioControl extends BaseInputControl {
      *
      * @see org.xamjwg.html.domimpl.InputContext#click()
      */
-    @Override
-    public void click() {
-        this.widget.doClick();
+    override fun click() {
+        this.widget.doClick()
     }
+
+    var checked: Boolean
+        /*
+             * (non-Javadoc)
+             *
+             * @see org.xamjwg.html.domimpl.InputContext#getChecked()
+             */
+        get() = this.widget.isSelected
+        /*
+             * (non-Javadoc)
+             *
+             * @see org.xamjwg.html.domimpl.InputContext#setChecked(boolean)
+             */
+        set(checked) {
+            this.widget.setSelected(checked)
+        }
 
     /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#getChecked()
-     */
-    @Override
-    public boolean getChecked() {
-        return this.widget.isSelected();
+    * (non-Javadoc)
+    *
+    * @see org.xamjwg.html.domimpl.InputContext#setDisabled(boolean)
+    */
+    override fun setDisabled(disabled: Boolean) {
+        super.disabled = disabled
+        this.widget.isEnabled = !disabled
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#setChecked(boolean)
-     */
-    @Override
-    public void setChecked(final boolean checked) {
-        this.widget.setSelected(checked);
+    override fun resetInput() {
+        this.widget.isSelected = this.controlElement.getAttributeAsBoolean("checked")
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#setDisabled(boolean)
-     */
-    @Override
-    public void setDisabled(final boolean disabled) {
-        super.setDisabled(disabled);
-        this.widget.setEnabled(!disabled);
-    }
+    val value: String?
+        get() = this.controlElement.getAttribute("value")
 
-    public void resetInput() {
-        this.widget.setSelected(this.controlElement.getAttributeAsBoolean("checked"));
-    }
-
-    @Override
-    public String getValue() {
-        return this.controlElement.getAttribute("value");
+    companion object {
+        private const val serialVersionUID = 8518656510826949865L
     }
 }

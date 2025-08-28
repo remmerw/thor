@@ -18,22 +18,16 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.html.HTMLQuoteElement;
+import org.w3c.dom.html.HTMLQuoteElement
 
-public class HTMLQuoteElementImpl extends HTMLElementImpl implements HTMLQuoteElement {
-    public HTMLQuoteElementImpl(final String name) {
-        super(name);
+class HTMLQuoteElementImpl(name: String?) : HTMLElementImpl(name), HTMLQuoteElement {
+    override fun getCite(): String? {
+        return getAttribute("cite")
     }
 
-    @Override
-    public String getCite() {
-        return getAttribute("cite");
-    }
-
-    @Override
-    public void setCite(String cite) {
-        setAttribute("cite", cite);
+    override fun setCite(cite: String?) {
+        setAttribute("cite", cite)
     }
 }

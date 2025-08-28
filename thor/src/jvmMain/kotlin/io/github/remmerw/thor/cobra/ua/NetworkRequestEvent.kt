@@ -20,20 +20,18 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.github.remmerw.thor.cobra.ua;
+package io.github.remmerw.thor.cobra.ua
 
-import java.util.EventObject;
+import java.util.EventObject
 
-public class NetworkRequestEvent extends EventObject {
-    private static final long serialVersionUID = -412274798030623834L;
-    private final int newState;
+class NetworkRequestEvent(source: Any, newState: Int) : EventObject(source) {
+    val state: Int
 
-    public NetworkRequestEvent(final Object source, final int newState) {
-        super(source);
-        this.newState = newState;
+    init {
+        this.state = newState
     }
 
-    public int getState() {
-        return newState;
+    companion object {
+        private val serialVersionUID = -412274798030623834L
     }
 }

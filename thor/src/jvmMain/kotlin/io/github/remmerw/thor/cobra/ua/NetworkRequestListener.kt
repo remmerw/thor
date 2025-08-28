@@ -21,19 +21,19 @@
 /*
  * Created on Nov 13, 2005
  */
-package io.github.remmerw.thor.cobra.ua;
+package io.github.remmerw.thor.cobra.ua
 
-import java.util.EventListener;
+import java.util.EventListener
 
 /**
- * Listener of {@link NetworkRequest} state changes.
+ * Listener of [NetworkRequest] state changes.
  *
- * @see NetworkRequest#addNetworkRequestListener(NetworkRequestListener)
+ * @see NetworkRequest.addNetworkRequestListener
  */
-public interface NetworkRequestListener extends EventListener {
+interface NetworkRequestListener : EventListener {
     /**
-     * This method is called when the <code>readyState</code> property of the
+     * This method is called when the `readyState` property of the
      * request changes.
      */
-    void readyStateChanged(NetworkRequestEvent event);
+    fun readyStateChanged(event: NetworkRequestEvent?)
 }

@@ -21,29 +21,31 @@
 /*
  * Created on Oct 23, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import java.net.MalformedURLException;
-
-import io.github.remmerw.thor.cobra.html.style.RenderState;
+import io.github.remmerw.thor.cobra.html.style.RenderState
+import java.net.MalformedURLException
+import java.net.URL
 
 /**
  * A generic node interface. The idea is that implementors could be W3C nodes or
  * not.
  */
-public interface ModelNode {
+interface ModelNode {
     // There shouldn't be any references to GUI components here.
     // Events are processed by controller in renderer package.
+    @Throws(MalformedURLException::class)
+    fun getFullURL(spec: String?): URL?
 
-    java.net.URL getFullURL(String spec) throws MalformedURLException;
+    fun warn(message: String?, err: Throwable?)
 
-    void warn(String message, Throwable err);
+    fun isEqualOrDescendentOf(otherNode: ModelNode?): Boolean
 
-    boolean isEqualOrDescendentOf(ModelNode otherNode);
+    @JvmField
+    val parentModelNode: ModelNode?
 
-    ModelNode getParentModelNode();
-
-    RenderState getRenderState();
+    @JvmField
+    val renderState: RenderState?
 
     /**
      * Sets a document item. A radio button, for example, can use this to set
@@ -52,9 +54,10 @@ public interface ModelNode {
      * @param name
      * @param value
      */
-    void setDocumentItem(String name, Object value);
+    fun setDocumentItem(name: String?, value: Any?)
 
-    Object getDocumentItem(String name);
+    fun getDocumentItem(name: String?): Any?
 
-    String getNodeName();
+    @JvmField
+    val nodeName: String?
 }

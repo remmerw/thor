@@ -21,89 +21,89 @@
 /*
  * Created on Nov 19, 2005
  */
-package io.github.remmerw.thor.cobra.html.style;
+package io.github.remmerw.thor.cobra.html.style
 
-public final class HtmlLength {
-    // Note: Preferred type has higher value
-    public static final int PIXELS = 1;
-    public static final int LENGTH = 2;
-    public static final int MULTI_LENGTH = 0;
+import kotlin.concurrent.Volatile
 
-    public static final HtmlLength[] EMPTY_ARRAY = new HtmlLength[0];
-
-    private final int lengthType;
-    private volatile int value;
-
-    public HtmlLength(String spec) throws NumberFormatException {
-        spec = spec.trim();
-        final int length = spec.length();
-        final char lastChar = spec.charAt(length - 1);
-        String parseable;
-        if (spec.endsWith("px")) {
-            this.lengthType = PIXELS;
-            parseable = spec.substring(0, length - 2);
-        } else if (lastChar == '%') {
-            this.lengthType = LENGTH;
-            parseable = spec.substring(0, length - 1).trim();
-        } else if (lastChar == '*') {
-            this.lengthType = MULTI_LENGTH;
-            if (length <= 1) {
-                parseable = "1";
-            } else {
-                parseable = spec.substring(0, length - 1).trim();
-            }
-        } else {
-            this.lengthType = PIXELS;
-            parseable = spec;
-        }
-        try {
-            this.value = Integer.parseInt(parseable);
-        } catch (final NumberFormatException nfe) {
-            this.value = (int) Double.parseDouble(parseable);
-        }
-    }
-
-    public HtmlLength(final int pixels) {
-        this.lengthType = PIXELS;
-        this.value = pixels;
-    }
-
+class HtmlLength {
     /**
      * @return Returns the lengthType.
      */
-    public int getLengthType() {
-        return lengthType;
-    }
+    val lengthType: Int
 
     /**
      * @return Returns the spec.
      */
-    public int getRawValue() {
-        return this.value;
-    }
+    @Volatile
+    var rawValue: Int = 0
+        private set
 
-    public int getLength(final int availLength) {
-        final int lt = this.lengthType;
-        if (lt == LENGTH) {
-            return (availLength * this.value) / 100;
+    constructor(spec: String) {
+        var spec = spec
+        spec = spec.trim { it <= ' ' }
+        val length = spec.length
+        val lastChar = spec.get(length - 1)
+        val parseable: String?
+        if (spec.endsWith("px")) {
+            this.lengthType = PIXELS
+            parseable = spec.substring(0, length - 2)
+        } else if (lastChar == '%') {
+            this.lengthType = LENGTH
+            parseable = spec.substring(0, length - 1).trim { it <= ' ' }
+        } else if (lastChar == '*') {
+            this.lengthType = MULTI_LENGTH
+            if (length <= 1) {
+                parseable = "1"
+            } else {
+                parseable = spec.substring(0, length - 1).trim { it <= ' ' }
+            }
         } else {
-            return this.value;
+            this.lengthType = PIXELS
+            parseable = spec
+        }
+        try {
+            this.rawValue = parseable.toInt()
+        } catch (nfe: NumberFormatException) {
+            this.rawValue = parseable.toDouble().toInt()
         }
     }
 
-    public void divideBy(final int denominator) {
-        int val = this.value;
-        val = val / denominator;
-        this.value = val;
+    constructor(pixels: Int) {
+        this.lengthType = PIXELS
+        this.rawValue = pixels
     }
 
-    public boolean isPreferredOver(final HtmlLength otherLength) {
+    fun getLength(availLength: Int): Int {
+        val lt = this.lengthType
+        if (lt == LENGTH) {
+            return (availLength * this.rawValue) / 100
+        } else {
+            return this.rawValue
+        }
+    }
+
+    fun divideBy(denominator: Int) {
+        var `val` = this.rawValue
+        `val` = `val` / denominator
+        this.rawValue = `val`
+    }
+
+    fun isPreferredOver(otherLength: HtmlLength?): Boolean {
         if (otherLength == null) {
-            return true;
+            return true
         }
         if (this.lengthType > otherLength.lengthType) {
-            return true;
+            return true
         }
-        return this.value > otherLength.value;
+        return this.rawValue > otherLength.rawValue
+    }
+
+    companion object {
+        // Note: Preferred type has higher value
+        const val PIXELS: Int = 1
+        const val LENGTH: Int = 2
+        const val MULTI_LENGTH: Int = 0
+
+        val EMPTY_ARRAY: Array<HtmlLength?> = arrayOfNulls<HtmlLength>(0)
     }
 }

@@ -21,37 +21,34 @@
 /*
  * Created on Mar 19, 2005
  */
-package io.github.remmerw.thor.cobra.util.gui;
+package io.github.remmerw.thor.cobra.util.gui
 
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.LayoutManager;
+import java.awt.Component
+import java.awt.Container
+import java.awt.Dimension
+import java.awt.LayoutManager
 
 /**
  * @author J. H. S.
  */
-public class CenterLayout implements LayoutManager {
-    private static final CenterLayout instance = new CenterLayout();
-
-    public static CenterLayout getInstance() {
-        return instance;
+class CenterLayout : LayoutManager {
+    override fun addLayoutComponent(arg0: String?, arg1: Component?) {
     }
 
-    public void addLayoutComponent(final String arg0, final Component arg1) {
+    override fun removeLayoutComponent(arg0: Component?) {
     }
 
-    public void removeLayoutComponent(final Component arg0) {
-    }
-
-    public Dimension preferredLayoutSize(final Container arg0) {
-        final java.awt.Insets insets = arg0.getInsets();
-        final int count = arg0.getComponentCount();
+    override fun preferredLayoutSize(arg0: Container): Dimension {
+        val insets = arg0.insets
+        val count = arg0.componentCount
         if (count > 0) {
-            final Dimension d = arg0.getComponent(0).getPreferredSize();
-            return new Dimension(d.width + insets.left + insets.right, d.height + insets.top + insets.bottom);
+            val d = arg0.getComponent(0).preferredSize
+            return Dimension(
+                d.width + insets.left + insets.right,
+                d.height + insets.top + insets.bottom
+            )
         } else {
-            return new Dimension(insets.left + insets.right, insets.top + insets.bottom);
+            return Dimension(insets.left + insets.right, insets.top + insets.bottom)
         }
     }
 
@@ -60,14 +57,17 @@ public class CenterLayout implements LayoutManager {
      *
      * @see java.awt.LayoutManager#minimumLayoutSize(java.awt.Container)
      */
-    public Dimension minimumLayoutSize(final Container arg0) {
-        final java.awt.Insets insets = arg0.getInsets();
-        final int count = arg0.getComponentCount();
+    override fun minimumLayoutSize(arg0: Container): Dimension {
+        val insets = arg0.insets
+        val count = arg0.componentCount
         if (count > 0) {
-            final Dimension d = arg0.getComponent(0).getMinimumSize();
-            return new Dimension(d.width + insets.left + insets.right, d.height + insets.top + insets.bottom);
+            val d = arg0.getComponent(0).minimumSize
+            return Dimension(
+                d.width + insets.left + insets.right,
+                d.height + insets.top + insets.bottom
+            )
         } else {
-            return new Dimension(insets.left + insets.right, insets.top + insets.bottom);
+            return Dimension(insets.left + insets.right, insets.top + insets.bottom)
         }
     }
 
@@ -76,35 +76,39 @@ public class CenterLayout implements LayoutManager {
      *
      * @see java.awt.LayoutManager#layoutContainer(java.awt.Container)
      */
-    public void layoutContainer(final Container container) {
-        final int count = container.getComponentCount();
+    override fun layoutContainer(container: Container) {
+        val count = container.componentCount
         if (count > 0) {
-            final Component child = container.getComponent(0);
-            final java.awt.Insets insets = container.getInsets();
-            final int availWidth = container.getWidth() - insets.left - insets.right;
-            final int availHeight = container.getHeight() - insets.top - insets.bottom;
-            final Dimension preferredSize = child.getPreferredSize();
-            final double preferredWidth = preferredSize.getWidth();
-            final double preferredHeight = preferredSize.getHeight();
-            int width;
-            int height;
-            int x;
-            int y;
+            val child = container.getComponent(0)
+            val insets = container.insets
+            val availWidth = container.getWidth() - insets.left - insets.right
+            val availHeight = container.getHeight() - insets.top - insets.bottom
+            val preferredSize = child.preferredSize
+            val preferredWidth = preferredSize.getWidth()
+            val preferredHeight = preferredSize.getHeight()
+            val width: Int
+            val height: Int
+            val x: Int
+            val y: Int
             if (preferredWidth < availWidth) {
-                x = (int) Math.round(insets.left + ((availWidth - preferredWidth) / 2));
-                width = (int) Math.round(preferredWidth);
+                x = Math.round(insets.left + ((availWidth - preferredWidth) / 2)).toInt()
+                width = Math.round(preferredWidth).toInt()
             } else {
-                x = insets.left;
-                width = availWidth;
+                x = insets.left
+                width = availWidth
             }
             if (preferredHeight < availHeight) {
-                y = (int) Math.round(insets.top + ((availHeight - preferredHeight) / 2));
-                height = (int) Math.round(preferredHeight);
+                y = Math.round(insets.top + ((availHeight - preferredHeight) / 2)).toInt()
+                height = Math.round(preferredHeight).toInt()
             } else {
-                y = insets.top;
-                height = availHeight;
+                y = insets.top
+                height = availHeight
             }
-            child.setBounds(x, y, width, height);
+            child.setBounds(x, y, width, height)
         }
+    }
+
+    companion object {
+        val instance: CenterLayout = CenterLayout()
     }
 }

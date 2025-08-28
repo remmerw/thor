@@ -1,32 +1,27 @@
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.mozilla.javascript.Function;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.html.HTMLCollection;
-import org.w3c.dom.html.HTMLElement;
-import org.w3c.dom.html.HTMLSelectElement;
+import io.github.remmerw.thor.cobra.html.FormInput
+import org.mozilla.javascript.Function
+import org.w3c.dom.DOMException
+import org.w3c.dom.html.HTMLCollection
+import org.w3c.dom.html.HTMLElement
+import org.w3c.dom.html.HTMLSelectElement
 
-import java.util.ArrayList;
+class HTMLSelectElementImpl(name: String?) : HTMLBaseInputElement(name), HTMLSelectElement {
+    private var multipleState: Boolean? = null
 
-import io.github.remmerw.thor.cobra.html.FormInput;
-
-public class HTMLSelectElementImpl extends HTMLBaseInputElement implements HTMLSelectElement {
-    private Boolean multipleState = null;
     // private HTMLOptionsCollection options;
-    private HTMLCollection options;
-    private int deferredSelectedIndex = -1;
-    private Function onchange;
+    private var options: HTMLCollection? = null
+    private var deferredSelectedIndex = -1
+    var onchange: Function? = null
+        get() = this.getEventFunction(field, "onchange")
 
-    public HTMLSelectElementImpl(final String name) {
-        super(name);
+    @Throws(DOMException::class)
+    override fun add(element: HTMLElement?, before: HTMLElement?) {
+        this.insertBefore(element, before)
     }
 
-    public void add(final HTMLElement element, final HTMLElement before) throws DOMException {
-        this.insertBefore(element, before);
-    }
-
-  /* public HTMLOptionsCollection getOptions() {
+    /* public HTMLOptionsCollection getOptions() {
     synchronized (this) {
       if (this.options == null) {
         this.options = new HTMLOptionsCollectionImpl(this);
@@ -34,138 +29,125 @@ public class HTMLSelectElementImpl extends HTMLBaseInputElement implements HTMLS
       return this.options;
     }
   }*/
-
-    public int getLength() {
-        return this.getOptions().getLength();
+    override fun getLength(): Int {
+        return this.options.length
     }
 
-    public boolean getMultiple() {
-        final Boolean m = this.multipleState;
+    override fun getMultiple(): Boolean {
+        val m = this.multipleState
         if (m != null) {
-            return m.booleanValue();
+            return m
         }
-        return this.getAttributeAsBoolean("multiple");
+        return this.getAttributeAsBoolean("multiple")
     }
 
-    public void setMultiple(final boolean multiple) {
-        final boolean prevMultiple = this.getMultiple();
-        this.multipleState = Boolean.valueOf(multiple);
+    override fun setMultiple(multiple: Boolean) {
+        val prevMultiple = this.getMultiple()
+        this.multipleState = multiple
         if (prevMultiple != multiple) {
-            this.informLayoutInvalid();
+            this.informLayoutInvalid()
         }
     }
 
-    public HTMLCollection getOptions() {
-        synchronized (this) {
+    override fun getOptions(): HTMLCollection {
+        synchronized(this) {
             if (this.options == null) {
-                this.options = new HTMLOptionsCollectionImpl(this);
+                this.options = HTMLOptionsCollectionImpl(this)
             }
-            return this.options;
+            return this.options!!
         }
     }
 
-    public int getSelectedIndex() {
-        final InputContext ic = this.inputContext;
+    override fun getSelectedIndex(): Int {
+        val ic = this.inputContext
         if (ic != null) {
-            return ic.getSelectedIndex();
+            return ic.getSelectedIndex()
         } else {
-            return this.deferredSelectedIndex;
+            return this.deferredSelectedIndex
         }
     }
 
-  /* public void setLength(final int length) throws DOMException {
+    /* public void setLength(final int length) throws DOMException {
     this.getOptions().setLength(length);
   }*/
-
-    public void setSelectedIndex(final int selectedIndex) {
-        this.setSelectedIndexImpl(selectedIndex);
-        final HTMLCollection options = this.getOptions();
-        final int length = options.getLength();
-        for (int i = 0; i < length; i++) {
-            final HTMLOptionElementImpl option = (HTMLOptionElementImpl) options.item(i);
-            option.setSelectedImpl(i == selectedIndex);
+    override fun setSelectedIndex(selectedIndex: Int) {
+        this.setSelectedIndexImpl(selectedIndex)
+        val options = this.options
+        val length = options.length
+        for (i in 0..<length) {
+            val option = options.item(i) as HTMLOptionElementImpl
+            option.setSelectedImpl(i == selectedIndex)
         }
     }
 
-    public int getSize() {
-        final InputContext ic = this.inputContext;
+    override fun getSize(): Int {
+        val ic = this.inputContext
         if (ic != null) {
-            return ic.getVisibleSize();
+            return ic.getVisibleSize()
         } else {
-            return 0;
+            return 0
         }
     }
 
-    public void setSize(final int size) {
-        final InputContext ic = this.inputContext;
+    override fun setSize(size: Int) {
+        val ic = this.inputContext
         if (ic != null) {
-            ic.setVisibleSize(size);
+            ic.setVisibleSize(size)
         }
     }
 
-    public String getType() {
-        return this.getMultiple() ? "select-multiple" : "select-one";
+    override fun getType(): String {
+        return if (this.getMultiple()) "select-multiple" else "select-one"
     }
 
-    public void remove(final int index) {
+    override fun remove(index: Int) {
         try {
-            this.removeChild(this.getOptions().item(index));
-        } catch (final DOMException de) {
-            this.warn("remove(): Unable to remove option at index " + index + ".", de);
+            this.removeChild(this.options.item(index))
+        } catch (de: DOMException) {
+            this.warn("remove(): Unable to remove option at index " + index + ".", de)
         }
     }
 
-    void setSelectedIndexImpl(final int selectedIndex) {
-        final InputContext ic = this.inputContext;
+    fun setSelectedIndexImpl(selectedIndex: Int) {
+        val ic = this.inputContext
         if (ic != null) {
-            ic.setSelectedIndex(selectedIndex);
+            ic.setSelectedIndex(selectedIndex)
         } else {
-            this.deferredSelectedIndex = selectedIndex;
+            this.deferredSelectedIndex = selectedIndex
         }
     }
 
-    @Override
-    protected FormInput[] getFormInputs() {
+    protected override fun getFormInputs(): Array<FormInput?>? {
         // Needs to be overriden for forms to submit.
-        final InputContext ic = this.inputContext;
-        String[] values = ic == null ? null : ic.getValues();
+        val ic = this.inputContext
+        var values = if (ic == null) null else ic.getValues()
         if (values == null) {
-            final String value = this.getValue();
-            values = value == null ? null : new String[]{value};
+            val value = this.value
+            values = if (value == null) null else arrayOf<String>(value)
             if (values == null) {
-                return null;
+                return null
             }
         }
-        final String name = this.getName();
+        val name = this.name
         if (name == null) {
-            return null;
+            return null
         }
-        final ArrayList<FormInput> formInputs = new ArrayList<>();
-        for (final String value : values) {
-            formInputs.add(new FormInput(name, value));
+        val formInputs = ArrayList<FormInput?>()
+        for (value in values) {
+            formInputs.add(FormInput(name, value))
         }
-        return formInputs.toArray(FormInput.EMPTY_ARRAY);
+        return formInputs.toArray<FormInput?>(FormInput.EMPTY_ARRAY)
     }
 
-    @Override
-    public void resetInput() {
-        final InputContext ic = this.inputContext;
+    override fun resetInput() {
+        val ic = this.inputContext
         if (ic != null) {
-            ic.resetInput();
+            ic.resetInput()
         }
     }
 
-    @Override
-    public void setInputContext(final @NonNull InputContext ic) {
-        super.setInputContext(ic);
-        ic.setSelectedIndex(this.deferredSelectedIndex);
-    }
-
-    public Function getOnchange() {
-        return this.getEventFunction(this.onchange, "onchange");
-    }
-
-    public void setOnchange(final Function value) {
-        this.onchange = value;
+    override fun setInputContext(ic: InputContext) {
+        super.setInputContext(ic)
+        ic.setSelectedIndex(this.deferredSelectedIndex)
     }
 }

@@ -20,48 +20,51 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.github.remmerw.thor.cobra.ua;
+package io.github.remmerw.thor.cobra.ua
 
-import java.util.EventListener;
+import java.util.EventListener
 
 /**
  * A listener of navigator window events. Listener methods are invoked by the
  * user agent in the GUI dispatch thread.
  */
-public interface NavigatorWindowListener extends EventListener {
+interface NavigatorWindowListener : EventListener {
     /**
      * Invoked after a connection request to a URL succeeds and the document
      * starts loading. There is no guarantee that the document will render. For
      * example, a download may be started instead.
-     * <p>
+     *
+     *
      */
-    void documentAccessed(NavigatorWindowEvent event);
+    fun documentAccessed(event: NavigatorWindowEvent?)
 
     /**
      * Invoked after a clientlet has set the document content. This could be when
      * the document has rendered or is being rendered. This method is also called
      * when a page error occurs.
-     * <p>
+     *
+     *
      * This method is meant to be used by the primary extension in order to update
      * the address bar.
      */
-    void documentRendering(NavigatorWindowEvent event);
+    fun documentRendering(event: NavigatorWindowEvent?)
 
     /**
      * Invoked as a document loads in order to inform the listener of progress.
-     * <p>
+     *
+     *
      * This method is meant to be used by the primary extension in order to update
      * its progress bar. It is invoked outside the GUI dispatch thread.
      */
-    void progressUpdated(NavigatorProgressEvent event);
+    fun progressUpdated(event: NavigatorProgressEvent?)
 
     /**
      * Invoked when the status message is updated.
      */
-    void statusUpdated(NavigatorWindowEvent event);
+    fun statusUpdated(event: NavigatorWindowEvent?)
 
     /**
      * Invoked when the default status message is updated.
      */
-    void defaultStatusUpdated(NavigatorWindowEvent event);
+    fun defaultStatusUpdated(event: NavigatorWindowEvent?)
 }

@@ -18,11 +18,7 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
 // TODO: Can be chopped off; this class is now a shell after removing createRenderState
-public class HTMLCenterElementImpl extends HTMLAbstractUIElement {
-    public HTMLCenterElementImpl(final String name) {
-        super(name);
-    }
-}
+class HTMLCenterElementImpl(name: String?) : HTMLAbstractUIElement(name)

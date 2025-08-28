@@ -1,62 +1,66 @@
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
+import io.github.remmerw.thor.cobra.html.HtmlObject
+import java.awt.Color
+import java.awt.Component
+import java.awt.Dimension
+import java.awt.Graphics
 
-import io.github.remmerw.thor.cobra.html.HtmlObject;
+internal class UIControlWrapper(ho: HtmlObject?) : UIControl {
+    private val component: Component
+    private val htmlObject: HtmlObject?
 
-class UIControlWrapper implements UIControl {
-    private final Component component;
-    private final HtmlObject htmlObject;
-
-    public UIControlWrapper(final HtmlObject ho) {
-        this.htmlObject = ho;
-        Component c;
+    init {
+        this.htmlObject = ho
+        val c: Component
         if (ho == null) {
-            c = new BrokenComponent();
+            c = BrokenComponent()
         } else {
-            c = ho.getComponent();
+            c = ho.component
         }
-        this.component = c;
+        this.component = c
     }
 
-    public void reset(final int availWidth, final int availHeight) {
-        this.htmlObject.reset(availWidth, availHeight);
+    override fun reset(availWidth: Int, availHeight: Int) {
+        this.htmlObject!!.reset(availWidth, availHeight)
     }
 
-    public Component getComponent() {
-        return this.component;
+    override fun getComponent(): Component {
+        return this.component
     }
 
-    public Color getBackgroundColor() {
-        return this.component.getBackground();
+    override fun getBackgroundColor(): Color? {
+        return this.component.getBackground()
     }
 
-    public Dimension getPreferredSize() {
-        return this.component.getPreferredSize();
+    override fun getPreferredSize(): Dimension? {
+        return this.component.preferredSize
     }
 
-    public void invalidate() {
+    override fun invalidate() {
         // Calls its AWT parent's invalidate, but I guess that's OK.
-        this.component.invalidate();
+        this.component.invalidate()
     }
 
-    public boolean paintSelection(final Graphics g, final boolean inSelection, final RenderableSpot startPoint, final RenderableSpot endPoint) {
+    fun paintSelection(
+        g: Graphics?,
+        inSelection: Boolean,
+        startPoint: RenderableSpot?,
+        endPoint: RenderableSpot?
+    ): Boolean {
         // Does not paint selection
-        return inSelection;
+        return inSelection
     }
 
-    public void setBounds(final int x, final int y, final int width, final int height) {
-        this.component.setBounds(x, y, width, height);
+    override fun setBounds(x: Int, y: Int, width: Int, height: Int) {
+        this.component.setBounds(x, y, width, height)
     }
 
-    public void setRUIControl(final RUIControl ruicontrol) {
+    override fun setRUIControl(ruicontrol: RUIControl?) {
         // Not doing anything with this.
     }
 
-    public void paint(final Graphics g) {
-        this.component.paint(g);
+    override fun paint(g: Graphics?) {
+        this.component.paint(g)
     }
 }

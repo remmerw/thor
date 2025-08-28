@@ -21,32 +21,33 @@
 /*
  * Created on Nov 19, 2005
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import java.awt.Dimension;
-import java.awt.Graphics;
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
+import java.awt.Dimension
+import java.awt.Graphics
 
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl;
+internal class HrControl(modelNode: HTMLElementImpl?) : BaseControl(modelNode) {
+    private var availWidth = 0
 
-class HrControl extends BaseControl {
-    private static final long serialVersionUID = 2138367420714598428L;
-    private int availWidth;
-
-    public HrControl(final HTMLElementImpl modelNode) {
-        super(modelNode);
+    fun paintSelection(
+        g: Graphics?,
+        inSelection: Boolean,
+        startPoint: RenderableSpot?,
+        endPoint: RenderableSpot?
+    ): Boolean {
+        return inSelection
     }
 
-    public boolean paintSelection(final Graphics g, final boolean inSelection, final RenderableSpot startPoint, final RenderableSpot endPoint) {
-        return inSelection;
+    override fun reset(availWidth: Int, availHeight: Int) {
+        this.availWidth = availWidth
     }
 
-    @Override
-    public void reset(final int availWidth, final int availHeight) {
-        this.availWidth = availWidth;
+    override fun getPreferredSize(): Dimension {
+        return Dimension(this.availWidth, 0)
     }
 
-    @Override
-    public Dimension getPreferredSize() {
-        return new Dimension(this.availWidth, 0);
+    companion object {
+        private const val serialVersionUID = 2138367420714598428L
     }
 }

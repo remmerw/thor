@@ -21,29 +21,24 @@
 /*
  * Created on Feb 12, 2006
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.html.HTMLPreElement;
+import org.w3c.dom.html.HTMLPreElement
 
-public class HTMLPreElementImpl extends HTMLAbstractUIElement implements HTMLPreElement {
-    public HTMLPreElementImpl(final String name) {
-        super(name);
-    }
-
-    public int getWidth() {
-        final String widthText = this.getAttribute("width");
+class HTMLPreElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLPreElement {
+    override fun getWidth(): Int {
+        val widthText = this.getAttribute("width")
         if (widthText == null) {
-            return 0;
+            return 0
         }
         try {
-            return Integer.parseInt(widthText);
-        } catch (final NumberFormatException nfe) {
-            return 0;
+            return widthText.toInt()
+        } catch (nfe: NumberFormatException) {
+            return 0
         }
     }
 
-    public void setWidth(final int width) {
-        this.setAttribute("width", String.valueOf(width));
+    override fun setWidth(width: Int) {
+        this.setAttribute("width", width.toString())
     }
-
 }

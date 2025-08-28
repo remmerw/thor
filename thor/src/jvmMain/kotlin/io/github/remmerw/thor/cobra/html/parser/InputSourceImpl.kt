@@ -21,87 +21,74 @@
 /*
  * Created on Oct 22, 2005
  */
-package io.github.remmerw.thor.cobra.html.parser;
+package io.github.remmerw.thor.cobra.html.parser
 
-import org.xml.sax.InputSource;
-
-import java.io.InputStream;
-import java.io.Reader;
+import org.xml.sax.InputSource
+import java.io.InputStream
+import java.io.Reader
 
 /**
- * The <code>InputSourceImpl</code> class implements the
- * <code>InputSource</code> interface.
+ * The `InputSourceImpl` class implements the
+ * `InputSource` interface.
  *
  * @author J. H. S.
  */
-public class InputSourceImpl extends InputSource {
+class InputSourceImpl : InputSource {
     /**
-     * Constructs an <code>InputSourceImpl</code>.
+     * Constructs an `InputSourceImpl`.
      *
-     * @deprecated Use a constructor that takes either a stream or a reader.
      */
-    @Deprecated
-    public InputSourceImpl() {
-        super();
-    }
+    @Deprecated("Use a constructor that takes either a stream or a reader.")
+    constructor() : super()
 
     /**
-     * Constructs an <code>InputSourceImpl</code>.
-     * <p>
+     * Constructs an `InputSourceImpl`.
+     *
+     *
      * It is valid to use this constructor, but it is generally recommended that
      * callers use one of the constructors that take a reader or an input stream
      * instead.
      *
      * @param uri The URI (or systemID) of the document.
      */
-    public InputSourceImpl(final String uri) {
-        super(uri);
-    }
+    constructor(uri: String?) : super(uri)
 
     /**
-     * Constructs an <code>InputSourceImpl</code>.
+     * Constructs an `InputSourceImpl`.
      *
      * @param byteStream The input stream where content can be read.
-     * @deprecated Use constructor with <code>uri</code> parameter.
      */
-    @Deprecated
-    public InputSourceImpl(final InputStream byteStream) {
-        super(byteStream);
-    }
+    @Deprecated("Use constructor with <code>uri</code> parameter.")
+    constructor(byteStream: InputStream?) : super(byteStream)
 
     /**
-     * Constructs an <code>InputSourceImpl</code>.
+     * Constructs an `InputSourceImpl`.
      *
-     * @param characterStream The <code>Reader</code> where characters can be read.
-     * @deprecated Use constructor with <code>uri</code> parameter.
+     * @param characterStream The `Reader` where characters can be read.
      */
-    @Deprecated
-    public InputSourceImpl(final Reader characterStream) {
-        super(characterStream);
-    }
+    @Deprecated("Use constructor with <code>uri</code> parameter.")
+    constructor(characterStream: Reader?) : super(characterStream)
 
     /**
-     * Constructs an <code>InputSourceImpl</code>.
+     * Constructs an `InputSourceImpl`.
      *
-     * @param characterStream The <code>Reader</code> where characters can be read.
+     * @param characterStream The `Reader` where characters can be read.
      * @param uri             The URI of the document.
      */
-    public InputSourceImpl(final Reader characterStream, final String uri) {
-        super(characterStream);
-        this.setSystemId(uri);
+    constructor(characterStream: Reader?, uri: String?) : super(characterStream) {
+        this.systemId = uri
     }
 
     /**
-     * Constructs an <code>InputSourceImpl</code>.
+     * Constructs an `InputSourceImpl`.
      *
      * @param byteStream The input stream where content can be read.
      * @param uri        The URI that identifies the content.
      * @param charset    The character set of the input stream.
      */
-    public InputSourceImpl(final InputStream byteStream, final String uri, final String charset) {
-        super(byteStream);
-        this.setEncoding(charset);
-        this.setSystemId(uri);
-        this.setPublicId(uri);
+    constructor(byteStream: InputStream?, uri: String?, charset: String?) : super(byteStream) {
+        this.encoding = charset
+        this.systemId = uri
+        this.publicId = uri
     }
 }

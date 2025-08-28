@@ -18,214 +18,232 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
+package io.github.remmerw.thor.cobra.html.style
 
-package io.github.remmerw.thor.cobra.html.style;
+import cz.vutbr.web.css.CSSException
+import cz.vutbr.web.css.CSSFactory
+import cz.vutbr.web.css.MediaSpec
+import cz.vutbr.web.css.NetworkProcessor
+import cz.vutbr.web.css.RuleFactory
+import cz.vutbr.web.css.StyleSheet
+import cz.vutbr.web.csskit.RuleFactoryImpl
+import cz.vutbr.web.csskit.antlr.CSSParserFactory
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLDocumentImpl
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
+import io.github.remmerw.thor.cobra.ua.UserAgentContext
+import io.github.remmerw.thor.cobra.ua.UserAgentContext.RequestKind
+import io.github.remmerw.thor.cobra.util.SecurityUtil
+import io.github.remmerw.thor.cobra.util.Strings
+import io.github.remmerw.thor.cobra.util.Urls
+import org.w3c.css.sac.InputSource
+import org.w3c.dom.Node
+import org.w3c.dom.stylesheets.MediaList
+import java.io.BufferedReader
+import java.io.ByteArrayInputStream
+import java.io.IOException
+import java.io.InputStream
+import java.io.Reader
+import java.io.StringReader
+import java.net.MalformedURLException
+import java.net.URL
+import java.security.PrivilegedAction
+import java.util.StringTokenizer
+import java.util.logging.Level
+import java.util.logging.Logger
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.w3c.css.sac.InputSource;
-import org.w3c.dom.stylesheets.MediaList;
+object CSSUtilities {
+    private val logger: Logger = Logger.getLogger(CSSUtilities::class.java.name)
+    private val rf: RuleFactory = RuleFactoryImpl.getInstance()
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import cz.vutbr.web.css.CSSException;
-import cz.vutbr.web.css.CSSFactory;
-import cz.vutbr.web.css.MediaSpec;
-import cz.vutbr.web.css.NetworkProcessor;
-import cz.vutbr.web.css.RuleFactory;
-import cz.vutbr.web.css.StyleSheet;
-import cz.vutbr.web.csskit.RuleFactoryImpl;
-import cz.vutbr.web.csskit.antlr.CSSParserFactory;
-import cz.vutbr.web.csskit.antlr.CSSParserFactory.SourceType;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLDocumentImpl;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl;
-import io.github.remmerw.thor.cobra.ua.NetworkRequest;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext.Request;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext.RequestKind;
-import io.github.remmerw.thor.cobra.util.SecurityUtil;
-import io.github.remmerw.thor.cobra.util.Strings;
-import io.github.remmerw.thor.cobra.util.Urls;
-
-public class CSSUtilities {
-    private static final Logger logger = Logger.getLogger(CSSUtilities.class.getName());
-    private static final RuleFactory rf = RuleFactoryImpl.getInstance();
-
-    private CSSUtilities() {
-    }
-
-    public static String preProcessCss(final String text) {
+    fun preProcessCss(text: String): String {
         try {
-            final BufferedReader reader = new BufferedReader(new StringReader(text));
-            String line;
-            final StringBuffer sb = new StringBuffer();
-            String pendingLine = null;
+            val reader = BufferedReader(StringReader(text))
+            var line: String?
+            val sb = StringBuffer()
+            var pendingLine: String? = null
             // Only last line should be trimmed.
-            while ((line = reader.readLine()) != null) {
-                final String tline = line.trim();
-                if (tline.length() != 0) {
+            while ((reader.readLine().also { line = it }) != null) {
+                val tline = line!!.trim { it <= ' ' }
+                if (tline.length != 0) {
                     if (pendingLine != null) {
-                        sb.append(pendingLine);
-                        sb.append("\r\n");
-                        pendingLine = null;
+                        sb.append(pendingLine)
+                        sb.append("\r\n")
+                        pendingLine = null
                     }
                     if (tline.startsWith("//")) {
-                        pendingLine = line;
-                        continue;
+                        pendingLine = line
+                        continue
                     }
-                    sb.append(line);
-                    sb.append("\r\n");
+                    sb.append(line)
+                    sb.append("\r\n")
                 }
             }
-            return sb.toString();
-        } catch (final IOException ioe) {
+            return sb.toString()
+        } catch (ioe: IOException) {
             // not possible
-            throw new IllegalStateException(ioe.getMessage());
+            throw IllegalStateException(ioe.message)
         }
     }
 
-    public static InputSource getCssInputSourceForStyleSheet(final String text, final String scriptURI) {
-        final java.io.Reader reader = new StringReader(text);
-        final InputSource is = new InputSource(reader);
-        is.setURI(scriptURI);
-        return is;
+    fun getCssInputSourceForStyleSheet(text: String, scriptURI: String?): InputSource {
+        val reader: Reader = StringReader(text)
+        val `is` = InputSource(reader)
+        `is`.uri = scriptURI
+        return `is`
     }
 
-    public static StyleSheet jParseStyleSheet(final org.w3c.dom.Node ownerNode, final String baseURI, final String stylesheetStr, final UserAgentContext bcontext) {
-        return jParseCSS2(ownerNode, baseURI, stylesheetStr, bcontext);
+    fun jParseStyleSheet(
+        ownerNode: Node?,
+        baseURI: String,
+        stylesheetStr: String?,
+        bcontext: UserAgentContext
+    ): StyleSheet? {
+        return jParseCSS2(ownerNode, baseURI, stylesheetStr, bcontext)
     }
 
-    public static StyleSheet jParse(final org.w3c.dom.Node ownerNode, final String href, final HTMLDocumentImpl doc, final String baseUri,
-                                    final boolean considerDoubleSlashComments) throws MalformedURLException {
-        final UserAgentContext bcontext = doc.getUserAgentContext();
-        final NetworkRequest request = bcontext.createHttpRequest();
-        final URL baseURL = new URL(baseUri);
-        final URL cssURL = Urls.createURL(baseURL, href);
-        final String cssURI = cssURL.toExternalForm();
+    @Throws(MalformedURLException::class)
+    fun jParse(
+        ownerNode: Node?, href: String?, doc: HTMLDocumentImpl, baseUri: String,
+        considerDoubleSlashComments: Boolean
+    ): StyleSheet? {
+        val bcontext = doc.getUserAgentContext()
+        val request = bcontext.createHttpRequest()
+        val baseURL = URL(baseUri)
+        val cssURL = Urls.createURL(baseURL, href)
+        val cssURI = cssURL.toExternalForm()
         // Perform a synchronous request
-        SecurityUtil.doPrivileged(() -> {
+        SecurityUtil.doPrivileged<StyleSheet?>(PrivilegedAction {
             try {
-                request.open("GET", cssURI, false);
-                request.send(null, new Request(cssURL, RequestKind.CSS));
-            } catch (final IOException thrown) {
-                logger.log(Level.WARNING, "parse()", thrown);
+                request.open("GET", cssURI, false)
+                request.send(null, UserAgentContext.Request(cssURL, RequestKind.CSS))
+            } catch (thrown: IOException) {
+                logger.log(Level.WARNING, "parse()", thrown)
             }
-            return getEmptyStyleSheet();
-        });
-        final int status = request.getStatus();
+            emptyStyleSheet
+        })
+        val status = request.status
         if ((status != 200) && (status != 0)) {
-            logger.warning("Unable to parse CSS. URI=[" + cssURI + "]. Response status was " + status + ".");
-            return getEmptyStyleSheet();
+            logger.warning("Unable to parse CSS. URI=[" + cssURI + "]. Response status was " + status + ".")
+            return emptyStyleSheet
         }
 
-        final String text = request.getResponseText();
-        if ((text != null) && !"".equals(text)) {
-            final String processedText = considerDoubleSlashComments ? preProcessCss(text) : text;
-            return jParseCSS2(ownerNode, cssURI, processedText, bcontext);
+        val text = request.responseText
+        if ((text != null) && "" != text) {
+            val processedText = if (considerDoubleSlashComments) preProcessCss(text) else text
+            return jParseCSS2(ownerNode, cssURI, processedText, bcontext)
         } else {
-            return getEmptyStyleSheet();
+            return emptyStyleSheet
         }
     }
 
-    public static StyleSheet getEmptyStyleSheet() {
-        final StyleSheet css = rf.createStyleSheet();
-        css.unlock();
-        return css;
-    }
+    val emptyStyleSheet: StyleSheet
+        get() {
+            val css = rf.createStyleSheet()
+            css.unlock()
+            return css
+        }
 
-    private static StyleSheet jParseCSS2(final org.w3c.dom.Node ownerNode, final String cssURI, final String processedText,
-                                         final UserAgentContext bcontext) {
-
+    private fun jParseCSS2(
+        ownerNode: Node?, cssURI: String, processedText: String?,
+        bcontext: UserAgentContext
+    ): StyleSheet? {
         try {
-            final URL base = new URL(cssURI);
-            CSSFactory.setAutoImportMedia(new MediaSpec("screen"));
-            return CSSParserFactory.getInstance().parse(processedText, new SafeNetworkProcessor(bcontext), "utf-8", SourceType.EMBEDDED, base);
-        } catch (IOException | CSSException e) {
-            logger.log(Level.SEVERE, "Unable to parse CSS. URI=[" + cssURI + "].", e);
-            return getEmptyStyleSheet();
+            val base = URL(cssURI)
+            CSSFactory.setAutoImportMedia(MediaSpec("screen"))
+            return CSSParserFactory.getInstance().parse(
+                processedText,
+                SafeNetworkProcessor(bcontext),
+                "utf-8",
+                CSSParserFactory.SourceType.EMBEDDED,
+                base
+            )
+        } catch (e: IOException) {
+            logger.log(Level.SEVERE, "Unable to parse CSS. URI=[" + cssURI + "].", e)
+            return emptyStyleSheet
+        } catch (e: CSSException) {
+            logger.log(Level.SEVERE, "Unable to parse CSS. URI=[" + cssURI + "].", e)
+            return emptyStyleSheet
         }
     }
 
-    public static StyleSheet jParseInlineStyle(final String style, final String encoding,
-                                               final HTMLElementImpl element, final boolean inlinePriority) {
+    fun jParseInlineStyle(
+        style: String?, encoding: String?,
+        element: HTMLElementImpl, inlinePriority: Boolean
+    ): StyleSheet? {
         try {
-            return CSSParserFactory.getInstance().parse(style, new SafeNetworkProcessor(null), null, SourceType.INLINE, element, inlinePriority, element.getDocumentURL());
-        } catch (IOException | CSSException e) {
-            logger.log(Level.SEVERE, "Unable to parse CSS. CSS=[" + style + "].", e);
-            return getEmptyStyleSheet();
+            return CSSParserFactory.getInstance().parse(
+                style,
+                SafeNetworkProcessor(null),
+                null,
+                CSSParserFactory.SourceType.INLINE,
+                element,
+                inlinePriority,
+                element.documentURL
+            )
+        } catch (e: IOException) {
+            logger.log(Level.SEVERE, "Unable to parse CSS. CSS=[" + style + "].", e)
+            return emptyStyleSheet
+        } catch (e: CSSException) {
+            logger.log(Level.SEVERE, "Unable to parse CSS. CSS=[" + style + "].", e)
+            return emptyStyleSheet
         }
     }
 
-    public static boolean matchesMedia(final String mediaValues, final UserAgentContext rcontext) {
-        if ((mediaValues == null) || (mediaValues.length() == 0)) {
-            return true;
+    fun matchesMedia(mediaValues: String?, rcontext: UserAgentContext?): Boolean {
+        if ((mediaValues == null) || (mediaValues.length == 0)) {
+            return true
         }
         if (rcontext == null) {
-            return false;
+            return false
         }
-        final StringTokenizer tok = new StringTokenizer(mediaValues, ",");
+        val tok = StringTokenizer(mediaValues, ",")
         while (tok.hasMoreTokens()) {
-            final String token = tok.nextToken().trim();
-            final String mediaName = Strings.trimForAlphaNumDash(token);
+            val token = tok.nextToken().trim { it <= ' ' }
+            val mediaName = Strings.trimForAlphaNumDash(token)
             if (rcontext.isMedia(mediaName)) {
-                return true;
+                return true
             }
         }
-        return false;
+        return false
     }
 
-    public static boolean matchesMedia(final MediaList mediaList, final UserAgentContext rcontext) {
+    fun matchesMedia(mediaList: MediaList?, rcontext: UserAgentContext?): Boolean {
         if (mediaList == null) {
-            return true;
+            return true
         }
-        final int length = mediaList.getLength();
+        val length = mediaList.length
         if (length == 0) {
-            return true;
+            return true
         }
         if (rcontext == null) {
-            return false;
+            return false
         }
-        for (int i = 0; i < length; i++) {
-            final String mediaName = mediaList.item(i);
+        for (i in 0..<length) {
+            val mediaName = mediaList.item(i)
             if (rcontext.isMedia(mediaName)) {
-                return true;
+                return true
             }
         }
-        return false;
+        return false
     }
 
-    public static class SafeNetworkProcessor implements NetworkProcessor {
-        final UserAgentContext bcontext;
-
-        public SafeNetworkProcessor(final UserAgentContext bcontext) {
-            this.bcontext = bcontext;
-        }
-
-        @Override
-        public InputStream fetch(final @NonNull URL url) throws IOException {
-
+    class SafeNetworkProcessor(val bcontext: UserAgentContext) : NetworkProcessor {
+        @Throws(IOException::class)
+        override fun fetch(url: URL): InputStream {
             //return AccessController.doPrivileged((PrivilegedExceptionAction<InputStream>) () -> {
-            final NetworkRequest request = bcontext.createHttpRequest();
-            request.open("GET", url, false);
-            request.send(null, new Request(url, RequestKind.CSS));
-            final byte[] responseBytes = request.getResponseBytes();
+
+            val request = bcontext.createHttpRequest()
+            request.open("GET", url, false)
+            request.send(null, UserAgentContext.Request(url, RequestKind.CSS))
+            val responseBytes = request.responseBytes
             if (responseBytes == null) {
                 // This can happen when a request is denied by the request manager.
-                throw new IOException("Empty response");
+                throw IOException("Empty response")
             } else {
-                return new ByteArrayInputStream(responseBytes);
+                return ByteArrayInputStream(responseBytes)
             }
-            // });
 
+            // });
         }
     }
-
 }

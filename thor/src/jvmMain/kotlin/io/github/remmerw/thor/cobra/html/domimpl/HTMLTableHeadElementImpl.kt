@@ -18,14 +18,10 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
 /**
  * Element used for TH.
  */
 // TODO: Can be chopped off; this class is now a shell after removing createRenderState
-public class HTMLTableHeadElementImpl extends HTMLTableCellElementImpl {
-    public HTMLTableHeadElementImpl(final String name) {
-        super(name);
-    }
-}
+class HTMLTableHeadElementImpl(name: String?) : HTMLTableCellElementImpl(name)

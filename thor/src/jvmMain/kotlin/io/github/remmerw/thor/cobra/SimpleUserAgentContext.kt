@@ -1,103 +1,82 @@
-package io.github.remmerw.thor.cobra;
+package io.github.remmerw.thor.cobra
 
-import java.net.URL;
+import io.github.remmerw.thor.cobra.ua.NetworkRequest
+import io.github.remmerw.thor.cobra.ua.UserAgentContext
+import java.net.URL
 
-import io.github.remmerw.thor.cobra.ua.NetworkRequest;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext;
-
-public class SimpleUserAgentContext implements UserAgentContext {
-    @Override
-    public boolean isRequestPermitted(Request request) {
-        return false;
+class SimpleUserAgentContext : UserAgentContext {
+    override fun isRequestPermitted(request: UserAgentContext.Request?): Boolean {
+        return false
     }
 
-    @Override
-    public NetworkRequest createHttpRequest() {
-        return null;
+    override fun createHttpRequest(): NetworkRequest? {
+        return null
     }
 
-    @Override
-    public String getAppCodeName() {
-        return "";
+    override fun getAppCodeName(): String {
+        return ""
     }
 
-    @Override
-    public String getAppName() {
-        return "";
+    override fun getAppName(): String {
+        return ""
     }
 
-    @Override
-    public String getAppVersion() {
-        return "";
+    override fun getAppVersion(): String {
+        return ""
     }
 
-    @Override
-    public String getAppMinorVersion() {
-        return "";
+    override fun getAppMinorVersion(): String {
+        return ""
     }
 
-    @Override
-    public String getBrowserLanguage() {
-        return "";
+    override fun getBrowserLanguage(): String {
+        return ""
     }
 
-    @Override
-    public boolean isCookieEnabled() {
-        return false;
+    override fun isCookieEnabled(): Boolean {
+        return false
     }
 
-    @Override
-    public boolean isScriptingEnabled() {
-        return false;
+    override fun isScriptingEnabled(): Boolean {
+        return false
     }
 
-    @Override
-    public boolean isExternalCSSEnabled() {
-        return false;
+    override fun isExternalCSSEnabled(): Boolean {
+        return false
     }
 
-    @Override
-    public boolean isInternalCSSEnabled() {
-        return false;
+    override fun isInternalCSSEnabled(): Boolean {
+        return false
     }
 
-    @Override
-    public String getPlatform() {
-        return "";
+    override fun getPlatform(): String {
+        return ""
     }
 
-    @Override
-    public String getUserAgent() {
-        return "";
+    override fun getUserAgent(): String {
+        return ""
     }
 
-    @Override
-    public String getCookie(URL url) {
-        return "";
+    override fun getCookie(url: URL?): String {
+        return ""
     }
 
-    @Override
-    public void setCookie(URL url, String cookieSpec) {
-
+    override fun setCookie(url: URL?, cookieSpec: String?) {
     }
 
-    @Override
-    public int getScriptingOptimizationLevel() {
-        return 0;
+    override fun getScriptingOptimizationLevel(): Int {
+        return 0
     }
 
-    @Override
-    public boolean isMedia(String mediaName) {
-        return false;
+    override fun isMedia(mediaName: String?): Boolean {
+        return false
     }
 
-    @Override
-    public String getVendor() {
-        return "";
+    override fun getVendor(): String {
+        return ""
     }
 
-    @Override
-    public String getProduct() {
-        return "";
+    override fun getProduct(): String {
+        return ""
     }
 }

@@ -20,162 +20,149 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.github.remmerw.thor.cobra.clientlet;
+package io.github.remmerw.thor.cobra.clientlet
 
-import org.eclipse.jdt.annotation.NonNull;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.net.URL;
-import java.util.Iterator;
-
-import io.github.remmerw.thor.cobra.ua.RequestType;
+import java.io.IOException
+import java.io.Serializable
 
 /**
  * Represents a URL response such as an HTTP or file protocol response.
  */
-public interface ClientletResponse {
+interface ClientletResponse {
     /**
      * Gets the response URL. This may be different to the request URL in the case
      * of a redirect.
      */
-    @NonNull
-    URL getResponseURL();
+    @JvmField
+    val responseURL: URL
 
     /**
      * Gets the request method for the response URL. This may be different to the
      * original request method in case of a redirect.
      */
-    String getLastRequestMethod();
+    @JvmField
+    val lastRequestMethod: String?
 
     /**
      * Gets a response header.
      *
      * @param name The header name.
      */
-    String getHeader(String name);
+    fun getHeader(name: String?): String?
 
     /**
      * Gets all values for a particular header.
      *
      * @param name The header name.
      */
-    String[] getHeaders(String name);
+    fun getHeaders(name: String?): Array<String?>?
 
     /**
      * Gets an iterator of response header names.
      */
-    Iterator<String> getHeaderNames();
+    val headerNames: MutableIterator<String?>?
 
-    /**
-     * Gets the response stream.
-     *
-     * @throws IOException
-     */
-    InputStream getInputStream() throws IOException;
+    @get:Throws(IOException::class)
+    val inputStream: InputStream?
 
     /**
      * Gets the response content type. This can also contain a character encoding,
-     * e.g. <em>text/html; charset=ISO-8859-1</em>.
+     * e.g. *text/html; charset=ISO-8859-1*.
      *
-     * @see #getMimeType()
+     * @see .getMimeType
      */
-    String getContentType();
+    val contentType: String?
 
     /**
-     * Gets only the mime-type part of the content type, e.g. <em>text/html</em>.
+     * Gets only the mime-type part of the content type, e.g. *text/html*.
      *
-     * @see #getContentType()
+     * @see .getContentType
      */
-    String getMimeType();
+    val mimeType: String?
 
     /**
      * A convenience method used to match parameters provided against the response
      * mime-type or the "file extension" of the response URL's file path. The file
      * extension is matched only when the mime type of the response is either
-     * <code>application/octet-stream</code>, <code>content/unknown</code>, or not
+     * `application/octet-stream`, `content/unknown`, or not
      * provided.
      *
-     * @param mimeType      A mime type, e.g. <em>application/x-acme</em>.
+     * @param mimeType      A mime type, e.g. *application/x-acme*.
      * @param fileExtension A collection of file extensions, each starting with a dot, e.g.
-     *                      <em>new String[] { ".acme", ".acm" }</em>.
+     * *new String[] { ".acme", ".acm" }*.
      * @return True if the navigator considers there is a match.
      */
-    boolean matches(String mimeType, String[] fileExtension);
+    fun matches(mimeType: String?, fileExtension: Array<String?>?): Boolean
 
     /**
      * Gets the content length of the reponse. This may be -1 if the content
      * length is not known.
      */
-    int getContentLength();
+    val contentLength: Int
 
     /**
      * Returns true only if the response comes from a local cache.
      */
-    boolean isFromCache();
+    val isFromCache: Boolean
 
     /**
      * Gets the charset specified with the content type. If no such charset has
      * been provided, the implementation may recommend a default.
      */
-    String getCharset();
+    val charset: String?
 
     /**
      * Determines whether a charset has been provided with the Content-Type
      * header.
      */
-    boolean isCharsetProvided();
+    val isCharsetProvided: Boolean
 
-    /**
-     * Gets the HTTP response or status code.
-     */
-    int getResponseCode() throws IOException;
+    @get:Throws(IOException::class)
+    val responseCode: Int
 
-    /**
-     * Gets the HTTP response message.
-     */
-    String getResponseMessage() throws IOException;
+    @get:Throws(IOException::class)
+    val responseMessage: String?
 
     /**
      * Returns true only if the response is allowed to be cached.
      */
-    boolean isCacheable();
+    val isCacheable: Boolean
 
     /**
      * Returns true only if the response does not result from a reload, forward or
      * back. Generally, this method indicates that a response is not related to an
      * entry already in the navigation history.
      */
-    boolean isNewNavigationAction();
+    val isNewNavigationAction: Boolean
 
     /**
      * If available, gets an object previously persisted along with the cached
      * document.
      *
      * @param classLoader A class loader that can load an object of the type expected.
-     * @see #setNewPersistentCachedObject(Serializable)
+     * @see .setNewPersistentCachedObject
      */
-    Object getPersistentCachedObject(ClassLoader classLoader);
+    fun getPersistentCachedObject(classLoader: ClassLoader?): Any?
 
     /**
      * Caches the object provided in persistent memory and associates it with the
      * reponse URL, if caching is allowed.
      *
-     * @param object A <code>Serializable</code> object.
+     * @param object A `Serializable` object.
      */
-    void setNewPersistentCachedObject(Serializable object);
+    fun setNewPersistentCachedObject(`object`: Serializable?)
 
     /**
      * If available, gets an object previously cached in main memory associated
      * with the response URL.
-     * <p>
-     * <b>Note</b>: Most callers should only use the persistent cached object if
-     * {@link #isFromCache()} returns true.
      *
-     * @see #setNewTransientCachedObject(Object, int)
+     *
+     * **Note**: Most callers should only use the persistent cached object if
+     * [.isFromCache] returns true.
+     *
+     * @see .setNewTransientCachedObject
      */
-    Object getTransientCachedObject();
+    val transientCachedObject: Any?
 
     /**
      * Caches an object in main memory, provided caching is allowed and there's
@@ -184,30 +171,30 @@ public interface ClientletResponse {
      *
      * @param object     An object.
      * @param approxSize The approximate byte size the object occupies in memory. Note that
-     *                   values less than the size of the response in bytes are assumed to
-     *                   be in error.
+     * values less than the size of the response in bytes are assumed to
+     * be in error.
      */
-    void setNewTransientCachedObject(Object object, int approxSize);
+    fun setNewTransientCachedObject(`object`: Any?, approxSize: Int)
 
     /**
      * Gets the approximate size in bytes of the transient cached object
      * previously associated with the response.
-     * <p>
-     * <b>Note</b>: Most callers should only use the transient cached object if
-     * {@link #isFromCache()} returns true.
+     *
+     *
+     * **Note**: Most callers should only use the transient cached object if
+     * [.isFromCache] returns true.
      */
-  /* Commented because nothing is using it.
+    /* Commented because nothing is using it.
   public int getTransientCachedObjectSize();
   */
-
     /**
-     * Gets the value of the "Date" header. This method returns <code>null</code>
+     * Gets the value of the "Date" header. This method returns `null`
      * if the header is not available.
      */
-    java.util.Date getDate();
+    val date: Date?
 
     /**
      * Gets the type of request.
      */
-    RequestType getRequestType();
+    val requestType: RequestType?
 }

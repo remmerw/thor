@@ -21,12 +21,8 @@
 /*
  * Created on Oct 8, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.html.HTMLElement;
+import org.w3c.dom.html.HTMLElement
 
-public class HTMLSpanElementImpl extends HTMLAbstractUIElement implements HTMLElement {
-    public HTMLSpanElementImpl(final String name) {
-        super(name);
-    }
-}
+class HTMLSpanElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLElement

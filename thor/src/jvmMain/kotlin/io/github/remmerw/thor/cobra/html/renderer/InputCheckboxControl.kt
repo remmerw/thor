@@ -21,35 +21,28 @@
 /*
  * Created on Jan 15, 2006
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import javax.swing.JCheckBox;
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement
+import io.github.remmerw.thor.cobra.util.gui.WrapperLayout
+import javax.swing.JCheckBox
 
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement;
-import io.github.remmerw.thor.cobra.util.gui.WrapperLayout;
+internal class InputCheckboxControl(modelNode: HTMLBaseInputElement?) :
+    BaseInputControl(modelNode) {
+    private val widget: JCheckBox
 
-class InputCheckboxControl extends BaseInputControl {
-    private static final long serialVersionUID = -7156618963339104117L;
-    private final JCheckBox widget;
-
-    public InputCheckboxControl(final HTMLBaseInputElement modelNode) {
-        super(modelNode);
-        this.setLayout(WrapperLayout.getInstance());
-        final JCheckBox checkBox = new JCheckBox();
-        checkBox.setOpaque(false);
-        this.widget = checkBox;
+    init {
+        this.layout = WrapperLayout.instance
+        val checkBox = JCheckBox()
+        checkBox.isOpaque = false
+        this.widget = checkBox
 
         // Note: Value attribute cannot be set in reset() method.
         // Otherwise, layout revalidation causes typed values to
         // be lost (including revalidation due to hover.)
-        checkBox.setSelected(this.controlElement.getAttributeAsBoolean("checked"));
+        checkBox.isSelected = this.controlElement.getAttributeAsBoolean("checked")
 
-        this.add(checkBox);
-    }
-
-    @Override
-    public void reset(final int availWidth, final int availHeight) {
-        super.reset(availWidth, availHeight);
+        this.add(checkBox)
     }
 
     /*
@@ -57,48 +50,44 @@ class InputCheckboxControl extends BaseInputControl {
      *
      * @see org.xamjwg.html.domimpl.InputContext#click()
      */
-    @Override
-    public void click() {
-        this.widget.doClick();
+    override fun click() {
+        this.widget.doClick()
     }
+
+    var checked: Boolean
+        /*
+             * (non-Javadoc)
+             *
+             * @see org.xamjwg.html.domimpl.InputContext#getChecked()
+             */
+        get() = this.widget.isSelected
+        /*
+             * (non-Javadoc)
+             *
+             * @see org.xamjwg.html.domimpl.InputContext#setChecked(boolean)
+             */
+        set(checked) {
+            this.widget.setSelected(checked)
+        }
 
     /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#getChecked()
-     */
-    @Override
-    public boolean getChecked() {
-        return this.widget.isSelected();
+    * (non-Javadoc)
+    *
+    * @see org.xamjwg.html.domimpl.InputContext#setDisabled(boolean)
+    */
+    override fun setDisabled(disabled: Boolean) {
+        super.disabled = disabled
+        this.widget.isEnabled = !disabled
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#setChecked(boolean)
-     */
-    @Override
-    public void setChecked(final boolean checked) {
-        this.widget.setSelected(checked);
+    override fun resetInput() {
+        this.widget.isSelected = this.controlElement.getAttributeAsBoolean("checked")
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#setDisabled(boolean)
-     */
-    @Override
-    public void setDisabled(final boolean disabled) {
-        super.setDisabled(disabled);
-        this.widget.setEnabled(!disabled);
-    }
+    val value: String?
+        get() = this.controlElement.getAttribute("value")
 
-    public void resetInput() {
-        this.widget.setSelected(this.controlElement.getAttributeAsBoolean("checked"));
-    }
-
-    @Override
-    public String getValue() {
-        return this.controlElement.getAttribute("value");
+    companion object {
+        private val serialVersionUID = -7156618963339104117L
     }
 }

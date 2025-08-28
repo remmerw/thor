@@ -20,266 +20,243 @@
 /*
  * Created on Sep 3, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.mozilla.javascript.Function;
-import org.w3c.dom.Attr;
-import org.w3c.dom.CDATASection;
-import org.w3c.dom.Comment;
-import org.w3c.dom.DOMConfiguration;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.DocumentFragment;
-import org.w3c.dom.DocumentType;
-import org.w3c.dom.Element;
-import org.w3c.dom.EntityReference;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.ProcessingInstruction;
-import org.w3c.dom.Text;
-import org.w3c.dom.UserDataHandler;
-import org.w3c.dom.css.CSSStyleSheet;
-import org.w3c.dom.events.EventException;
-import org.w3c.dom.events.EventListener;
-import org.w3c.dom.events.EventTarget;
-import org.w3c.dom.html.HTMLCollection;
-import org.w3c.dom.html.HTMLDocument;
-import org.w3c.dom.html.HTMLElement;
-import org.w3c.dom.ranges.Range;
-import org.w3c.dom.stylesheets.DocumentStyle;
-import org.w3c.dom.stylesheets.LinkStyle;
-import org.w3c.dom.stylesheets.StyleSheetList;
-import org.w3c.dom.views.AbstractView;
-import org.w3c.dom.views.DocumentView;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.SAXException;
-
-import java.io.IOException;
-import java.io.LineNumberReader;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-
-import cz.vutbr.web.css.CSSException;
-import cz.vutbr.web.css.ElementMatcher;
-import cz.vutbr.web.css.MediaSpec;
-import cz.vutbr.web.css.StyleSheet;
-import cz.vutbr.web.csskit.ElementMatcherSafeCS;
-import cz.vutbr.web.csskit.ElementMatcherSafeStd;
-import cz.vutbr.web.csskit.antlr.CSSParserFactory;
-import cz.vutbr.web.csskit.antlr.CSSParserFactory.SourceType;
-import cz.vutbr.web.domassign.Analyzer.Holder;
-import cz.vutbr.web.domassign.AnalyzerUtil;
-import io.github.remmerw.thor.cobra.css.domimpl.JStyleSheetWrapper;
-import io.github.remmerw.thor.cobra.css.domimpl.StyleSheetBridge;
-import io.github.remmerw.thor.cobra.html.HtmlRendererContext;
-import io.github.remmerw.thor.cobra.html.domimpl.NodeFilter.AnchorFilter;
-import io.github.remmerw.thor.cobra.html.domimpl.NodeFilter.AppletFilter;
-import io.github.remmerw.thor.cobra.html.domimpl.NodeFilter.ElementFilter;
-import io.github.remmerw.thor.cobra.html.domimpl.NodeFilter.ElementNameFilter;
-import io.github.remmerw.thor.cobra.html.domimpl.NodeFilter.FormFilter;
-import io.github.remmerw.thor.cobra.html.domimpl.NodeFilter.FrameFilter;
-import io.github.remmerw.thor.cobra.html.domimpl.NodeFilter.ImageFilter;
-import io.github.remmerw.thor.cobra.html.domimpl.NodeFilter.LinkFilter;
-import io.github.remmerw.thor.cobra.html.domimpl.NodeFilter.TagNameFilter;
-import io.github.remmerw.thor.cobra.html.io.WritableLineReader;
-import io.github.remmerw.thor.cobra.html.js.Event;
-import io.github.remmerw.thor.cobra.html.js.EventTargetManager;
-import io.github.remmerw.thor.cobra.html.js.Location;
-import io.github.remmerw.thor.cobra.html.js.Window;
-import io.github.remmerw.thor.cobra.html.js.Window.JSRunnableTask;
-import io.github.remmerw.thor.cobra.html.parser.HtmlParser;
-import io.github.remmerw.thor.cobra.html.style.CSSNorm;
-import io.github.remmerw.thor.cobra.html.style.RenderState;
-import io.github.remmerw.thor.cobra.html.style.StyleElements;
-import io.github.remmerw.thor.cobra.html.style.StyleSheetRenderState;
-import io.github.remmerw.thor.cobra.js.HideFromJS;
-import io.github.remmerw.thor.cobra.ua.ImageResponse;
-import io.github.remmerw.thor.cobra.ua.NetworkRequest;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext.Request;
-import io.github.remmerw.thor.cobra.ua.UserAgentContext.RequestKind;
-import io.github.remmerw.thor.cobra.util.SecurityUtil;
-import io.github.remmerw.thor.cobra.util.Urls;
-import io.github.remmerw.thor.cobra.util.WeakValueHashMap;
-import io.github.remmerw.thor.cobra.util.io.EmptyReader;
-import io.github.remmerw.thor.cobra.validation.DomainValidation;
+import cz.vutbr.web.css.CSSException
+import cz.vutbr.web.css.ElementMatcher
+import cz.vutbr.web.css.MediaSpec
+import cz.vutbr.web.css.StyleSheet
+import cz.vutbr.web.csskit.ElementMatcherSafeCS
+import cz.vutbr.web.csskit.ElementMatcherSafeStd
+import cz.vutbr.web.csskit.antlr.CSSParserFactory
+import cz.vutbr.web.domassign.Analyzer
+import cz.vutbr.web.domassign.AnalyzerUtil
+import io.github.remmerw.thor.cobra.css.domimpl.JStyleSheetWrapper
+import io.github.remmerw.thor.cobra.css.domimpl.JStyleSheetWrapper.Companion.getStyleSheets
+import io.github.remmerw.thor.cobra.css.domimpl.StyleSheetBridge
+import io.github.remmerw.thor.cobra.html.HtmlRendererContext
+import io.github.remmerw.thor.cobra.html.domimpl.NodeFilter.AnchorFilter
+import io.github.remmerw.thor.cobra.html.domimpl.NodeFilter.AppletFilter
+import io.github.remmerw.thor.cobra.html.domimpl.NodeFilter.ElementNameFilter
+import io.github.remmerw.thor.cobra.html.domimpl.NodeFilter.FormFilter
+import io.github.remmerw.thor.cobra.html.domimpl.NodeFilter.FrameFilter
+import io.github.remmerw.thor.cobra.html.domimpl.NodeFilter.LinkFilter
+import io.github.remmerw.thor.cobra.html.domimpl.NodeFilter.TagNameFilter
+import io.github.remmerw.thor.cobra.html.io.WritableLineReader
+import io.github.remmerw.thor.cobra.html.js.Event
+import io.github.remmerw.thor.cobra.html.js.EventTargetManager
+import io.github.remmerw.thor.cobra.html.js.Window
+import io.github.remmerw.thor.cobra.html.js.Window.JSRunnableTask
+import io.github.remmerw.thor.cobra.html.parser.HtmlParser
+import io.github.remmerw.thor.cobra.html.style.CSSNorm
+import io.github.remmerw.thor.cobra.html.style.RenderState
+import io.github.remmerw.thor.cobra.html.style.StyleElements
+import io.github.remmerw.thor.cobra.html.style.StyleSheetRenderState
+import io.github.remmerw.thor.cobra.js.HideFromJS
+import io.github.remmerw.thor.cobra.ua.ImageResponse
+import io.github.remmerw.thor.cobra.ua.NetworkRequest
+import io.github.remmerw.thor.cobra.ua.NetworkRequestEvent
+import io.github.remmerw.thor.cobra.ua.NetworkRequestListener
+import io.github.remmerw.thor.cobra.ua.UserAgentContext
+import io.github.remmerw.thor.cobra.ua.UserAgentContext.RequestKind
+import io.github.remmerw.thor.cobra.util.SecurityUtil
+import io.github.remmerw.thor.cobra.util.Urls
+import io.github.remmerw.thor.cobra.util.WeakValueHashMap
+import io.github.remmerw.thor.cobra.util.io.EmptyReader
+import io.github.remmerw.thor.cobra.validation.DomainValidation.isValidCookieDomain
+import org.mozilla.javascript.Function
+import org.w3c.dom.Attr
+import org.w3c.dom.CDATASection
+import org.w3c.dom.Comment
+import org.w3c.dom.DOMConfiguration
+import org.w3c.dom.DOMException
+import org.w3c.dom.DOMImplementation
+import org.w3c.dom.DocumentFragment
+import org.w3c.dom.DocumentType
+import org.w3c.dom.Element
+import org.w3c.dom.EntityReference
+import org.w3c.dom.Node
+import org.w3c.dom.NodeList
+import org.w3c.dom.ProcessingInstruction
+import org.w3c.dom.Text
+import org.w3c.dom.UserDataHandler
+import org.w3c.dom.css.CSSStyleSheet
+import org.w3c.dom.events.EventException
+import org.w3c.dom.events.EventListener
+import org.w3c.dom.events.EventTarget
+import org.w3c.dom.html.HTMLCollection
+import org.w3c.dom.html.HTMLDocument
+import org.w3c.dom.html.HTMLElement
+import org.w3c.dom.ranges.Range
+import org.w3c.dom.stylesheets.DocumentStyle
+import org.w3c.dom.stylesheets.LinkStyle
+import org.w3c.dom.stylesheets.StyleSheetList
+import org.w3c.dom.views.AbstractView
+import org.w3c.dom.views.DocumentView
+import org.xml.sax.ErrorHandler
+import org.xml.sax.SAXException
+import java.io.IOException
+import java.io.LineNumberReader
+import java.io.Reader
+import java.io.StringReader
+import java.net.MalformedURLException
+import java.net.URL
+import java.security.PrivilegedAction
+import java.util.LinkedList
+import java.util.Locale
+import java.util.concurrent.Semaphore
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.function.Consumer
+import java.util.logging.Level
+import kotlin.concurrent.Volatile
 
 /**
- * Implementation of the W3C <code>HTMLDocument</code> interface.
+ * Implementation of the W3C `HTMLDocument` interface.
  */
-public class HTMLDocumentImpl extends NodeImpl implements HTMLDocument, DocumentView, DocumentStyle, EventTarget {
-    final static ElementMatcher xhtmlMatcher = new ElementMatcherSafeCS();
-    final static ElementMatcher stdMatcher = new ElementMatcherSafeStd();
-    private final static String XHTML_STRICT_PUBLIC_ID = "-//W3C//DTD XHTML 1.0 Strict//EN";
-    private final static String XHTML_STRICT_SYS_ID = "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd";
-    private static final StyleSheet recommendedStyle = parseStyle(CSSNorm.stdStyleSheet(), StyleSheet.Origin.AGENT, false);
-    private static final StyleSheet userAgentStyle = parseStyle(CSSNorm.userStyleSheet(), StyleSheet.Origin.AGENT, false);
-    private static final StyleSheet recommendedStyleXML = parseStyle(CSSNorm.stdStyleSheet(), StyleSheet.Origin.AGENT, true);
-    private static final StyleSheet userAgentStyleXML = parseStyle(CSSNorm.userStyleSheet(), StyleSheet.Origin.AGENT, true);
-    public final AtomicBoolean layoutBlocked = new AtomicBoolean(true);
-    protected final StyleSheetManager styleSheetManager = new StyleSheetManager();
-    private final ElementFactory factory;
-    private final HtmlRendererContext rcontext;
-    private final UserAgentContext ucontext;
-    private final Window window;
-    private final Map<String, Element> elementsById = new WeakValueHashMap<>();
-    private final String contentType;
-    private final Map<String, Element> elementsByName = new HashMap<>(0);
-    private final ArrayList<DocumentNotificationListener> documentNotificationListeners = new ArrayList<>(1);
-    private final Map<String, ImageInfo> imageInfos = new HashMap<>(4);
-    private final ImageEvent BLANK_IMAGE_EVENT = new ImageEvent(this, new ImageResponse());
-    private final List<Function> onloadHandlers = new ArrayList<>();
-    private final AtomicInteger registeredJobs = new AtomicInteger(0);
-    private final AtomicInteger layoutBlockingJobs = new AtomicInteger(0);
-    private final Semaphore doneAllJobs = new Semaphore(0);
-    private final AtomicBoolean stopRequested = new AtomicBoolean(false);
-    private final AtomicBoolean modificationsStarted = new AtomicBoolean(false);
-    private final AtomicBoolean modificationsOver = new AtomicBoolean(false);
-    private final AtomicBoolean loadOver = new AtomicBoolean(false);
-    private String documentURI;
-    private URL documentURL;
-    private WritableLineReader reader;
-    private Set<Locale> locales;
-    private volatile String baseURI;
-    private String defaultTarget;
-    private String title;
-    private String referrer;
-    private String domain;
-    private HTMLCollection images;
-    private HTMLCollection applets;
-    private HTMLCollection links;
-    private HTMLCollection forms;
-    private HTMLCollection anchors;
-    private HTMLCollection frames;
-    private DocumentType doctype;
-    private boolean isDocTypeXHTML = false;
-    private String inputEncoding;
-    private String xmlEncoding;
-    private boolean xmlStandalone;
-    private String xmlVersion = null;
-    private boolean strictErrorChecking = true;
-    private DOMConfiguration domConfig;
-    private DOMImplementation domImplementation;
-    private HTMLElement body;
-    private Function onloadHandler;
-    private List<Runnable> jobs = new LinkedList<>();
-    private int oldPendingTaskId = -1;
-    private Holder classifiedRules = null;
+class HTMLDocumentImpl @JvmOverloads constructor(
+    private val ucontext: UserAgentContext,
+    private val rcontext: HtmlRendererContext? = null,
+    private var reader: WritableLineReader? = null,
+    private var documentURI: String = null,
+    private val contentType: String? = null
+) : NodeImpl(), HTMLDocument, DocumentView, DocumentStyle, EventTarget {
+    @JvmField
+    val layoutBlocked: AtomicBoolean = AtomicBoolean(true)
+    val styleSheetManager: StyleSheetManager = StyleSheetManager()
+    private val factory: ElementFactory
 
-    public HTMLDocumentImpl(final HtmlRendererContext rcontext) {
-        this(rcontext.getUserAgentContext(), rcontext, null, null, null);
-    }
+    @JvmField
+    val window: Window
+    private val elementsById: MutableMap<String?, Element?> = WeakValueHashMap<String?, Element?>()
+    private val elementsByName: MutableMap<String?, Element?> = HashMap<String?, Element?>(0)
+    private val documentNotificationListeners = ArrayList<DocumentNotificationListener>(1)
+    private val imageInfos: MutableMap<String?, ImageInfo?> = HashMap<String?, ImageInfo?>(4)
+    private val BLANK_IMAGE_EVENT = ImageEvent(this, ImageResponse())
+    private val onloadHandlers: MutableList<Function?> = ArrayList<Function?>()
+    private val registeredJobs = AtomicInteger(0)
+    private val layoutBlockingJobs = AtomicInteger(0)
+    private val doneAllJobs = Semaphore(0)
+    private val stopRequested = AtomicBoolean(false)
+    private val modificationsStarted = AtomicBoolean(false)
+    private val modificationsOver = AtomicBoolean(false)
+    private val loadOver = AtomicBoolean(false)
+    private var documentURL: URL? = null
+    /**
+     * Gets an *immutable* set of locales previously set for this document.
+     */
+    /**
+     * Sets the locales of the document. This helps determine whether specific
+     * fonts can display text in the languages of all the locales.
+     *
+     * @param locales An *immutable* set of `java.util.Locale`
+     * instances.
+     */
+    @JvmField
+    var locales: MutableSet<Locale?>? = null
 
-    public HTMLDocumentImpl(final UserAgentContext ucontext) {
-        this(ucontext, null, null, null, null);
-    }
+    @Volatile
+    private var baseURI: String? = null
+    var defaultTarget: String? = null
+    private var title: String? = null
+    private var referrer: String? = null
+    private var domain: String? = null
+    private var images: HTMLCollection? = null
+    private var applets: HTMLCollection? = null
+    private var links: HTMLCollection? = null
+    private var forms: HTMLCollection? = null
+    private var anchors: HTMLCollection? = null
+    var frames: HTMLCollection? = null
+        get() {
+            synchronized(this) {
+                if (field == null) {
+                    field = DescendentHTMLCollection(this, FrameFilter(), this.treeLock)
+                }
+                return field
+            }
+        }
+        private set
+    private var doctype: DocumentType? = null
+    private var isDocTypeXHTML = false
+    private var inputEncoding: String? = null
+    private var xmlEncoding: String? = null
+    private var xmlStandalone = false
+    private var xmlVersion: String? = null
+    private var strictErrorChecking = true
+    private var domConfig: DOMConfiguration? = null
+    private var domImplementation: DOMImplementation? = null
+    private var body: HTMLElement? = null
 
-    public HTMLDocumentImpl(final UserAgentContext ucontext, final HtmlRendererContext rcontext, final WritableLineReader reader,
-                            final String documentURI, final String contentType) {
-        this.factory = ElementFactory.getInstance();
-        this.rcontext = rcontext;
-        this.ucontext = ucontext;
-        this.reader = reader;
-        this.documentURI = documentURI;
-        this.contentType = contentType;
+    @JvmField
+    var onloadHandler: Function? = null
+    private var jobs: MutableList<Runnable?> = LinkedList<Runnable?>()
+    private var oldPendingTaskId = -1
+    private var classifiedRules: Analyzer.Holder? = null
+
+    constructor(rcontext: HtmlRendererContext) : this(
+        rcontext.userAgentContext,
+        rcontext,
+        null,
+        null,
+        null
+    )
+
+    init {
+        this.factory = ElementFactory.Companion.getInstance()
         try {
-            final URL docURL = new URL(documentURI);
+            val docURL = URL(documentURI)
 
-            this.documentURL = docURL;
-            this.domain = docURL.getHost();
-        } catch (final MalformedURLException mfu) {
-            logger.warning("HTMLDocumentImpl(): Document URI [" + documentURI + "] is malformed.");
+            this.documentURL = docURL
+            this.domain = docURL.host
+        } catch (mfu: MalformedURLException) {
+            logger.warning("HTMLDocumentImpl(): Document URI [" + documentURI + "] is malformed.")
         }
 
         // TODO: This should be inside the try block above. That is, if there is a malformed URL, the below shouldn't be allowed.
         //       It is currently being allowed to quickly bootstrap and run web-platform-tests.
         //       One failure case is: The methods in DOMImplemenationImpl call those constructors which have null document URIs.
         //       Such constructors should be ideally removed.
-        this.document = this;
+        this.document = this
         // Get Window object
-        Window window;
+        val window: Window
         if (rcontext != null) {
-            window = Window.getWindow(rcontext);
+            window = Window.getWindow(rcontext)
         } else {
             // Plain parsers may use Javascript too.
-            window = new Window(null, ucontext);
+            window = Window(null, ucontext)
         }
         // Window must be retained or it will be garbage collected.
-        this.window = window;
-        window.setDocument(this);
+        this.window = window
+        window.setDocument(this)
     }
 
-    private static StyleSheet parseStyle(final String cssdata, final StyleSheet.Origin origin, final boolean isXML) {
-        try {
-            final StyleSheet newsheet = CSSParserFactory.getInstance().parse(cssdata, null, null, SourceType.EMBEDDED, null);
-            newsheet.setOrigin(origin);
-            return newsheet;
-        } catch (IOException | CSSException e) {
-            throw new RuntimeException(e);
+    val documentHost: String?
+        get() {
+            val docUrl = this.documentURL
+            return if (docUrl == null) null else docUrl.host
         }
-    }
 
-    /**
-     * Gets an <i>immutable</i> set of locales previously set for this document.
-     */
-    public Set<Locale> getLocales() {
-        return locales;
-    }
-
-    /**
-     * Sets the locales of the document. This helps determine whether specific
-     * fonts can display text in the languages of all the locales.
-     *
-     * @param locales An <i>immutable</i> set of <code>java.util.Locale</code>
-     *                instances.
-     */
-    public void setLocales(final Set<Locale> locales) {
-        this.locales = locales;
-    }
-
-    String getDocumentHost() {
-        final URL docUrl = this.documentURL;
-        return docUrl == null ? null : docUrl.getHost();
-    }
-
-    @Override
-    public URL getDocumentURL() {
+    override fun getDocumentURL(): URL? {
         // TODO: Security considerations?
-        return this.documentURL;
+        return this.documentURL
     }
 
     /**
      * Caller should synchronize on document.
      */
-    void setElementById(final String id, final Element element) {
-        synchronized (this) {
+    fun setElementById(id: String?, element: Element?) {
+        synchronized(this) {
             // TODO: Need to take care of document order. The following check is crude and only takes
             //       care of document order for elements in static HTML.
             if (!elementsById.containsKey(id)) {
-                this.elementsById.put(id, element);
+                this.elementsById.put(id, element)
             }
         }
     }
 
-    void removeElementById(final String id) {
-        synchronized (this) {
-            this.elementsById.remove(id);
+    fun removeElementById(id: String?) {
+        synchronized(this) {
+            this.elementsById.remove(id)
         }
     }
 
@@ -288,154 +265,133 @@ public class HTMLDocumentImpl extends NodeImpl implements HTMLDocument, Document
      *
      * @see org.xamjwg.html.domimpl.NodeImpl#getbaseURI()
      */
-    @Override
-    public String getBaseURI() {
-        final String buri = this.baseURI;
-        return buri == null ? this.documentURI : buri;
+    override fun getBaseURI(): String? {
+        val buri = this.baseURI
+        return if (buri == null) this.documentURI else buri
     }
 
-    public void setBaseURI(final String value) {
+    fun setBaseURI(value: String?) {
         if (value != null) {
             try {
-                @SuppressWarnings("unused") final URL ignore = new URL(value);
+                URL(value)
 
                 // this is a full url if it parses
-                this.baseURI = value;
-            } catch (final MalformedURLException mfe) {
+                this.baseURI = value
+            } catch (mfe: MalformedURLException) {
                 try {
-                    Urls.createURL(documentURL, value);
-                } catch (final MalformedURLException mfe2) {
-                    throw new IllegalArgumentException(mfe2);
+                    Urls.createURL(documentURL, value)
+                } catch (mfe2: MalformedURLException) {
+                    throw IllegalArgumentException(mfe2)
                 }
             }
         } else {
-            this.baseURI = null;
+            this.baseURI = null
         }
     }
 
-    public String getDefaultTarget() {
-        return this.defaultTarget;
+    override fun getDefaultView(): AbstractView {
+        return this.window
     }
 
-    public void setDefaultTarget(final String value) {
-        this.defaultTarget = value;
+    @Throws(DOMException::class)
+    override fun getTextContent(): String? {
+        return null
     }
 
-    public AbstractView getDefaultView() {
-        return this.window;
-    }
-
-    public Window getWindow() {
-        return this.window;
-    }
-
-    @Override
-    public String getTextContent() throws DOMException {
-        return null;
-    }
-
-    @Override
-    public void setTextContent(final String textContent) throws DOMException {
+    @Throws(DOMException::class)
+    override fun setTextContent(textContent: String?) {
         // NOP, per spec
     }
 
-    public String getTitle() {
-        return this.title;
+    override fun getTitle(): String? {
+        return this.title
     }
 
-    public void setTitle(final String title) {
-        this.title = title;
+    override fun setTitle(title: String?) {
+        this.title = title
     }
 
-    public String getReferrer() {
-        return this.referrer;
+    override fun getReferrer(): String? {
+        return this.referrer
     }
 
-    public void setReferrer(final String value) {
-        this.referrer = value;
+    fun setReferrer(value: String?) {
+        this.referrer = value
     }
 
-    public String getDomain() {
-        return this.domain;
+    override fun getDomain(): String? {
+        return this.domain
     }
 
-    public void setDomain(final String domain) {
-        final String oldDomain = this.domain;
-        if ((oldDomain != null) && DomainValidation.isValidCookieDomain(domain, oldDomain)) {
-            this.domain = domain;
+    fun setDomain(domain: String) {
+        val oldDomain = this.domain
+        if ((oldDomain != null) && isValidCookieDomain(domain, oldDomain)) {
+            this.domain = domain
         } else {
-            throw new SecurityException("Cannot set domain to '" + domain + "' when current domain is '" + oldDomain + "'");
+            throw SecurityException("Cannot set domain to '" + domain + "' when current domain is '" + oldDomain + "'")
         }
     }
 
-    public HTMLElement getBody() {
-        synchronized (this) {
-            return this.body;
+    override fun getBody(): HTMLElement? {
+        synchronized(this) {
+            return this.body
         }
     }
 
-    public void setBody(final HTMLElement body) {
-        synchronized (this) {
-            this.body = body;
+    override fun setBody(body: HTMLElement?) {
+        synchronized(this) {
+            this.body = body
         }
     }
 
-    public HTMLCollection getImages() {
-        synchronized (this) {
+    override fun getImages(): HTMLCollection {
+        synchronized(this) {
             if (this.images == null) {
-                this.images = new DescendentHTMLCollection(this, new ImageFilter(), this.treeLock);
+                this.images =
+                    DescendentHTMLCollection(this, NodeFilter.ImageFilter(), this.treeLock)
             }
-            return this.images;
+            return this.images!!
         }
     }
 
-    public HTMLCollection getApplets() {
-        synchronized (this) {
+    override fun getApplets(): HTMLCollection {
+        synchronized(this) {
             if (this.applets == null) {
                 // TODO: Should include OBJECTs that are applets?
-                this.applets = new DescendentHTMLCollection(this, new AppletFilter(), this.treeLock);
+                this.applets = DescendentHTMLCollection(this, AppletFilter(), this.treeLock)
             }
-            return this.applets;
+            return this.applets!!
         }
     }
 
-    public HTMLCollection getLinks() {
-        synchronized (this) {
+    override fun getLinks(): HTMLCollection {
+        synchronized(this) {
             if (this.links == null) {
-                this.links = new DescendentHTMLCollection(this, new LinkFilter(), this.treeLock);
+                this.links = DescendentHTMLCollection(this, LinkFilter(), this.treeLock)
             }
-            return this.links;
+            return this.links!!
         }
     }
 
-    public HTMLCollection getForms() {
-        synchronized (this) {
+    override fun getForms(): HTMLCollection {
+        synchronized(this) {
             if (this.forms == null) {
-                this.forms = new DescendentHTMLCollection(this, new FormFilter(), this.treeLock);
+                this.forms = DescendentHTMLCollection(this, FormFilter(), this.treeLock)
             }
-            return this.forms;
+            return this.forms!!
         }
     }
 
-    public HTMLCollection getFrames() {
-        synchronized (this) {
-            if (this.frames == null) {
-                this.frames = new DescendentHTMLCollection(this, new FrameFilter(), this.treeLock);
-            }
-            return this.frames;
-        }
-    }
-
-    public HTMLCollection getAnchors() {
-        synchronized (this) {
+    override fun getAnchors(): HTMLCollection {
+        synchronized(this) {
             if (this.anchors == null) {
-                this.anchors = new DescendentHTMLCollection(this, new AnchorFilter(), this.treeLock);
+                this.anchors = DescendentHTMLCollection(this, AnchorFilter(), this.treeLock)
             }
-            return this.anchors;
+            return this.anchors!!
         }
     }
 
-    public String getCookie() {
+    override fun getCookie(): String? {
         // Justification: A caller (e.g. Google Analytics script)
         // might want to get cookies from the parent document.
         // If the caller has access to the document, it appears
@@ -445,187 +401,202 @@ public class HTMLDocumentImpl extends NodeImpl implements HTMLDocument, Document
 
         // TODO: Security: Review rationale.
 
-        return SecurityUtil.doPrivileged(() -> ucontext.getCookie(documentURL));
+        return SecurityUtil.doPrivileged<String?>(PrivilegedAction { ucontext.getCookie(documentURL) })
     }
 
-    public void setCookie(final String cookie) throws DOMException {
+    @Throws(DOMException::class)
+    override fun setCookie(cookie: String?) {
         // Justification: A caller (e.g. Google Analytics script)
         // might want to set cookies on the parent document.
         // If the caller has access to the document, it appears
         // they should be able to set cookies on that document.
         // Note that this Document instance cannot be created
         // with an arbitrary URL.
-        SecurityUtil.doPrivileged(() -> {
-            ucontext.setCookie(documentURL, cookie);
-            return null;
-        });
+        SecurityUtil.doPrivileged<Any?>(PrivilegedAction {
+            ucontext.setCookie(documentURL, cookie)
+            null
+        })
     }
 
-    public void open() {
-        synchronized (this.treeLock) {
+    override fun open() {
+        synchronized(this.treeLock) {
             if (this.reader != null) {
-                if (this.reader instanceof LocalWritableLineReader) {
+                if (this.reader is LocalWritableLineReader) {
                     try {
-                        this.reader.close();
-                    } catch (final IOException ioe) {
+                        this.reader!!.close()
+                    } catch (ioe: IOException) {
                         // ignore
                     }
-                    this.reader = null;
+                    this.reader = null
                 } else {
                     // Already open, return.
                     // Do not close http/file documents in progress.
-                    return;
+                    return
                 }
             }
-            this.removeAllChildrenImpl();
-            this.reader = new LocalWritableLineReader(new EmptyReader());
+            this.removeAllChildrenImpl()
+            this.reader = LocalWritableLineReader(EmptyReader())
         }
     }
 
     /**
      * Loads the document from the reader provided when the current instance of
-     * <code>HTMLDocumentImpl</code> was constructed. It then closes the reader.
+     * `HTMLDocumentImpl` was constructed. It then closes the reader.
      *
      * @throws IOException
      * @throws SAXException
      * @throws UnsupportedEncodingException
      */
-    public void load() throws IOException, SAXException, UnsupportedEncodingException {
-        this.load(true);
-    }
-
-    public void load(final boolean closeReader) throws IOException, SAXException {
-        WritableLineReader reader;
-        synchronized (this.treeLock) {
-            this.removeAllChildrenImpl();
-            this.setTitle(null);
-            this.setBaseURI(null);
-            this.setDefaultTarget(null);
-            this.styleSheetManager.invalidateStyles();
-            reader = this.reader;
+    @JvmOverloads
+    @Throws(IOException::class, SAXException::class)
+    fun load(closeReader: Boolean = true) {
+        val reader: WritableLineReader?
+        synchronized(this.treeLock) {
+            this.removeAllChildrenImpl()
+            this.title = null
+            this.setBaseURI(null)
+            this.defaultTarget = null
+            this.styleSheetManager.invalidateStyles()
+            reader = this.reader
         }
         if (reader != null) {
             try {
-                final ErrorHandler errorHandler = new LocalErrorHandler();
-                final String systemId = this.documentURI;
-                final String publicId = systemId;
-                final HtmlParser parser = new HtmlParser(this.ucontext, this, errorHandler, publicId, systemId, isXML(), true);
-                parser.parse(reader);
+                val errorHandler: ErrorHandler = LocalErrorHandler()
+                val systemId = this.documentURI
+                val publicId = systemId
+                val parser = HtmlParser(
+                    this.ucontext, this, errorHandler, publicId, systemId,
+                    this.isXML, true
+                )
+                parser.parse(reader)
             } finally {
                 if (closeReader) {
                     try {
-                        reader.close();
-                    } catch (final Exception err) {
-                        logger.log(Level.WARNING, "load(): Unable to close stream", err);
+                        reader.close()
+                    } catch (err: Exception) {
+                        logger.log(
+                            Level.WARNING,
+                            "load(): Unable to close stream",
+                            err
+                        )
                     }
-                    synchronized (this.treeLock) {
-                        this.reader = null;
+                    synchronized(this.treeLock) {
+                        this.reader = null
                     }
                 }
             }
         }
     }
 
-    @HideFromJS
-    public boolean isXML() {
-        return isDocTypeXHTML || "application/xhtml+xml".equals(contentType);
-    }
+    @get:HideFromJS
+    val isXML: Boolean
+        get() = isDocTypeXHTML || "application/xhtml+xml" == contentType
 
-    public void close() {
-        synchronized (this.treeLock) {
-            if (this.reader instanceof LocalWritableLineReader) {
+    override fun close() {
+        synchronized(this.treeLock) {
+            if (this.reader is LocalWritableLineReader) {
                 try {
-                    this.reader.close();
-                } catch (final IOException ioe) {
+                    this.reader!!.close()
+                } catch (ioe: IOException) {
                     // ignore
                 }
-                this.reader = null;
+                this.reader = null
             } else {
                 // do nothing - could be parsing document off the web.
             }
-            // TODO: cause it to render
         }
     }
 
-    public void write(final String text) {
-        synchronized (this.treeLock) {
+    override fun write(text: String?) {
+        synchronized(this.treeLock) {
             if (this.reader != null) {
                 try {
                     // This can end up in openBufferChanged
-                    this.reader.write(text);
-                } catch (final IOException ioe) {
+                    this.reader!!.write(text)
+                } catch (ioe: IOException) {
                     // ignore
                 }
             }
         }
     }
 
-    public void writeln(final String text) {
-        synchronized (this.treeLock) {
+    override fun writeln(text: String?) {
+        synchronized(this.treeLock) {
             if (this.reader != null) {
                 try {
                     // This can end up in openBufferChanged
-                    this.reader.write(text + "\r\n");
-                } catch (final IOException ioe) {
+                    this.reader!!.write(text + "\r\n")
+                } catch (ioe: IOException) {
                     // ignore
                 }
             }
         }
     }
 
-    private void openBufferChanged(final String text) {
+    private fun openBufferChanged(text: String) {
         // Assumed to execute in a lock
         // Assumed that text is not broken up HTML.
-        final ErrorHandler errorHandler = new LocalErrorHandler();
-        final String systemId = this.documentURI;
-        final String publicId = systemId;
-        final HtmlParser parser = new HtmlParser(this.ucontext, this, errorHandler, publicId, systemId, false /* TODO */, true);
-        final StringReader strReader = new StringReader(text);
+        val errorHandler: ErrorHandler = LocalErrorHandler()
+        val systemId = this.documentURI
+        val publicId = systemId
+        val parser = HtmlParser(
+            this.ucontext,
+            this,
+            errorHandler,
+            publicId,
+            systemId,
+            false,  /* TODO */
+            true
+        )
+        val strReader = StringReader(text)
         try {
             // This sets up another Javascript scope Window. Does it matter?
-            parser.parse(strReader);
-        } catch (final Exception err) {
-            this.warn("Unable to parse written HTML text. BaseURI=[" + this.getBaseURI() + "].", err);
+            parser.parse(strReader)
+        } catch (err: Exception) {
+            this.warn(
+                "Unable to parse written HTML text. BaseURI=[" + this.getBaseURI() + "].",
+                err
+            )
         }
     }
 
     /**
-     * Gets the collection of elements whose <code>name</code> attribute is
-     * <code>elementName</code>.
+     * Gets the collection of elements whose `name` attribute is
+     * `elementName`.
      */
-    public NodeList getElementsByName(final String elementName) {
-        return this.getNodeList(new ElementNameFilter(elementName));
+    override fun getElementsByName(elementName: String?): NodeList? {
+        return this.getNodeList(ElementNameFilter(elementName))
     }
 
-    public DocumentType getDoctype() {
-        return this.doctype;
+    override fun getDoctype(): DocumentType? {
+        return this.doctype
     }
 
-    public void setDoctype(final DocumentType doctype) {
-        this.doctype = doctype;
-        isDocTypeXHTML = (doctype != null) && (doctype.getName().equals("html"))
-                && (doctype.getPublicId().equals(XHTML_STRICT_PUBLIC_ID)) && (doctype.getSystemId().equals(XHTML_STRICT_SYS_ID));
-
+    fun setDoctype(doctype: DocumentType?) {
+        this.doctype = doctype
+        isDocTypeXHTML = (doctype != null) && (doctype.name == "html")
+                && (doctype.publicId == XHTML_STRICT_PUBLIC_ID) && (doctype.systemId == XHTML_STRICT_SYS_ID)
     }
 
-    public Element getDocumentElement() {
-        synchronized (this.treeLock) {
-            final ArrayList<Node> nl = this.nodeList;
+    override fun getDocumentElement(): Element? {
+        synchronized(this.treeLock) {
+            val nl = this.nodeList
             if (nl != null) {
-                final Iterator<Node> i = nl.iterator();
+                val i = nl.iterator()
                 while (i.hasNext()) {
-                    final Object node = i.next();
-                    if (node instanceof Element) {
-                        return (Element) node;
+                    val node: Any? = i.next()
+                    if (node is Element) {
+                        return node
                     }
                 }
             }
-            return null;
+            return null
         }
     }
 
-    public Element createElement(final String tagName) throws DOMException {
-        return this.factory.createElement(this, tagName);
+    @Throws(DOMException::class)
+    override fun createElement(tagName: String): Element {
+        return this.factory.createElement(this, tagName)
     }
 
     /*
@@ -633,188 +604,209 @@ public class HTMLDocumentImpl extends NodeImpl implements HTMLDocument, Document
      *
      * @see org.w3c.dom.Document#createDocumentFragment()
      */
-    public DocumentFragment createDocumentFragment() {
+    override fun createDocumentFragment(): DocumentFragment {
         // TODO: According to documentation, when a document
         // fragment is added to a node, its children are added,
         // not itself.
-        final DocumentFragmentImpl node = new DocumentFragmentImpl();
-        node.setOwnerDocument(this);
-        return node;
+        val node = DocumentFragmentImpl()
+        node.setOwnerDocument(this)
+        return node
     }
 
-    public Text createTextNode(final String data) {
-        final TextImpl node = new TextImpl(data);
-        node.setOwnerDocument(this);
-        return node;
+    override fun createTextNode(data: String?): Text {
+        val node = TextImpl(data)
+        node.setOwnerDocument(this)
+        return node
     }
 
-    public Comment createComment(final String data) {
-        final CommentImpl node = new CommentImpl(data);
-        node.setOwnerDocument(this);
-        return node;
+    override fun createComment(data: String?): Comment {
+        val node = CommentImpl(data)
+        node.setOwnerDocument(this)
+        return node
     }
 
-    public CDATASection createCDATASection(final String data) throws DOMException {
-        final CDataSectionImpl node = new CDataSectionImpl(data);
-        node.setOwnerDocument(this);
-        return node;
+    @Throws(DOMException::class)
+    override fun createCDATASection(data: String?): CDATASection {
+        val node = CDataSectionImpl(data)
+        node.setOwnerDocument(this)
+        return node
     }
 
-    public ProcessingInstruction createProcessingInstruction(final String target, final String data) throws DOMException {
-        final HTMLProcessingInstruction node = new HTMLProcessingInstruction(target, data);
-        node.setOwnerDocument(this);
-        return node;
+    @Throws(DOMException::class)
+    override fun createProcessingInstruction(
+        target: String?,
+        data: String?
+    ): ProcessingInstruction {
+        val node = HTMLProcessingInstruction(target, data)
+        node.setOwnerDocument(this)
+        return node
     }
 
-    public Attr createAttribute(final String name) throws DOMException {
-        return new AttrImpl(name);
+    @Throws(DOMException::class)
+    override fun createAttribute(name: String?): Attr {
+        return AttrImpl(name)
     }
 
-    public EntityReference createEntityReference(final String name) throws DOMException {
-        throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "HTML document");
+    @Throws(DOMException::class)
+    override fun createEntityReference(name: String?): EntityReference? {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "HTML document")
     }
 
     /**
      * Gets all elements that match the given tag name.
      *
      * @param tagname The element tag name or an asterisk character (*) to match all
-     *                elements.
+     * elements.
      */
-    public NodeList getElementsByTagName(final String tagname) {
-        if ("*".equals(tagname)) {
-            return this.getNodeList(new ElementFilter());
+    override fun getElementsByTagName(tagname: String?): NodeList? {
+        if ("*" == tagname) {
+            return this.getNodeList(NodeFilter.ElementFilter())
         } else {
-            return this.getNodeList(new TagNameFilter(tagname));
+            return this.getNodeList(TagNameFilter(tagname))
         }
     }
 
-    public Node importNode(final Node importedNode, final boolean deep) throws DOMException {
-        throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "Not implemented");
+    @Throws(DOMException::class)
+    override fun importNode(importedNode: Node?, deep: Boolean): Node? {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not implemented")
     }
 
-    public Element createElementNS(final String namespaceURI, final String qualifiedName) throws DOMException {
-        if (namespaceURI == null || (namespaceURI.trim().length() == 0) || "http://www.w3.org/1999/xhtml".equalsIgnoreCase(namespaceURI)) {
-            return createElement(qualifiedName);
-        } else if ("http://www.w3.org/2000/svg".equalsIgnoreCase(namespaceURI)) {
+    @Throws(DOMException::class)
+    override fun createElementNS(namespaceURI: String?, qualifiedName: String): Element? {
+        if (namespaceURI == null || (namespaceURI.trim { it <= ' ' }.length == 0) || "http://www.w3.org/1999/xhtml".equals(
+                namespaceURI,
+                ignoreCase = true
+            )
+        ) {
+            return createElement(qualifiedName)
+        } else if ("http://www.w3.org/2000/svg".equals(namespaceURI, ignoreCase = true)) {
             // TODO: This is a plug
-            return createElement(qualifiedName);
+            return createElement(qualifiedName)
         }
-        System.out.println("unhandled request to create element in NS: " + namespaceURI + " with tag: " + qualifiedName);
-        return null;
+        println("unhandled request to create element in NS: " + namespaceURI + " with tag: " + qualifiedName)
+        return null
         // TODO
         // throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "Not implemented: createElementNS");
     }
 
-    public Attr createAttributeNS(final String namespaceURI, final String qualifiedName) throws DOMException {
-        throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "Not implemented: createAttributeNS");
+    @Throws(DOMException::class)
+    override fun createAttributeNS(namespaceURI: String?, qualifiedName: String?): Attr? {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not implemented: createAttributeNS")
     }
 
-    public NodeList getElementsByTagNameNS(final String namespaceURI, final String localName) {
-        throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "Not implemented: getElementsByTagNameNS");
+    override fun getElementsByTagNameNS(namespaceURI: String?, localName: String?): NodeList? {
+        throw DOMException(
+            DOMException.NOT_SUPPORTED_ERR,
+            "Not implemented: getElementsByTagNameNS"
+        )
     }
 
-    public Element getElementById(final String elementId) {
-        if ((elementId != null) && (elementId.length() > 0)) {
-            synchronized (this) {
-                return this.elementsById.get(elementId);
+    override fun getElementById(elementId: String?): Element? {
+        if ((elementId != null) && (elementId.length > 0)) {
+            synchronized(this) {
+                return this.elementsById.get(elementId)
             }
         } else {
-            return null;
+            return null
         }
     }
 
-    public Element namedItem(final String name) {
-        Element element;
-        synchronized (this) {
-            element = this.elementsByName.get(name);
+    fun namedItem(name: String?): Element? {
+        val element: Element?
+        synchronized(this) {
+            element = this.elementsByName.get(name)
         }
-        return element;
+        return element
     }
 
-    void setNamedItem(final String name, final Element element) {
-        synchronized (this) {
-            this.elementsByName.put(name, element);
-        }
-    }
-
-    void removeNamedItem(final String name) {
-        synchronized (this) {
-            this.elementsByName.remove(name);
+    fun setNamedItem(name: String?, element: Element?) {
+        synchronized(this) {
+            this.elementsByName.put(name, element)
         }
     }
 
-    public String getInputEncoding() {
-        return this.inputEncoding;
+    fun removeNamedItem(name: String?) {
+        synchronized(this) {
+            this.elementsByName.remove(name)
+        }
     }
 
-    public String getXmlEncoding() {
-        return this.xmlEncoding;
+    override fun getInputEncoding(): String? {
+        return this.inputEncoding
     }
 
-    public boolean getXmlStandalone() {
-        return this.xmlStandalone;
+    override fun getXmlEncoding(): String? {
+        return this.xmlEncoding
     }
 
-    public void setXmlStandalone(final boolean xmlStandalone) throws DOMException {
-        this.xmlStandalone = xmlStandalone;
+    override fun getXmlStandalone(): Boolean {
+        return this.xmlStandalone
     }
 
-    public String getXmlVersion() {
-        return this.xmlVersion;
+    @Throws(DOMException::class)
+    override fun setXmlStandalone(xmlStandalone: Boolean) {
+        this.xmlStandalone = xmlStandalone
     }
 
-    public void setXmlVersion(final String xmlVersion) throws DOMException {
-        this.xmlVersion = xmlVersion;
+    override fun getXmlVersion(): String? {
+        return this.xmlVersion
     }
 
-    public boolean getStrictErrorChecking() {
-        return this.strictErrorChecking;
+    @Throws(DOMException::class)
+    override fun setXmlVersion(xmlVersion: String?) {
+        this.xmlVersion = xmlVersion
     }
 
-    public void setStrictErrorChecking(final boolean strictErrorChecking) {
-        this.strictErrorChecking = strictErrorChecking;
+    override fun getStrictErrorChecking(): Boolean {
+        return this.strictErrorChecking
     }
 
-    public String getDocumentURI() {
-        return this.documentURI;
+    override fun setStrictErrorChecking(strictErrorChecking: Boolean) {
+        this.strictErrorChecking = strictErrorChecking
     }
 
-    public void setDocumentURI(final String documentURI) {
+    override fun getDocumentURI(): String {
+        return this.documentURI
+    }
+
+    override fun setDocumentURI(documentURI: String) {
         // TODO: Security considerations? Chaging documentURL?
-        this.documentURI = documentURI;
+        this.documentURI = documentURI
     }
 
-    public Node adoptNode(final Node source) throws DOMException {
-        if (source instanceof NodeImpl node) {
-            node.setOwnerDocument(this, true);
-            return node;
+    @Throws(DOMException::class)
+    override fun adoptNode(source: Node?): Node {
+        if (source is NodeImpl) {
+            source.setOwnerDocument(this, true)
+            return source
         } else {
-            throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "Invalid Node implementation");
+            throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Invalid Node implementation")
         }
     }
 
-    public DOMConfiguration getDomConfig() {
-        synchronized (this) {
+    override fun getDomConfig(): DOMConfiguration {
+        synchronized(this) {
             if (this.domConfig == null) {
-                this.domConfig = new DOMConfigurationImpl();
+                this.domConfig = DOMConfigurationImpl()
             }
-            return this.domConfig;
+            return this.domConfig!!
         }
     }
 
-    public void normalizeDocument() {
+    override fun normalizeDocument() {
         // TODO: Normalization options from domConfig
-        synchronized (this.treeLock) {
-            this.visitImpl(new NodeVisitor() {
-                public void visit(final Node node) {
-                    node.normalize();
+        synchronized(this.treeLock) {
+            this.visitImpl(object : NodeVisitor {
+                override fun visit(node: Node) {
+                    node.normalize()
                 }
-            });
+            })
         }
     }
 
-    public Node renameNode(final Node n, final String namespaceURI, final String qualifiedName) throws DOMException {
-        throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "No renaming");
+    @Throws(DOMException::class)
+    override fun renameNode(n: Node?, namespaceURI: String?, qualifiedName: String?): Node? {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "No renaming")
     }
 
     /*
@@ -822,12 +814,12 @@ public class HTMLDocumentImpl extends NodeImpl implements HTMLDocument, Document
      *
      * @see org.w3c.dom.Document#getImplementation()
      */
-    public DOMImplementation getImplementation() {
-        synchronized (this) {
+    override fun getImplementation(): DOMImplementation {
+        synchronized(this) {
             if (this.domImplementation == null) {
-                this.domImplementation = new DOMImplementationImpl(this.ucontext);
+                this.domImplementation = DOMImplementationImpl(this.ucontext)
             }
-            return this.domImplementation;
+            return this.domImplementation!!
         }
     }
 
@@ -836,10 +828,9 @@ public class HTMLDocumentImpl extends NodeImpl implements HTMLDocument, Document
      *
      * @see org.xamjwg.html.domimpl.NodeImpl#getLocalName()
      */
-    @Override
-    public String getLocalName() {
+    override fun getLocalName(): String? {
         // Always null for document
-        return null;
+        return null
     }
 
     /*
@@ -847,9 +838,8 @@ public class HTMLDocumentImpl extends NodeImpl implements HTMLDocument, Document
      *
      * @see org.xamjwg.html.domimpl.NodeImpl#getNodeName()
      */
-    @Override
-    public String getNodeName() {
-        return "#document";
+    override fun getNodeName(): String {
+        return "#document"
     }
 
     /*
@@ -857,9 +847,8 @@ public class HTMLDocumentImpl extends NodeImpl implements HTMLDocument, Document
      *
      * @see org.xamjwg.html.domimpl.NodeImpl#getNodeType()
      */
-    @Override
-    public short getNodeType() {
-        return Node.DOCUMENT_NODE;
+    override fun getNodeType(): Short {
+        return DOCUMENT_NODE
     }
 
     /*
@@ -867,10 +856,10 @@ public class HTMLDocumentImpl extends NodeImpl implements HTMLDocument, Document
      *
      * @see org.xamjwg.html.domimpl.NodeImpl#getNodeValue()
      */
-    @Override
-    public String getNodeValue() throws DOMException {
+    @Throws(DOMException::class)
+    override fun getNodeValue(): String? {
         // Always null for document
-        return null;
+        return null
     }
 
     /*
@@ -878,105 +867,105 @@ public class HTMLDocumentImpl extends NodeImpl implements HTMLDocument, Document
      *
      * @see org.xamjwg.html.domimpl.NodeImpl#setNodeValue(java.lang.String)
      */
-    @Override
-    public void setNodeValue(final String nodeValue) throws DOMException {
-        throw new DOMException(DOMException.INVALID_MODIFICATION_ERR, "Cannot set node value of document");
+    @Throws(DOMException::class)
+    override fun setNodeValue(nodeValue: String?) {
+        throw DOMException(
+            DOMException.INVALID_MODIFICATION_ERR,
+            "Cannot set node value of document"
+        )
     }
 
-    @Override
-    public final HtmlRendererContext getHtmlRendererContext() {
-        return this.rcontext;
+    override fun getHtmlRendererContext(): HtmlRendererContext {
+        return this.rcontext!!
     }
 
-    @Override
-    public UserAgentContext getUserAgentContext() {
-        return this.ucontext;
+    override fun getUserAgentContext(): UserAgentContext {
+        return this.ucontext
     }
 
-    @Override
-    public final @NonNull URL getFullURL(final String uri) throws MalformedURLException {
+    @Throws(MalformedURLException::class)
+    override fun getFullURL(uri: String): URL {
         try {
-            final String baseURI = this.getBaseURI();
-            final URL documentURL = baseURI == null ? null : new URL(baseURI);
-            return Urls.createURL(documentURL, uri);
-        } catch (final MalformedURLException mfu) {
-            return new URL(uri);
+            val baseURI = this.getBaseURI()
+            val documentURL = if (baseURI == null) null else URL(baseURI)
+            return Urls.createURL(documentURL, uri)
+        } catch (mfu: MalformedURLException) {
+            return URL(uri)
         }
     }
 
-    public final Location getLocation() {
-        return this.window.getLocation();
+    val location: Location?
+        get() = this.window.getLocation()
+
+    fun setLocation(location: String?) {
+        this.location.setHref(location)
     }
 
-    public void setLocation(final String location) {
-        this.getLocation().setHref(location);
+    override fun getURL(): String {
+        return this.documentURI
     }
 
-    public String getURL() {
-        return this.documentURI;
-    }
-
-    public void allInvalidated(final boolean forgetRenderStates) {
+    fun allInvalidated(forgetRenderStates: Boolean) {
         if (forgetRenderStates) {
-            synchronized (this.treeLock) {
+            synchronized(this.treeLock) {
                 // Need to invalidate all children up to
                 // this point.
-                this.forgetRenderState();
+                this.forgetRenderState()
                 // TODO: this might be ineffcient.
-                final ArrayList<Node> nl = this.nodeList;
+                val nl = this.nodeList
                 if (nl != null) {
-                    final Iterator<Node> i = nl.iterator();
+                    val i = nl.iterator()
                     while (i.hasNext()) {
-                        final Object node = i.next();
-                        if (node instanceof HTMLElementImpl) {
-                            ((HTMLElementImpl) node).forgetStyle(true);
+                        val node: Any? = i.next()
+                        if (node is HTMLElementImpl) {
+                            node.forgetStyle(true)
                         }
                     }
                 }
             }
         }
-        this.allInvalidated();
+        this.allInvalidated()
     }
 
-    public StyleSheetList getStyleSheets() {
-        return styleSheetManager.constructStyleSheetList();
+    override fun getStyleSheets(): StyleSheetList {
+        return styleSheetManager.constructStyleSheetList()
     }
 
     /**
      * Adds a document notification listener, which is informed about changes to
      * the document.
      *
-     * @param listener An instance of {@link DocumentNotificationListener}.
+     * @param listener An instance of [DocumentNotificationListener].
      */
-    public void addDocumentNotificationListener(final DocumentNotificationListener listener) {
-        final ArrayList<DocumentNotificationListener> listenersList = this.documentNotificationListeners;
-        synchronized (listenersList) {
-            listenersList.add(listener);
+    fun addDocumentNotificationListener(listener: DocumentNotificationListener?) {
+        val listenersList = this.documentNotificationListeners
+        synchronized(listenersList) {
+            listenersList.add(listener!!)
         }
     }
 
-    public void removeDocumentNotificationListener(final DocumentNotificationListener listener) {
-        final ArrayList<DocumentNotificationListener> listenersList = this.documentNotificationListeners;
-        synchronized (listenersList) {
-            listenersList.remove(listener);
+    fun removeDocumentNotificationListener(listener: DocumentNotificationListener?) {
+        val listenersList = this.documentNotificationListeners
+        synchronized(listenersList) {
+            listenersList.remove(listener)
         }
     }
 
-    public void sizeInvalidated(final NodeImpl node) {
-        final ArrayList<DocumentNotificationListener> listenersList = this.documentNotificationListeners;
-        int size;
-        synchronized (listenersList) {
-            size = listenersList.size();
+    fun sizeInvalidated(node: NodeImpl?) {
+        val listenersList = this.documentNotificationListeners
+        val size: Int
+        synchronized(listenersList) {
+            size = listenersList.size
         }
         // Traverse list outside synchronized block.
         // (Shouldn't call listener methods in synchronized block.
         // Deadlock is possible). But assume list could have
         // been changed.
-        for (int i = 0; i < size; i++) {
+        for (i in 0..<size) {
             try {
-                final DocumentNotificationListener dnl = listenersList.get(i);
-                dnl.sizeInvalidated(node);
-            } catch (final IndexOutOfBoundsException iob) {
+                val dnl = listenersList.get(i)
+                dnl.sizeInvalidated(node)
+            } catch (iob: IndexOutOfBoundsException) {
                 // ignore
             }
         }
@@ -989,25 +978,24 @@ public class HTMLDocumentImpl extends NodeImpl implements HTMLDocument, Document
      *
      * @param node
      */
-    public void lookInvalidated(final NodeImpl node) {
-        final ArrayList<DocumentNotificationListener> listenersList = this.documentNotificationListeners;
-        int size;
-        synchronized (listenersList) {
-            size = listenersList.size();
+    fun lookInvalidated(node: NodeImpl?) {
+        val listenersList = this.documentNotificationListeners
+        val size: Int
+        synchronized(listenersList) {
+            size = listenersList.size
         }
         // Traverse list outside synchronized block.
         // (Shouldn't call listener methods in synchronized block.
         // Deadlock is possible). But assume list could have
         // been changed.
-        for (int i = 0; i < size; i++) {
+        for (i in 0..<size) {
             try {
-                final DocumentNotificationListener dnl = listenersList.get(i);
-                dnl.lookInvalidated(node);
-            } catch (final IndexOutOfBoundsException iob) {
+                val dnl = listenersList.get(i)
+                dnl.lookInvalidated(node)
+            } catch (iob: IndexOutOfBoundsException) {
                 // ignore
             }
         }
-
     }
 
     /**
@@ -1015,21 +1003,21 @@ public class HTMLDocumentImpl extends NodeImpl implements HTMLDocument, Document
      *
      * @param node
      */
-    public void positionInParentInvalidated(final NodeImpl node) {
-        final ArrayList<DocumentNotificationListener> listenersList = this.documentNotificationListeners;
-        int size;
-        synchronized (listenersList) {
-            size = listenersList.size();
+    fun positionInParentInvalidated(node: NodeImpl?) {
+        val listenersList = this.documentNotificationListeners
+        val size: Int
+        synchronized(listenersList) {
+            size = listenersList.size
         }
         // Traverse list outside synchronized block.
         // (Shouldn't call listener methods in synchronized block.
         // Deadlock is possible). But assume list could have
         // been changed.
-        for (int i = 0; i < size; i++) {
+        for (i in 0..<size) {
             try {
-                final DocumentNotificationListener dnl = listenersList.get(i);
-                dnl.positionInvalidated(node);
-            } catch (final IndexOutOfBoundsException iob) {
+                val dnl = listenersList.get(i)
+                dnl.positionInvalidated(node)
+            } catch (iob: IndexOutOfBoundsException) {
                 // ignore
             }
         }
@@ -1041,21 +1029,21 @@ public class HTMLDocumentImpl extends NodeImpl implements HTMLDocument, Document
      *
      * @param node
      */
-    public void invalidated(final NodeImpl node) {
-        final ArrayList<DocumentNotificationListener> listenersList = this.documentNotificationListeners;
-        int size;
-        synchronized (listenersList) {
-            size = listenersList.size();
+    fun invalidated(node: NodeImpl?) {
+        val listenersList = this.documentNotificationListeners
+        val size: Int
+        synchronized(listenersList) {
+            size = listenersList.size
         }
         // Traverse list outside synchronized block.
         // (Shouldn't call listener methods in synchronized block.
         // Deadlock is possible). But assume list could have
         // been changed.
-        for (int i = 0; i < size; i++) {
+        for (i in 0..<size) {
             try {
-                final DocumentNotificationListener dnl = listenersList.get(i);
-                dnl.invalidated(node);
-            } catch (final IndexOutOfBoundsException iob) {
+                val dnl = listenersList.get(i)
+                dnl.invalidated(node)
+            } catch (iob: IndexOutOfBoundsException) {
                 // ignore
             }
         }
@@ -1066,61 +1054,61 @@ public class HTMLDocumentImpl extends NodeImpl implements HTMLDocument, Document
      *
      * @param node
      */
-    public void structureInvalidated(final NodeImpl node) {
-        final ArrayList<DocumentNotificationListener> listenersList = this.documentNotificationListeners;
-        int size;
-        synchronized (listenersList) {
-            size = listenersList.size();
+    fun structureInvalidated(node: NodeImpl?) {
+        val listenersList = this.documentNotificationListeners
+        val size: Int
+        synchronized(listenersList) {
+            size = listenersList.size
         }
         // Traverse list outside synchronized block.
         // (Shouldn't call listener methods in synchronized block.
         // Deadlock is possible). But assume list could have
         // been changed.
-        for (int i = 0; i < size; i++) {
+        for (i in 0..<size) {
             try {
-                final DocumentNotificationListener dnl = listenersList.get(i);
-                dnl.structureInvalidated(node);
-            } catch (final IndexOutOfBoundsException iob) {
+                val dnl = listenersList.get(i)
+                dnl.structureInvalidated(node)
+            } catch (iob: IndexOutOfBoundsException) {
                 // ignore
             }
         }
     }
 
-    public void nodeLoaded(final NodeImpl node) {
-        final ArrayList<DocumentNotificationListener> listenersList = this.documentNotificationListeners;
-        int size;
-        synchronized (listenersList) {
-            size = listenersList.size();
+    fun nodeLoaded(node: NodeImpl?) {
+        val listenersList = this.documentNotificationListeners
+        val size: Int
+        synchronized(listenersList) {
+            size = listenersList.size
         }
         // Traverse list outside synchronized block.
         // (Shouldn't call listener methods in synchronized block.
         // Deadlock is possible). But assume list could have
         // been changed.
-        for (int i = 0; i < size; i++) {
+        for (i in 0..<size) {
             try {
-                final DocumentNotificationListener dnl = listenersList.get(i);
-                dnl.nodeLoaded(node);
-            } catch (final IndexOutOfBoundsException iob) {
+                val dnl = listenersList.get(i)
+                dnl.nodeLoaded(node)
+            } catch (iob: IndexOutOfBoundsException) {
                 // ignore
             }
         }
     }
 
-    public void externalScriptLoading(final NodeImpl node) {
-        final ArrayList<DocumentNotificationListener> listenersList = this.documentNotificationListeners;
-        int size;
-        synchronized (listenersList) {
-            size = listenersList.size();
+    fun externalScriptLoading(node: NodeImpl?) {
+        val listenersList = this.documentNotificationListeners
+        val size: Int
+        synchronized(listenersList) {
+            size = listenersList.size
         }
         // Traverse list outside synchronized block.
         // (Shouldn't call listener methods in synchronized block.
         // Deadlock is possible). But assume list could have
         // been changed.
-        for (int i = 0; i < size; i++) {
+        for (i in 0..<size) {
             try {
-                final DocumentNotificationListener dnl = listenersList.get(i);
-                dnl.externalScriptLoading(node);
-            } catch (final IndexOutOfBoundsException iob) {
+                val dnl = listenersList.get(i)
+                dnl.externalScriptLoading(node)
+            } catch (iob: IndexOutOfBoundsException) {
                 // ignore
             }
         }
@@ -1129,29 +1117,28 @@ public class HTMLDocumentImpl extends NodeImpl implements HTMLDocument, Document
     /**
      * Informs listeners that the whole document has been invalidated.
      */
-    public void allInvalidated() {
-        final ArrayList<DocumentNotificationListener> listenersList = this.documentNotificationListeners;
-        int size;
-        synchronized (listenersList) {
-            size = listenersList.size();
+    fun allInvalidated() {
+        val listenersList = this.documentNotificationListeners
+        val size: Int
+        synchronized(listenersList) {
+            size = listenersList.size
         }
         // Traverse list outside synchronized block.
         // (Shouldn't call listener methods in synchronized block.
         // Deadlock is possible). But assume list could have
         // been changed.
-        for (int i = 0; i < size; i++) {
+        for (i in 0..<size) {
             try {
-                final DocumentNotificationListener dnl = listenersList.get(i);
-                dnl.allInvalidated();
-            } catch (final IndexOutOfBoundsException iob) {
+                val dnl = listenersList.get(i)
+                dnl.allInvalidated()
+            } catch (iob: IndexOutOfBoundsException) {
                 // ignore
             }
         }
     }
 
-    @Override
-    protected @NonNull RenderState createRenderState(final RenderState prevRenderState) {
-        return new StyleSheetRenderState(this);
+    override fun createRenderState(prevRenderState: RenderState?): RenderState {
+        return StyleSheetRenderState(this)
     }
 
     /**
@@ -1162,182 +1149,175 @@ public class HTMLDocumentImpl extends NodeImpl implements HTMLDocument, Document
      * @param relativeUri
      * @param imageListener
      */
-    protected void loadImage(final String relativeUri, final ImageListener imageListener) {
-        final HtmlRendererContext rcontext = this.getHtmlRendererContext();
-        if ((rcontext == null) || !rcontext.isImageLoadingEnabled()) {
+    fun loadImage(relativeUri: String, imageListener: ImageListener) {
+        val rcontext = this.getHtmlRendererContext()
+        if ((rcontext == null) || !rcontext.isImageLoadingEnabled) {
             // Ignore image loading when there's no renderer context.
             // Consider Cobra users who are only using the parser.
-            imageListener.imageLoaded(BLANK_IMAGE_EVENT);
-            return;
+            imageListener.imageLoaded(BLANK_IMAGE_EVENT)
+            return
         }
         try {
-            final URL url = this.getFullURL(relativeUri);
-            final String urlText = url.toExternalForm();
-            final Map<String, ImageInfo> map = this.imageInfos;
-            ImageEvent event = null;
-            synchronized (map) {
-                final ImageInfo info = map.get(urlText);
+            val url = this.getFullURL(relativeUri)
+            val urlText = url.toExternalForm()
+            val map = this.imageInfos
+            var event: ImageEvent? = null
+            synchronized(map) {
+                val info = map.get(urlText)
                 if (info != null) {
                     if (info.loaded) {
                         // TODO: This can't really happen because ImageInfo
                         // is removed right after image is loaded.
-                        event = info.imageEvent;
+                        event = info.imageEvent
                     } else {
-                        info.addListener(imageListener);
+                        info.addListener(imageListener)
                     }
                 } else {
-                    final UserAgentContext uac = rcontext.getUserAgentContext();
-                    final NetworkRequest httpRequest = uac.createHttpRequest();
-                    final ImageInfo newInfo = new ImageInfo();
-                    map.put(urlText, newInfo);
-                    newInfo.addListener(imageListener);
-                    httpRequest.addNetworkRequestListener(netEvent -> {
-                        if (httpRequest.getReadyState() == NetworkRequest.STATE_COMPLETE) {
-                            final ImageResponse imageResponse = httpRequest.getResponseImage();
-                            final ImageEvent newEvent = new ImageEvent(HTMLDocumentImpl.this, imageResponse);
-                            ImageListener[] listeners;
-                            synchronized (map) {
-                                newInfo.imageEvent = newEvent;
-                                newInfo.loaded = true;
-                                listeners = newInfo.getListeners();
+                    val uac = rcontext.userAgentContext
+                    val httpRequest = uac.createHttpRequest()
+                    val newInfo = ImageInfo()
+                    map.put(urlText, newInfo)
+                    newInfo.addListener(imageListener)
+                    httpRequest.addNetworkRequestListener(NetworkRequestListener { netEvent: NetworkRequestEvent? ->
+                        if (httpRequest.readyState == NetworkRequest.STATE_COMPLETE) {
+                            val imageResponse = httpRequest.responseImage
+                            val newEvent = ImageEvent(this@HTMLDocumentImpl, imageResponse)
+                            val listeners: Array<ImageListener?>?
+                            synchronized(map) {
+                                newInfo.imageEvent = newEvent
+                                newInfo.loaded = true
+                                listeners = newInfo.getListeners()
                                 // Must remove from map in the locked block
                                 // that got the listeners. Otherwise a new
                                 // listener might miss the event??
-                                map.remove(urlText);
+                                map.remove(urlText)
                             }
                             if (listeners != null) {
-                                final int llength = listeners.length;
-                                for (int i = 0; i < llength; i++) {
+                                val llength = listeners.size
+                                for (i in 0..<llength) {
                                     // Call holding no locks
-                                    listeners[i].imageLoaded(newEvent);
+                                    listeners[i]!!.imageLoaded(newEvent)
                                 }
                             }
-                        } else if (httpRequest.getReadyState() == NetworkRequest.STATE_ABORTED) {
-                            ImageListener[] listeners;
-                            synchronized (map) {
-                                newInfo.loaded = true;
-                                listeners = newInfo.getListeners();
+                        } else if (httpRequest.readyState == NetworkRequest.STATE_ABORTED) {
+                            val listeners: Array<ImageListener?>?
+                            synchronized(map) {
+                                newInfo.loaded = true
+                                listeners = newInfo.getListeners()
                                 // Must remove from map in the locked block
                                 // that got the listeners. Otherwise a new
                                 // listener might miss the event??
-                                map.remove(urlText);
+                                map.remove(urlText)
                             }
                             if (listeners != null) {
-                                final int llength = listeners.length;
-                                for (int i = 0; i < llength; i++) {
+                                val llength = listeners.size
+                                for (i in 0..<llength) {
                                     // Call holding no locks
-                                    listeners[i].imageAborted();
+                                    listeners[i]!!.imageAborted()
                                 }
                             }
                         }
-                    });
+                    })
 
-                    SecurityUtil.doPrivileged(() -> {
+                    SecurityUtil.doPrivileged<Any?>(PrivilegedAction {
                         try {
-                            httpRequest.open("GET", url);
-                            httpRequest.send(null, new Request(url, RequestKind.Image));
-                        } catch (final IOException thrown) {
-                            logger.log(Level.WARNING, "loadImage()", thrown);
+                            httpRequest.open("GET", url)
+                            httpRequest.send(null, UserAgentContext.Request(url, RequestKind.Image))
+                        } catch (thrown: IOException) {
+                            logger.log(Level.WARNING, "loadImage()", thrown)
                         }
-                        return null;
-                    });
+                        null
+                    })
                 }
             }
             if (event != null) {
                 // Call holding no locks.
-                imageListener.imageLoaded(event);
+                imageListener.imageLoaded(event)
             }
-        } catch (final MalformedURLException mfe) {
-            imageListener.imageLoaded(BLANK_IMAGE_EVENT);
+        } catch (mfe: MalformedURLException) {
+            imageListener.imageLoaded(BLANK_IMAGE_EVENT)
         }
     }
 
-    public Function getOnloadHandler() {
-        return onloadHandler;
-    }
-
-    public void setOnloadHandler(final Function onloadHandler) {
-        this.onloadHandler = onloadHandler;
-    }
-
-    @Override
-    public Object setUserData(final String key, final Object data, final UserDataHandler handler) {
+    override fun setUserData(key: String?, data: Any?, handler: UserDataHandler?): Any? {
         // if (org.cobraparser.html.parser.HtmlParser.MODIFYING_KEY.equals(key) && data == Boolean.FALSE) {
         // dispatchLoadEvent();
         // }
-        return super.setUserData(key, data, handler);
+        return super.setUserData(key, data, handler)
     }
 
-    private void dispatchLoadEvent() {
-        final Function onloadHandler = this.onloadHandler;
+    private fun dispatchLoadEvent() {
+        val onloadHandler = this.onloadHandler
         if (onloadHandler != null) {
             // TODO: onload event object?
-            throw new UnsupportedOperationException();
+            throw UnsupportedOperationException()
             // TODO: Use the event dispatcher
             // Executor.executeFunction(this, onloadHandler, null);
         }
 
         // final Event loadEvent = new Event("load", getBody()); // TODO: What should be the target for this event?
         // dispatchEventToHandlers(loadEvent, onloadHandlers);
+        val domContentLoadedEvent =
+            Event("DOMContentLoaded", body) // TODO: What should be the target for this event?
+        dispatchEvent(domContentLoadedEvent)
 
-        final Event domContentLoadedEvent = new Event("DOMContentLoaded", getBody()); // TODO: What should be the target for this event?
-        dispatchEvent(domContentLoadedEvent);
-
-        window.domContentLoaded(domContentLoadedEvent);
+        window.domContentLoaded(domContentLoadedEvent)
     }
 
-    protected EventTargetManager getEventTargetManager() {
-        return window.getEventTargetManager();
-    }
+    val eventTargetManager: EventTargetManager?
+        get() = window.eventTargetManager
 
-    @Override
-    protected Node createSimilarNode() {
-        return new HTMLDocumentImpl(this.ucontext, this.rcontext, this.reader, this.documentURI, this.contentType);
-    }
-
-    @HideFromJS
-    public void addLoadHandler(final Function handler) {
-        onloadHandlers.add(handler);
-    }
-
-    @HideFromJS
-    public void removeLoadHandler(final Function handler) {
-        onloadHandlers.remove(handler);
+    override fun createSimilarNode(): Node {
+        return HTMLDocumentImpl(
+            this.ucontext,
+            this.rcontext,
+            this.reader,
+            this.documentURI,
+            this.contentType
+        )
     }
 
     @HideFromJS
-    public void stopEverything() {
-        if (stopRequested.get()) {
-            throw new IllegalStateException("Stop requested twice!");
-        }
-        stopRequested.set(true);
+    fun addLoadHandler(handler: Function?) {
+        onloadHandlers.add(handler)
+    }
+
+    @HideFromJS
+    fun removeLoadHandler(handler: Function?) {
+        onloadHandlers.remove(handler)
+    }
+
+    @HideFromJS
+    fun stopEverything() {
+        check(!stopRequested.get()) { "Stop requested twice!" }
+        stopRequested.set(true)
         if (modificationsStarted.get()) {
-            boolean done = false;
+            var done = false
             while (!done) {
                 try {
-                    doneAllJobs.acquire();
-                    done = true;
-                } catch (final InterruptedException e) {
-                    e.printStackTrace();
+                    doneAllJobs.acquire()
+                    done = true
+                } catch (e: InterruptedException) {
+                    e.printStackTrace()
                 }
             }
         }
     }
 
     @HideFromJS
-    public void addJob(final Runnable job, final boolean layoutBlocker) {
-        addJob(job, layoutBlocker, 1);
+    fun addJob(job: Runnable?, layoutBlocker: Boolean) {
+        addJob(job, layoutBlocker, 1)
     }
 
     @HideFromJS
-    public void addJob(final Runnable job, final boolean layoutBlocker, final int incr) {
-        synchronized (jobs) {
-            registeredJobs.addAndGet(incr);
+    fun addJob(job: Runnable?, layoutBlocker: Boolean, incr: Int) {
+        synchronized(jobs) {
+            registeredJobs.addAndGet(incr)
             if (layoutBlocker) {
-                layoutBlockingJobs.addAndGet(incr);
+                layoutBlockingJobs.addAndGet(incr)
             }
 
-            jobs.add(job);
+            jobs.add(job)
 
             // Added into synch block because of the JS Uniq task change. (old Id should be protected from parallel mod)
             if (modificationsOver.get()) {
@@ -1350,53 +1330,56 @@ public class HTMLDocumentImpl extends NodeImpl implements HTMLDocument, Document
                 // }.start();
 
                 // TODO: temp hack 2. This seems more legitimate than hack #1.
-        /*
+                /*
         window.addJSTask(new JSRunnableTask(0, "todo: quick check to run all pending jobs", () -> {
             runAllPending();
         }));
         */
 
                 // TODO: temp hack 3. This seems more legitimate than hack #1 and optimisation over #2.
-                oldPendingTaskId = window.addJSUniqueTask(oldPendingTaskId, new JSRunnableTask(0, "todo: quick check to run all pending jobs",
-                        () -> {
-                            runAllPending();
-                        }));
+
+                oldPendingTaskId = window.addJSUniqueTask(
+                    oldPendingTaskId, JSRunnableTask(
+                        0, "todo: quick check to run all pending jobs",
+                        Runnable {
+                            runAllPending()
+                        })
+                )
                 // runAllPending();
             }
         }
     }
 
-    private void runAllPending() {
-        boolean done = false;
+    private fun runAllPending() {
+        var done = false
         while (!done && !stopRequested.get()) {
-            List<Runnable> jobsCopy;
-            synchronized (jobs) {
-                jobsCopy = jobs;
-                jobs = new LinkedList<>();
+            val jobsCopy: MutableList<Runnable?>
+            synchronized(jobs) {
+                jobsCopy = jobs
+                jobs = LinkedList<Runnable?>()
             }
-            jobsCopy.forEach(j -> j.run());
-            synchronized (jobs) {
-                done = jobs.size() == 0;
+            jobsCopy.forEach(Consumer { j: Runnable? -> j!!.run() })
+            synchronized(jobs) {
+                done = jobs.size == 0
             }
         }
-        doneAllJobs.release();
+        doneAllJobs.release()
     }
 
-    private void updateStyleRules() {
-        synchronized (treeLock) {
+    private fun updateStyleRules() {
+        synchronized(treeLock) {
             if (classifiedRules == null) {
-                final List<StyleSheet> jSheets = new ArrayList<>();
-                jSheets.add(isXML() ? recommendedStyleXML : recommendedStyle);
-                jSheets.add(isXML() ? userAgentStyleXML : userAgentStyle);
-                jSheets.addAll(styleSheetManager.getEnabledJStyleSheets());
-                classifiedRules = AnalyzerUtil.getClassifiedRules(jSheets, new MediaSpec("screen"));
+                val jSheets: MutableList<StyleSheet?> = ArrayList<StyleSheet?>()
+                jSheets.add(if (this.isXML) recommendedStyleXML else recommendedStyle)
+                jSheets.add(if (this.isXML) userAgentStyleXML else userAgentStyle)
+                jSheets.addAll(styleSheetManager.getEnabledJStyleSheets()!!)
+                classifiedRules = AnalyzerUtil.getClassifiedRules(jSheets, MediaSpec("screen"))
             }
         }
     }
 
-    ElementMatcher getMatcher() {
-        return isXML() ? xhtmlMatcher : stdMatcher;
-    }
+    val matcher: ElementMatcher
+        get() = if (this.isXML) xhtmlMatcher else stdMatcher
 
     /**
      * Visits all elements and computes their styles. This is faster than
@@ -1404,66 +1387,66 @@ public class HTMLDocumentImpl extends NodeImpl implements HTMLDocument, Document
      * soft / weak references, this method will lose its value.
      */
     @HideFromJS
-    public void primeNodeData() {
-        visit((node) -> {
-            if (node instanceof HTMLElementImpl he) {
-                he.getCurrentStyle();
+    fun primeNodeData() {
+        visit(NodeVisitor { node: Node? ->
+            if (node is HTMLElementImpl) {
+                node.getCurrentStyle()
             }
-        });
+        })
     }
 
-    Holder getClassifiedRules() {
-        synchronized (treeLock) {
+    fun getClassifiedRules(): Analyzer.Holder? {
+        synchronized(treeLock) {
             if (classifiedRules == null) {
-                updateStyleRules();
+                updateStyleRules()
             }
-            return classifiedRules;
+            return classifiedRules
         }
     }
 
     // TODO: Synchronize?
     @HideFromJS
-    public void markJobsFinished(final int numJobs, final boolean layoutBlocker) {
-        final int curr = registeredJobs.addAndGet(-numJobs);
-        final int layoutBlockers = layoutBlocker ? layoutBlockingJobs.addAndGet(-numJobs) : layoutBlockingJobs.get();
+    fun markJobsFinished(numJobs: Int, layoutBlocker: Boolean) {
+        val curr = registeredJobs.addAndGet(-numJobs)
+        val layoutBlockers =
+            if (layoutBlocker) layoutBlockingJobs.addAndGet(-numJobs) else layoutBlockingJobs.get()
         if (layoutBlocked.get()) {
             if (layoutBlockers == 0) {
-                layoutBlocked.set(false);
-                allInvalidated();
+                layoutBlocked.set(false)
+                allInvalidated()
             }
         }
-        if (curr < 0) {
-            throw new IllegalStateException("More jobs over than registered!");
-        } else if (curr == 0) {
+        check(curr >= 0) { "More jobs over than registered!" }
+        if (curr == 0) {
             if (!stopRequested.get() && !loadOver.get()) {
-                loadOver.set(true);
-                dispatchLoadEvent();
+                loadOver.set(true)
+                dispatchLoadEvent()
                 // System.out.println("In " + baseURI);
                 // System.out.println("  calling window.jobsFinished()");
-                rcontext.jobsFinished();
-                window.jobsFinished();
+                rcontext!!.jobsFinished()
+                window.jobsFinished()
             }
         }
     }
 
     @HideFromJS
-    public void finishModifications() {
-        StyleElements.normalizeHTMLTree(this);
+    fun finishModifications() {
+        StyleElements.normalizeHTMLTree(this)
         // TODO: Not sure if this should be run in new thread. But this blocks the UI sometimes when it is in the same thread, and a network request hangs.
         //       There is a race condition here, when iframes are involved.
         //       The thread creation can probably be removed as part of GH #140
-        new Thread(() -> {
-            modificationsStarted.set(true);
-            runAllPending();
-            modificationsOver.set(true);
-        }).start();
+        Thread(Runnable {
+            modificationsStarted.set(true)
+            runAllPending()
+            modificationsOver.set(true)
+        }).start()
 
         // This is to trigger a check in the no external resource case.
         // On second thoughts, this may not be required. The window load event need only be fired if there is a script
         // On third thoughs, this also affects frame that embed iframes
-        markJobsFinished(0, false);
+        markJobsFinished(0, false)
 
-    /* Nodes.forEachNode(document, node -> {
+        /* Nodes.forEachNode(document, node -> {
       if (node instanceof NodeImpl) {
         final NodeImpl element = (NodeImpl) node;
         Object oldData = element.getUserData(org.cobraparser.html.parser.HtmlParser.MODIFYING_KEY);
@@ -1474,49 +1457,48 @@ public class HTMLDocumentImpl extends NodeImpl implements HTMLDocument, Document
     });*/
     }
 
-    @Override
-    public void addEventListener(final String type, final EventListener listener, final boolean useCapture) {
+    override fun addEventListener(type: String?, listener: EventListener?, useCapture: Boolean) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
 
-    @Override
-    public void removeEventListener(final String type, final EventListener listener, final boolean useCapture) {
+    override fun removeEventListener(type: String?, listener: EventListener?, useCapture: Boolean) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
 
-    @Override
-    public boolean dispatchEvent(final org.w3c.dom.events.Event evt) throws EventException {
+    @Throws(EventException::class)
+    override fun dispatchEvent(evt: org.w3c.dom.events.Event?): Boolean {
         // TODO Auto-generated method stub
-        return false;
+        return false
     }
 
-    public Event createEvent(final String type) {
-        return new Event(type, this);
+    fun createEvent(type: String?): Event {
+        return Event(type, this)
     }
 
-    public Range createRange() {
-        return new RangeImpl(this);
+    fun createRange(): Range {
+        return RangeImpl(this)
     }
 
-    public boolean hasFocus() {
+    fun hasFocus(): Boolean {
         // TODO: Plug
-        return true;
+        return true
     }
 
-    private static class ImageInfo {
-        private final ArrayList<ImageListener> listeners = new ArrayList<>(1);
-        // Access to this class is synchronized on imageInfos.
-        public ImageEvent imageEvent;
-        public boolean loaded;
+    private class ImageInfo {
+        private val listeners = ArrayList<ImageListener?>(1)
 
-        void addListener(final ImageListener listener) {
-            this.listeners.add(listener);
+        // Access to this class is synchronized on imageInfos.
+        var imageEvent: ImageEvent? = null
+        var loaded: Boolean = false
+
+        fun addListener(listener: ImageListener?) {
+            this.listeners.add(listener)
         }
 
-        ImageListener[] getListeners() {
-            return this.listeners.toArray(ImageListener.EMPTY_ARRAY);
+        fun getListeners(): Array<ImageListener?> {
+            return this.listeners.toArray<ImageListener?>(ImageListener.Companion.EMPTY_ARRAY)
         }
     }
 
@@ -1526,127 +1508,156 @@ public class HTMLDocumentImpl extends NodeImpl implements HTMLDocument, Document
      *
      * @author J. H. S.
      */
-    private class LocalWritableLineReader extends WritableLineReader {
+    private inner class LocalWritableLineReader : WritableLineReader {
         /**
          * @param reader
          */
-        public LocalWritableLineReader(final LineNumberReader reader) {
-            super(reader);
-        }
+        constructor(reader: LineNumberReader?) : super(reader)
 
         /**
          * @param reader
          */
-        public LocalWritableLineReader(final Reader reader) {
-            super(reader);
-        }
+        constructor(reader: Reader?) : super(reader)
 
-        @Override
-        public void write(final String text) throws IOException {
-            super.write(text);
-            if ("".equals(text)) {
-                openBufferChanged(text);
+        @Throws(IOException::class)
+        override fun write(text: String?) {
+            super.write(text)
+            if ("" == text) {
+                openBufferChanged(text)
             }
         }
     }
 
-    final class StyleSheetManager {
+    internal inner class StyleSheetManager {
+        @Volatile
+        private var styleSheets: MutableList<JStyleSheetWrapper>? = null
 
-        private volatile List<JStyleSheetWrapper> styleSheets = null;
-        private volatile List<StyleSheet> enabledJStyleSheets = null;
-        final StyleSheetBridge bridge = new StyleSheetBridge() {
-
-            public void notifyStyleSheetChanged(final CSSStyleSheet styleSheet) {
-                final Node ownerNode = styleSheet.getOwnerNode();
+        @Volatile
+        private var enabledJStyleSheets: MutableList<StyleSheet?>? = null
+        val bridge: StyleSheetBridge = object : StyleSheetBridge {
+            override fun notifyStyleSheetChanged(styleSheet: CSSStyleSheet) {
+                val ownerNode = styleSheet.ownerNode
                 if (ownerNode != null) {
-                    final boolean disabled = styleSheet.getDisabled();
-                    if (ownerNode instanceof HTMLStyleElementImpl htmlStyleElement) {
-                        if (htmlStyleElement.getDisabled() != disabled) {
-                            htmlStyleElement.setDisabledImpl(disabled);
+                    val disabled = styleSheet.disabled
+                    if (ownerNode is HTMLStyleElementImpl) {
+                        if (ownerNode.disabled != disabled) {
+                            ownerNode.setDisabledImpl(disabled)
                         }
-                    } else if (ownerNode instanceof HTMLLinkElementImpl htmlLinkElement) {
-                        if (htmlLinkElement.getDisabled() != disabled) {
-                            htmlLinkElement.setDisabledImpl(disabled);
+                    } else if (ownerNode is HTMLLinkElementImpl) {
+                        if (ownerNode.disabled != disabled) {
+                            ownerNode.setDisabledImpl(disabled)
                         }
                     }
                 }
-                invalidateStyles();
-                allInvalidated();
+                invalidateStyles()
+                allInvalidated()
             }
 
-            public List<JStyleSheetWrapper> getDocStyleSheets() {
-                return getDocStyleSheetList();
-            }
-
-        };
-
-        private List<JStyleSheetWrapper> getDocStyleSheetList() {
-            synchronized (this) {
-                if (styleSheets == null) {
-                    styleSheets = new ArrayList<>();
-                    final List<JStyleSheetWrapper> docStyles = new ArrayList<>();
-                    synchronized (treeLock) {
-                        scanElementStyleSheets(docStyles, HTMLDocumentImpl.this);
-                    }
-                    styleSheets.addAll(docStyles);
-                    // System.out.println("Found stylesheets: " + this.styleSheets.size());
-                }
-                return this.styleSheets;
-            }
+            val docStyleSheets: MutableList<JStyleSheetWrapper>
+                get() = this.docStyleSheetList
         }
 
-        private void scanElementStyleSheets(final List<JStyleSheetWrapper> styles, final Node node) {
-            if (node instanceof LinkStyle linkStyle) {
-                final JStyleSheetWrapper sheet = (JStyleSheetWrapper) linkStyle.getSheet();
+        private val docStyleSheetList: MutableList<JStyleSheetWrapper>
+            get() {
+                synchronized(this) {
+                    if (styleSheets == null) {
+                        styleSheets = ArrayList<JStyleSheetWrapper>()
+                        val docStyles: MutableList<JStyleSheetWrapper?> =
+                            ArrayList<JStyleSheetWrapper?>()
+                        synchronized(treeLock) {
+                            scanElementStyleSheets(docStyles, this@HTMLDocumentImpl)
+                        }
+                        styleSheets!!.addAll(docStyles)
+                        // System.out.println("Found stylesheets: " + this.styleSheets.size());
+                    }
+                    return this.styleSheets!!
+                }
+            }
+
+        private fun scanElementStyleSheets(styles: MutableList<JStyleSheetWrapper?>, node: Node) {
+            if (node is LinkStyle) {
+                val sheet = node.sheet as JStyleSheetWrapper?
                 if (sheet != null) {
-                    styles.add(sheet);
+                    styles.add(sheet)
                 }
             }
 
             if (node.hasChildNodes()) {
-                final NodeList nodeList = node.getChildNodes();
-                for (int i = 0; i < nodeList.getLength(); i++) {
-                    scanElementStyleSheets(styles, nodeList.item(i));
+                val nodeList = node.childNodes
+                for (i in 0..<nodeList.length) {
+                    scanElementStyleSheets(styles, nodeList.item(i))
                 }
             }
         }
 
         // TODO enabled style sheets can be cached
-        List<StyleSheet> getEnabledJStyleSheets() {
-            synchronized (this) {
+        fun getEnabledJStyleSheets(): MutableList<StyleSheet?>? {
+            synchronized(this) {
                 if (enabledJStyleSheets != null) {
-                    return enabledJStyleSheets;
+                    return enabledJStyleSheets
                 }
-                final List<JStyleSheetWrapper> documentStyles = this.getDocStyleSheetList();
-                final List<StyleSheet> jStyleSheets = new ArrayList<>();
-                for (final JStyleSheetWrapper style : documentStyles) {
-                    if ((!style.getDisabled()) && (style.getJStyleSheet() != null)) {
-                        jStyleSheets.add(style.getJStyleSheet());
+                val documentStyles =
+                    this.docStyleSheetList
+                val jStyleSheets: MutableList<StyleSheet?> = ArrayList<StyleSheet?>()
+                for (style in documentStyles) {
+                    if ((!style.disabled) && (style.jStyleSheet != null)) {
+                        jStyleSheets.add(style.jStyleSheet)
                     }
                 }
-                enabledJStyleSheets = jStyleSheets;
-                return jStyleSheets;
+                enabledJStyleSheets = jStyleSheets
+                return jStyleSheets
             }
         }
 
-        void invalidateStyles() {
-            synchronized (treeLock) {
-                this.styleSheets = null;
-                getDocStyleSheetList();
+        fun invalidateStyles() {
+            synchronized(treeLock) {
+                this.styleSheets = null
+                this.docStyleSheetList
             }
-            synchronized (this) {
-                this.enabledJStyleSheets = null;
+            synchronized(this) {
+                this.enabledJStyleSheets = null
             }
-            synchronized (treeLock) {
-                HTMLDocumentImpl.this.classifiedRules = null;
+            synchronized(treeLock) {
+                this@HTMLDocumentImpl.classifiedRules = null
             }
             // System.out.println("Stylesheets set to null");
-            allInvalidated(true);
+            allInvalidated(true)
         }
 
-        StyleSheetList constructStyleSheetList() {
-            return JStyleSheetWrapper.getStyleSheets(bridge);
+        fun constructStyleSheetList(): StyleSheetList {
+            return getStyleSheets(bridge)
         }
+    }
 
+    companion object {
+        val xhtmlMatcher: ElementMatcher = ElementMatcherSafeCS()
+        val stdMatcher: ElementMatcher = ElementMatcherSafeStd()
+        private const val XHTML_STRICT_PUBLIC_ID = "-//W3C//DTD XHTML 1.0 Strict//EN"
+        private const val XHTML_STRICT_SYS_ID = "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
+        private val recommendedStyle: StyleSheet =
+            parseStyle(CSSNorm.stdStyleSheet(), StyleSheet.Origin.AGENT, false)
+        private val userAgentStyle: StyleSheet =
+            parseStyle(CSSNorm.userStyleSheet(), StyleSheet.Origin.AGENT, false)
+        private val recommendedStyleXML: StyleSheet =
+            parseStyle(CSSNorm.stdStyleSheet(), StyleSheet.Origin.AGENT, true)
+        private val userAgentStyleXML: StyleSheet =
+            parseStyle(CSSNorm.userStyleSheet(), StyleSheet.Origin.AGENT, true)
+
+        private fun parseStyle(
+            cssdata: String?,
+            origin: StyleSheet.Origin?,
+            isXML: Boolean
+        ): StyleSheet {
+            try {
+                val newsheet = CSSParserFactory.getInstance()
+                    .parse(cssdata, null, null, CSSParserFactory.SourceType.EMBEDDED, null)
+                newsheet.origin = origin
+                return newsheet
+            } catch (e: IOException) {
+                throw RuntimeException(e)
+            } catch (e: CSSException) {
+                throw RuntimeException(e)
+            }
+        }
     }
 }

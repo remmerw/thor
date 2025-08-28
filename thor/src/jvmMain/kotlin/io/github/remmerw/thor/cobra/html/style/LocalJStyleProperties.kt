@@ -1,671 +1,662 @@
-package io.github.remmerw.thor.cobra.html.style;
+package io.github.remmerw.thor.cobra.html.style
 
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Element;
+import cz.vutbr.web.css.NodeData
+import cz.vutbr.web.css.StyleSheet
+import cz.vutbr.web.domassign.DirectAnalyzer
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
+import org.w3c.dom.DOMException
+import org.w3c.dom.Element
+import java.util.Locale
 
-import java.util.ArrayList;
-import java.util.List;
-
-import cz.vutbr.web.css.NodeData;
-import cz.vutbr.web.css.StyleSheet;
-import cz.vutbr.web.domassign.DirectAnalyzer;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl;
-
-public final class LocalJStyleProperties extends JStyleProperties {
-
-    private final HTMLElementImpl element;
-
-    public LocalJStyleProperties(final HTMLElementImpl element) {
-        super(element, false);
-        this.element = element;
-    }
-
-    @Override
-    public void setAzimuth(final String azimuth) throws DOMException {
-        updateInlineStyle("azimuth", azimuth);
+class LocalJStyleProperties(private val element: HTMLElementImpl) :
+    JStyleProperties(element, false) {
+    @Throws(DOMException::class)
+    override fun setAzimuth(azimuth: String?) {
+        updateInlineStyle("azimuth", azimuth)
     }
 
-    @Override
-    public void setBackground(final String background) throws DOMException {
-        updateInlineStyle("background", background);
+    @Throws(DOMException::class)
+    override fun setBackground(background: String?) {
+        updateInlineStyle("background", background)
     }
 
-    @Override
-    public void setBackgroundAttachment(final String backgroundAttachment) throws DOMException {
-        updateInlineStyle("background-attachment", backgroundAttachment);
+    @Throws(DOMException::class)
+    override fun setBackgroundAttachment(backgroundAttachment: String?) {
+        updateInlineStyle("background-attachment", backgroundAttachment)
     }
 
-    @Override
-    public void setBackgroundColor(final String backgroundColor) throws DOMException {
-        updateInlineStyle("background-color", backgroundColor);
+    @Throws(DOMException::class)
+    override fun setBackgroundColor(backgroundColor: String?) {
+        updateInlineStyle("background-color", backgroundColor)
     }
 
-    @Override
-    public void setBackgroundImage(final String backgroundImage) throws DOMException {
-        updateInlineStyle("background-image", backgroundImage);
+    @Throws(DOMException::class)
+    override fun setBackgroundImage(backgroundImage: String?) {
+        updateInlineStyle("background-image", backgroundImage)
     }
 
-    @Override
-    public void setBackgroundPosition(final String backgroundPosition) throws DOMException {
-        updateInlineStyle("background-position", backgroundPosition);
+    @Throws(DOMException::class)
+    override fun setBackgroundPosition(backgroundPosition: String?) {
+        updateInlineStyle("background-position", backgroundPosition)
     }
 
-    @Override
-    public void setBackgroundRepeat(final String backgroundRepeat) throws DOMException {
-        updateInlineStyle("background-repeat", backgroundRepeat);
+    @Throws(DOMException::class)
+    override fun setBackgroundRepeat(backgroundRepeat: String?) {
+        updateInlineStyle("background-repeat", backgroundRepeat)
     }
 
-    @Override
-    public void setBorder(final String border) throws DOMException {
-        updateInlineStyle("border", border);
+    @Throws(DOMException::class)
+    override fun setBorder(border: String?) {
+        updateInlineStyle("border", border)
     }
-
-    @Override
-    public void setBorderCollapse(final String borderCollapse) throws DOMException {
-        updateInlineStyle("border-collapse", borderCollapse);
 
+    @Throws(DOMException::class)
+    override fun setBorderCollapse(borderCollapse: String?) {
+        updateInlineStyle("border-collapse", borderCollapse)
     }
 
-    @Override
-    public void setBorderColor(final String borderColor) throws DOMException {
-        updateInlineStyle("border-color", borderColor);
+    @Throws(DOMException::class)
+    override fun setBorderColor(borderColor: String?) {
+        updateInlineStyle("border-color", borderColor)
     }
 
-    @Override
-    public void setBorderSpacing(final String borderSpacing) throws DOMException {
-        updateInlineStyle("border-spacing", borderSpacing);
+    @Throws(DOMException::class)
+    override fun setBorderSpacing(borderSpacing: String?) {
+        updateInlineStyle("border-spacing", borderSpacing)
     }
 
-    @Override
-    public void setBorderStyle(final String borderStyle) throws DOMException {
-        updateInlineStyle("border-style", borderStyle);
+    @Throws(DOMException::class)
+    override fun setBorderStyle(borderStyle: String?) {
+        updateInlineStyle("border-style", borderStyle)
     }
 
-    @Override
-    public void setBorderTop(final String borderTop) throws DOMException {
-        updateInlineStyle("border-top", borderTop);
+    @Throws(DOMException::class)
+    override fun setBorderTop(borderTop: String?) {
+        updateInlineStyle("border-top", borderTop)
     }
 
-    @Override
-    public void setBorderRight(final String borderRight) throws DOMException {
-        updateInlineStyle("border-right", borderRight);
+    @Throws(DOMException::class)
+    override fun setBorderRight(borderRight: String?) {
+        updateInlineStyle("border-right", borderRight)
     }
 
-    @Override
-    public void setBorderBottom(final String borderBottom) throws DOMException {
-        updateInlineStyle("border-bottom", borderBottom);
+    @Throws(DOMException::class)
+    override fun setBorderBottom(borderBottom: String?) {
+        updateInlineStyle("border-bottom", borderBottom)
     }
 
-    @Override
-    public void setBorderLeft(final String borderLeft) throws DOMException {
-        updateInlineStyle("border-left", borderLeft);
+    @Throws(DOMException::class)
+    override fun setBorderLeft(borderLeft: String?) {
+        updateInlineStyle("border-left", borderLeft)
     }
 
-    @Override
-    public void setBorderTopColor(final String borderTopColor) throws DOMException {
-        updateInlineStyle("border-top-color", borderTopColor);
+    @Throws(DOMException::class)
+    override fun setBorderTopColor(borderTopColor: String?) {
+        updateInlineStyle("border-top-color", borderTopColor)
     }
 
-    @Override
-    public void setBorderRightColor(final String borderRightColor) throws DOMException {
-        updateInlineStyle("border-right-color", borderRightColor);
+    @Throws(DOMException::class)
+    override fun setBorderRightColor(borderRightColor: String?) {
+        updateInlineStyle("border-right-color", borderRightColor)
     }
 
-    @Override
-    public void setBorderBottomColor(final String borderBottomColor) throws DOMException {
-        updateInlineStyle("border-bottom-color", borderBottomColor);
+    @Throws(DOMException::class)
+    override fun setBorderBottomColor(borderBottomColor: String?) {
+        updateInlineStyle("border-bottom-color", borderBottomColor)
     }
 
-    @Override
-    public void setBorderLeftColor(final String borderLeftColor) throws DOMException {
-        updateInlineStyle("border-left-color", borderLeftColor);
+    @Throws(DOMException::class)
+    override fun setBorderLeftColor(borderLeftColor: String?) {
+        updateInlineStyle("border-left-color", borderLeftColor)
     }
 
-    @Override
-    public void setBorderTopStyle(final String borderTopStyle) throws DOMException {
-        updateInlineStyle("border-top-style", borderTopStyle);
+    @Throws(DOMException::class)
+    override fun setBorderTopStyle(borderTopStyle: String?) {
+        updateInlineStyle("border-top-style", borderTopStyle)
     }
 
-    @Override
-    public void setBorderRightStyle(final String borderRightStyle) throws DOMException {
-        updateInlineStyle("border-right-style", borderRightStyle);
+    @Throws(DOMException::class)
+    override fun setBorderRightStyle(borderRightStyle: String?) {
+        updateInlineStyle("border-right-style", borderRightStyle)
     }
 
-    @Override
-    public void setBorderBottomStyle(final String borderBottomStyle) throws DOMException {
-        updateInlineStyle("border-bottom-style", borderBottomStyle);
+    @Throws(DOMException::class)
+    override fun setBorderBottomStyle(borderBottomStyle: String?) {
+        updateInlineStyle("border-bottom-style", borderBottomStyle)
     }
 
-    @Override
-    public void setBorderLeftStyle(final String borderLeftStyle) throws DOMException {
-        updateInlineStyle("border-left-style", borderLeftStyle);
+    @Throws(DOMException::class)
+    override fun setBorderLeftStyle(borderLeftStyle: String?) {
+        updateInlineStyle("border-left-style", borderLeftStyle)
     }
 
-    @Override
-    public void setBorderTopWidth(final String borderTopWidth) throws DOMException {
-        updateInlineStyle("border-top-width", borderTopWidth);
+    @Throws(DOMException::class)
+    override fun setBorderTopWidth(borderTopWidth: String?) {
+        updateInlineStyle("border-top-width", borderTopWidth)
     }
 
-    @Override
-    public void setBorderRightWidth(final String borderRightWidth) throws DOMException {
-        updateInlineStyle("border-right-width", borderRightWidth);
+    @Throws(DOMException::class)
+    override fun setBorderRightWidth(borderRightWidth: String?) {
+        updateInlineStyle("border-right-width", borderRightWidth)
     }
 
-    @Override
-    public void setBorderBottomWidth(final String borderBottomWidth) throws DOMException {
-        updateInlineStyle("border-bottom-width", borderBottomWidth);
+    @Throws(DOMException::class)
+    override fun setBorderBottomWidth(borderBottomWidth: String?) {
+        updateInlineStyle("border-bottom-width", borderBottomWidth)
     }
 
-    @Override
-    public void setBorderLeftWidth(final String borderLeftWidth) throws DOMException {
-        updateInlineStyle("border-left-width", borderLeftWidth);
+    @Throws(DOMException::class)
+    override fun setBorderLeftWidth(borderLeftWidth: String?) {
+        updateInlineStyle("border-left-width", borderLeftWidth)
     }
 
-    @Override
-    public void setBorderWidth(final String borderWidth) throws DOMException {
-        updateInlineStyle("border-width", borderWidth);
+    @Throws(DOMException::class)
+    override fun setBorderWidth(borderWidth: String?) {
+        updateInlineStyle("border-width", borderWidth)
     }
 
-    @Override
-    public void setBottom(final String bottom) throws DOMException {
-        updateInlineStyle("bottom", bottom);
+    @Throws(DOMException::class)
+    override fun setBottom(bottom: String?) {
+        updateInlineStyle("bottom", bottom)
     }
 
-    @Override
-    public void setCaptionSide(final String captionSide) throws DOMException {
-        updateInlineStyle("caption-side", captionSide);
+    @Throws(DOMException::class)
+    override fun setCaptionSide(captionSide: String?) {
+        updateInlineStyle("caption-side", captionSide)
     }
 
-    @Override
-    public void setClear(final String clear) throws DOMException {
-        updateInlineStyle("clear", clear);
+    @Throws(DOMException::class)
+    override fun setClear(clear: String?) {
+        updateInlineStyle("clear", clear)
     }
 
-    @Override
-    public void setClip(final String clip) throws DOMException {
-        updateInlineStyle("clip", clip);
+    @Throws(DOMException::class)
+    override fun setClip(clip: String?) {
+        updateInlineStyle("clip", clip)
     }
 
-    @Override
-    public void setColor(final String color) throws DOMException {
-        updateInlineStyle("color", color);
+    @Throws(DOMException::class)
+    override fun setColor(color: String?) {
+        updateInlineStyle("color", color)
     }
 
-    @Override
-    public void setContent(final String content) throws DOMException {
-        updateInlineStyle("content", content);
+    @Throws(DOMException::class)
+    override fun setContent(content: String?) {
+        updateInlineStyle("content", content)
     }
 
-    @Override
-    public void setCounterIncrement(final String counterIncrement) throws DOMException {
-        updateInlineStyle("counter-increment", counterIncrement);
+    @Throws(DOMException::class)
+    override fun setCounterIncrement(counterIncrement: String?) {
+        updateInlineStyle("counter-increment", counterIncrement)
     }
 
-    @Override
-    public void setCounterReset(final String counterReset) throws DOMException {
-        updateInlineStyle("counter-reset", counterReset);
+    @Throws(DOMException::class)
+    override fun setCounterReset(counterReset: String?) {
+        updateInlineStyle("counter-reset", counterReset)
     }
 
-    @Override
-    public void setCue(final String cue) throws DOMException {
-        updateInlineStyle("cue", cue);
+    @Throws(DOMException::class)
+    override fun setCue(cue: String?) {
+        updateInlineStyle("cue", cue)
     }
 
-    @Override
-    public void setCueAfter(final String cueAfter) throws DOMException {
-        updateInlineStyle("cue-after", cueAfter);
+    @Throws(DOMException::class)
+    override fun setCueAfter(cueAfter: String?) {
+        updateInlineStyle("cue-after", cueAfter)
     }
 
-    @Override
-    public void setCueBefore(final String cueBefore) throws DOMException {
-        updateInlineStyle("cue-before", cueBefore);
+    @Throws(DOMException::class)
+    override fun setCueBefore(cueBefore: String?) {
+        updateInlineStyle("cue-before", cueBefore)
     }
 
-    @Override
-    public void setCursor(final String cursor) throws DOMException {
-        updateInlineStyle("cursor", cursor);
+    @Throws(DOMException::class)
+    override fun setCursor(cursor: String?) {
+        updateInlineStyle("cursor", cursor)
     }
 
-    @Override
-    public void setDirection(final String direction) throws DOMException {
-        updateInlineStyle("direction", direction);
+    @Throws(DOMException::class)
+    override fun setDirection(direction: String?) {
+        updateInlineStyle("direction", direction)
     }
 
-    @Override
-    public void setDisplay(final String display) throws DOMException {
-        updateInlineStyle("display", display);
+    @Throws(DOMException::class)
+    override fun setDisplay(display: String?) {
+        updateInlineStyle("display", display)
     }
 
-    @Override
-    public void setElevation(final String elevation) throws DOMException {
-        updateInlineStyle("elevation", elevation);
+    @Throws(DOMException::class)
+    override fun setElevation(elevation: String?) {
+        updateInlineStyle("elevation", elevation)
     }
 
-    @Override
-    public void setEmptyCells(final String emptyCells) throws DOMException {
-        updateInlineStyle("empty-cells", emptyCells);
+    @Throws(DOMException::class)
+    override fun setEmptyCells(emptyCells: String?) {
+        updateInlineStyle("empty-cells", emptyCells)
     }
 
-    @Override
-    public void setCssFloat(final String cssFloat) throws DOMException {
-        updateInlineStyle("css-float", cssFloat);
+    @Throws(DOMException::class)
+    override fun setCssFloat(cssFloat: String?) {
+        updateInlineStyle("css-float", cssFloat)
     }
 
-    @Override
-    public void setFont(final String font) throws DOMException {
-        updateInlineStyle("font", font);
+    @Throws(DOMException::class)
+    override fun setFont(font: String?) {
+        updateInlineStyle("font", font)
     }
 
-    @Override
-    public void setFontFamily(final String fontFamily) throws DOMException {
-        updateInlineStyle("font-family", fontFamily);
+    @Throws(DOMException::class)
+    override fun setFontFamily(fontFamily: String?) {
+        updateInlineStyle("font-family", fontFamily)
     }
 
-    @Override
-    public void setFontSize(final String fontSize) throws DOMException {
-        updateInlineStyle("font-size", fontSize);
+    @Throws(DOMException::class)
+    override fun setFontSize(fontSize: String?) {
+        updateInlineStyle("font-size", fontSize)
     }
 
-    @Override
-    public void setFontSizeAdjust(final String fontSizeAdjust) throws DOMException {
-        updateInlineStyle("font-size-adjust", fontSizeAdjust);
+    @Throws(DOMException::class)
+    override fun setFontSizeAdjust(fontSizeAdjust: String?) {
+        updateInlineStyle("font-size-adjust", fontSizeAdjust)
     }
 
-    @Override
-    public void setFontStretch(final String fontStretch) throws DOMException {
-        updateInlineStyle("font-stretch", fontStretch);
+    @Throws(DOMException::class)
+    override fun setFontStretch(fontStretch: String?) {
+        updateInlineStyle("font-stretch", fontStretch)
     }
 
-    @Override
-    public void setFontStyle(final String fontStyle) throws DOMException {
-        updateInlineStyle("font-style", fontStyle);
+    @Throws(DOMException::class)
+    override fun setFontStyle(fontStyle: String?) {
+        updateInlineStyle("font-style", fontStyle)
     }
 
-    @Override
-    public void setFontVariant(final String fontVariant) throws DOMException {
-        updateInlineStyle("font-Variant", fontVariant);
+    @Throws(DOMException::class)
+    override fun setFontVariant(fontVariant: String?) {
+        updateInlineStyle("font-Variant", fontVariant)
     }
 
-    @Override
-    public void setFontWeight(final String fontWeight) throws DOMException {
-        updateInlineStyle("font-weight", fontWeight);
+    @Throws(DOMException::class)
+    override fun setFontWeight(fontWeight: String?) {
+        updateInlineStyle("font-weight", fontWeight)
     }
 
-    @Override
-    public void setHeight(final String height) throws DOMException {
-        updateInlineStyle("height", height);
+    @Throws(DOMException::class)
+    override fun setHeight(height: String?) {
+        updateInlineStyle("height", height)
     }
 
-    @Override
-    public void setLeft(final String left) throws DOMException {
-        updateInlineStyle("left", left);
+    @Throws(DOMException::class)
+    override fun setLeft(left: String?) {
+        updateInlineStyle("left", left)
     }
 
-    @Override
-    public void setLetterSpacing(final String letterSpacing) throws DOMException {
-        updateInlineStyle("letter-spacing", letterSpacing);
+    @Throws(DOMException::class)
+    override fun setLetterSpacing(letterSpacing: String?) {
+        updateInlineStyle("letter-spacing", letterSpacing)
     }
 
-    @Override
-    public void setLineHeight(final String lineHeight) throws DOMException {
-        updateInlineStyle("line-height", lineHeight);
+    @Throws(DOMException::class)
+    override fun setLineHeight(lineHeight: String?) {
+        updateInlineStyle("line-height", lineHeight)
     }
 
-    @Override
-    public void setListStyle(final String listStyle) throws DOMException {
-        updateInlineStyle("list-Style", listStyle);
+    @Throws(DOMException::class)
+    override fun setListStyle(listStyle: String?) {
+        updateInlineStyle("list-Style", listStyle)
     }
 
-    @Override
-    public void setListStyleImage(final String listStyleImage) throws DOMException {
-        updateInlineStyle("list-style-image", listStyleImage);
+    @Throws(DOMException::class)
+    override fun setListStyleImage(listStyleImage: String?) {
+        updateInlineStyle("list-style-image", listStyleImage)
     }
 
-    @Override
-    public void setListStylePosition(final String listStylePosition) throws DOMException {
-        updateInlineStyle("list-style-position", listStylePosition);
+    @Throws(DOMException::class)
+    override fun setListStylePosition(listStylePosition: String?) {
+        updateInlineStyle("list-style-position", listStylePosition)
     }
 
-    @Override
-    public void setListStyleType(final String listStyleType) throws DOMException {
-        updateInlineStyle("list-style-type", listStyleType);
+    @Throws(DOMException::class)
+    override fun setListStyleType(listStyleType: String?) {
+        updateInlineStyle("list-style-type", listStyleType)
     }
 
-    @Override
-    public void setMargin(final String margin) throws DOMException {
-        updateInlineStyle("margin", margin);
+    @Throws(DOMException::class)
+    override fun setMargin(margin: String?) {
+        updateInlineStyle("margin", margin)
     }
 
-    @Override
-    public void setMarginTop(final String marginTop) throws DOMException {
-        updateInlineStyle("margin-top", marginTop);
+    @Throws(DOMException::class)
+    override fun setMarginTop(marginTop: String?) {
+        updateInlineStyle("margin-top", marginTop)
     }
 
-    @Override
-    public void setMarginRight(final String marginRight) throws DOMException {
-        updateInlineStyle("margin-right", marginRight);
+    @Throws(DOMException::class)
+    override fun setMarginRight(marginRight: String?) {
+        updateInlineStyle("margin-right", marginRight)
     }
 
-    @Override
-    public void setMarginBottom(final String marginBottom) throws DOMException {
-        updateInlineStyle("margin-bottom", marginBottom);
+    @Throws(DOMException::class)
+    override fun setMarginBottom(marginBottom: String?) {
+        updateInlineStyle("margin-bottom", marginBottom)
     }
 
-    @Override
-    public void setMarginLeft(final String marginLeft) throws DOMException {
-        updateInlineStyle("margin-left", marginLeft);
+    @Throws(DOMException::class)
+    override fun setMarginLeft(marginLeft: String?) {
+        updateInlineStyle("margin-left", marginLeft)
     }
 
-    @Override
-    public void setMarkerOffset(final String markerOffset) throws DOMException {
-        updateInlineStyle("marker-offset", markerOffset);
+    @Throws(DOMException::class)
+    override fun setMarkerOffset(markerOffset: String?) {
+        updateInlineStyle("marker-offset", markerOffset)
     }
 
-    @Override
-    public void setMarks(final String marks) throws DOMException {
-        updateInlineStyle("marks", marks);
+    @Throws(DOMException::class)
+    override fun setMarks(marks: String?) {
+        updateInlineStyle("marks", marks)
     }
 
-    @Override
-    public void setMaxHeight(final String maxHeight) throws DOMException {
-        updateInlineStyle("max-height", maxHeight);
+    @Throws(DOMException::class)
+    override fun setMaxHeight(maxHeight: String?) {
+        updateInlineStyle("max-height", maxHeight)
     }
 
-    @Override
-    public void setMaxWidth(final String maxWidth) throws DOMException {
-        updateInlineStyle("max-width", maxWidth);
+    @Throws(DOMException::class)
+    override fun setMaxWidth(maxWidth: String?) {
+        updateInlineStyle("max-width", maxWidth)
     }
 
-    @Override
-    public void setMinHeight(final String minHeight) throws DOMException {
-        updateInlineStyle("min-height", minHeight);
+    @Throws(DOMException::class)
+    override fun setMinHeight(minHeight: String?) {
+        updateInlineStyle("min-height", minHeight)
     }
 
-    @Override
-    public void setMinWidth(final String minWidth) throws DOMException {
-        updateInlineStyle("min-width", minWidth);
+    @Throws(DOMException::class)
+    override fun setMinWidth(minWidth: String?) {
+        updateInlineStyle("min-width", minWidth)
     }
 
-    @Override
-    public void setOrphans(final String orphans) throws DOMException {
-        updateInlineStyle("orphans", orphans);
+    @Throws(DOMException::class)
+    override fun setOrphans(orphans: String?) {
+        updateInlineStyle("orphans", orphans)
     }
 
-    @Override
-    public void setOutline(final String outline) throws DOMException {
-        updateInlineStyle("outline", outline);
+    @Throws(DOMException::class)
+    override fun setOutline(outline: String?) {
+        updateInlineStyle("outline", outline)
     }
 
-    @Override
-    public void setOutlineColor(final String outlineColor) throws DOMException {
-        updateInlineStyle("outline-color", outlineColor);
+    @Throws(DOMException::class)
+    override fun setOutlineColor(outlineColor: String?) {
+        updateInlineStyle("outline-color", outlineColor)
     }
 
-    @Override
-    public void setOutlineStyle(final String outlineStyle) throws DOMException {
-        updateInlineStyle("outline-style", outlineStyle);
+    @Throws(DOMException::class)
+    override fun setOutlineStyle(outlineStyle: String?) {
+        updateInlineStyle("outline-style", outlineStyle)
     }
 
-    @Override
-    public void setOutlineWidth(final String outlineWidth) throws DOMException {
-        updateInlineStyle("outline-width", outlineWidth);
+    @Throws(DOMException::class)
+    override fun setOutlineWidth(outlineWidth: String?) {
+        updateInlineStyle("outline-width", outlineWidth)
     }
 
-    @Override
-    public void setOverflow(final String overflow) throws DOMException {
-        updateInlineStyle("overflow", overflow);
+    @Throws(DOMException::class)
+    override fun setOverflow(overflow: String?) {
+        updateInlineStyle("overflow", overflow)
     }
 
-    @Override
-    public void setPadding(final String padding) throws DOMException {
-        updateInlineStyle("padding", padding);
+    @Throws(DOMException::class)
+    override fun setPadding(padding: String?) {
+        updateInlineStyle("padding", padding)
     }
 
-    @Override
-    public void setPaddingTop(final String paddingTop) throws DOMException {
-        updateInlineStyle("padding-top", paddingTop);
+    @Throws(DOMException::class)
+    override fun setPaddingTop(paddingTop: String?) {
+        updateInlineStyle("padding-top", paddingTop)
     }
 
-    @Override
-    public void setPaddingRight(final String paddingRight) throws DOMException {
-        updateInlineStyle("padding-right", paddingRight);
+    @Throws(DOMException::class)
+    override fun setPaddingRight(paddingRight: String?) {
+        updateInlineStyle("padding-right", paddingRight)
     }
 
-    @Override
-    public void setPaddingBottom(final String paddingBottom) throws DOMException {
-        updateInlineStyle("padding-bottom", paddingBottom);
+    @Throws(DOMException::class)
+    override fun setPaddingBottom(paddingBottom: String?) {
+        updateInlineStyle("padding-bottom", paddingBottom)
     }
 
-    @Override
-    public void setPaddingLeft(final String paddingLeft) throws DOMException {
-        updateInlineStyle("padding-left", paddingLeft);
+    @Throws(DOMException::class)
+    override fun setPaddingLeft(paddingLeft: String?) {
+        updateInlineStyle("padding-left", paddingLeft)
     }
 
-    @Override
-    public void setPage(final String page) throws DOMException {
-        updateInlineStyle("page", page);
+    @Throws(DOMException::class)
+    override fun setPage(page: String?) {
+        updateInlineStyle("page", page)
     }
 
-    @Override
-    public void setPageBreakAfter(final String pageBreakAfter) throws DOMException {
-        updateInlineStyle("page-break-after", pageBreakAfter);
+    @Throws(DOMException::class)
+    override fun setPageBreakAfter(pageBreakAfter: String?) {
+        updateInlineStyle("page-break-after", pageBreakAfter)
     }
 
-    @Override
-    public void setPageBreakBefore(final String pageBreakBefore) throws DOMException {
-        updateInlineStyle("page-break-before", pageBreakBefore);
+    @Throws(DOMException::class)
+    override fun setPageBreakBefore(pageBreakBefore: String?) {
+        updateInlineStyle("page-break-before", pageBreakBefore)
     }
 
-    @Override
-    public void setPageBreakInside(final String pageBreakInside) throws DOMException {
-        updateInlineStyle("page-break-inside", pageBreakInside);
+    @Throws(DOMException::class)
+    override fun setPageBreakInside(pageBreakInside: String?) {
+        updateInlineStyle("page-break-inside", pageBreakInside)
     }
 
-    @Override
-    public void setPause(final String pause) throws DOMException {
-        updateInlineStyle("pause", pause);
+    @Throws(DOMException::class)
+    override fun setPause(pause: String?) {
+        updateInlineStyle("pause", pause)
     }
 
-    @Override
-    public void setPauseAfter(final String pauseAfter) throws DOMException {
-        updateInlineStyle("pause-after", pauseAfter);
+    @Throws(DOMException::class)
+    override fun setPauseAfter(pauseAfter: String?) {
+        updateInlineStyle("pause-after", pauseAfter)
     }
 
-    @Override
-    public void setPauseBefore(final String pauseBefore) throws DOMException {
-        updateInlineStyle("pause-before", pauseBefore);
+    @Throws(DOMException::class)
+    override fun setPauseBefore(pauseBefore: String?) {
+        updateInlineStyle("pause-before", pauseBefore)
     }
 
-    @Override
-    public void setPitch(final String pitch) throws DOMException {
-        updateInlineStyle("pitch", pitch);
+    @Throws(DOMException::class)
+    override fun setPitch(pitch: String?) {
+        updateInlineStyle("pitch", pitch)
     }
 
-    @Override
-    public void setPitchRange(final String pitchRange) throws DOMException {
-        updateInlineStyle("pitch-range", pitchRange);
+    @Throws(DOMException::class)
+    override fun setPitchRange(pitchRange: String?) {
+        updateInlineStyle("pitch-range", pitchRange)
     }
 
-    @Override
-    public void setPlayDuring(final String playDuring) throws DOMException {
-        updateInlineStyle("play-during", playDuring);
+    @Throws(DOMException::class)
+    override fun setPlayDuring(playDuring: String?) {
+        updateInlineStyle("play-during", playDuring)
     }
 
-    @Override
-    public void setPosition(final String position) throws DOMException {
-        updateInlineStyle("position", position);
+    @Throws(DOMException::class)
+    override fun setPosition(position: String?) {
+        updateInlineStyle("position", position)
     }
 
-    @Override
-    public void setQuotes(final String quotes) throws DOMException {
-        updateInlineStyle("quotes", quotes);
+    @Throws(DOMException::class)
+    override fun setQuotes(quotes: String?) {
+        updateInlineStyle("quotes", quotes)
     }
 
-    @Override
-    public void setRichness(final String richness) throws DOMException {
-        updateInlineStyle("richness", richness);
+    @Throws(DOMException::class)
+    override fun setRichness(richness: String?) {
+        updateInlineStyle("richness", richness)
     }
 
-    @Override
-    public void setRight(final String right) throws DOMException {
-        updateInlineStyle("right", right);
+    @Throws(DOMException::class)
+    override fun setRight(right: String?) {
+        updateInlineStyle("right", right)
     }
 
-    @Override
-    public void setSize(final String size) throws DOMException {
-        updateInlineStyle("size", size);
+    @Throws(DOMException::class)
+    override fun setSize(size: String?) {
+        updateInlineStyle("size", size)
     }
 
-    @Override
-    public void setSpeak(final String speak) throws DOMException {
-        updateInlineStyle("speak", speak);
+    @Throws(DOMException::class)
+    override fun setSpeak(speak: String?) {
+        updateInlineStyle("speak", speak)
     }
 
-    @Override
-    public void setSpeakHeader(final String speakHeader) throws DOMException {
-        updateInlineStyle("speak-header", speakHeader);
+    @Throws(DOMException::class)
+    override fun setSpeakHeader(speakHeader: String?) {
+        updateInlineStyle("speak-header", speakHeader)
     }
 
-    @Override
-    public void setSpeakNumeral(final String speakNumeral) throws DOMException {
-        updateInlineStyle("speak-numeral", speakNumeral);
+    @Throws(DOMException::class)
+    override fun setSpeakNumeral(speakNumeral: String?) {
+        updateInlineStyle("speak-numeral", speakNumeral)
     }
 
-    @Override
-    public void setSpeakPunctuation(final String speakPunctuation) throws DOMException {
-        updateInlineStyle("speak-punctuation", speakPunctuation);
+    @Throws(DOMException::class)
+    override fun setSpeakPunctuation(speakPunctuation: String?) {
+        updateInlineStyle("speak-punctuation", speakPunctuation)
     }
 
-    @Override
-    public void setSpeechRate(final String speechRate) throws DOMException {
-        updateInlineStyle("speech-rate", speechRate);
+    @Throws(DOMException::class)
+    override fun setSpeechRate(speechRate: String?) {
+        updateInlineStyle("speech-rate", speechRate)
     }
 
-    @Override
-    public void setStress(final String stress) throws DOMException {
-        updateInlineStyle("stress", stress);
+    @Throws(DOMException::class)
+    override fun setStress(stress: String?) {
+        updateInlineStyle("stress", stress)
     }
 
-    @Override
-    public void setTableLayout(final String tableLayout) throws DOMException {
-        updateInlineStyle("table-layout", tableLayout);
+    @Throws(DOMException::class)
+    override fun setTableLayout(tableLayout: String?) {
+        updateInlineStyle("table-layout", tableLayout)
     }
 
-    @Override
-    public void setTextAlign(final String textAlign) throws DOMException {
-        updateInlineStyle("text-align", textAlign);
+    @Throws(DOMException::class)
+    override fun setTextAlign(textAlign: String?) {
+        updateInlineStyle("text-align", textAlign)
     }
 
-    @Override
-    public void setTextDecoration(final String textDecoration) throws DOMException {
-        updateInlineStyle("text-decoration", textDecoration);
+    @Throws(DOMException::class)
+    override fun setTextDecoration(textDecoration: String?) {
+        updateInlineStyle("text-decoration", textDecoration)
     }
 
-    @Override
-    public void setTextIndent(final String textIndent) throws DOMException {
-        updateInlineStyle("text-indent", textIndent);
+    @Throws(DOMException::class)
+    override fun setTextIndent(textIndent: String?) {
+        updateInlineStyle("text-indent", textIndent)
     }
 
-    @Override
-    public void setTextShadow(final String textShadow) throws DOMException {
-        updateInlineStyle("text-shadow", textShadow);
+    @Throws(DOMException::class)
+    override fun setTextShadow(textShadow: String?) {
+        updateInlineStyle("text-shadow", textShadow)
     }
 
-    @Override
-    public void setTextTransform(final String textTransform) throws DOMException {
-        updateInlineStyle("text-transform", textTransform);
+    @Throws(DOMException::class)
+    override fun setTextTransform(textTransform: String?) {
+        updateInlineStyle("text-transform", textTransform)
     }
 
-    @Override
-    public void setTop(final String top) throws DOMException {
-        updateInlineStyle("top", top);
+    @Throws(DOMException::class)
+    override fun setTop(top: String?) {
+        updateInlineStyle("top", top)
     }
 
-    @Override
-    public void setUnicodeBidi(final String unicodeBidi) throws DOMException {
-        updateInlineStyle("unicode-bidi", unicodeBidi);
+    @Throws(DOMException::class)
+    override fun setUnicodeBidi(unicodeBidi: String?) {
+        updateInlineStyle("unicode-bidi", unicodeBidi)
     }
 
-    @Override
-    public void setVerticalAlign(final String verticalAlign) throws DOMException {
-        updateInlineStyle("vertical-align", verticalAlign);
+    @Throws(DOMException::class)
+    override fun setVerticalAlign(verticalAlign: String?) {
+        updateInlineStyle("vertical-align", verticalAlign)
     }
 
-    @Override
-    public void setVisibility(final String visibility) throws DOMException {
-        updateInlineStyle("visibility", visibility);
+    @Throws(DOMException::class)
+    override fun setVisibility(visibility: String?) {
+        updateInlineStyle("visibility", visibility)
     }
 
-    @Override
-    public void setVoiceFamily(final String voiceFamily) throws DOMException {
-        updateInlineStyle("voice-family", voiceFamily);
+    @Throws(DOMException::class)
+    override fun setVoiceFamily(voiceFamily: String?) {
+        updateInlineStyle("voice-family", voiceFamily)
     }
 
-    @Override
-    public void setVolume(final String volume) throws DOMException {
-        updateInlineStyle("volume", volume);
+    @Throws(DOMException::class)
+    override fun setVolume(volume: String?) {
+        updateInlineStyle("volume", volume)
     }
 
-    @Override
-    public void setWhiteSpace(final String whiteSpace) throws DOMException {
-        updateInlineStyle("white-space", whiteSpace);
+    @Throws(DOMException::class)
+    override fun setWhiteSpace(whiteSpace: String?) {
+        updateInlineStyle("white-space", whiteSpace)
     }
 
-    @Override
-    public void setWidows(final String widows) throws DOMException {
-        updateInlineStyle("widows", widows);
+    @Throws(DOMException::class)
+    override fun setWidows(widows: String?) {
+        updateInlineStyle("widows", widows)
     }
 
-    @Override
-    public void setWidth(final String width) throws DOMException {
-        updateInlineStyle("width", width);
+    @Throws(DOMException::class)
+    override fun setWidth(width: String?) {
+        updateInlineStyle("width", width)
     }
 
-    @Override
-    public void setWordSpacing(final String wordSpacing) throws DOMException {
-        updateInlineStyle("word-spacing", wordSpacing);
+    @Throws(DOMException::class)
+    override fun setWordSpacing(wordSpacing: String?) {
+        updateInlineStyle("word-spacing", wordSpacing)
     }
 
-    @Override
-    public void setZIndex(final String zIndex) throws DOMException {
-        updateInlineStyle("z-index", zIndex);
+    @Throws(DOMException::class)
+    override fun setZIndex(zIndex: String?) {
+        updateInlineStyle("z-index", zIndex)
     }
 
-    @Override
-    protected NodeData getNodeData() {
-        final HTMLElementImpl ele = this.element;
-        final String inlineStyle = ele.getAttribute("style");
-        if ((inlineStyle != null) && (inlineStyle.length() > 0)) {
-            final List<StyleSheet> jSheets = new ArrayList<>();
-            final StyleSheet jSheet = CSSUtilities.jParseInlineStyle(inlineStyle, null, ele, true);
-            jSheets.add(jSheet);
-            final DirectAnalyzer domAnalyser = new DirectAnalyzer(jSheets);
-            return domAnalyser.getElementStyle(ele, null, "screen");
+    protected override fun getNodeData(): NodeData? {
+        val ele = this.element
+        val inlineStyle = ele.getAttribute("style")
+        if ((inlineStyle != null) && (inlineStyle.length > 0)) {
+            val jSheets: MutableList<StyleSheet?> = ArrayList<StyleSheet?>()
+            val jSheet = CSSUtilities.jParseInlineStyle(inlineStyle, null, ele, true)
+            jSheets.add(jSheet)
+            val domAnalyser = DirectAnalyzer(jSheets)
+            return domAnalyser.getElementStyle(ele, null, "screen")
         }
-        return null;
+        return null
     }
 
-    private void updateInlineStyle(final String propertyName, final String propertyValue) {
-        final Element ele = this.element;
+    private fun updateInlineStyle(propertyName: String, propertyValue: String?) {
+        val ele: Element? = this.element
         if (ele != null) {
-            final StringBuilder sb = new StringBuilder();
-            final String inlineStyle = ele.getAttribute("style");
-            if ((inlineStyle != null) && (inlineStyle.length() > 0)) {
-                final String propertyNameLC = propertyName.toLowerCase();
-                final String[] styleDeclarations = inlineStyle.split(";");
-                for (final String styleDeclaration : styleDeclarations) {
-                    final String[] nameValue = styleDeclaration.split(":");
-                    if (nameValue.length == 2) {
-                        final String oldPropertyName = nameValue[0].toLowerCase().trim();
-                        if (!(oldPropertyName.equals(propertyNameLC))) {
-                            sb.append(styleDeclaration + ";");
+            val sb = StringBuilder()
+            val inlineStyle = ele.getAttribute("style")
+            if ((inlineStyle != null) && (inlineStyle.length > 0)) {
+                val propertyNameLC = propertyName.lowercase(Locale.getDefault())
+                val styleDeclarations =
+                    inlineStyle.split(";".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+                for (styleDeclaration in styleDeclarations) {
+                    val nameValue =
+                        styleDeclaration.split(":".toRegex()).dropLastWhile { it.isEmpty() }
+                            .toTypedArray()
+                    if (nameValue.size == 2) {
+                        val oldPropertyName =
+                            nameValue[0].lowercase(Locale.getDefault()).trim { it <= ' ' }
+                        if (!(oldPropertyName == propertyNameLC)) {
+                            sb.append(styleDeclaration + ";")
                         }
                     }
                 }
             }
-            sb.append(propertyName + ":" + propertyValue + ";");
-            ele.setAttribute("style", sb.toString());
+            sb.append(propertyName + ":" + propertyValue + ";")
+            ele.setAttribute("style", sb.toString())
         }
     }
-
 }

@@ -21,28 +21,25 @@
 /*
  * Created on Jan 15, 2006
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import javax.swing.JPasswordField;
-import javax.swing.text.JTextComponent;
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement
+import javax.swing.JPasswordField
+import javax.swing.text.JTextComponent
 
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement;
-
-class InputPasswordControl extends InputTextControl {
-    private static final long serialVersionUID = -5595867004382157867L;
-
-    public InputPasswordControl(final HTMLBaseInputElement modelNode) {
-        super(modelNode);
-    }
-
+internal class InputPasswordControl(modelNode: HTMLBaseInputElement?) :
+    InputTextControl(modelNode) {
     /*
      * (non-Javadoc)
      *
      * @see
      * org.xamjwg.html.renderer.InputTextControl#createTextField(java.lang.String)
      */
-    @Override
-    protected JTextComponent createTextField() {
-        return new JPasswordField();
+    override fun createTextField(): JTextComponent {
+        return JPasswordField()
+    }
+
+    companion object {
+        private val serialVersionUID = -5595867004382157867L
     }
 }

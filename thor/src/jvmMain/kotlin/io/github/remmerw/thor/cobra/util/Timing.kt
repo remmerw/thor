@@ -18,26 +18,26 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
 
-public class Timing {
-    public static double round1(final double value) {
-        return Math.round(value * 10.0) / 10.0;
+object Timing {
+    fun round1(value: Double): Double {
+        return Math.round(value * 10.0) / 10.0
     }
 
-    public static String getElapsedText(final long elapsedMillis) {
+    fun getElapsedText(elapsedMillis: Long): String {
         if (elapsedMillis < 60000) {
-            final double unit = round1(elapsedMillis / 1000.0);
-            return unit + (unit == 1 ? " second" : " seconds");
+            val unit = round1(elapsedMillis / 1000.0)
+            return unit.toString() + (if (unit == 1.0) " second" else " seconds")
         } else if (elapsedMillis < (60000 * 60)) {
-            final double unit = round1(elapsedMillis / 60000.0);
-            return unit + (unit == 1 ? " minute" : " minutes");
+            val unit = round1(elapsedMillis / 60000.0)
+            return unit.toString() + (if (unit == 1.0) " minute" else " minutes")
         } else if (elapsedMillis < (60000 * 60 * 24)) {
-            final double unit = round1(elapsedMillis / (60000.0 * 60));
-            return unit + (unit == 1 ? " hour" : " hours");
+            val unit = round1(elapsedMillis / (60000.0 * 60))
+            return unit.toString() + (if (unit == 1.0) " hour" else " hours")
         } else {
-            final double unit = round1(elapsedMillis / (60000.0 * 60 * 24));
-            return unit + (unit == 1 ? " day" : " days");
+            val unit = round1(elapsedMillis / (60000.0 * 60 * 24))
+            return unit.toString() + (if (unit == 1.0) " day" else " days")
         }
     }
 }

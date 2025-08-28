@@ -21,53 +21,56 @@
 /*
  * Created on Oct 8, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.html.HTMLFrameElement;
-import org.w3c.dom.html.HTMLIFrameElement;
-import org.w3c.dom.html.HTMLLinkElement;
+import org.w3c.dom.Element
+import org.w3c.dom.Node
+import org.w3c.dom.html.HTMLFrameElement
+import org.w3c.dom.html.HTMLIFrameElement
+import org.w3c.dom.html.HTMLLinkElement
 
-public interface NodeFilter {
-    boolean accept(Node node);
+interface NodeFilter {
+    fun accept(node: Node?): Boolean
 
-    final class ImageFilter implements NodeFilter {
-        public boolean accept(final Node node) {
-            return "IMG".equalsIgnoreCase(node.getNodeName());
+    class ImageFilter : NodeFilter {
+        override fun accept(node: Node): Boolean {
+            return "IMG".equals(node.nodeName, ignoreCase = true)
         }
     }
 
-    final class AppletFilter implements NodeFilter {
-        public boolean accept(final Node node) {
+    class AppletFilter : NodeFilter {
+        override fun accept(node: Node): Boolean {
             // TODO: "OBJECT" elements that are applets too.
-            return "APPLET".equalsIgnoreCase(node.getNodeName());
+            return "APPLET".equals(node.nodeName, ignoreCase = true)
         }
     }
 
-    final class LinkFilter implements NodeFilter {
-        public boolean accept(final Node node) {
-            return node instanceof HTMLLinkElement;
+    class LinkFilter : NodeFilter {
+        override fun accept(node: Node?): Boolean {
+            return node is HTMLLinkElement
         }
     }
 
-    final class AnchorFilter implements NodeFilter {
-        public boolean accept(final Node node) {
-            final String nodeName = node.getNodeName();
-            return "A".equalsIgnoreCase(nodeName) || "ANCHOR".equalsIgnoreCase(nodeName);
+    class AnchorFilter : NodeFilter {
+        override fun accept(node: Node): Boolean {
+            val nodeName = node.nodeName
+            return "A".equals(nodeName, ignoreCase = true) || "ANCHOR".equals(
+                nodeName,
+                ignoreCase = true
+            )
         }
     }
 
-    final class FormFilter implements NodeFilter {
-        public boolean accept(final Node node) {
-            final String nodeName = node.getNodeName();
-            return "FORM".equalsIgnoreCase(nodeName);
+    class FormFilter : NodeFilter {
+        override fun accept(node: Node): Boolean {
+            val nodeName = node.nodeName
+            return "FORM".equals(nodeName, ignoreCase = true)
         }
     }
 
-    final class FrameFilter implements NodeFilter {
-        public boolean accept(final Node node) {
-            return (node instanceof HTMLFrameElement) || (node instanceof HTMLIFrameElement);
+    class FrameFilter : NodeFilter {
+        override fun accept(node: Node?): Boolean {
+            return (node is HTMLFrameElement) || (node is HTMLIFrameElement)
         }
     }
 
@@ -76,43 +79,26 @@ public interface NodeFilter {
     // return node instanceof org.w3c.dom.html2.HTMLBodyElement;
     // }
     // }
-
-    final class ElementNameFilter implements NodeFilter {
-        private final String name;
-
-        public ElementNameFilter(final String name) {
-            this.name = name;
-        }
-
-        public boolean accept(final Node node) {
+    class ElementNameFilter(private val name: String) : NodeFilter {
+        override fun accept(node: Node?): Boolean {
             // TODO: Case sensitive?
-            return (node instanceof Element) && this.name.equals(((Element) node).getAttribute("name"));
+            return (node is Element) && this.name == node.getAttribute("name")
         }
     }
 
-    final class ElementFilter implements NodeFilter {
-        public ElementFilter() {
-        }
-
-        public boolean accept(final Node node) {
-            return node instanceof Element;
+    class ElementFilter : NodeFilter {
+        override fun accept(node: Node?): Boolean {
+            return node is Element
         }
     }
 
-    final class TagNameFilter implements NodeFilter {
-        private final String name;
-
-        public TagNameFilter(final String name) {
-            this.name = name;
-        }
-
-        public boolean accept(final Node node) {
-            if (!(node instanceof Element)) {
-                return false;
+    class TagNameFilter(private val name: String) : NodeFilter {
+        override fun accept(node: Node?): Boolean {
+            if (node !is Element) {
+                return false
             }
-            final String n = this.name;
-            return n.equalsIgnoreCase(((Element) node).getTagName());
+            val n = this.name
+            return n.equals(node.tagName, ignoreCase = true)
         }
     }
-
 }

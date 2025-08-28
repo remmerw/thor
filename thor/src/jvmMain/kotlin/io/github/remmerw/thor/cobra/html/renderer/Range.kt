@@ -21,27 +21,17 @@
 /*
  * Created on Apr 16, 2005
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
 /**
  * @author J. H. S.
  */
-class Range {
-    public final int offset;
-    public final int length;
-
-    /**
-     * @param offset
-     * @param length
-     */
-    public Range(final int offset, final int length) {
-        super();
-        this.offset = offset;
-        this.length = length;
-    }
-
-    @Override
-    public String toString() {
-        return "Range[offset=" + this.offset + ",length=" + this.length + "]";
+internal class Range
+/**
+ * @param offset
+ * @param length
+ */(val offset: Int, val length: Int) {
+    override fun toString(): String {
+        return "Range[offset=" + this.offset + ",length=" + this.length + "]"
     }
 }

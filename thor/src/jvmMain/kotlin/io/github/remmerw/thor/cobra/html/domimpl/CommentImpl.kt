@@ -21,44 +21,36 @@
 /*
  * Created on Oct 9, 2005
  */
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.Comment;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Node;
+import org.w3c.dom.Comment
+import org.w3c.dom.DOMException
+import org.w3c.dom.Node
 
-public class CommentImpl extends CharacterDataImpl implements Comment {
-    public CommentImpl(final String text) {
-        super(text);
+class CommentImpl(text: String?) : CharacterDataImpl(text), Comment {
+    override fun getLocalName(): String? {
+        return null
     }
 
-    @Override
-    public String getLocalName() {
-        return null;
+    override fun getNodeName(): String {
+        return "#comment"
     }
 
-    @Override
-    public String getNodeName() {
-        return "#comment";
+    @Throws(DOMException::class)
+    override fun getNodeValue(): String? {
+        return this.textContent
     }
 
-    @Override
-    public String getNodeValue() throws DOMException {
-        return this.getTextContent();
+    @Throws(DOMException::class)
+    override fun setNodeValue(nodeValue: String?) {
+        this.setTextContent(nodeValue)
     }
 
-    @Override
-    public void setNodeValue(final String nodeValue) throws DOMException {
-        this.setTextContent(nodeValue);
+    override fun getNodeType(): Short {
+        return COMMENT_NODE
     }
 
-    @Override
-    public short getNodeType() {
-        return Node.COMMENT_NODE;
-    }
-
-    @Override
-    protected Node createSimilarNode() {
-        return new CommentImpl(this.text);
+    override fun createSimilarNode(): Node {
+        return CommentImpl(this.text)
     }
 }

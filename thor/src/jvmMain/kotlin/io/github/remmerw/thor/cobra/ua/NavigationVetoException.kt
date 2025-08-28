@@ -18,30 +18,24 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.ua;
+package io.github.remmerw.thor.cobra.ua
 
 /**
- * An exception thrown by {@link NavigationListener} methods in order to prevent
+ * An exception thrown by [NavigationListener] methods in order to prevent
  * navigation from occurring.
  *
  * @see NavigationListener
  */
-public class NavigationVetoException extends Exception {
-    private static final long serialVersionUID = -3613259503559453757L;
+class NavigationVetoException : Exception {
+    constructor() : super()
 
-    public NavigationVetoException() {
-        super();
-    }
+    constructor(message: String?, cause: Throwable?) : super(message, cause)
 
-    public NavigationVetoException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
+    constructor(message: String?) : super(message)
 
-    public NavigationVetoException(final String message) {
-        super(message);
-    }
+    constructor(cause: Throwable?) : super(cause)
 
-    public NavigationVetoException(final Throwable cause) {
-        super(cause);
+    companion object {
+        private val serialVersionUID = -3613259503559453757L
     }
 }

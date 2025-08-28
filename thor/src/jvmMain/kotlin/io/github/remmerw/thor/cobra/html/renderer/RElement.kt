@@ -18,24 +18,16 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
+package io.github.remmerw.thor.cobra.html.renderer
 
-package io.github.remmerw.thor.cobra.html.renderer;
-
-import cz.vutbr.web.css.CSSProperty.VerticalAlign;
-import io.github.remmerw.thor.cobra.html.domimpl.UINode;
+import cz.vutbr.web.css.CSSProperty.VerticalAlign
+import io.github.remmerw.thor.cobra.html.domimpl.UINode
 
 /**
  * A renderer node for elements such as blocks, lists, tables, inputs, images,
  * etc.
  */
-public interface RElement extends RCollection, UINode {
-    int VALIGN_TOP = 0;
-    int VALIGN_MIDDLE = 1;
-    int VALIGN_BOTTOM = 2;
-    int VALIGN_ABSMIDDLE = 3;
-    int VALIGN_ABSBOTTOM = 4;
-    int VALIGN_BASELINE = 5;
-
+interface RElement : RCollection, UINode {
     /**
      * Lays out the subtree below the RElement. The RElement is expected to set
      * its own dimensions, but not its origin.
@@ -44,29 +36,37 @@ public interface RElement extends RCollection, UINode {
      * @param availHeight The available height from the parent's canvas.
      * @param sizeOnly    Whether the layout is for sizing determination only.
      */
-    void layout(int availWidth, int availHeight, boolean sizeOnly);
+    fun layout(availWidth: Int, availHeight: Int, sizeOnly: Boolean)
 
-    /**
-     * Vertical alignment for elements rendered in a line. Returns one of the
-     * constants defined in this class.
-     */
-    default VerticalAlign getVAlign() {
-        return VerticalAlign.BASELINE;
+    val vAlign: CSSProperty.VerticalAlign?
+        /**
+         * Vertical alignment for elements rendered in a line. Returns one of the
+         * constants defined in this class.
+         */
+        get() = VerticalAlign.BASELINE
+
+    val marginTop: Int
+
+    val marginLeft: Int
+
+    val marginBottom: Int
+
+    val marginRight: Int
+
+    val collapsibleMarginTop: Int
+
+    val collapsibleMarginBottom: Int
+
+    fun invalidateRenderStyle()
+
+    fun setupRelativePosition(container: RenderableContainer?)
+
+    companion object {
+        const val VALIGN_TOP: Int = 0
+        const val VALIGN_MIDDLE: Int = 1
+        const val VALIGN_BOTTOM: Int = 2
+        const val VALIGN_ABSMIDDLE: Int = 3
+        const val VALIGN_ABSBOTTOM: Int = 4
+        const val VALIGN_BASELINE: Int = 5
     }
-
-    int getMarginTop();
-
-    int getMarginLeft();
-
-    int getMarginBottom();
-
-    int getMarginRight();
-
-    int getCollapsibleMarginTop();
-
-    int getCollapsibleMarginBottom();
-
-    void invalidateRenderStyle();
-
-    void setupRelativePosition(final RenderableContainer container);
 }

@@ -1,97 +1,93 @@
-package io.github.remmerw.thor.cobra.html.domimpl;
+package io.github.remmerw.thor.cobra.html.domimpl
 
-import org.w3c.dom.html.HTMLAppletElement;
+import org.w3c.dom.html.HTMLAppletElement
 
-public class HTMLAppletElementImpl extends HTMLAbstractUIElement implements HTMLAppletElement {
-    public HTMLAppletElementImpl(final String name) {
-        super(name);
+class HTMLAppletElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLAppletElement {
+    override fun getAlign(): String? {
+        return this.getAttribute("align")
     }
 
-    public String getAlign() {
-        return this.getAttribute("align");
+    override fun setAlign(align: String?) {
+        this.setAttribute("align", align)
     }
 
-    public void setAlign(final String align) {
-        this.setAttribute("align", align);
+    override fun getAlt(): String? {
+        return this.getAttribute("alt")
     }
 
-    public String getAlt() {
-        return this.getAttribute("alt");
+    override fun setAlt(alt: String?) {
+        this.setAttribute("alt", alt)
     }
 
-    public void setAlt(final String alt) {
-        this.setAttribute("alt", alt);
+    override fun getArchive(): String? {
+        return this.getAttribute("archive")
     }
 
-    public String getArchive() {
-        return this.getAttribute("archive");
+    override fun setArchive(archive: String?) {
+        this.setAttribute("archive", archive)
     }
 
-    public void setArchive(final String archive) {
-        this.setAttribute("archive", archive);
+    override fun getCode(): String? {
+        return this.getAttribute("code")
     }
 
-    public String getCode() {
-        return this.getAttribute("code");
+    override fun setCode(code: String?) {
+        this.setAttribute("code", code)
     }
 
-    public void setCode(final String code) {
-        this.setAttribute("code", code);
+    override fun getCodeBase(): String? {
+        return this.getAttribute("codebase")
     }
 
-    public String getCodeBase() {
-        return this.getAttribute("codebase");
+    override fun setCodeBase(codeBase: String?) {
+        this.setAttribute("codebase", codeBase)
     }
 
-    public void setCodeBase(final String codeBase) {
-        this.setAttribute("codebase", codeBase);
+    override fun getHeight(): String? {
+        return this.getAttribute("height")
     }
 
-    public String getHeight() {
-        return this.getAttribute("height");
+    override fun setHeight(height: String?) {
+        this.setAttribute("height", height)
     }
 
-    public void setHeight(final String height) {
-        this.setAttribute("height", height);
+    override fun getHspace(): String? {
+        return this.getAttribute("hspace")
     }
 
-    public String getHspace() {
-        return this.getAttribute("hspace");
+    override fun setHspace(hspace: String?) {
+        this.setAttribute("hspace", hspace)
     }
 
-    public void setHspace(final String hspace) {
-        this.setAttribute("hspace", hspace);
+    override fun getName(): String? {
+        return this.getAttribute("name")
     }
 
-    public String getName() {
-        return this.getAttribute("name");
+    override fun setName(name: String?) {
+        this.setAttribute("name", name)
     }
 
-    public void setName(final String name) {
-        this.setAttribute("name", name);
+    override fun getObject(): String? {
+        return this.getAttribute("object")
     }
 
-    public String getObject() {
-        return this.getAttribute("object");
+    override fun setObject(`object`: String?) {
+        this.setAttribute("object", `object`)
     }
 
-    public void setObject(final String object) {
-        this.setAttribute("object", object);
+    override fun getVspace(): String? {
+        return this.getAttribute("vspace")
     }
 
-    public String getVspace() {
-        return this.getAttribute("vspace");
+    override fun setVspace(vspace: String?) {
+        this.setAttribute("vspace", vspace)
     }
 
-    public void setVspace(final String vspace) {
-        this.setAttribute("vspace", vspace);
+    override fun getWidth(): String? {
+        return this.getAttribute("width")
     }
 
-    public String getWidth() {
-        return this.getAttribute("width");
-    }
-
-    public void setWidth(final String width) {
-        this.setAttribute("width", width);
+    override fun setWidth(width: String?) {
+        this.setAttribute("width", width)
     }
 }

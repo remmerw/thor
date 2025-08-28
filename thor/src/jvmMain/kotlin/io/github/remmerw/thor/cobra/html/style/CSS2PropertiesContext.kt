@@ -18,18 +18,18 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.style;
+package io.github.remmerw.thor.cobra.html.style
 
-public interface CSS2PropertiesContext {
-    void informLookInvalid();
+interface CSS2PropertiesContext {
+    fun informLookInvalid()
 
-    void informSizeInvalid();
+    fun informSizeInvalid()
 
-    void informPositionInvalid();
+    fun informPositionInvalid()
 
-    void informLayoutInvalid();
+    fun informLayoutInvalid()
 
-    void informInvalid();
+    fun informInvalid()
 
-    String getDocumentBaseURI();
+    val documentBaseURI: String?
 }

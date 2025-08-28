@@ -13,41 +13,36 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+package io.github.remmerw.thor.cobra.css.domimpl
 
-package io.github.remmerw.thor.cobra.css.domimpl;
+import org.w3c.dom.DOMException
+import org.w3c.dom.css.CSSCharsetRule
 
-import org.w3c.dom.DOMException;
-import org.w3c.dom.css.CSSCharsetRule;
-import org.w3c.dom.css.CSSRule;
-
-final class CSSCharsetRuleImpl extends AbstractCSSRule implements CSSCharsetRule {
-
-    CSSCharsetRuleImpl(final JStyleSheetWrapper containingStyleSheet) {
-        super(containingStyleSheet);
+internal class CSSCharsetRuleImpl(containingStyleSheet: JStyleSheetWrapper?) :
+    AbstractCSSRule(containingStyleSheet), CSSCharsetRule {
+    override fun getType(): Short {
+        return CHARSET_RULE
     }
 
-    public short getType() {
-        return CSSRule.CHARSET_RULE;
-    }
-
-    public String getCssText() {
+    override fun getCssText(): String? {
         // TODO implement this method
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
 
-    public void setCssText(final String cssText) throws DOMException {
+    @Throws(DOMException::class)
+    override fun setCssText(cssText: String?) {
         // TODO implement this method
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
 
-    public String getEncoding() {
+    override fun getEncoding(): String? {
         // TODO implement this method
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
 
-    public void setEncoding(final String encoding) throws DOMException {
+    @Throws(DOMException::class)
+    override fun setEncoding(encoding: String?) {
         // TODO implement this method
-        throw new UnsupportedOperationException();
+        throw UnsupportedOperationException()
     }
-
 }

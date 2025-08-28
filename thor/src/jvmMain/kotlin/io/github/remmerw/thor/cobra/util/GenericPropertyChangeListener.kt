@@ -21,39 +21,32 @@
 /*
  * Created on Mar 19, 2005
  */
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.EventObject;
+import java.beans.PropertyChangeEvent
+import java.beans.PropertyChangeListener
+import java.util.EventObject
 
 /**
  * @author J. H. S.
  */
-public class GenericPropertyChangeListener implements GenericEventListener {
-    private final PropertyChangeListener delegate;
-
-    public GenericPropertyChangeListener(final PropertyChangeListener delegate) {
-        this.delegate = delegate;
-    }
-
+class GenericPropertyChangeListener(private val delegate: PropertyChangeListener) :
+    GenericEventListener {
     /*
-     * (non-Javadoc)
-     *
-     * @see net.sourceforge.xamj.util.GenericEventListener#processEvent(java.util.
-     * EventObject)
-     */
-    public void processEvent(final EventObject event) {
-        this.delegate.propertyChange((PropertyChangeEvent) event);
+          * (non-Javadoc)
+          *
+          * @see net.sourceforge.xamj.util.GenericEventListener#processEvent(java.util.
+          * EventObject)
+          */
+    override fun processEvent(event: EventObject?) {
+        this.delegate.propertyChange(event as PropertyChangeEvent?)
     }
 
-    @Override
-    public boolean equals(final Object other) {
-        return (other instanceof GenericPropertyChangeListener) && ((GenericPropertyChangeListener) other).delegate.equals(this.delegate);
+    override fun equals(other: Any?): Boolean {
+        return (other is GenericPropertyChangeListener) && other.delegate == this.delegate
     }
 
-    @Override
-    public int hashCode() {
-        return this.delegate.hashCode();
+    override fun hashCode(): Int {
+        return this.delegate.hashCode()
     }
 }

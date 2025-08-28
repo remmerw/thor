@@ -21,25 +21,22 @@
 /*
  * Created on Jun 19, 2005
  */
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
 
-import java.net.URL;
-import java.util.Collection;
+import java.net.URL
 
 /**
  * @author J. H. S.
  */
-public class MultiplexClassLoader extends BaseClassLoader {
-    private static final ClassLoader[] EMPTY_CLASS_LOADERS = new ClassLoader[0];
-    private final ClassLoader[] parentLoaders;
+class MultiplexClassLoader(classLoaders: MutableCollection<ClassLoader?>) : BaseClassLoader(null) {
+    private val parentLoaders: Array<ClassLoader>
 
     /**
      * @param parent
      */
-    public MultiplexClassLoader(final Collection<ClassLoader> classLoaders) {
-        super(null);
+    init {
         // TODO: Check why input parameter is not being used
-        this.parentLoaders = classLoaders.toArray(EMPTY_CLASS_LOADERS);
+        this.parentLoaders = classLoaders.toArray<ClassLoader?>(EMPTY_CLASS_LOADERS)
     }
 
     /*
@@ -47,52 +44,55 @@ public class MultiplexClassLoader extends BaseClassLoader {
      *
      * @see java.lang.ClassLoader#loadClass(java.lang.String, boolean)
      */
-    @Override
-    public synchronized Class<?> loadClass(final String name, final boolean resolve) throws ClassNotFoundException {
+    @Synchronized
+    @Throws(ClassNotFoundException::class)
+    override fun loadClass(name: String?, resolve: Boolean): Class<*>? {
         // First, check if the class has already been loaded
-        Class<?> c = findLoadedClass(name);
+        var c = findLoadedClass(name)
         if (c == null) {
             try {
-                final int len = this.parentLoaders.length;
+                val len = this.parentLoaders.size
                 if (len == 0) {
-                    c = findSystemClass(name);
+                    c = findSystemClass(name)
                 } else {
-                    for (int i = 0; i < len; i++) {
-                        final ClassLoader parent = this.parentLoaders[i];
+                    for (i in 0..<len) {
+                        val parent = this.parentLoaders[i]
                         try {
-                            c = parent.loadClass(name);
+                            c = parent.loadClass(name)
                             if (c != null) {
-                                return c;
+                                return c
                             }
-                        } catch (final ClassNotFoundException cnfe) {
+                        } catch (cnfe: ClassNotFoundException) {
                             // ignore
                         }
                     }
                 }
-            } catch (final ClassNotFoundException e) {
+            } catch (e: ClassNotFoundException) {
                 // If still not found, then invoke findClass in order
                 // to find the class.
-                c = findClass(name);
+                c = findClass(name)
             }
             if (c == null) {
-                c = findClass(name);
+                c = findClass(name)
             }
         }
         if (resolve) {
-            resolveClass(c);
+            resolveClass(c)
         }
-        return c;
+        return c
     }
 
-    @Override
-    public URL getResource(final String name) {
-        for (final ClassLoader loader : parentLoaders) {
-            final URL url = loader.getResource(name);
+    override fun getResource(name: String?): URL? {
+        for (loader in parentLoaders) {
+            val url = loader.getResource(name)
             if (url != null) {
-                return url;
+                return url
             }
         }
-        return null;
+        return null
     }
 
+    companion object {
+        private val EMPTY_CLASS_LOADERS = arrayOfNulls<ClassLoader>(0)
+    }
 }

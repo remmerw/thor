@@ -21,41 +21,45 @@
 /*
  * Created on Jan 15, 2006
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import java.awt.Graphics;
-import java.io.File;
+import cz.vutbr.web.css.CSSProperty.VerticalAlign
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement
+import io.github.remmerw.thor.cobra.html.domimpl.InputContext
+import java.awt.Graphics
 
-import cz.vutbr.web.css.CSSProperty.VerticalAlign;
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement;
-import io.github.remmerw.thor.cobra.html.domimpl.InputContext;
+internal abstract class BaseInputControl(modelNode: HTMLBaseInputElement?) : BaseControl(modelNode),
+    InputContext {
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.xamjwg.html.domimpl.InputContext#getValue()
+     *//*
+     * (non-Javadoc)
+     *
+     * @see org.xamjwg.html.domimpl.InputContext#setValue(java.lang.String)
+     */
+    var value: String? = null
+    protected var size: Int = -1
 
-abstract class BaseInputControl extends BaseControl implements InputContext {
-    private static final long serialVersionUID = -5300609640161763515L;
-    protected String value;
-    protected int size = -1;
-
-    public BaseInputControl(final HTMLBaseInputElement modelNode) {
-        super(modelNode);
-        this.setOpaque(false);
+    init {
+        this.isOpaque = false
     }
 
-    @Override
-    public void reset(final int availWidth, final int availHeight) {
-        super.reset(availWidth, availHeight);
-        final String sizeText = this.controlElement.getAttribute("size");
+    override fun reset(availWidth: Int, availHeight: Int) {
+        super.reset(availWidth, availHeight)
+        val sizeText = this.controlElement.getAttribute("size")
         if (sizeText != null) {
             try {
-                this.size = Integer.parseInt(sizeText);
-            } catch (final NumberFormatException nfe) {
+                this.size = sizeText.toInt()
+            } catch (nfe: NumberFormatException) {
                 // ignore
             }
         }
     }
 
-    @Override
-    public VerticalAlign getVAlign() {
-        return VerticalAlign.BOTTOM;
+    override fun getVAlign(): VerticalAlign? {
+        return VerticalAlign.BOTTOM
     }
 
     /*
@@ -63,7 +67,7 @@ abstract class BaseInputControl extends BaseControl implements InputContext {
      *
      * @see org.xamjwg.html.domimpl.InputContext#blur()
      */
-    public void blur() {
+    override fun blur() {
     }
 
     /*
@@ -71,7 +75,7 @@ abstract class BaseInputControl extends BaseControl implements InputContext {
      *
      * @see org.xamjwg.html.domimpl.InputContext#click()
      */
-    public void click() {
+    override fun click() {
     }
 
     /*
@@ -79,223 +83,190 @@ abstract class BaseInputControl extends BaseControl implements InputContext {
      *
      * @see org.xamjwg.html.domimpl.InputContext#focus()
      */
-    public void focus() {
-        this.requestFocus();
+    override fun focus() {
+        this.requestFocus()
     }
+
+    var checked: Boolean
+        /*
+             * (non-Javadoc)
+             *
+             * @see org.xamjwg.html.domimpl.InputContext#getChecked()
+             */
+        get() = false
+        /*
+             * (non-Javadoc)
+             *
+             * @see org.xamjwg.html.domimpl.InputContext#setChecked(boolean)
+             */
+        set(checked) {
+        }
+
+    var disabled: Boolean
+        /*
+             * (non-Javadoc)
+             *
+             * @see org.xamjwg.html.domimpl.InputContext#getDisabled()
+             */
+        get() = !this.isEnabled
+        /*
+             * (non-Javadoc)
+             *
+             * @see org.xamjwg.html.domimpl.InputContext#setDisabled(boolean)
+             */
+        set(disabled) {
+            this.setEnabled(!disabled)
+        }
+
+    var maxLength: Int
+        /*
+             * (non-Javadoc)
+             *
+             * @see org.xamjwg.html.domimpl.InputContext#getMaxLength()
+             */
+        get() = 0
+        /*
+             * (non-Javadoc)
+             *
+             * @see org.xamjwg.html.domimpl.InputContext#setMaxLength(int)
+             */
+        set(maxLength) {
+        }
+
+    var readOnly: Boolean
+        /*
+             * (non-Javadoc)
+             *
+             * @see org.xamjwg.html.domimpl.InputContext#getReadOnly()
+             */
+        get() = false
+        /*
+             * (non-Javadoc)
+             *
+             * @see org.xamjwg.html.domimpl.InputContext#setReadOnly(boolean)
+             */
+        set(readOnly) {
+        }
+
+    var tabIndex: Int
+        /*
+             * (non-Javadoc)
+             *
+             * @see org.xamjwg.html.domimpl.InputContext#getTabIndex()
+             */
+        get() = 0
+        /*
+             * (non-Javadoc)
+             *
+             * @see org.xamjwg.html.domimpl.InputContext#setTabIndex(int)
+             */
+        set(tabIndex) {
+        }
+
+    val values: Array<String?>?
+        /**
+         * Returns `null`. It should be overridden by controls that support
+         * multiple values.
+         */
+        get() = null
 
     /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#getChecked()
-     */
-    public boolean getChecked() {
-        return false;
+    * (non-Javadoc)
+    *
+    * @see org.xamjwg.html.domimpl.InputContext#select()
+    */
+    override fun select() {
     }
+
+    var controlSize: Int
+        /*
+             * (non-Javadoc)
+             *
+             * @see org.xamjwg.html.domimpl.InputContext#getTextSize()
+             */
+        get() = this.size
+        /*
+             * (non-Javadoc)
+             *
+             * @see org.xamjwg.html.domimpl.InputContext#setSize(int)
+             */
+        set(size) {
+            this.size = size
+            this.invalidate()
+        }
+
+    var cols: Int
+        /*
+             * (non-Javadoc)
+             *
+             * @see org.xamjwg.html.domimpl.InputContext#getCols()
+             */
+        get() = 0
+        /*
+             * (non-Javadoc)
+             *
+             * @see org.xamjwg.html.domimpl.InputContext#setCols(int)
+             */
+        set(cols) {
+        }
+
+    var rows: Int
+        /*
+             * (non-Javadoc)
+             *
+             * @see org.xamjwg.html.domimpl.InputContext#getRows()
+             */
+        get() = 0
+        /*
+             * (non-Javadoc)
+             *
+             * @see org.xamjwg.html.domimpl.InputContext#setRows(int)
+             */
+        set(rows) {
+        }
 
     /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#setChecked(boolean)
-     */
-    public void setChecked(final boolean checked) {
+    * (non-Javadoc)
+    *
+    * @see org.xamjwg.html.renderer.UIControl#paintSelection(java.awt.Graphics,
+    * boolean, org.xamjwg.html.renderer.RenderablePoint,
+    * org.xamjwg.html.renderer.RenderablePoint)
+    */
+    open fun paintSelection(
+        g: Graphics?,
+        inSelection: Boolean,
+        startPoint: RenderableSpot?,
+        endPoint: RenderableSpot?
+    ): Boolean {
+        return inSelection
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#getDisabled()
-     */
-    public boolean getDisabled() {
-        return !this.isEnabled();
-    }
+    var multiple: Boolean
+        get() =// For selects
+            false
+        set(value) {
+            // For selects
+        }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#setDisabled(boolean)
-     */
-    public void setDisabled(final boolean disabled) {
-        this.setEnabled(!disabled);
-    }
+    var selectedIndex: Int
+        get() =// For selects
+            -1
+        set(value) {
+            // For selects
+        }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#getMaxLength()
-     */
-    public int getMaxLength() {
-        return 0;
-    }
+    var visibleSize: Int
+        get() =// For selects
+            0
+        set(value) {
+            // For selects
+        }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#setMaxLength(int)
-     */
-    public void setMaxLength(final int maxLength) {
-    }
+    val fileValue: File
+        get() =// For file inputs
+            null
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#getReadOnly()
-     */
-    public boolean getReadOnly() {
-        return false;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#setReadOnly(boolean)
-     */
-    public void setReadOnly(final boolean readOnly) {
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#getTabIndex()
-     */
-    public int getTabIndex() {
-        return 0;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#setTabIndex(int)
-     */
-    public void setTabIndex(final int tabIndex) {
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#getValue()
-     */
-    public String getValue() {
-        return this.value;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#setValue(java.lang.String)
-     */
-    public void setValue(final String value) {
-        this.value = value;
-    }
-
-    /**
-     * Returns <code>null</code>. It should be overridden by controls that support
-     * multiple values.
-     */
-    public String[] getValues() {
-        return null;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#select()
-     */
-    public void select() {
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#getTextSize()
-     */
-    public int getControlSize() {
-        return this.size;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#setSize(int)
-     */
-    public void setControlSize(final int size) {
-        this.size = size;
-        this.invalidate();
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#getCols()
-     */
-    public int getCols() {
-        return 0;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#setCols(int)
-     */
-    public void setCols(final int cols) {
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#getRows()
-     */
-    public int getRows() {
-        return 0;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#setRows(int)
-     */
-    public void setRows(final int rows) {
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.renderer.UIControl#paintSelection(java.awt.Graphics,
-     * boolean, org.xamjwg.html.renderer.RenderablePoint,
-     * org.xamjwg.html.renderer.RenderablePoint)
-     */
-    public boolean paintSelection(final Graphics g, final boolean inSelection, final RenderableSpot startPoint, final RenderableSpot endPoint) {
-        return inSelection;
-    }
-
-    public boolean getMultiple() {
-        // For selects
-        return false;
-    }
-
-    public void setMultiple(final boolean value) {
-        // For selects
-    }
-
-    public int getSelectedIndex() {
-        // For selects
-        return -1;
-    }
-
-    public void setSelectedIndex(final int value) {
-        // For selects
-    }
-
-    public int getVisibleSize() {
-        // For selects
-        return 0;
-    }
-
-    public void setVisibleSize(final int value) {
-        // For selects
-    }
-
-    public File getFileValue() {
-        // For file inputs
-        return null;
+    companion object {
+        private val serialVersionUID = -5300609640161763515L
     }
 }

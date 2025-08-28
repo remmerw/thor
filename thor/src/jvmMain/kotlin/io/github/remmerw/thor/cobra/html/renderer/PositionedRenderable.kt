@@ -18,201 +18,186 @@
 
     Contact info: lobochief@users.sourceforge.net
  */
-package io.github.remmerw.thor.cobra.html.renderer;
+package io.github.remmerw.thor.cobra.html.renderer
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.w3c.dom.html.HTMLDocument;
-import org.w3c.dom.html.HTMLHtmlElement;
+import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
+import io.github.remmerw.thor.cobra.html.style.RenderState
+import org.w3c.dom.html.HTMLDocument
+import org.w3c.dom.html.HTMLHtmlElement
+import java.awt.Graphics
+import java.awt.Point
+import java.awt.Rectangle
 
-import java.awt.Graphics;
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.Rectangle;
+class PositionedRenderable(
+    val renderable: BoundableRenderable, val verticalAlignable: Boolean, val ordinal: Int,
+    val isFloat: Boolean, private val isFixed: Boolean, private val isDelegated: Boolean
+) : Renderable {
+    val originalParent: RCollection
+        get() = this.renderable.getOriginalParent()
 
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode;
-import io.github.remmerw.thor.cobra.html.style.RenderState;
-
-public class PositionedRenderable implements Renderable {
-    public static final PositionedRenderable[] EMPTY_ARRAY = new PositionedRenderable[0];
-    public final @NonNull BoundableRenderable renderable;
-    public final boolean verticalAlignable;
-    public final int ordinal;
-    public final boolean isFloat;
-    private final boolean isFixed;
-    private final boolean isDelegated;
-
-    public PositionedRenderable(final @NonNull BoundableRenderable renderable, final boolean verticalAlignable, final int ordinal,
-                                final boolean isFloat, final boolean isFixed, final boolean isDelegated) {
-        super();
-        this.renderable = renderable;
-        this.verticalAlignable = verticalAlignable;
-        this.ordinal = ordinal;
-        this.isFloat = isFloat;
-        this.isFixed = isFixed;
-        this.isDelegated = isDelegated;
-    }
-
-    public RCollection getOriginalParent() {
-        return this.renderable.getOriginalParent();
-    }
-
-    @Override
-    public void paint(final Graphics gIn) {
+    override fun paint(gIn: Graphics) {
         if (isDelegated) {
-            return;
+            return
         }
 
-        final RCollection originalParent = this.renderable.getOriginalParent();
-        final RCollection rparent = renderable.getParent();
+        val originalParent = this.renderable.getOriginalParent()
+        val rparent = renderable.getParent()
 
-    /*
+        /*
     System.out.println("pr: " + this);
     System.out.println("  parent     : " + rparent);
     System.out.println("  orig parent: " + originalParent);
     */
-
-        final Point or = originalParent.getOriginRelativeTo(rparent);
-        final int pos = this.renderable.getModelNode().getRenderState().getPosition();
+        val or = originalParent.getOriginRelativeTo(rparent)
+        val pos = this.renderable.getModelNode().renderState!!.position
 
         if (isFloat || pos == RenderState.POSITION_ABSOLUTE || pos == RenderState.POSITION_FIXED) {
-            final Graphics g2 = gIn.create();
-            final Point some = getSome();
+            val g2 = gIn.create()
+            val some = this.some
 
             if (some != null) {
-                g2.translate(some.x, some.y);
+                g2.translate(some.x, some.y)
             }
 
-      /*
+            /*
       if (isFloat) {
         g2.translate(or.x, or.y);
       }*/
 
             // g2.setColor(Color.GREEN);
             // g2.fillRect(0, 0, renderable.getWidth(), 100);
-
-            this.renderable.paintTranslated(g2);
+            this.renderable.paintTranslated(g2)
         } else {
-            final Point orNoScroll = originalParent.getOriginRelativeToNoScroll(rparent);
+            val orNoScroll = originalParent.getOriginRelativeToNoScroll(rparent)
 
             // System.out.println("  orNoScroll: " + orNoScroll);
             // System.out.println("  or        : " + or);
 
             // final Rectangle bounds = originalParent.getClipBounds();
-            final Rectangle bounds = getRelativeBounds();
+            val bounds = this.relativeBounds
             // System.out.println("  clip bounds: " + bounds);
-            Graphics g2;
+            val g2: Graphics
             if (bounds != null) {
-                final int tx = bounds.x + orNoScroll.x;
-                final int ty = bounds.y + orNoScroll.y;
-                g2 = gIn.create(tx, ty, bounds.width, bounds.height);
-                g2.translate(-tx, -ty);
+                val tx = bounds.x + orNoScroll.x
+                val ty = bounds.y + orNoScroll.y
+                g2 = gIn.create(tx, ty, bounds.width, bounds.height)
+                g2.translate(-tx, -ty)
             } else {
-                g2 = gIn.create();
+                g2 = gIn.create()
             }
 
-            g2.translate(or.x, or.y);
+            g2.translate(or.x, or.y)
 
             // g2.setColor(new java.awt.Color(0.5f, 0.5f, 0f, 0.8f));
             // g2.fillRect(0, 0, bounds.width, bounds.height);
-
             try {
-                this.renderable.paintTranslated(g2);
+                this.renderable.paintTranslated(g2)
             } finally {
-                g2.dispose();
+                g2.dispose()
             }
         }
     }
 
-    private Rectangle getRelativeBounds() {
-        final RCollection origParent = this.renderable.getOriginalParent();
-        RCollection current = origParent;
-        Rectangle currentBounds = current.getClipBoundsWithoutInsets();
-        final RCollection parent = this.renderable.getParent();
-        while (current != parent) {
-            current = current.getParent();
-            if (current.getModelNode() instanceof HTMLHtmlElement) {
-                break;
-            }
-            final Rectangle newBounds = current.getClipBoundsWithoutInsets();
-            if (newBounds != null) {
-                final Point or = origParent.getOriginRelativeToNoScroll(current);
-                newBounds.translate(-or.x, -or.y);
-                if (currentBounds == null) {
-                    currentBounds = newBounds;
-                } else {
-                    currentBounds = currentBounds.intersection(newBounds);
+    private val relativeBounds: Rectangle?
+        get() {
+            val origParent = this.renderable.getOriginalParent()
+            var current = origParent
+            var currentBounds = current.getClipBoundsWithoutInsets()
+            val parent = this.renderable.getParent()
+            while (current !== parent) {
+                current = current.getParent()
+                if (current.getModelNode() is HTMLHtmlElement) {
+                    break
+                }
+                val newBounds = current.getClipBoundsWithoutInsets()
+                if (newBounds != null) {
+                    val or = origParent.getOriginRelativeToNoScroll(current)
+                    newBounds.translate(-or.x, -or.y)
+                    if (currentBounds == null) {
+                        currentBounds = newBounds
+                    } else {
+                        currentBounds = currentBounds.intersection(newBounds)
+                    }
                 }
             }
-        }
-        return currentBounds;
-    }
-
-    @Override
-    public ModelNode getModelNode() {
-        return this.renderable.getModelNode();
-    }
-
-    @Override
-    public boolean isFixed() {
-        return isFixed;
-    }
-
-    @Override
-    public String toString() {
-        return "PosRndrbl [" + renderable + "]";
-    }
-
-    public Rectangle getVisualBounds() {
-        final Rectangle bounds = renderable.getVisualBounds();
-        final Point offset = getOffset();
-        bounds.translate(offset.x, offset.y);
-        return bounds;
-    }
-
-    public Point getOffset() {
-        final Point offset = new Point();
-        final int pos = this.renderable.getModelNode().getRenderState().getPosition();
-
-        final RCollection originalParent = this.renderable.getOriginalParent();
-        final RCollection rparent = renderable.getParent();
-        final Point or = originalParent.getOriginRelativeTo(rparent);
-        if (isFloat || pos == RenderState.POSITION_ABSOLUTE || pos == RenderState.POSITION_FIXED) {
-            final Point some = getSome();
-            if (some != null) {
-                offset.translate(some.x, some.y);
-            }
-        } else {
-            offset.translate(or.x, or.y);
-        }
-        return offset;
-    }
-
-    // TODO: name this function well: what exactly does it compute?
-    private Point getSome() {
-        final RCollection rparent = renderable.getParent();
-        if (!isFixed && rparent.getModelNode() instanceof HTMLDocument) {
-            Renderable htmlRenderable = RenderUtils.findHtmlRenderable(rparent);
-            if (htmlRenderable instanceof PositionedRenderable htmlPR) {
-                htmlRenderable = htmlPR.renderable;
-            }
-            // TODO: Handle other renderable types such as RTable
-            if (htmlRenderable instanceof RBlock htmlBlock) {
-                final Point htmlOffset = htmlBlock.bodyLayout.getOrigin();
-                final Insets htmlInsets = htmlBlock.getInsetsMarginBorder(htmlBlock.hasHScrollBar, htmlBlock.hasVScrollBar);
-
-                return new Point((int) htmlOffset.getX() - htmlInsets.left, (int) htmlOffset.getY() - htmlInsets.top);
-            }
+            return currentBounds
         }
 
-        return null;
+    override fun getModelNode(): ModelNode? {
+        return this.renderable.getModelNode()
     }
 
-    public boolean contains(int x, int y) {
-        return getVisualBounds().contains(x, y);
+    override fun isFixed(): Boolean {
+        return isFixed
     }
 
-    @Override
-    public boolean isReadyToPaint() {
-        return renderable.isReadyToPaint();
+    override fun toString(): String {
+        return "PosRndrbl [" + renderable + "]"
+    }
+
+    val visualBounds: Rectangle
+        get() {
+            val bounds = renderable.getVisualBounds()
+            val offset = this.offset
+            bounds.translate(offset.x, offset.y)
+            return bounds
+        }
+
+    val offset: Point
+        get() {
+            val offset = Point()
+            val pos = this.renderable.getModelNode().renderState!!.position
+
+            val originalParent = this.renderable.getOriginalParent()
+            val rparent = renderable.getParent()
+            val or = originalParent.getOriginRelativeTo(rparent)
+            if (isFloat || pos == RenderState.POSITION_ABSOLUTE || pos == RenderState.POSITION_FIXED) {
+                val some = this.some
+                if (some != null) {
+                    offset.translate(some.x, some.y)
+                }
+            } else {
+                offset.translate(or.x, or.y)
+            }
+            return offset
+        }
+
+    private val some: Point?
+        // TODO: name this function well: what exactly does it compute?
+        get() {
+            val rparent = renderable.getParent()
+            if (!isFixed && rparent.getModelNode() is HTMLDocument) {
+                var htmlRenderable = RenderUtils.findHtmlRenderable(rparent)
+                if (htmlRenderable is PositionedRenderable) {
+                    htmlRenderable = htmlRenderable.renderable
+                }
+                // TODO: Handle other renderable types such as RTable
+                if (htmlRenderable is RBlock) {
+                    val htmlOffset = htmlRenderable.bodyLayout.getOrigin()
+                    val htmlInsets = htmlRenderable.getInsetsMarginBorder(
+                        htmlRenderable.hasHScrollBar,
+                        htmlRenderable.hasVScrollBar
+                    )
+
+                    return Point(
+                        htmlOffset.getX().toInt() - htmlInsets.left,
+                        htmlOffset.getY().toInt() - htmlInsets.top
+                    )
+                }
+            }
+
+            return null
+        }
+
+    fun contains(x: Int, y: Int): Boolean {
+        return this.visualBounds.contains(x, y)
+    }
+
+    override fun isReadyToPaint(): Boolean {
+        return renderable.isReadyToPaint()
+    }
+
+    companion object {
+        val EMPTY_ARRAY: Array<PositionedRenderable?> = arrayOfNulls<PositionedRenderable>(0)
     }
 }

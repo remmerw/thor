@@ -21,23 +21,15 @@
 /*
  * Created on Oct 23, 2005
  */
-package io.github.remmerw.thor.cobra.html.parser;
+package io.github.remmerw.thor.cobra.html.parser
 
-import org.w3c.dom.Element;
+import org.w3c.dom.Element
 
-class StopException extends Exception {
-    private static final long serialVersionUID = 5937640406056298831L;
-    private final Element element;
-
-    /**
-     * @param element
-     */
-    public StopException(final Element element) {
-        super();
-        this.element = element;
-    }
-
-    public Element getElement() {
-        return this.element;
+internal class StopException
+/**
+ * @param element
+ */(val element: Element?) : Exception() {
+    companion object {
+        private const val serialVersionUID = 5937640406056298831L
     }
 }

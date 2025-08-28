@@ -1,145 +1,146 @@
-package io.github.remmerw.thor.cobra.util;
+package io.github.remmerw.thor.cobra.util
 
-import javax.annotation.Nullable;
+object HexDump {
+    private val HEX_DIGITS =
+        charArrayOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F')
+    private val HEX_LOWER_CASE_DIGITS =
+        charArrayOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f')
 
-public class HexDump {
-    private final static char[] HEX_DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
-    private final static char[] HEX_LOWER_CASE_DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
-
-    public static String dumpHexString(@Nullable byte[] array) {
-        if (array == null) return "(null)";
-        return dumpHexString(array, 0, array.length);
+    fun dumpHexString(array: ByteArray?): String {
+        if (array == null) return "(null)"
+        return dumpHexString(array, 0, array.size)
     }
 
-    public static String dumpHexString(@Nullable byte[] array, int offset, int length) {
-        if (array == null) return "(null)";
-        StringBuilder result = new StringBuilder();
+    fun dumpHexString(array: ByteArray?, offset: Int, length: Int): String {
+        if (array == null) return "(null)"
+        val result = StringBuilder()
 
-        byte[] line = new byte[16];
-        int lineIndex = 0;
+        val line = ByteArray(16)
+        var lineIndex = 0
 
-        result.append("\n0x");
-        result.append(toHexString(offset));
+        result.append("\n0x")
+        result.append(toHexString(offset))
 
-        for (int i = offset; i < offset + length; i++) {
+        for (i in offset..<offset + length) {
             if (lineIndex == 16) {
-                result.append(" ");
+                result.append(" ")
 
-                for (int j = 0; j < 16; j++) {
-                    if (line[j] > ' ' && line[j] < '~') {
-                        result.append(new String(line, j, 1));
+                for (j in 0..15) {
+                    if (line[j] > ' '.code.toByte() && line[j] < '~'.code.toByte()) {
+                        result.append(String(line, j, 1))
                     } else {
-                        result.append(".");
+                        result.append(".")
                     }
                 }
 
-                result.append("\n0x");
-                result.append(toHexString(i));
-                lineIndex = 0;
+                result.append("\n0x")
+                result.append(toHexString(i))
+                lineIndex = 0
             }
 
-            byte b = array[i];
-            result.append(" ");
-            result.append(HEX_DIGITS[(b >>> 4) & 0x0F]);
-            result.append(HEX_DIGITS[b & 0x0F]);
+            val b = array[i]
+            result.append(" ")
+            result.append(HEX_DIGITS[(b.toInt() ushr 4) and 0x0F])
+            result.append(HEX_DIGITS[b.toInt() and 0x0F])
 
-            line[lineIndex++] = b;
+            line[lineIndex++] = b
         }
 
         if (lineIndex != 16) {
-            int count = (16 - lineIndex) * 3;
-            count++;
-            for (int i = 0; i < count; i++) {
-                result.append(" ");
+            var count = (16 - lineIndex) * 3
+            count++
+            for (i in 0..<count) {
+                result.append(" ")
             }
 
-            for (int i = 0; i < lineIndex; i++) {
-                if (line[i] > ' ' && line[i] < '~') {
-                    result.append(new String(line, i, 1));
+            for (i in 0..<lineIndex) {
+                if (line[i] > ' '.code.toByte() && line[i] < '~'.code.toByte()) {
+                    result.append(String(line, i, 1))
                 } else {
-                    result.append(".");
+                    result.append(".")
                 }
             }
         }
 
-        return result.toString();
+        return result.toString()
     }
 
-    public static String toHexString(byte b) {
-        return toHexString(toByteArray(b));
+    fun toHexString(b: Byte): String {
+        return toHexString(toByteArray(b))
     }
 
-    public static String toHexString(byte[] array) {
-        return toHexString(array, 0, array.length, true);
+    fun toHexString(array: ByteArray, upperCase: Boolean): String {
+        return toHexString(array, 0, array.size, upperCase)
     }
 
-    public static String toHexString(byte[] array, boolean upperCase) {
-        return toHexString(array, 0, array.length, upperCase);
-    }
+    @JvmOverloads
+    fun toHexString(
+        array: ByteArray,
+        offset: Int = 0,
+        length: Int = array.length,
+        upperCase: Boolean = true
+    ): String {
+        val digits = if (upperCase) HEX_DIGITS else HEX_LOWER_CASE_DIGITS
+        val buf = CharArray(length * 2)
 
-    public static String toHexString(byte[] array, int offset, int length) {
-        return toHexString(array, offset, length, true);
-    }
-
-    public static String toHexString(byte[] array, int offset, int length, boolean upperCase) {
-        char[] digits = upperCase ? HEX_DIGITS : HEX_LOWER_CASE_DIGITS;
-        char[] buf = new char[length * 2];
-
-        int bufIndex = 0;
-        for (int i = offset; i < offset + length; i++) {
-            byte b = array[i];
-            buf[bufIndex++] = digits[(b >>> 4) & 0x0F];
-            buf[bufIndex++] = digits[b & 0x0F];
+        var bufIndex = 0
+        for (i in offset..<offset + length) {
+            val b = array[i]
+            buf[bufIndex++] = digits[(b.toInt() ushr 4) and 0x0F]
+            buf[bufIndex++] = digits[b.toInt() and 0x0F]
         }
 
-        return new String(buf);
+        return String(buf)
     }
 
-    public static String toHexString(int i) {
-        return toHexString(toByteArray(i));
+    fun toHexString(i: Int): String {
+        return toHexString(toByteArray(i))
     }
 
-    public static byte[] toByteArray(byte b) {
-        byte[] array = new byte[1];
-        array[0] = b;
-        return array;
+    fun toByteArray(b: Byte): ByteArray {
+        val array = ByteArray(1)
+        array[0] = b
+        return array
     }
 
-    public static byte[] toByteArray(int i) {
-        byte[] array = new byte[4];
+    fun toByteArray(i: Int): ByteArray {
+        val array = ByteArray(4)
 
-        array[3] = (byte) (i & 0xFF);
-        array[2] = (byte) ((i >> 8) & 0xFF);
-        array[1] = (byte) ((i >> 16) & 0xFF);
-        array[0] = (byte) ((i >> 24) & 0xFF);
+        array[3] = (i and 0xFF).toByte()
+        array[2] = ((i shr 8) and 0xFF).toByte()
+        array[1] = ((i shr 16) and 0xFF).toByte()
+        array[0] = ((i shr 24) and 0xFF).toByte()
 
-        return array;
+        return array
     }
 
-    private static int toByte(char c) {
-        if (c >= '0' && c <= '9') return (c - '0');
-        if (c >= 'A' && c <= 'F') return (c - 'A' + 10);
-        if (c >= 'a' && c <= 'f') return (c - 'a' + 10);
+    private fun toByte(c: Char): Int {
+        if (c >= '0' && c <= '9') return (c.code - '0'.code)
+        if (c >= 'A' && c <= 'F') return (c.code - 'A'.code + 10)
+        if (c >= 'a' && c <= 'f') return (c.code - 'a'.code + 10)
 
-        throw new RuntimeException("Invalid hex char '" + c + "'");
+        throw RuntimeException("Invalid hex char '" + c + "'")
     }
 
 
-    public static byte[] hexStringToByteArray(String hexString) {
-        int length = hexString.length();
-        byte[] buffer = new byte[length / 2];
+    fun hexStringToByteArray(hexString: String): ByteArray {
+        val length = hexString.length
+        val buffer = ByteArray(length / 2)
 
-        for (int i = 0; i < length; i += 2) {
-            buffer[i / 2] = (byte) ((toByte(hexString.charAt(i)) << 4) | toByte(hexString.charAt(i + 1)));
+        var i = 0
+        while (i < length) {
+            buffer[i / 2] =
+                ((toByte(hexString.get(i)) shl 4) or toByte(hexString.get(i + 1))).toByte()
+            i += 2
         }
 
-        return buffer;
+        return buffer
     }
 
-    public static StringBuilder appendByteAsHex(StringBuilder sb, byte b, boolean upperCase) {
-        char[] digits = upperCase ? HEX_DIGITS : HEX_LOWER_CASE_DIGITS;
-        sb.append(digits[(b >> 4) & 0xf]);
-        sb.append(digits[b & 0xf]);
-        return sb;
+    fun appendByteAsHex(sb: StringBuilder, b: Byte, upperCase: Boolean): StringBuilder {
+        val digits = if (upperCase) HEX_DIGITS else HEX_LOWER_CASE_DIGITS
+        sb.append(digits[(b.toInt() shr 4) and 0xf])
+        sb.append(digits[b.toInt() and 0xf])
+        return sb
     }
 }

@@ -21,20 +21,20 @@
 /*
  * Created on Nov 13, 2005
  */
-package io.github.remmerw.thor.cobra.html;
+package io.github.remmerw.thor.cobra.html
 
-import java.util.EventListener;
+import java.util.EventListener
 
 /**
- * The <code>ReadyStateChangeListener</code> interface is implemented to receive
- * ReadyState change events from {@link org.cobraparser.html.HttpRequest}.
+ * The `ReadyStateChangeListener` interface is implemented to receive
+ * ReadyState change events from [org.cobraparser.html.HttpRequest].
  *
  * @author J. H. S.
- * @see org.cobraparser.html.HttpRequest#addReadyStateChangeListener(ReadyStateChangeListener)
+ * @see org.cobraparser.html.HttpRequest.addReadyStateChangeListener
  */
-public interface ReadyStateChangeListener extends EventListener {
+interface ReadyStateChangeListener : EventListener {
     /**
      * This method is called when the ReadyState changes.
      */
-    void readyStateChanged();
+    fun readyStateChanged()
 }
