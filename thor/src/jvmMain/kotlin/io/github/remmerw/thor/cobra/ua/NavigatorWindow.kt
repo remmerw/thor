@@ -23,6 +23,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 package io.github.remmerw.thor.cobra.ua
 
 import java.awt.Component
+import java.awt.Window
 import javax.swing.JMenu
 
 /**
