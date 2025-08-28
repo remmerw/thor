@@ -56,6 +56,19 @@ kotlin {
             }
         }
 
+        jvmMain {
+            dependencies {
+                implementation("org.mozilla:rhino:1.8.0")
+                implementation("com.squareup.okhttp:okhttp:2.2.0")
+                implementation("org.bouncycastle:bcprov-jdk15to18:1.64")
+                implementation("org.bouncycastle:bcmail-jdk15to18:1.64")
+                implementation("org.eclipse.jdt:org.eclipse.jdt.annotation:2.0.0")
+                implementation("de.malkusch.whois-server-list:public-suffix-list:2.2.0")
+                implementation("net.sf.cssbox:jstyleparser:1.23")
+                implementation("org.w3c.css:sac:1.3")
+            }
+        }
+
         jvmTest {
             dependencies {
                 implementation(libs.kotlin.test)

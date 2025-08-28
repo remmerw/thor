@@ -92,3 +92,6 @@ fun createTasks(ctx: Context): Tasks {
 fun createBookmarks(ctx: Context): Bookmarks {
     return bookmarksDatabaseBuilder(bookmarksBuilder(ctx))
 }
+
+actual fun render() {
+}

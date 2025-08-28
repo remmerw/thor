@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import io.github.remmerw.thor.cobra.Render
 import io.github.remmerw.idun.Idun
 import io.github.remmerw.idun.newIdun
 import io.github.remmerw.thor.core.Bookmarks
@@ -95,3 +96,8 @@ fun createBookmarks(): Bookmarks {
 }
 
 
+actual fun render() {
+    val url = "http://www.benjysbrain.com/"
+    val p = Render(url)
+    p.parsePage()
+}
