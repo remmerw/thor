@@ -34,7 +34,7 @@ object Objects {
     }
 
     /* Checks whether the arguments are an exact match to the parameter types */
-    fun areSameTo(objects: Array<Any?>, types: Array<Class<*>?>): Boolean {
+    fun areSameTo(objects: Array<out Any?>, types: Array<Class<*>?>): Boolean {
         val length = objects.size
         if (length != types.size) {
             return false

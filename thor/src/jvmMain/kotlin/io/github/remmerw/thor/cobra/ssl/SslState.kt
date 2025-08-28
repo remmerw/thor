@@ -5,9 +5,5 @@ enum class SslState(name: String) {
     VALID("Valid"),
     INVALID("Invalid");
 
-    val name: String?
 
-    init {
-        this.name = name
-    }
 }

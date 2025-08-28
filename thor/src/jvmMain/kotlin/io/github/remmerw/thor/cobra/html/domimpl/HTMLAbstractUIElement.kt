@@ -41,14 +41,14 @@ open class HTMLAbstractUIElement(name: String?) : HTMLElementImpl(name) {
     private var functionByAttribute: MutableMap<String?, Function?>? = null
 
     open fun focus() {
-        val node = this.getUINode()
+        val node = this.uINode
         if (node != null) {
             node.focus()
         }
     }
 
     open fun blur() {
-        val node = this.getUINode()
+        val node = this.uINode
         if (node != null) {
             node.blur()
         }
@@ -66,7 +66,7 @@ open class HTMLAbstractUIElement(name: String?) : HTMLElementImpl(name) {
             if (f != null) {
                 return f
             }
-            val uac = this.getUserAgentContext()
+            val uac = this.userAgentContext
             checkNotNull(uac) { "No user agent context." }
             if (uac.isScriptingEnabled()) {
                 val attributeValue = this.getAttribute(attributeName)
@@ -76,11 +76,11 @@ open class HTMLAbstractUIElement(name: String?) : HTMLElementImpl(name) {
                                 + " }")
                     val doc = this.document
                     checkNotNull(doc) { "Element does not belong to a document." }
-                    val window = (doc as HTMLDocumentImpl).getWindow()
+                    val window = (doc as HTMLDocumentImpl).window
                     val ctx = Executor.createContext(
-                        this.getDocumentURL(),
+                        this.documentURL,
                         uac,
-                        window.getContextFactory()
+                        window.contextFactory
                     )
                     try {
                         val scope = window.getWindowScope()
@@ -127,7 +127,7 @@ open class HTMLAbstractUIElement(name: String?) : HTMLElementImpl(name) {
         }
     }
 
-    override fun handleAttributeChanged(name: String, oldValue: String?, newValue: String?) {
+    override fun handleAttributeChanged(name: String, oldValue: String, newValue: String) {
         super.handleAttributeChanged(name, oldValue, newValue)
         if (name.startsWith("on")) {
             synchronized(this) {

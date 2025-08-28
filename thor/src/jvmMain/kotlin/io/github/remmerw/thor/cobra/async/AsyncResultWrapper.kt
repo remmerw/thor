@@ -32,12 +32,12 @@ import java.util.function.Consumer
  *
  * @author J. H. S.
  */
-internal class AsyncResultWrapper<TResult>(private var ar: AsyncResult<TResult?>?) :
-    AsyncResult<TResult?>, AsyncResultListener<TResult?> {
-    private val listeners: MutableCollection<AsyncResultListener<TResult?>?> =
-        LinkedList<AsyncResultListener<TResult?>?>()
+internal class AsyncResultWrapper<TResult>(private var ar: AsyncResult<TResult>) :
+    AsyncResult<TResult>, AsyncResultListener<TResult> {
+    private val listeners: MutableCollection<AsyncResultListener<TResult>> =
+        LinkedList<AsyncResultListener<TResult>>()
 
-    var asyncResult: AsyncResult<TResult?>?
+    var asyncResult: AsyncResult<TResult>
         get() = this.ar
         /**
          * @param ar The ar to set.
@@ -60,7 +60,7 @@ internal class AsyncResultWrapper<TResult>(private var ar: AsyncResult<TResult?>
      * org.xamjwg.clientlet.AsyncResult#addResultListener(org.xamjwg.clientlet
      * .AsyncResultListener)
      */
-    override fun addResultListener(listener: AsyncResultListener<TResult?>?) {
+    override fun addResultListener(listener: AsyncResultListener<TResult>) {
         synchronized(this) {
             this.listeners.add(listener)
         }
@@ -77,7 +77,7 @@ internal class AsyncResultWrapper<TResult>(private var ar: AsyncResult<TResult?>
      * org.xamjwg.clientlet.AsyncResult#removeResultListener(org.xamjwg.clientlet
      * .AsyncResultListener)
      */
-    override fun removeResultListener(listener: AsyncResultListener<TResult?>?) {
+    override fun removeResultListener(listener: AsyncResultListener<TResult>) {
         synchronized(this) {
             this.listeners.remove(listener)
         }
@@ -89,11 +89,11 @@ internal class AsyncResultWrapper<TResult>(private var ar: AsyncResult<TResult?>
      * @see
      * org.xamjwg.clientlet.AsyncResultListener#exceptionReceived(org.xamjwg.clientlet.AsyncResultEvent)
      */
-    override fun exceptionReceived(event: AsyncResultEvent<Throwable?>?) {
-        ArrayUtilities.forEachSynched<AsyncResultListener<TResult?>?, RuntimeException?>(
+    override fun exceptionReceived(event: AsyncResultEvent<Throwable>) {
+        ArrayUtilities.forEachSynched<AsyncResultListener<TResult>, RuntimeException>(
             this.listeners,
             this,
-            Consumer { l: AsyncResultListener<TResult?>? -> l!!.exceptionReceived(event) })
+            Consumer { l: AsyncResultListener<TResult>? -> l!!.exceptionReceived(event) })
     }
 
     /*
@@ -102,11 +102,11 @@ internal class AsyncResultWrapper<TResult>(private var ar: AsyncResult<TResult?>
      * @see
      * org.xamjwg.clientlet.AsyncResultListener#resultReceived(org.xamjwg.clientlet.AsyncResultEvent)
      */
-    override fun resultReceived(event: AsyncResultEvent<TResult?>?) {
-        ArrayUtilities.forEachSynched<AsyncResultListener<TResult?>?, RuntimeException?>(
+    override fun resultReceived(event: AsyncResultEvent<TResult>) {
+        ArrayUtilities.forEachSynched<AsyncResultListener<TResult>, RuntimeException>(
             this.listeners,
             this,
-            Consumer { l: AsyncResultListener<TResult?>? -> l!!.resultReceived(event) })
+            Consumer { l: AsyncResultListener<TResult>? -> l!!.resultReceived(event) })
     }
 
     /*

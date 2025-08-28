@@ -30,14 +30,14 @@ import org.w3c.dom.Element
 import org.w3c.dom.NamedNodeMap
 import org.w3c.dom.Node
 
-class NamedNodeMapImpl(owner: Element?, attribs: MutableMap<String?, String?>) :
+class NamedNodeMapImpl(owner: Element?, attribs: MutableMap<String, String>) :
     AbstractScriptableDelegate(), NamedNodeMap {
     // Note: class must be public for reflection to work.
-    private val attributes: MutableMap<String?, Node?> = HashMap<String?, Node?>()
-    private val attributeList = ArrayList<Node?>()
+    private val attributes: MutableMap<String, Node> = HashMap()
+    private val attributeList = ArrayList<Node>()
 
     init {
-        attribs.forEach { (name: String?, value: String?) ->
+        attribs.forEach { (name: String, value: String?) ->
             // TODO: "specified" attributes
             val attr: Attr = AttrImpl(name, value, true, owner, "ID" == name)
             this.attributes.put(name, attr)

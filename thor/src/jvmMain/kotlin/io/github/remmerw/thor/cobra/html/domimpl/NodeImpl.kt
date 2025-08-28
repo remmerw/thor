@@ -98,7 +98,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
     var treeLock: Any = this
 
     @Volatile
-    protected var notificationsSuspended: Boolean = false
+    protected var notificationsSuspended: kotlin.Boolean = false
 
     @Volatile
     protected var parentNode: Node? = null
@@ -109,7 +109,6 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
 
     @Volatile
     private var prefix: String? = null
-    private var renderState: RenderState? = null
 
     /**
      * @return the attachment with the document. true if the element is attached
@@ -117,7 +116,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
      * attached by default.
      */
     @Volatile
-    protected var isAttachedToDocument: Boolean = this is HTMLDocument
+    protected lateinit var isAttachedToDocument: kotlin.Boolean
         private set
 
     /**
@@ -298,7 +297,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
      */
     protected abstract fun createSimilarNode(): Node
 
-    override fun cloneNode(deep: Boolean): Node {
+    override fun cloneNode(deep: kotlin.Boolean): Node {
         // TODO: Synchronize with treeLock?
         try {
             val newNode = this.createSimilarNode()
@@ -387,7 +386,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
 
     return newChild;
   }*/
-    private fun isAncestorOf(other: Node): Boolean {
+    private fun isAncestorOf(other: Node): kotlin.Boolean {
         val parent = other.parentNode as NodeImpl?
         if (parent === this) {
             return true
@@ -398,7 +397,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
         }
     }
 
-    private fun isInclusiveAncestorOf(other: Node?): Boolean {
+    private fun isInclusiveAncestorOf(other: Node?): kotlin.Boolean {
         if (other === this) {
             return true
         } else if (other == null) {
@@ -633,7 +632,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
         }
     }
 
-    override fun hasChildNodes(): Boolean {
+    override fun hasChildNodes(): kotlin.Boolean {
         synchronized(this.treeLock) {
             val nl = this.nodeList
             return (nl != null) && !nl.isEmpty()
@@ -887,7 +886,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
             val len = nl.size
             var i = len
             while (--i >= 0) {
-                val node: Node? = nl.get(i)
+                val node: Node = nl.get(i)
                 if (filter.accept(node)) {
                     val n: Node? = nl.removeAt(i)
                     if (n is NodeImpl) {
@@ -950,7 +949,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
                     }
                 }
                 this.nodeList!!.removeAll(toDelete)
-                val textNode = TextImpl(textContent)
+                val textNode = TextImpl(textContent!!)
                 textNode.setOwnerDocument(this.document)
                 textNode.setParentImpl(this)
                 this.nodeList!!.add(firstIdx, textNode)
@@ -1048,7 +1047,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
             val nl = this.nodeList
             if (nl != null) {
                 var i = nl.iterator()
-                val textNodes: MutableList<Node?> = LinkedList<Node?>()
+                val textNodes: MutableList<Node> = LinkedList<Node>()
                 var prevText = false
                 while (i.hasNext()) {
                     val child = i.next()
@@ -1668,6 +1667,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
         }
 
     companion object {
+        @JvmStatic
         protected val logger: Logger = Logger.getLogger(NodeImpl::class.java.name)
         private val EMPTY_ARRAY = arrayOfNulls<NodeImpl>(0)
         private val BLANK_RENDER_STATE: RenderState = StyleSheetRenderState(null)

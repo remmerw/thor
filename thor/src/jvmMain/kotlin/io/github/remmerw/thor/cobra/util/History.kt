@@ -116,7 +116,7 @@ class History(
     }
 
     fun getHeadMatchItems(item: String, maxNumItems: Int): MutableCollection<String?> {
-        val array = ArrayUtilities.copy<String?>(this.historySortedSet, String::class.java)
+        val array = this.historySortedSet.toTypedArray()
         val idx = Arrays.binarySearch(array, item)
         val startIdx = if (idx >= 0) idx else (-idx - 1)
         var count = 0
@@ -124,7 +124,7 @@ class History(
         var i = startIdx
         while ((i < array.size) && (count++ < maxNumItems)) {
             val potentialItem = array[i]
-            if (potentialItem.startsWith(item)) {
+            if (potentialItem!!.startsWith(item)) {
                 items.add(potentialItem)
             } else {
                 break
@@ -179,10 +179,7 @@ class History(
         }
     }
 
-    private inner class TimedEntry
-    /**
-     * @param value
-     */(private val value: String) : Comparable<TimedEntry?>, Serializable {
+    private inner class TimedEntry(val value: String) : Comparable<TimedEntry>, Serializable {
         private var timestamp = System.currentTimeMillis()
 
         fun touch() {
@@ -219,12 +216,5 @@ class History(
             }
         }
 
-        companion object {
-            private const val serialVersionUID = 2257845000000000200L
-        }
-    }
-
-    companion object {
-        private const val serialVersionUID = 2257845000800300100L
     }
 }

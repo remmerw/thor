@@ -2,7 +2,7 @@ package io.github.remmerw.thor.cobra.html.gui
 
 import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
 
-internal class DocumentNotification(val type: Int, val node: NodeImpl?) {
+class DocumentNotification(val type: Int, val node: NodeImpl?) {
     override fun toString(): String {
         return "DocumentNotification[type=" + this.type + ",node=" + this.node + "]"
     }

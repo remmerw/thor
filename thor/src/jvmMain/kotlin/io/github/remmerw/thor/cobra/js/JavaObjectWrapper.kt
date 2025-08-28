@@ -22,13 +22,10 @@ package io.github.remmerw.thor.cobra.js
 
 import io.github.remmerw.thor.cobra.html.js.Window
 import org.mozilla.javascript.EvaluatorException
-import org.mozilla.javascript.ExternalArrayData
 import org.mozilla.javascript.Function
 import org.mozilla.javascript.Scriptable
 import org.mozilla.javascript.ScriptableObject
-import org.mozilla.javascript.Undefined
 import org.mozilla.javascript.WrappedException
-import java.lang.reflect.Field
 import java.lang.reflect.InvocationTargetException
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -77,78 +74,7 @@ class JavaObjectWrapper : ScriptableObject {// Cannot retain delegate with a str
     }
 
     private fun setupProperties() {
-        val integerIndexer = classWrapper.getIntegerIndexer()
-        if (integerIndexer != null) {
-            setExternalArrayData(object : ExternalArrayData {
-                override fun getArrayLength(): Int {
-                    try {
-                        // TODO: Some length() methods are returning integer while others return length. A good test case is http://web-platform.test:8000/dom/nodes/Element-classlist.html
-                        //       Check if length() methods can be converted to return a single type.
-                        val lengthObj = classWrapper.getProperty("length").getGetter().invoke(
-                            this.javaObject, *null as Array<Any?>?
-                        )
-                        if (lengthObj is Long) {
-                            val lengthLong = lengthObj
-                            val lengthInt = lengthLong.toInt()
-                            // TODO: Check for overflow when casting to int and throw an exception
-                            return lengthInt
-                        } else if (lengthObj is Int) {
-                            return lengthObj
-                        } else {
-                            // TODO: Throw exception
-                            throw RuntimeException("Can't represent length as an integer type")
-                        }
-                    } catch (e: IllegalAccessException) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace()
-                        return 0
-                    } catch (e: IllegalArgumentException) {
-                        e.printStackTrace()
-                        return 0
-                    } catch (e: InvocationTargetException) {
-                        e.printStackTrace()
-                        return 0
-                    }
-                }
 
-                override fun getArrayElement(index: Int): Any? {
-                    if (index < 0) {
-                        // TODO: The interface's javadoc says that this method is only called for indices are within range.
-                        //       Need to check if negative values are considered in range. Negative indices are being used in
-                        //       one of the web-platform-tests
-                        return Undefined.instance
-                    }
-                    try {
-                        val result: Any? = JavaScript.Companion.getInstance().getJavascriptObject(
-                            integerIndexer.getGetter().invoke(this.javaObject, index), null
-                        )
-                        return result
-                    } catch (e: IllegalAccessException) {
-                        throw RuntimeException("Error accessing a indexed element")
-                    } catch (e: IllegalArgumentException) {
-                        throw RuntimeException("Error accessing a indexed element")
-                    } catch (e: InvocationTargetException) {
-                        throw RuntimeException("Error accessing a indexed element")
-                    }
-                }
-
-                override fun setArrayElement(index: Int, value: Any?) {
-                    // TODO: Can this be supported? Needs a setter.
-                    throw UnsupportedOperationException("Writing to an indexed object")
-                }
-            })
-        }
-        classWrapper.properties.forEach { (name: String?, property: PropertyInfo?) ->
-            // TODO: Don't setup properties if getter is null? Are write-only properties supported in JS?
-            defineProperty(name, null, property!!.getter, property.setter, 0)
-        }
-        classWrapper.staticFinalProperties.forEach { (name: String?, field: Field?) ->
-            try {
-                defineProperty(name, field!!.get(null), READONLY)
-            } catch (e: Exception) {
-                throw RuntimeException(e)
-            }
-        }
     }
 
     /*
@@ -181,13 +107,13 @@ class JavaObjectWrapper : ScriptableObject {// Cannot retain delegate with a str
   }*/
 
     override fun getClassName(): String? {
-        return this.classWrapper.getClassName()
+        return this.classWrapper.className
     }
 
     override fun get(name: String?, start: Scriptable): Any? {
         val pinfo = this.classWrapper.getProperty(name)
         if (pinfo != null) {
-            val getter = pinfo.getGetter()
+            val getter = pinfo.getter
             if (getter == null) {
                 throw EvaluatorException("Property '" + name + "' is not readable")
             }
@@ -196,14 +122,14 @@ class JavaObjectWrapper : ScriptableObject {// Cannot retain delegate with a str
             checkNotNull(javaObject) { "Java object (class=" + this.classWrapper + ") is null." }
             val `val`: Any?
             try {
-                `val` = getter.invoke(javaObject, *null as Array<Any?>?)
+                `val` = getter.invoke(javaObject, null)
             } catch (e: IllegalAccessException) {
                 throw RuntimeException(e)
             } catch (e: InvocationTargetException) {
                 throw RuntimeException(e)
             }
 
-            return JavaScript.Companion.getInstance()
+            return JavaScript.Companion.instance
                 .getJavascriptObject(`val`, start.parentScope)
         } else {
             val f = this.classWrapper.getFunction(name)
@@ -217,9 +143,9 @@ class JavaObjectWrapper : ScriptableObject {// Cannot retain delegate with a str
                 if (result !== NOT_FOUND) {
                     return result
                 }
-                val ni = this.classWrapper.getNameIndexer()
+                val ni = this.classWrapper.nameIndexer
                 if (ni != null) {
-                    val getter = ni.getGetter()
+                    val getter = ni.getter
                     if (getter != null) {
                         // Cannot retain delegate with a strong reference.
                         val javaObject = this.javaObject
@@ -230,7 +156,7 @@ class JavaObjectWrapper : ScriptableObject {// Cannot retain delegate with a str
                                 // There might not be an indexer setter.
                                 return super.get(name, start)
                             } else {
-                                return JavaScript.Companion.getInstance()
+                                return JavaScript.Companion.instance
                                     .getJavascriptObject(`val`, start.parentScope)
                             }
                         } catch (err: Exception) {
@@ -244,18 +170,18 @@ class JavaObjectWrapper : ScriptableObject {// Cannot retain delegate with a str
     }
 
     override fun put(index: Int, start: Scriptable?, value: Any?) {
-        val pinfo = this.classWrapper.getIntegerIndexer()
+        val pinfo = this.classWrapper.integerIndexer
         if (pinfo == null) {
             super.put(index, start, value)
         } else {
             try {
-                val setter = pinfo.getSetter()
+                val setter = pinfo.setter
                 if (setter == null) {
                     throw EvaluatorException("Indexer is read-only")
                 }
                 val actualValue: Any?
                 actualValue =
-                    JavaScript.Companion.getInstance().getJavaObject(value, pinfo.getPropertyType())
+                    JavaScript.Companion.instance.getJavaObject(value, pinfo.propertyType)
                 setter.invoke(this.javaObject, (index), actualValue)
             } catch (err: Exception) {
                 throw WrappedException(err)
@@ -264,50 +190,7 @@ class JavaObjectWrapper : ScriptableObject {// Cannot retain delegate with a str
     }
 
     override fun put(name: String?, start: Scriptable?, value: Any?) {
-        if (value is Undefined) {
-            super.put(name, start, value)
-        } else {
-            val pinfo = this.classWrapper.getProperty(name)
-            if (pinfo != null) {
-                val setter = pinfo.getSetter()
-                if (setter == null) {
-                    throw EvaluatorException("Property '" + name + "' is not settable in " + this.classWrapper.getClassName() + ".")
-                }
-                try {
-                    val actualValue: Any? = JavaScript.Companion.getInstance()
-                        .getJavaObject(value, pinfo.getPropertyType())
-                    setter.invoke(this.javaObject, actualValue)
-                } catch (iae: IllegalArgumentException) {
-                    val newException: Exception = IllegalArgumentException(
-                        ("Property named '" + name + "' could not be set with value " + value
-                                + "."),
-                        iae
-                    )
-                    throw WrappedException(newException)
-                } catch (err: Exception) {
-                    throw WrappedException(err)
-                }
-            } else {
-                val ni = this.classWrapper.getNameIndexer()
-                if (ni != null) {
-                    val setter = ni.getSetter()
-                    if (setter != null) {
-                        try {
-                            val actualValue: Any?
-                            actualValue = JavaScript.Companion.getInstance()
-                                .getJavaObject(value, ni.getPropertyType())
-                            setter.invoke(this.javaObject, name, actualValue)
-                        } catch (err: Exception) {
-                            throw WrappedException(err)
-                        }
-                    } else {
-                        super.put(name, start, value)
-                    }
-                } else {
-                    super.put(name, start, value)
-                }
-            }
-        }
+
     }
 
     override fun getDefaultValue(hint: Class<*>?): Any? {
@@ -339,18 +222,14 @@ class JavaObjectWrapper : ScriptableObject {// Cannot retain delegate with a str
     }
 
     override fun hasInstance(instance: Scriptable?): Boolean {
-        if ((instance is JavaObjectWrapper) && (this.javaObject is Class<*>)) {
-            return myClass.isInstance(instance.javaObject)
-        } else {
-            return super.hasInstance(instance)
-        }
+        return false
     }
 
     // TODO: Override has(int index) also
     override fun has(name: String?, start: Scriptable?): Boolean {
         // TODO: should the start parameter be considered here?
-        if (classWrapper.getProperties()
-                .containsKey(name) || classWrapper.getStaticFinalProperties().containsKey(name)
+        if (classWrapper.properties
+                .containsKey(name) || classWrapper.staticFinalProperties.containsKey(name)
         ) {
             return true
         }
@@ -358,20 +237,20 @@ class JavaObjectWrapper : ScriptableObject {// Cannot retain delegate with a str
     }
 
     companion object {
-        private val serialVersionUID = -2669458528000105312L
+
         private val logger: Logger = Logger.getLogger(JavaObjectWrapper::class.java.name)
         private val loggableInfo: Boolean = logger.isLoggable(Level.INFO)
         fun getConstructor(
             className: String?,
-            classWrapper: JavaClassWrapper?,
+            classWrapper: JavaClassWrapper,
             scope: Scriptable?
         ): Function {
             return JavaConstructorObject(className, classWrapper)
         }
 
         fun getConstructor(
-            className: String?, classWrapper: JavaClassWrapper?, scope: Scriptable?,
-            instantiator: JavaInstantiator?
+            className: String?, classWrapper: JavaClassWrapper, scope: Scriptable?,
+            instantiator: JavaInstantiator
         ): Function {
             return JavaConstructorObject(className, classWrapper, instantiator)
         }

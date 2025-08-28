@@ -23,13 +23,13 @@ package io.github.remmerw.thor.cobra.js
 import org.mozilla.javascript.Scriptable
 
 abstract class AbstractScriptableDelegate : ScriptableDelegate {
-    private var scriptable: Scriptable? = null
 
-    override fun getScriptable(): Scriptable? {
+
+    fun getScriptable(): Scriptable? {
         return this.scriptable
     }
 
-    override fun setScriptable(scriptable: Scriptable?) {
+    fun setScriptable(scriptable: Scriptable?) {
         this.scriptable = scriptable
     }
 }

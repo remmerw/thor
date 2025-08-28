@@ -23,6 +23,8 @@
  */
 package io.github.remmerw.thor.cobra.html.domimpl
 
+import java.io.File
+
 interface InputContext {
     var checked: Boolean
 

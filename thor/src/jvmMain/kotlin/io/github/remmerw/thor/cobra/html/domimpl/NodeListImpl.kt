@@ -31,14 +31,9 @@ import org.w3c.dom.Node
 import org.w3c.dom.NodeList
 
 // TODO: This needs to be live (dynamic) not a static store of nodes.
-class NodeListImpl(collection: MutableCollection<Node?>) : AbstractScriptableDelegate(), NodeList {
+class NodeListImpl(collection: MutableCollection<Node>) : AbstractScriptableDelegate(), NodeList {
     // Note: class must be public for reflection to work.
-    private val nodeList: ArrayList<Node?>
-
-    // TODO: Add more constructors that take arrays for example
-    init {
-        nodeList = ArrayList<Node?>(collection)
-    }
+    private val nodeList: ArrayList<Node> = ArrayList<Node>(collection)
 
     override fun getLength(): Int {
         return this.nodeList.size

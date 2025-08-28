@@ -27,7 +27,7 @@ class JavaClassWrapperFactory private constructor() {
     private val classWrappers: MutableMap<Class<*>?, WeakReference<JavaClassWrapper?>?> =
         WeakHashMap<Class<*>?, WeakReference<JavaClassWrapper?>?>()
 
-    fun getClassWrapper(clazz: Class<*>?): JavaClassWrapper {
+    fun getClassWrapper(clazz: Class<*>): JavaClassWrapper {
         synchronized(this) {
             // WeakHashMaps where the value refers to
             // the key will retain keys. Must make it

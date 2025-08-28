@@ -26,18 +26,18 @@ package io.github.remmerw.thor.cobra.clientlet
  * Provides utility methods to access the current clientlet context.
  */
 object ClientletAccess {
-    var currentClientletContext: ThreadLocal<ClientletContext?> = ThreadLocal<ClientletContext?>()
+    var currentClientletContext: ThreadLocal<ClientletContext?>? = ThreadLocal<ClientletContext?>()
         /**
          * Gets the [ClientletContext] of the current thread, if any.
          */
         get() {
-            val ctx = field.get()
+            val ctx = field?.get()
             if (ctx != null) {
-                return ctx
+                return ctx as ThreadLocal<ClientletContext?>?
             } else {
                 val td = Thread.currentThread().threadGroup
                 if (td is ClientletThreadGroup) {
-                    return (td as ClientletThreadGroup).clientletContext
+                    return (td as ClientletThreadGroup).clientletContext as ThreadLocal<ClientletContext?>?
                 } else {
                     return null
                 }
@@ -50,6 +50,6 @@ object ClientletAccess {
          * @param context A [ClientletContext] instance.
          */
         set(context) {
-            field.set(context as ClientletContext?)
+            field?.set(context as ClientletContext?)
         }
 }

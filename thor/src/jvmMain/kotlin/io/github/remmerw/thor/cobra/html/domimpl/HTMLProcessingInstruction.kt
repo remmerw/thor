@@ -7,6 +7,7 @@ package io.github.remmerw.thor.cobra.html.domimpl
 
 import org.w3c.dom.DOMException
 import org.w3c.dom.Node
+import org.w3c.dom.Node.PROCESSING_INSTRUCTION_NODE
 import org.w3c.dom.ProcessingInstruction
 
 /**
@@ -17,8 +18,8 @@ import org.w3c.dom.ProcessingInstruction
  */
 class HTMLProcessingInstruction(var target: String, var data: String?) : NodeImpl(),
     ProcessingInstruction, Cloneable {
-    override fun createSimilarNode(): Node? {
-        return clone() as Node?
+    override fun createSimilarNode(): Node {
+        return clone() as Node
     }
 
     override fun getLocalName(): String {

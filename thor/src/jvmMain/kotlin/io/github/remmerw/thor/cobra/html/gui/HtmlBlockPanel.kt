@@ -218,7 +218,7 @@ class HtmlBlockPanel(
      * @param yIfNeeded If this parameter is true, scrolling will only occur if the
      * requested bounds are not currently visible vertically.
      */
-    fun scrollTo(bounds: Rectangle?, xIfNeeded: Boolean, yIfNeeded: Boolean) {
+    fun scrollTo(bounds: Rectangle, xIfNeeded: Boolean, yIfNeeded: Boolean) {
         val doc = getRootNode() as HTMLDocumentImpl?
         if (doc != null) {
             val bodyBlock = (doc.body as HTMLElementImpl).uINode as RBlock?
@@ -288,7 +288,7 @@ class HtmlBlockPanel(
             return null
         }
         val relativeTo: RCollection? =
-            if (relativeToScrollable) block.getRBlockViewport() else block
+            if (relativeToScrollable) block.rBlockViewport else block
         if (node === currentNode) {
             val br = uiNode as BoundableRenderable
             val guiPoint = br.getOriginRelativeTo(relativeTo)
@@ -321,7 +321,7 @@ class HtmlBlockPanel(
                     subBounds = this.scanNodeBounds(r, node, relativeTo)
                 } else if (r is BoundableRenderable) {
                     prevBoundable = r
-                    if (Nodes.isSameOrAncestorOf(node, r.getModelNode() as Node?)) {
+                    if (Nodes.isSameOrAncestorOf(node, r.modelNode as Node)) {
                         val origin = r.getOriginRelativeTo(relativeTo)
                         val size = r.size
                         subBounds = Rectangle(origin, size)
@@ -329,7 +329,7 @@ class HtmlBlockPanel(
                 } else {
                     // This would have to be a RStyleChanger. We rely on these
                     // when the target node has blank content.
-                    if (Nodes.isSameOrAncestorOf(node, r.modelNode as Node?)) {
+                    if (Nodes.isSameOrAncestorOf(node, r.modelNode as Node)) {
                         val xInRoot =
                             if (prevBoundable == null) 0 else prevBoundable.visualX + prevBoundable.visualWidth
                         val rootOrigin = root.getOriginRelativeTo(relativeTo)
@@ -416,7 +416,7 @@ class HtmlBlockPanel(
                     }
                 }
                 // Adjust for permanent vertical scrollbar.
-                val newPw = max(block.width + block.getVScrollBarWidth(), pw)
+                val newPw = max(block.width + block.vScrollBarWidth, pw)
                 return Dimension(newPw, block.height)
             }
         }
@@ -438,7 +438,7 @@ class HtmlBlockPanel(
     val firstLineHeight: Int
         get() {
             val block = this.rblock
-            return if (block == null) 0 else block.getFirstLineHeight()
+            return if (block == null) 0 else block.firstLineHeight
         }
 
     fun setSelectionEnd(rpoint: RenderableSpot?) {
@@ -620,7 +620,7 @@ class HtmlBlockPanel(
         if (r is RBlock) {
             return r
         } else if (r is TranslatedRenderable) {
-            return getContainingBlock(r.getChild())
+            return getContainingBlock(r.child)
         } else if (r == null) {
             return null
         } else if (r is BoundableRenderable) {
@@ -638,8 +638,8 @@ class HtmlBlockPanel(
                     val factor = if (mwe.isShiftDown) 2 else 1
                     val units = mwe.getWheelRotation() * mwe.getScrollAmount() * factor
                     val innerMostRenderable = getInnerMostRenderable(mwe.getX(), mwe.getY())
-                    val consumed = false
-                    val innerBlock = getContainingBlock(innerMostRenderable)
+                    var consumed = false
+                    var innerBlock = getContainingBlock(innerMostRenderable)
                     do {
                         if (innerBlock != null) {
                             consumed = innerBlock.scrollByUnits(Adjustable.VERTICAL, units)
@@ -830,7 +830,7 @@ class HtmlBlockPanel(
         // needs to be handled by Cobra.
     }
 
-    override fun getPaintedBackgroundColor(): Color? {
+    fun getPaintedBackgroundColor(): Color? {
         return if (this.isOpaque) this.getBackground() else null
     }
 
@@ -880,7 +880,7 @@ class HtmlBlockPanel(
             // notifications come in batches. Other types
             // of noitifications probably come one by one.
             var topLayout = false
-            var repainters: ArrayList<RElement?>? = null
+            var repainters: ArrayList<RElement>? = null
             val length = notifications.size
             for (i in 0..<length) {
                 val dn = notifications[i]
@@ -929,10 +929,10 @@ class HtmlBlockPanel(
 
                     DocumentNotification.Companion.LOOK -> {
                         val node = dn.node
-                        val uiNode = node.findUINode()
+                        val uiNode = node?.findUINode()
                         if (uiNode != null) {
                             if (repainters == null) {
-                                repainters = ArrayList<RElement?>(1)
+                                repainters = ArrayList<RElement>(1)
                             }
                             val relement = uiNode as RElement
                             relement.invalidateRenderStyle()
@@ -1070,19 +1070,19 @@ class HtmlBlockPanel(
         throw UnsupportedOperationException("Method added while fixing #32. Not implemented yet.")
     }
 
-    override fun getVisualHeight(): Int {
+    fun getVisualHeight(): Int {
         return rblock!!.getVisualHeight()
     }
 
-    override fun getVisualWidth(): Int {
+    fun getVisualWidth(): Int {
         return rblock!!.getVisualWidth()
     }
 
-    override fun getVisualBounds(): Rectangle {
+    fun getVisualBounds(): Rectangle {
         return Rectangle(x, y, getVisualWidth(), getVisualHeight())
     }
 
-    override fun translateDescendentPoint(descendent: BoundableRenderable, x: Int, y: Int): Point? {
+    fun translateDescendentPoint(descendent: BoundableRenderable, x: Int, y: Int): Point? {
         return rblock!!.translateDescendentPoint(descendent, x, y)
     }
 

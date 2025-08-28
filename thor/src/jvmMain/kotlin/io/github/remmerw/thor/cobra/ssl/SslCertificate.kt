@@ -14,7 +14,7 @@ class SslCertificate private constructor(
     /**
      * The original source certificate, if available.
      */
-    val x509Certificate: X509Certificate?
+    val x509Certificate: X509Certificate
 ) {
     /**
      * @return Issued-to distinguished name or null if none has been set
@@ -86,8 +86,8 @@ class SslCertificate private constructor(
      * @return A string representation of this certificate for debugging
      */
     override fun toString(): String {
-        return (("Issued to: " + issuedTo.getDName() + ";\n"
-                + "Issued by: " + issuedBy.getDName() + ";\n"))
+        return (("Issued to: " + issuedTo.dName + ";\n"
+                + "Issued by: " + issuedBy.dName + ";\n"))
     }
 
     companion object {

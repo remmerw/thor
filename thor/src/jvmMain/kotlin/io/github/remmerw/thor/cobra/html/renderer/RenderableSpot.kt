@@ -25,21 +25,7 @@ import java.awt.Point
 /**
  * Contains a renderer node and a position in that node.
  */
-class RenderableSpot(renderable: BoundableRenderable?, x: Int, y: Int) {
-    val renderable: BoundableRenderable?
-    val x: Int
-    val y: Int
-
-    /**
-     * @param renderable
-     * @param x
-     * @param y
-     */
-    init {
-        this.renderable = renderable
-        this.x = x
-        this.y = y
-    }
+class RenderableSpot(val renderable: BoundableRenderable, val x: Int, val y: Int) {
 
     val point: Point
         get() = Point(this.x, this.y)

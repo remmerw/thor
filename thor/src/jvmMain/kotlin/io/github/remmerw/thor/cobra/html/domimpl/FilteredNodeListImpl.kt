@@ -43,7 +43,7 @@ internal class FilteredNodeListImpl
             val i = this.sourceNodeList.iterator()
             while (i.hasNext()) {
                 val node = i.next()
-                if (this.filter.accept(node)) {
+                if (this.filter.accept(node!!)) {
                     if (count == index) {
                         return node
                     }
@@ -60,7 +60,7 @@ internal class FilteredNodeListImpl
             val i = this.sourceNodeList.iterator()
             while (i.hasNext()) {
                 val node = i.next()
-                if (this.filter.accept(node)) {
+                if (this.filter.accept(node!!)) {
                     count++
                 }
             }

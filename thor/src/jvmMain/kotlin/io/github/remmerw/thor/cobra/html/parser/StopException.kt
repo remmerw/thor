@@ -25,11 +25,4 @@ package io.github.remmerw.thor.cobra.html.parser
 
 import org.w3c.dom.Element
 
-internal class StopException
-/**
- * @param element
- */(val element: Element?) : Exception() {
-    companion object {
-        private const val serialVersionUID = 5937640406056298831L
-    }
-}
+internal class StopException(val element: Element) : Exception()

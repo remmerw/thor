@@ -37,9 +37,9 @@ interface ComponentContent {
         // NOP
     }
 
-    val component: Component?
+    var component: Component?
 
-    val title: String?
+    var title: String?
 
     val description: String?
 
@@ -60,7 +60,7 @@ interface ComponentContent {
     /**
      * Gets the source code associated with the content.
      */
-    val sourceCode: String?
+    var sourceCode: String?
 
     /**
      * Called after the content has been added to a container for display.

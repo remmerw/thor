@@ -6,7 +6,7 @@ import org.w3c.dom.NodeList
 import java.util.function.Consumer
 
 object Nodes {
-    private val emptyIterableNode: Iterable<Node> = object : Iterable<Node?> {
+    private val emptyIterableNode: Iterable<Node?> = object : Iterable<Node?> {
         override fun iterator(): MutableIterator<Node?> {
             return object : MutableIterator<Node?> {
                 override fun hasNext(): Boolean {
@@ -66,7 +66,7 @@ object Nodes {
         return isSameOrAncestorOf(node, parent)
     }
 
-    fun makeIterable(nodeList: NodeList?): Iterable<Node> {
+    fun makeIterable(nodeList: NodeList?): Iterable<Node?> {
         if (nodeList == null) {
             return emptyIterableNode
         } else {
@@ -122,7 +122,7 @@ object Nodes {
         // TODO: Change from recursive to iterative
         for (child in makeIterable(node.childNodes)) {
             consumer.accept(child)
-            forEachNode(child, consumer)
+            forEachNode(child!!, consumer)
         }
     }
 }

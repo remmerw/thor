@@ -72,11 +72,11 @@ class HtmlParser {
     private val document: Document
     private val ucontext: UserAgentContext?
     private val errorHandler: ErrorHandler?
-    private val isXML: Boolean
+    private val isXML: kotlin.Boolean
     private var lastRootElement: Node? = null
     private var lastHeadElement: Node? = null
     private var lastBodyElement: Node? = null
-    private var needRoot: Boolean
+    private var needRoot: kotlin.Boolean
     private var normalLastTag: String? = null
     private var justReadTagBegin = false
     private var justReadTagEnd = false
@@ -124,8 +124,8 @@ class HtmlParser {
         errorHandler: ErrorHandler?,
         publicId: String?,
         systemId: String?,
-        isXML: Boolean,
-        needRoot: Boolean
+        isXML: kotlin.Boolean,
+        needRoot: kotlin.Boolean
     ) {
         this.ucontext = ucontext
         this.document = document
@@ -148,7 +148,7 @@ class HtmlParser {
         this.needRoot = true
     }
 
-    private fun shouldDecodeEntities(einfo: ElementInfo?): Boolean {
+    private fun shouldDecodeEntities(einfo: ElementInfo?): kotlin.Boolean {
         return isXML || (einfo == null || einfo.decodeEntities)
     }
 
@@ -512,8 +512,8 @@ class HtmlParser {
                                             }
                                         } catch (se: StopException) {
                                             // newElement does not have a parent.
-                                            val newElement = se.getElement()
-                                            tag = newElement.getTagName()
+                                            val newElement = se.element!!
+                                            tag = newElement.tagName
                                             normalTag = tag.uppercase(Locale.getDefault())
                                             // If a subelement throws StopException with
                                             // a tag matching the current stop tag, the exception
@@ -615,7 +615,8 @@ class HtmlParser {
      */
     @Throws(IOException::class, SAXException::class)
     private fun parseForEndTag(
-        parent: Node, reader: LineNumberReader, tagName: String?, addTextNode: kotlin.Boolean,
+        parent: Node, reader: LineNumberReader, tagName: String?,
+        addTextNode: kotlin.Boolean,
         decodeEntities: kotlin.Boolean
     ): Int {
         val doc = this.document

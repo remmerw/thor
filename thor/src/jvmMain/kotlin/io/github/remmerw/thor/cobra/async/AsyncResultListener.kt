@@ -38,7 +38,7 @@ interface AsyncResultListener<TResult> : EventListener {
      *
      * @param event Event containing asynchronous result.
      */
-    fun resultReceived(event: AsyncResultEvent<TResult?>?)
+    fun resultReceived(event: AsyncResultEvent<TResult>)
 
     /**
      * Called when an exception has occurred trying to obtain an asynchronous
@@ -46,5 +46,5 @@ interface AsyncResultListener<TResult> : EventListener {
      *
      * @param event Event containing the exception.
      */
-    fun exceptionReceived(event: AsyncResultEvent<Throwable?>?)
+    fun exceptionReceived(event: AsyncResultEvent<Throwable>)
 }

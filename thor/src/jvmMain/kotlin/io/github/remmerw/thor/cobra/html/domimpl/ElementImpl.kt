@@ -31,6 +31,7 @@ import org.w3c.dom.DOMException
 import org.w3c.dom.Element
 import org.w3c.dom.NamedNodeMap
 import org.w3c.dom.Node
+import org.w3c.dom.Node.ELEMENT_NODE
 import org.w3c.dom.NodeList
 import org.w3c.dom.Text
 import org.w3c.dom.TypeInfo
@@ -41,8 +42,8 @@ import org.w3c.dom.events.EventTarget
 import java.util.LinkedList
 import java.util.Locale
 
-open class ElementImpl(private val name: String) : NodeImpl(), Element, EventTarget {
-    protected var attributes: MutableMap<String?, String?>? = null
+abstract class ElementImpl(private val name: String) : NodeImpl(), Element, EventTarget {
+    protected var attributes: MutableMap<String, String>? = null
 
     /*
      * (non-Javadoc)
@@ -51,21 +52,21 @@ open class ElementImpl(private val name: String) : NodeImpl(), Element, EventTar
      */
     override fun getAttributes(): NamedNodeMap {
         synchronized(this) {
-            var attrs: MutableMap<String?, String?>? = this.attributes
+            var attrs: MutableMap<String, String>? = this.attributes
             // TODO: Check if NamedNodeMapImpl can be changed to dynamically query the attributes field
             //       instead of keeping a reference to it. This will allow the NamedNodeMap to be live as well
             //       as avoid allocating of a HashMap here when attributes are empty.
             if (attrs == null) {
-                attrs = HashMap<String?, String?>()
+                attrs = HashMap<String, String>()
                 this.attributes = attrs
             }
-            return NamedNodeMapImpl(this, this.attributes)
+            return NamedNodeMapImpl(this, this.attributes!!)
         }
     }
 
     override fun hasAttributes(): Boolean {
         synchronized(this) {
-            val attrs: MutableMap<String?, String?>? = this.attributes
+            val attrs: MutableMap<String, String>? = this.attributes
             return attrs != null && !attrs.isEmpty()
         }
     }
@@ -73,13 +74,13 @@ open class ElementImpl(private val name: String) : NodeImpl(), Element, EventTar
     override fun equalAttributes(arg: Node?): Boolean {
         if (arg is ElementImpl) {
             synchronized(this) {
-                var attrs1: MutableMap<String?, String?>? = this.attributes
+                var attrs1: MutableMap<String, String>? = this.attributes
                 if (attrs1 == null) {
-                    attrs1 = mutableMapOf<String?, String?>()
+                    attrs1 = mutableMapOf<String, String>()
                 }
-                var attrs2: MutableMap<String?, String?>? = arg.attributes
+                var attrs2: MutableMap<String, String>? = arg.attributes
                 if (attrs2 == null) {
-                    attrs2 = mutableMapOf<String?, String?>()
+                    attrs2 = mutableMapOf<String, String>()
                 }
                 return attrs1 == attrs2
             }
@@ -120,12 +121,12 @@ open class ElementImpl(private val name: String) : NodeImpl(), Element, EventTar
     override fun getAttribute(name: String): String? {
         val normalName: String = normalizeAttributeName(name)
         synchronized(this) {
-            val attributes: MutableMap<String?, String?>? = this.attributes
+            val attributes: MutableMap<String, String>? = this.attributes
             return if (attributes == null) null else attributes.get(normalName)
         }
     }
 
-    private fun getAttr(normalName: String?, value: String?): Attr {
+    private fun getAttr(normalName: String, value: String?): Attr {
         // TODO: "specified" attributes
         return AttrImpl(normalName, value, true, this, "id" == normalName)
     }
@@ -133,7 +134,7 @@ open class ElementImpl(private val name: String) : NodeImpl(), Element, EventTar
     override fun getAttributeNode(name: String): Attr? {
         val normalName: String = normalizeAttributeName(name)
         synchronized(this) {
-            val attributes: MutableMap<String?, String?>? = this.attributes
+            val attributes: MutableMap<String, String>? = this.attributes
             val value = if (attributes == null) null else attributes.get(normalName)
             return if (value == null) null else this.getAttr(normalName, value)
         }
@@ -151,7 +152,7 @@ open class ElementImpl(private val name: String) : NodeImpl(), Element, EventTar
 
     override fun getElementsByTagName(name: String?): NodeList {
         val matchesAll = "*" == name
-        val descendents: MutableList<Node?> = LinkedList<Node?>()
+        val descendents: MutableList<Node> = LinkedList<Node>()
         synchronized(this.treeLock) {
             val nl = this.nodeList
             if (nl != null) {
@@ -186,13 +187,13 @@ open class ElementImpl(private val name: String) : NodeImpl(), Element, EventTar
     override fun getTagName(): String {
         // In HTML, tag names are supposed to be returned in upper-case, but in XHTML they are returned in original case
         // as per https://developer.mozilla.org/en-US/docs/Web/API/Element.tagName
-        return this.nodeName.uppercase(Locale.getDefault())
+        return this.nodeName!!.uppercase(Locale.getDefault())
     }
 
     override fun hasAttribute(name: String): Boolean {
         val normalName: String = normalizeAttributeName(name)
         synchronized(this) {
-            val attributes: MutableMap<String?, String?>? = this.attributes
+            val attributes: MutableMap<String, String>? = this.attributes
             return attributes != null && attributes.containsKey(normalName)
         }
     }
@@ -298,7 +299,7 @@ open class ElementImpl(private val name: String) : NodeImpl(), Element, EventTar
      * @see org.xamjwg.html.domimpl.NodeImpl#getLocalName()
      */
     override fun getLocalName(): String {
-        return this.nodeName
+        return this.nodeName!!
     }
 
     /*
@@ -391,7 +392,7 @@ open class ElementImpl(private val name: String) : NodeImpl(), Element, EventTar
         sb.append(this.nodeName)
         sb.append(" [")
         val attribs = this.attributes
-        val length = attribs.length
+        val length = attribs!!.size
         for (i in 0..<length) {
             val attr = attribs.item(i) as Attr
             sb.append(attr.nodeName)
@@ -582,6 +583,7 @@ open class ElementImpl(private val name: String) : NodeImpl(), Element, EventTar
             return node.nodeName.equals(name, ignoreCase = true)
         }
 
+        @JvmStatic
         protected fun normalizeAttributeName(name: String): String {
             return name.lowercase(Locale.getDefault())
         }

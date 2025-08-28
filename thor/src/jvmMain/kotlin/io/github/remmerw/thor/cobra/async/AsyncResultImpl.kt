@@ -51,7 +51,7 @@ class AsyncResultImpl<TResult> : AsyncResult<TResult?> {
                     val exception = this.exception
                     SwingUtilities.invokeLater(Runnable {
                         // Invoke holding no locks
-                        val are = AsyncResultEvent<Throwable?>(this@AsyncResultImpl, exception)
+                        val are = AsyncResultEvent<Throwable>(this@AsyncResultImpl, exception)
                         listener.exceptionReceived(are)
                     })
                 } else {
@@ -143,7 +143,7 @@ class AsyncResultImpl<TResult> : AsyncResult<TResult?> {
             // Invoke holding no locks
             val are = event as AsyncResultEvent<*>
             if (are.result is Exception) {
-                val areException = are as AsyncResultEvent<Throwable?>
+                val areException = are as AsyncResultEvent<Throwable>
                 this.listener.exceptionReceived(areException)
             } else {
                 val areResult = are as AsyncResultEvent<TR?>

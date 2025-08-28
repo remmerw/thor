@@ -30,7 +30,7 @@ import java.net.URL
  */
 class NavigationEntry(
     val navigatorFrame: NavigatorFrame?, // Note: Do not retain request context here.
-    val url: URL, method: String?, title: String?, description: String?
+    var url: URL, method: String?, title: String?, description: String?
 ) {
     /**
      * Gets the uppercase request method that resulted in this navigation entry.

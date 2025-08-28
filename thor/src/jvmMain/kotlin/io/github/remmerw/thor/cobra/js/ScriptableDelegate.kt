@@ -33,4 +33,6 @@ import org.mozilla.javascript.Scriptable
  */
 interface ScriptableDelegate {
     var scriptable: Scriptable?
+        get() = null
+        set(value) = TODO()
 }

@@ -32,7 +32,7 @@ import java.util.EventObject
  * @author J. H. S.
  * @see AsyncResultListener
  */
-internal class AsyncResultEvent<TResult>
+class AsyncResultEvent<TResult>
 /**
  * Instance constructor.
  *

@@ -45,22 +45,23 @@ class JavaFunctionObject(private val methodName: String?, private val className:
         // Quick hack for issue #98
         defineProperty("call", object : Callable {
             override fun call(
-                cx: Context?,
-                scope: Scriptable?,
-                thisObj: Scriptable?,
-                args: Array<Any?>
+                cx: Context,
+                scope: Scriptable,
+                thisObj: Scriptable,
+                args: kotlin.Array<out Any?>
             ): Any? {
-                if ((args.size > 0) && (args[0] is JavaObjectWrapper)) {
+                if ((args.isNotEmpty()) && (args.get(0) is JavaObjectWrapper)) {
                     return this@JavaFunctionObject.call(
                         cx,
                         scope,
-                        javaObjectWrapper,
+                        args.get(0) as JavaObjectWrapper,
                         Arrays.copyOfRange<Any?>(args, 1, args.size)
                     )
                 } else {
                     throw RuntimeException("Unexpected condition")
                 }
             }
+
         }, READONLY)
     }
 
@@ -76,7 +77,7 @@ class JavaFunctionObject(private val methodName: String?, private val className:
         return "JavaFunctionObject"
     }
 
-    private fun getExactMethod(args: Array<Any?>?): MethodAndArguments? {
+    private fun getExactMethod(args: kotlin.Array<out Any?>?): MethodAndArguments? {
         val methods = this.methods
         val size = methods.size
         for (i in 0..<size) {
@@ -84,12 +85,12 @@ class JavaFunctionObject(private val methodName: String?, private val className:
             val parameterTypes = m.parameterTypes
             if (args == null) {
                 if ((parameterTypes == null) || (parameterTypes.size == 0)) {
-                    return MethodAndArguments(m, null)
+                    return MethodAndArguments(m, emptyArray())
                 }
             } else if (parameterTypes != null) {
                 if (args.size == parameterTypes.size) {
                     if (Objects.areSameTo(args, parameterTypes)) {
-                        return MethodAndArguments(m, args)
+                        return MethodAndArguments(m, emptyArray())
                     }
                 } else if ((parameterTypes.size == 1) && parameterTypes[0].isArray) {
                     val arrayType = parameterTypes[0].componentType
@@ -101,9 +102,9 @@ class JavaFunctionObject(private val methodName: String?, private val className:
                     }
                     if (allSame) {
                         val argsInArray =
-                            Array.newInstance(arrayType, args.size) as kotlin.Array<Any?>
+                            Array.newInstance(arrayType, args.size) as kotlin.Array<Any>
                         System.arraycopy(args, 0, argsInArray, 0, args.size)
-                        return MethodAndArguments(m, arrayOf<Any>(argsInArray))
+                        return MethodAndArguments(m, argsInArray)
                     }
                 }
             }
@@ -126,13 +127,13 @@ class JavaFunctionObject(private val methodName: String?, private val className:
             val parameterTypes = m.parameterTypes
             if (args == null) {
                 if ((parameterTypes == null) || (parameterTypes.size == 0)) {
-                    return MethodAndArguments(m, arrayOfNulls<Any>(0))
+                    return MethodAndArguments(m, emptyArray())
                 }
             } else if ((parameterTypes != null) && (args.size >= parameterTypes.size)) {
                 if (Objects.areAssignableTo(args, parameterTypes)) {
                     val actualArgs: kotlin.Array<Any?> =
                         convertArgs(args, parameterTypes.size, parameterTypes)
-                    return MethodAndArguments(m, actualArgs)
+                    return MethodAndArguments(m, actualArgs as kotlin.Array<Any>)
                 }
                 if ((matchingMethod == null) || (parameterTypes.size > matchingNumParams)) {
                     matchingNumParams = parameterTypes.size
@@ -147,7 +148,7 @@ class JavaFunctionObject(private val methodName: String?, private val className:
             val actualArgTypes = matchingMethod.parameterTypes
             val actualArgs: kotlin.Array<Any?> =
                 convertArgs(args, matchingNumParams, actualArgTypes)
-            return MethodAndArguments(matchingMethod, actualArgs)
+            return MethodAndArguments(matchingMethod, actualArgs as kotlin.Array<Any>)
         }
     }
 
@@ -164,7 +165,7 @@ class JavaFunctionObject(private val methodName: String?, private val className:
                         + className + " .")
             )
         }
-        val manager: JavaScript = JavaScript.Companion.getInstance()
+        val manager: JavaScript = JavaScript.Companion.instance
         try {
             if (thisObj is JavaObjectWrapper) {
                 // if(linfo) {
@@ -173,7 +174,7 @@ class JavaFunctionObject(private val methodName: String?, private val className:
                 // " on object " + javaObject + " of type " +
                 // this.getTypeName(javaObject));
                 // }
-                val raw = methodAndArguments.invoke(thisObj.getJavaObject())
+                val raw = methodAndArguments.invoke(thisObj.javaObject)
                 return manager.getJavascriptObject(raw, scope)
             } else {
                 // if (args[0] instanceof Function ) {
@@ -194,7 +195,7 @@ class JavaFunctionObject(private val methodName: String?, private val className:
             throw IllegalStateException("Unable to call " + this.methodName + ".", iae)
         } catch (ite: InvocationTargetException) {
             if (ite.cause is DOMException) {
-                throw WrappedException(domException)
+                throw WrappedException(ite.cause)
             }
             throw WrappedException(
                 InvocationTargetException(
@@ -242,8 +243,8 @@ class JavaFunctionObject(private val methodName: String?, private val className:
     }
 
     private class MethodAndArguments(
-        private val method: Method,
-        private val args: kotlin.Array<Any?>
+        val method: Method,
+        val args: kotlin.Array<Any>
     ) {
         @Throws(
             IllegalAccessException::class,
@@ -268,7 +269,7 @@ class JavaFunctionObject(private val methodName: String?, private val className:
             numConvert: Int,
             actualArgTypes: kotlin.Array<Class<*>?>
         ): kotlin.Array<Any?> {
-            val manager: JavaScript = JavaScript.Companion.getInstance()
+            val manager: JavaScript = JavaScript.Companion.instance
             val actualArgs =
                 if (args == null) arrayOfNulls<Any>(0) else arrayOfNulls<Any>(numConvert)
             if (args != null) {

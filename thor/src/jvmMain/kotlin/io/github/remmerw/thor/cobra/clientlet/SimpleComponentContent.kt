@@ -25,9 +25,7 @@ package io.github.remmerw.thor.cobra.clientlet
 import java.awt.Component
 
 abstract class SimpleComponentContent : AbstractComponentContent {
-    private val component: Component?
-    private val title: String?
-    private val sourceCode: String?
+
 
     constructor(component: Component?, title: String?, sourceCode: String?) {
         this.component = component

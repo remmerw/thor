@@ -1073,7 +1073,7 @@ internal abstract class BaseElementRenderable(
             }
         }
         if (this.isMarginBoundary) {
-            val rs = this.modelNode.renderState
+            val rs = this.modelNode?.renderState
             if (rs != null) {
                 val fm = rs.fontMetrics
                 val fontHeight = fm.getHeight()

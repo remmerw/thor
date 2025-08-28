@@ -21,6 +21,7 @@
 package io.github.remmerw.thor.cobra.html.renderer
 
 import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
+import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.Point
 import java.awt.Rectangle
@@ -31,7 +32,7 @@ import java.awt.event.MouseEvent
  * interface.
  */
 interface BoundableRenderable : Renderable {
-    override fun getModelNode(): ModelNode?
+    fun getModelNode(): ModelNode?
 
     val bounds: Rectangle?
 
@@ -43,7 +44,7 @@ interface BoundableRenderable : Renderable {
 
     val origin: Point?
 
-    fun getOriginRelativeTo(ancestor: RCollection?): Point?
+    fun getOriginRelativeTo(ancestor: RCollection?): Point
 
     fun getOriginRelativeToAbs(ancestor: RCollection?): Point?
 

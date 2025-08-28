@@ -19,22 +19,22 @@ class DName private constructor(mCertificate: X509Certificate, subject: Boolean)
     /**
      * Distinguished name (normally includes CN, O, and OU names)
      */
-    private val mDName: String? = null
+    private var mDName: String? = null
 
     /**
      * Common-name (CN) component of the name
      */
-    private val mCName: String? = null
+    private var mCName: String? = null
 
     /**
      * Organization (O) component of the name
      */
-    private val mOName: String? = null
+    private var mOName: String? = null
 
     /**
      * Organizational Unit (OU) component of the name
      */
-    private val mUName: String? = null
+    private var mUName: String? = null
 
     /**
      * Creates a new `DName` from a string. The attributes
@@ -71,25 +71,25 @@ class DName private constructor(mCertificate: X509Certificate, subject: Boolean)
         }
     }
 
-    val dName: String
+    val dName: String?
         /**
          * @return The distinguished name (normally includes CN, O, and OU names)
          */
         get() = if (mDName != null) mDName else ""
 
-    val cName: String
+    val cName: String?
         /**
          * @return The most specific Common-name (CN) component of this name
          */
         get() = if (mCName != null) mCName else ""
 
-    val oName: String
+    val oName: String?
         /**
          * @return The most specific Organization (O) component of this name
          */
         get() = if (mOName != null) mOName else ""
 
-    val uName: String
+    val uName: String?
         /**
          * @return The most specific Organizational Unit (OU) component of this name
          */

@@ -42,7 +42,7 @@ internal class CSSMediaRuleImpl(
     }
 
     override fun getMedia(): MediaList {
-        return MediaListImpl(mediaRule.mediaQueries, this.containingStyleSheet)
+        return MediaListImpl(mediaRule.mediaQueries, this.containingStyleSheet!!)
     }
 
     override fun getCssRules(): CSSRuleList {

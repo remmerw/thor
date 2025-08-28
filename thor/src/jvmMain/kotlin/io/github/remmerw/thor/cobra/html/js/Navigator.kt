@@ -23,10 +23,8 @@ package io.github.remmerw.thor.cobra.html.js
 import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate
 import io.github.remmerw.thor.cobra.ua.UserAgentContext
 
-class Navigator
-/**
- * @param context
- */ internal constructor(private val context: UserAgentContext) : AbstractScriptableDelegate() {
+class Navigator internal constructor(private val context: UserAgentContext) :
+    AbstractScriptableDelegate() {
     var mimeTypes: MimeTypesCollection? = null
         get() {
             synchronized(this) {

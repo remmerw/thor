@@ -24,6 +24,7 @@
 package io.github.remmerw.thor.cobra.html
 
 import io.github.remmerw.thor.cobra.ua.UserAgentContext
+import org.w3c.dom.html.HTMLCollection
 import org.w3c.dom.html.HTMLElement
 import org.w3c.dom.html.HTMLLinkElement
 import java.awt.Cursor
@@ -100,8 +101,8 @@ interface HtmlRendererContext {
     /**
      * Gets the user agent context.
      */
-    @JvmField
-    val userAgentContext: UserAgentContext?
+
+    val userAgentContext: UserAgentContext
 
     /**
      * Gets a `HtmlObject` instance that implements a OBJECT tag from

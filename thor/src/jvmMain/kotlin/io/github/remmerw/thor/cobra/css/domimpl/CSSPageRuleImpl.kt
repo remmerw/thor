@@ -52,7 +52,7 @@ internal class CSSPageRuleImpl(
     }
 
     override fun getStyle(): CSSStyleDeclaration {
-        val declarations: MutableList<Declaration?> = ArrayList<Declaration?>()
+        val declarations: MutableList<Declaration> = ArrayList()
         for (r in rule) {
             if (r is Declaration) {
                 declarations.add(r)

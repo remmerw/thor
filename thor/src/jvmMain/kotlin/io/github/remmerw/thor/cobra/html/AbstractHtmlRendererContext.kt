@@ -56,14 +56,14 @@ abstract class AbstractHtmlRendererContext : HtmlRendererContext {
     override fun focus() {
     }
 
-    override fun getDefaultStatus(): String? {
+    fun getDefaultStatus(): String? {
         return null
     }
 
-    override fun setDefaultStatus(value: String?) {
+    fun setDefaultStatus(value: String?) {
     }
 
-    override fun getFrames(): HTMLCollection? {
+    fun getFrames(): HTMLCollection? {
         return null
     }
 
@@ -71,33 +71,33 @@ abstract class AbstractHtmlRendererContext : HtmlRendererContext {
         return null
     }
 
-    override fun getName(): String? {
+    fun getName(): String? {
         return null
     }
 
-    override fun getOpener(): HtmlRendererContext? {
+    fun getOpener(): HtmlRendererContext? {
         return null
     }
 
-    override fun setOpener(opener: HtmlRendererContext?) {
+    fun setOpener(opener: HtmlRendererContext?) {
     }
 
-    override fun getParent(): HtmlRendererContext? {
+    fun getParent(): HtmlRendererContext? {
         return null
     }
 
-    override fun getStatus(): String? {
+    fun getStatus(): String? {
         return null
     }
 
-    override fun setStatus(message: String?) {
+    fun setStatus(message: String?) {
     }
 
-    override fun getTop(): HtmlRendererContext? {
+    fun getTop(): HtmlRendererContext? {
         return null
     }
 
-    override fun getUserAgentContext(): UserAgentContext? {
+    fun getUserAgentContext(): UserAgentContext? {
         return null
     }
 
@@ -110,14 +110,14 @@ abstract class AbstractHtmlRendererContext : HtmlRendererContext {
     /**
      * Returns false unless overridden.
      */
-    override fun isClosed(): Boolean {
+    fun isClosed(): Boolean {
         return false
     }
 
     /**
      * Returns true unless overridden.
      */
-    override fun isImageLoadingEnabled(): Boolean {
+    fun isImageLoadingEnabled(): Boolean {
         return true
     }
 
@@ -199,19 +199,19 @@ abstract class AbstractHtmlRendererContext : HtmlRendererContext {
     override fun forward() {
     }
 
-    override fun getCurrentURL(): String? {
+    fun getCurrentURL(): String? {
         return null
     }
 
-    override fun getHistoryLength(): Int {
+    fun getHistoryLength(): Int {
         return 0
     }
 
-    override fun getNextURL(): Optional<String?> {
-        return Optional.empty<String?>()
+    fun getNextURL(): Optional<String> {
+        return Optional.empty<String>()
     }
 
-    override fun getPreviousURL(): Optional<String?>? {
+    fun getPreviousURL(): Optional<String?>? {
         return null
     }
 

@@ -41,10 +41,9 @@ interface ModelNode {
 
     fun isEqualOrDescendentOf(otherNode: ModelNode?): Boolean
 
-    @JvmField
+
     val parentModelNode: ModelNode?
 
-    @JvmField
     val renderState: RenderState?
 
     /**
@@ -58,6 +57,6 @@ interface ModelNode {
 
     fun getDocumentItem(name: String?): Any?
 
-    @JvmField
+
     val nodeName: String?
 }
