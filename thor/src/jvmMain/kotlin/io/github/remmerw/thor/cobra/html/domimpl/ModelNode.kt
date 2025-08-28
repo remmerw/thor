@@ -35,7 +35,7 @@ interface ModelNode {
     // There shouldn't be any references to GUI components here.
     // Events are processed by controller in renderer package.
     @Throws(MalformedURLException::class)
-    fun getFullURL(spec: String?): URL?
+    fun getFullURL(spec: String): URL
 
     fun warn(message: String?, err: Throwable?)
 
@@ -44,7 +44,7 @@ interface ModelNode {
 
     val parentModelNode: ModelNode?
 
-    val renderState: RenderState?
+    var renderState: RenderState?
 
     /**
      * Sets a document item. A radio button, for example, can use this to set

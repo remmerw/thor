@@ -82,10 +82,9 @@ import kotlin.synchronized
 abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
     // Called in GUI thread always.
     // Called in GUI thread always.
-    @get:HideFromJS
-    @set:HideFromJS
+
     var uINode: UINode? = null
-    protected var nodeList: java.util.ArrayList<Node>? = null
+    protected var nodeList: ArrayList<Node>? = null
 
     @Volatile
     protected var document: Document? = null
@@ -105,7 +104,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
     private var userData: MutableMap<String?, Any?>? = null
 
     // TODO: Inform handlers on cloning, etc.
-    private var userDataHandlers: MutableMap<String?, UserDataHandler?>? = null
+    private val userDataHandlers: MutableMap<String, UserDataHandler> = mutableMapOf()
 
     @Volatile
     private var prefix: String? = null
@@ -115,9 +114,9 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
      * to the document, false otherwise. Document nodes are considered
      * attached by default.
      */
-    @Volatile
-    protected lateinit var isAttachedToDocument: kotlin.Boolean
-        private set
+
+     var isAttachedToDocument: kotlin.Boolean = this is Document
+
 
     /**
      * Tries to get a UINode associated with the current node. Failing that, it
@@ -132,7 +131,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
             return uiNode
         }
         val parentNode = this.parentNode as NodeImpl?
-        return if (parentNode == null) null else parentNode.findUINode()
+        return parentNode?.findUINode()
     }
 
     @Throws(DOMException::class)
@@ -191,7 +190,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
     }
 
     protected fun getNodeList(filter: NodeFilter): NodeList {
-        val collection: MutableCollection<Node?> = java.util.ArrayList<Node?>()
+        val collection: MutableCollection<Node> = ArrayList<Node>()
         synchronized(this.treeLock) {
             this.appendChildrenToCollectionImpl(filter, collection)
         }
@@ -236,7 +235,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
      */
     fun getDescendents(
         filter: NodeFilter,
-        nestIntoMatchingNodes: Boolean
+        nestIntoMatchingNodes: kotlin.Boolean
     ): java.util.ArrayList<NodeImpl?> {
         val al = java.util.ArrayList<NodeImpl?>()
         synchronized(this.treeLock) {
@@ -255,7 +254,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
     private fun extractDescendentsArrayImpl(
         filter: NodeFilter,
         al: java.util.ArrayList<NodeImpl?>,
-        nestIntoMatchingNodes: Boolean
+        nestIntoMatchingNodes: kotlin.Boolean
     ) {
         val nl = this.nodeList
         if (nl != null) {
@@ -276,7 +275,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
 
     private fun appendChildrenToCollectionImpl(
         filter: NodeFilter,
-        collection: MutableCollection<Node?>
+        collection: MutableCollection<Node>
     ) {
         val nl = this.nodeList
         if (nl != null) {
@@ -321,8 +320,11 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
 
             synchronized(this) {
                 if ((userDataHandlers != null) && (userData != null)) {
-                    userDataHandlers.forEach { (k: String?, handler: UserDataHandler?) ->
-                        handler!!.handle(
+
+                    userDataHandlers.toMap().forEach { (k: String, handler: UserDataHandler) ->
+
+                        handler.handle(
+
                             UserDataHandler.NODE_CLONED, k, userData!!.get(k), this, newNode
                         )
                     }
@@ -447,7 +449,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
         this.treeLock = if (value == null) this else value
     }
 
-    open fun setOwnerDocument(value: Document?, deep: Boolean) {
+    open fun setOwnerDocument(value: Document?, deep: kotlin.Boolean) {
         this.document = value
         this.treeLock = if (value == null) this else value
         if (deep) {
@@ -647,7 +649,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
     override fun getChildNodes(): NodeList {
         synchronized(this.treeLock) {
             val nl = this.nodeList
-            return NodeListImpl(if (nl == null) mutableListOf<Node?>() else nl)
+            return NodeListImpl(if (nl == null) mutableListOf<Node>() else nl)
         }
     }
 
@@ -754,7 +756,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
         return null
     }
 
-    override fun setUserData(key: String?, data: Any?, handler: UserDataHandler?): Any? {
+    override fun setUserData(key: String, data: Any?, handler: UserDataHandler?): Any? {
         if (HtmlParser.MODIFYING_KEY == key) {
             val ns = (Boolean.TRUE === data)
             this.notificationsSuspended = ns
@@ -765,12 +767,8 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
         // here we spent some effort preventing our maps from growing too much
         synchronized(this) {
             if (handler != null) {
-                if (this.userDataHandlers == null) {
-                    this.userDataHandlers = HashMap<String?, UserDataHandler?>()
-                } else {
-                    this.userDataHandlers!!.remove(key)
-                }
-                this.userDataHandlers!!.put(key, handler)
+                this.userDataHandlers.remove(key)
+                this.userDataHandlers.put(key, handler)
             }
             var userData = this.userData
             if (data != null) {
@@ -917,7 +915,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
     }
 
     @HideFromJS
-    fun replaceAdjacentTextNodes(node: Text?, textContent: String?): Text {
+    fun replaceAdjacentTextNodes(node: Text, textContent: String?): Text {
         try {
             synchronized(this.treeLock) {
                 val nl = this.nodeList
@@ -933,7 +931,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
                 run {
                     var adjIdx = idx
                     while (--adjIdx >= 0) {
-                        val child: Any? = this.nodeList!!.get(adjIdx)
+                        val child: Any? = this.nodeList!![adjIdx]
                         if (child is Text) {
                             firstIdx = adjIdx
                             toDelete.add(child)
@@ -961,7 +959,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
     }
 
     @HideFromJS
-    fun replaceAdjacentTextNodes(node: Text?): Text {
+    fun replaceAdjacentTextNodes(node: Text): Text {
         try {
             synchronized(this.treeLock) {
                 val nl = this.nodeList
@@ -978,7 +976,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
                 run {
                     var adjIdx = idx
                     while (--adjIdx >= 0) {
-                        val child: Any? = this.nodeList!!.get(adjIdx)
+                        val child: Any? = this.nodeList!![adjIdx]
                         if (child is Text) {
                             firstIdx = adjIdx
                             toDelete.add(child)
@@ -1062,7 +1060,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
                 }
                 i = textNodes.iterator()
                 while (i.hasNext()) {
-                    val text = i.next() as Text?
+                    val text = i.next() as Text
                     this.replaceAdjacentTextNodes(text)
                 }
             }
@@ -1106,7 +1104,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
      * @see
      * org.xamjwg.html.renderer.RenderableContext#getFullURL(java.lang.String)
      */
-    @Throws(MalformedURLException::class)
+
     override fun getFullURL(spec: String): URL {
         val doc: Any? = this.document
         val cleanSpec = Urls.encodeIllegalCharacters(spec)
@@ -1173,7 +1171,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
         }
     }
 
-    override fun getParentModelNode(): ModelNode? {
+    fun getParentModelNode(): ModelNode? {
         return this.parentNode as ModelNode?
     }
 
@@ -1260,7 +1258,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
         }
     }
 
-    override fun getRenderState(): RenderState {
+    fun getRenderState(): RenderState {
         // Generally called from the GUI thread, except for
         // offset properties.
         synchronized(this.treeLock) {
@@ -1319,10 +1317,10 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
 
     protected fun appendInnerHTMLImpl(buffer: StringBuffer) {
         val nl = this.nodeList
-        val size: Int
+        var size: Int = 0
         if ((nl != null) && ((nl.size.also { size = it }) > 0)) {
             for (i in 0..<size) {
-                val child: Node? = nl.get(i)
+                val child: Node? = nl[i]
                 if (child is HTMLElementImpl) {
                     child.appendOuterHTMLImpl(buffer)
                 } else if (child is Comment) {
@@ -1479,7 +1477,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
             this.isAttachedToDocument = attached
             handleDocumentAttachmentChanged()
             if (this is ElementImpl) {
-                elementImpl.updateIdMap(attached)
+                this.updateIdMap(attached)
             }
         }
         if (nodeList != null) {
@@ -1527,15 +1525,13 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
         // TODO
         println("node by name: " + getNodeName() + " adding Event listener of type: " + type)
         // System.out.println("  txt content: " + getInnerText());
-        (ownerDocument as HTMLDocumentImpl).getEventTargetManager()
-            .addEventListener(this, type, listener)
+        (ownerDocument as HTMLDocumentImpl).eventTargetManager?.addEventListener(this, type, listener)
     }
 
     fun removeEventListener(type: String?, listener: Function?, useCapture: kotlin.Boolean) {
         // TODO
         println("node remove Event listener: " + type)
-        (ownerDocument as HTMLDocumentImpl).getEventTargetManager()
-            .removeEventListener(this, type, listener, useCapture)
+        (ownerDocument as HTMLDocumentImpl).eventTargetManager?.removeEventListener(this, type, listener, useCapture)
     }
 
     /*
@@ -1561,7 +1557,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
     fun dispatchEvent(evt: Event): kotlin.Boolean {
         println("Dispatching event: " + evt)
         // dispatchEventToHandlers(evt, onEventHandlers.get(evt.getType()));
-        (ownerDocument as HTMLDocumentImpl).getEventTargetManager().dispatchEvent(this, evt)
+        (ownerDocument as HTMLDocumentImpl).eventTargetManager?.dispatchEvent(this, evt)
         return false
     }
 
@@ -1593,8 +1589,8 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
     }
     return matchingElements;
   }*/
-    protected fun getMatchingChildren(selectors: MutableList<Selector>): MutableCollection<Node?> {
-        val matchingElements: MutableCollection<Node?> = LinkedList<Node?>()
+    protected fun getMatchingChildren(selectors: MutableList<Selector>): MutableCollection<Node> {
+        val matchingElements: MutableCollection<Node> = LinkedList<Node>()
         val numSelectors = selectors.size
         if (numSelectors > 0) {
             val firstSelector = selectors.get(0)
@@ -1622,7 +1618,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
     fun querySelectorAll(query: String?): NodeList {
         try {
             val selectors: Array<CombinedSelector> = makeSelectors(query)
-            val matches = LinkedList<Node?>()
+            val matches = LinkedList<Node>()
             for (selector in selectors) {
                 matches.addAll(getMatchingChildren(selector))
             }

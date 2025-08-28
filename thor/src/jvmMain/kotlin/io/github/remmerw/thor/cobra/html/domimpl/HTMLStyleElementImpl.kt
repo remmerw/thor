@@ -26,6 +26,7 @@ package io.github.remmerw.thor.cobra.html.domimpl
 import io.github.remmerw.thor.cobra.css.domimpl.JStyleSheetWrapper
 import io.github.remmerw.thor.cobra.html.style.CSSUtilities
 import org.w3c.dom.DOMException
+import org.w3c.dom.Node.TEXT_NODE
 import org.w3c.dom.Text
 import org.w3c.dom.css.CSSStyleSheet
 import org.w3c.dom.html.HTMLStyleElement
@@ -74,7 +75,7 @@ class HTMLStyleElementImpl : HTMLElementImpl, HTMLStyleElement, LinkStyle {
     }
 
     // TODO: This should probably not be a nop. We should probably be handling changes to inner text.
-    override fun appendInnerTextImpl(buffer: StringBuffer?) {
+    override fun appendInnerTextImpl(buffer: StringBuffer) {
         // nop
     }
 
