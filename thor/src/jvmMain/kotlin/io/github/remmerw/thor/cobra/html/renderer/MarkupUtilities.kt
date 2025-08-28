@@ -60,8 +60,9 @@ internal object MarkupUtilities {
         length: Int, vertical: Boolean
     ): BoundableRenderable? {
         for (i in firstIndex + length - 1 downTo firstIndex) {
-            if (renderables[i] is BoundableRenderable) {
-                if ((!br2.isDelegated()) && br2.contains(x, y)) {
+            val br2 = renderables[i]
+            if (br2 is BoundableRenderable) {
+                if ((!br2.isDelegated) && br2.contains(x, y)) {
                     return br2
                 }
             }
@@ -78,8 +79,9 @@ internal object MarkupUtilities {
     ): MutableList<BoundableRenderable?>? {
         var found: MutableList<BoundableRenderable?>? = null
         for (i in renderables.indices) {
-            if (renderables[i] is BoundableRenderable) {
-                if ((!br.isDelegated()) && br.contains(x, y)) {
+            val br = renderables[i]
+            if (br is BoundableRenderable) {
+                if ((!br.isDelegated) && br.contains(x, y)) {
                     if (found == null) {
                         found = ArrayList<BoundableRenderable?>()
                     }
@@ -248,7 +250,7 @@ internal object MarkupUtilities {
         for (i in index..<length) {
             val ri = renderables[i]
             if (ri is BoundableRenderable) {
-                if (intersects(clipArea, ri.getVisualBounds(), vertical)) {
+                if (intersects(clipArea, ri.visualBounds!!, vertical)) {
                     return i
                 }
             }
@@ -263,7 +265,7 @@ internal object MarkupUtilities {
         for (i in index + length - 1 downTo index) {
             val ri = renderables[i]
             if (ri is BoundableRenderable) {
-                if (intersects(clipArea, ri.getVisualBounds(), vertical)) {
+                if (intersects(clipArea, ri.visualBounds!!, vertical)) {
                     return i
                 }
             }

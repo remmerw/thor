@@ -44,7 +44,7 @@ internal class ImgControl(modelNode: HTMLImageElementImpl) : BaseControl(modelNo
 
     // private final UserAgentContext browserContext;
     private val lastSrc: String? = null
-    private var preferredSize: Dimension? = null
+
     private var declaredWidth = 0
     private var declaredHeight = 0
 
@@ -56,7 +56,7 @@ internal class ImgControl(modelNode: HTMLImageElementImpl) : BaseControl(modelNo
     override fun paintComponent(g: Graphics) {
         super.paintComponent(g)
         val imageResponse = this.imageResponse
-        if (imageResponse.isDecoded()) {
+        if (imageResponse.isDecoded) {
             checkNotNull(imageResponse.img)
             val image: Image = imageResponse.img
             val size = this.size
@@ -107,7 +107,7 @@ internal class ImgControl(modelNode: HTMLImageElementImpl) : BaseControl(modelNo
 
     override fun getVAlign(): VerticalAlign {
         val element = this.controlElement
-        val verticalAlign = element.getRenderState().verticalAlign
+        val verticalAlign = element?.getRenderState()?.verticalAlign
         return if (verticalAlign == null) VerticalAlign.BASELINE else verticalAlign
     }
 
@@ -120,7 +120,7 @@ internal class ImgControl(modelNode: HTMLImageElementImpl) : BaseControl(modelNo
         var dw = dw
         var dh = dh
         val imageResponseLocal = this.imageResponse
-        if (!imageResponseLocal.isDecoded()) {
+        if (!imageResponseLocal.isDecoded) {
             return Dimension(if (dw == -1) 0 else dw, if (dh == -1) 0 else dh)
         }
 
@@ -182,7 +182,7 @@ internal class ImgControl(modelNode: HTMLImageElementImpl) : BaseControl(modelNo
                 if (!checkPreferredSizeChange()) {
                     repaint()
                 } else {
-                    ruicontrol.preferredSizeInvalidated()
+                    ruicontrol?.preferredSizeInvalidated()
                 }
             })
         }
@@ -200,7 +200,7 @@ internal class ImgControl(modelNode: HTMLImageElementImpl) : BaseControl(modelNo
             if (!checkPreferredSizeChange()) {
                 repaint()
             } else {
-                ruicontrol.preferredSizeInvalidated()
+                ruicontrol?.preferredSizeInvalidated()
             }
         })
     }
@@ -218,7 +218,7 @@ internal class ImgControl(modelNode: HTMLImageElementImpl) : BaseControl(modelNo
         // Implementation of ImageListener. Invoked in a request thread most likely.
         val imageResponseLocal = event.imageResponse
         this.imageResponse = imageResponseLocal
-        if (imageResponseLocal.isDecoded()) {
+        if (imageResponseLocal.isDecoded) {
             checkNotNull(imageResponseLocal.img)
             val image: Image = imageResponseLocal.img
             val width = image.getWidth(this)
@@ -284,11 +284,9 @@ internal class ImgControl(modelNode: HTMLImageElementImpl) : BaseControl(modelNo
         return ret
     }
 
-    override fun isReadyToPaint(): Boolean {
-        return imageResponse.isReadyToPaint()
+    fun isReadyToPaint(): Boolean {
+        return imageResponse.isReadyToPaint
     }
 
-    companion object {
-        private val serialVersionUID = -1510794248068777990L
-    }
+    companion object
 }

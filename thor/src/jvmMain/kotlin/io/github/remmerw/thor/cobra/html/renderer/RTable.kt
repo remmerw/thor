@@ -39,8 +39,8 @@ import java.util.LinkedList
 import java.util.SortedSet
 import java.util.TreeSet
 
-internal class RTable(
-    modelNode: HTMLElementImpl?, pcontext: UserAgentContext?, rcontext: HtmlRendererContext?,
+internal abstract class RTable(
+    modelNode: HTMLElementImpl, pcontext: UserAgentContext?, rcontext: HtmlRendererContext?,
     frameContext: FrameContext?,
     container: RenderableContainer?
 ) : BaseBlockyRenderable(container, modelNode, pcontext) {
@@ -56,8 +56,8 @@ internal class RTable(
         this.tableMatrix = TableMatrix(modelNode, pcontext, rcontext, frameContext, this, this)
     }
 
-    override fun paintShifted(g: Graphics?) {
-        val rs = this.modelNode.renderState
+    override fun paintShifted(g: Graphics) {
+        val rs = this.modelNode?.renderState
         if ((rs != null) && (rs.visibility != RenderState.VISIBILITY_VISIBLE)) {
             // Just don't paint it.
             return

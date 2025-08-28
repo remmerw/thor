@@ -23,7 +23,6 @@
  */
 package io.github.remmerw.thor.cobra.html.renderer
 
-import cz.vutbr.web.css.CSSProperty
 import cz.vutbr.web.css.CSSProperty.VerticalAlign
 import java.awt.Color
 import java.awt.Component
@@ -40,7 +39,7 @@ internal interface UIControl {
      */
     fun reset(availWidth: Int, availHeight: Int)
 
-    val preferredSize: Dimension?
+    var preferredSize: Dimension?
 
     val vAlign: VerticalAlign?
         get() = VerticalAlign.BASELINE

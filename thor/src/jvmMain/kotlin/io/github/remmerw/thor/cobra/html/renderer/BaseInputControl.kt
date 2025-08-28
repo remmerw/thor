@@ -29,7 +29,7 @@ import io.github.remmerw.thor.cobra.html.domimpl.InputContext
 import java.awt.Graphics
 import java.io.File
 
-internal abstract class BaseInputControl(modelNode: HTMLBaseInputElement?) : BaseControl(modelNode),
+abstract class BaseInputControl(modelNode: HTMLBaseInputElement?) : BaseControl(modelNode),
     InputContext {
 
     protected var size: Int = -1

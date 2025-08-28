@@ -6,7 +6,7 @@ import java.awt.Point
 import java.awt.Rectangle
 import java.awt.event.MouseEvent
 
-internal abstract class BaseRCollection(container: RenderableContainer, modelNode: ModelNode?) :
+abstract class BaseRCollection(container: RenderableContainer, modelNode: ModelNode?) :
     BaseBoundableRenderable(container, modelNode), RCollection {
     private var renderableWithMouse: BoundableRenderable? = null
 

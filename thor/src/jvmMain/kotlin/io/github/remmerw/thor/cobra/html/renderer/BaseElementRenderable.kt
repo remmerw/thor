@@ -55,8 +55,8 @@ import java.util.logging.Level
 import javax.swing.SwingUtilities
 import kotlin.concurrent.Volatile
 
-internal abstract class BaseElementRenderable(
-    container: RenderableContainer?,
+abstract class BaseElementRenderable(
+    container: RenderableContainer,
     modelNode: ModelNode?,
     protected val userAgentContext: UserAgentContext?
 ) : BaseRCollection(container, modelNode), RElement, RenderableContainer, ImageObserver {
@@ -66,7 +66,7 @@ internal abstract class BaseElementRenderable(
     /**
      * A list of absolute positioned or float parent-child pairs.
      */
-    protected var delayedPairs: MutableCollection<DelayedPair?>? = null
+    override var delayedPairs: MutableCollection<DelayedPair?>? = null
 
     /**
      * Background color which may be different to that from RenderState in the

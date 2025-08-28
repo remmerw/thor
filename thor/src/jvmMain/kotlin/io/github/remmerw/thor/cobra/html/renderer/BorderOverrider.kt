@@ -3,7 +3,7 @@ package io.github.remmerw.thor.cobra.html.renderer
 import io.github.remmerw.thor.cobra.html.style.HtmlInsets
 import java.awt.Insets
 
-internal class BorderOverrider {
+class BorderOverrider {
     var leftOverridden: Boolean = false
     var rightOverridden: Boolean = false
     var bottomOverridden: Boolean = false

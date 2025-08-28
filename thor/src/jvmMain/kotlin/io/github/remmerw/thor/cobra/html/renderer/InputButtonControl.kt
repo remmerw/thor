@@ -41,7 +41,7 @@ internal class InputButtonControl(modelNode: HTMLBaseInputElement?) : BaseInputC
         this.add(widget)
         widget.addActionListener(object : ActionListener {
             override fun actionPerformed(event: ActionEvent?) {
-                HtmlController.Companion.getInstance()
+                HtmlController.Companion.instance
                     .onPressed(this@InputButtonControl.controlElement, null, 0, 0)
             }
         })
@@ -51,8 +51,8 @@ internal class InputButtonControl(modelNode: HTMLBaseInputElement?) : BaseInputC
         super.reset(availWidth, availHeight)
         val ruiControl = this.ruicontrol
         val button = this.widget
-        button.isContentAreaFilled = !ruiControl.hasBackground()
-        val foregroundColor = ruiControl.getForegroundColor()
+        button.isContentAreaFilled = !ruiControl!!.hasBackground()
+        val foregroundColor = ruiControl.foregroundColor
         if (foregroundColor != null) {
             button.setForeground(foregroundColor)
         }
@@ -80,7 +80,7 @@ internal class InputButtonControl(modelNode: HTMLBaseInputElement?) : BaseInputC
         this.widget.doClick()
     }
 
-    var value: String?
+    override var value: String?
         /*
              * (non-Javadoc)
              *
@@ -96,7 +96,7 @@ internal class InputButtonControl(modelNode: HTMLBaseInputElement?) : BaseInputC
             this.widget.setText(value)
         }
 
-    override fun setDisabled(disabled: Boolean) {
+    fun setDisabled(disabled: Boolean) {
         super.disabled = disabled
         this.widget.isEnabled = !disabled
     }

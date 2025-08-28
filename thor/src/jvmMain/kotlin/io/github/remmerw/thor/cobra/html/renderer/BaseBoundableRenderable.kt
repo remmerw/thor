@@ -37,7 +37,7 @@ import javax.swing.SwingUtilities
 /**
  * @author J. H. S.
  */
-internal abstract class BaseBoundableRenderable /*
+ abstract class BaseBoundableRenderable /*
   public Point getRenderablePoint(final int guiX, final int guiY) {
     final Renderable parent = this.getParent();
     if (parent instanceof BoundableRenderable) {
@@ -48,12 +48,12 @@ internal abstract class BaseBoundableRenderable /*
       throw new IllegalStateException("parent=" + parent);
     }
   }*/(// protected final Rectangle bounds = new Rectangle();
-    protected val container: RenderableContainer, val modelNode: ModelNode?
+    protected val container: RenderableContainer, override val modelNode: ModelNode?
 ) : BaseRenderable(), BoundableRenderable {
-    var width: Int = 0
-    var height: Int = 0
-    var x: Int = 0
-    var y: Int = 0
+    override var width: Int = 0
+    override var height: Int = 0
+    override var x: Int = 0
+    override var y: Int = 0
 
     /**
      * Starts as true because ancestors could be invalidated.
@@ -61,15 +61,8 @@ internal abstract class BaseBoundableRenderable /*
     var isValid: Boolean = true
         protected set
 
-    /**
-     * Parent for graphics coordinates.
-     */
-    protected var parent: RCollection? = null
 
-    /**
-     * Parent for invalidation.
-     */
-    protected var originalParent: RCollection? = null
+
     private var delegator: BoundableRenderable? = null
 
     open fun markLayoutValid() {
@@ -87,51 +80,51 @@ internal abstract class BaseBoundableRenderable /*
         }
     }
 
-    override fun getHeight(): Int {
+    fun getHeight(): Int {
         return height
     }
 
-    override fun setHeight(height: Int) {
+    fun setHeight(height: Int) {
         this.height = height
     }
 
-    override fun getWidth(): Int {
+    fun getWidth(): Int {
         return width
     }
 
-    override fun setWidth(width: Int) {
+    fun setWidth(width: Int) {
         this.width = width
     }
 
-    override fun getVisualX(): Int {
+    fun getVisualX(): Int {
         return getX()
     }
 
-    override fun getVisualY(): Int {
+    fun getVisualY(): Int {
         return getY()
     }
 
-    override fun getVisualHeight(): Int {
+    fun getVisualHeight(): Int {
         return getHeight()
     }
 
-    override fun getVisualWidth(): Int {
+    fun getVisualWidth(): Int {
         return getWidth()
     }
 
-    override fun getX(): Int {
+    fun getX(): Int {
         return x
     }
 
-    override fun setX(x: Int) {
+    fun setX(x: Int) {
         this.x = x
     }
 
-    override fun getY(): Int {
+    fun getY(): Int {
         return y
     }
 
-    override fun setY(y: Int) {
+    fun setY(y: Int) {
         this.y = y
     }
 
@@ -141,7 +134,7 @@ internal abstract class BaseBoundableRenderable /*
         return (x >= mx) && (y >= my) && (x < (mx + this.getVisualWidth())) && (y < (my + this.getVisualHeight()))
     }
 
-    override fun getBounds(): Rectangle? {
+    fun getBounds(): Rectangle {
         return Rectangle(this.x, this.y, this.width, this.height)
     }
 
@@ -149,11 +142,11 @@ internal abstract class BaseBoundableRenderable /*
      * returns the visual bounds
      * They are distinct from layout bounds when {overflow:visible} or {position:relative} is set on the element
      */
-    override fun getVisualBounds(): Rectangle? {
+    fun getVisualBounds(): Rectangle {
         return Rectangle(getVisualX(), getVisualY(), getVisualWidth(), getVisualHeight())
     }
 
-    override fun getSize(): Dimension? {
+    fun getSize(): Dimension? {
         return Dimension(this.width, this.height)
     }
 
@@ -250,26 +243,26 @@ internal abstract class BaseBoundableRenderable /*
         }
     }
 
-    override fun getParent(): RCollection? {
+    fun getParent(): RCollection? {
         return this.parent
     }
 
-    override fun setParent(parent: RCollection?) {
+    fun setParent(parent: RCollection?) {
         this.parent = parent
     }
 
     /**
      * This is the parent based on the original element hierarchy.
      */
-    override fun getOriginalParent(): RCollection? {
+    fun getOriginalParent(): RCollection? {
         return this.originalParent
     }
 
-    override fun setOriginalParent(origParent: RCollection?) {
+    fun setOriginalParent(origParent: RCollection?) {
         this.originalParent = origParent
     }
 
-    override fun getOriginalOrCurrentParent(): RCollection? {
+    fun getOriginalOrCurrentParent(): RCollection? {
         val origParent = this.originalParent
         if (origParent == null) {
             return this.parent
@@ -306,7 +299,7 @@ internal abstract class BaseBoundableRenderable /*
     }
 
     open val blockBackgroundColor: Color?
-        get() = this.container.getPaintedBackgroundColor()
+        get() = this.container.paintedBackgroundColor
 
     override fun paintTranslated(g: Graphics) {
         val x = this.x
@@ -320,8 +313,8 @@ internal abstract class BaseBoundableRenderable /*
     }
 
     override fun onMouseOut(event: MouseEvent?, x: Int, y: Int, limit: ModelNode?) {
-        if (this.isContainedByNode()) {
-            HtmlController.Companion.getInstance().onMouseOut(this.modelNode, event, x, y, limit)
+        if (this.isContainedByNode) {
+            HtmlController.Companion.instance.onMouseOut(this.modelNode, event, x, y, limit)
         }
     }
 
@@ -333,18 +326,18 @@ internal abstract class BaseBoundableRenderable /*
         limit: ModelNode?
     ) {
         if (triggerEvent) {
-            if (this.isContainedByNode()) {
-                HtmlController.Companion.getInstance()
+            if (this.isContainedByNode) {
+                HtmlController.Companion.instance
                     .onMouseOver(this, this.modelNode, event, x, y, limit)
             }
         }
     }
 
-    override fun getOrigin(): Point? {
+    fun getOrigin(): Point? {
         return Point(this.x, this.y)
     }
 
-    override fun getOriginRelativeTo(ancestor: RCollection?): Point? {
+    override fun getOriginRelativeTo(ancestor: RCollection?): Point {
         if (ancestor === this) {
             return Point(0, 0)
         }
@@ -365,9 +358,9 @@ internal abstract class BaseBoundableRenderable /*
             if (parent === ancestor) {
                 return Point(x, y)
             }
-            x += parent.getVisualX()
-            y += parent.getVisualY()
-            parent = parent.getParent()
+            x += parent.visualX
+            y += parent.visualY
+            parent = parent.parent
         }
     }
 
@@ -397,9 +390,9 @@ internal abstract class BaseBoundableRenderable /*
             }
             x += nextX
             y += nextY
-            nextX = parent.getVisualX()
-            nextY = parent.getVisualY()
-            parent = parent.getParent()
+            nextX = parent.visualX
+            nextY = parent.visualY
+            parent = parent.parent
         }
     }
 
@@ -413,8 +406,8 @@ internal abstract class BaseBoundableRenderable /*
 
 
         if (this is RBlockViewport) {
-            x -= rBV.scrollX
-            y -= rBV.scrollY
+            x -= this.scrollX
+            y -= this.scrollY
         }
 
         var parent = this.parent
@@ -430,9 +423,9 @@ internal abstract class BaseBoundableRenderable /*
             if (parent === ancestor) {
                 return Point(x, y)
             }
-            x += parent.getVisualX()
-            y += parent.getVisualY()
-            parent = parent.getParent()
+            x += parent.visualX
+            y += parent.visualY
+            parent = parent.parent
         }
     }
 
@@ -448,14 +441,14 @@ internal abstract class BaseBoundableRenderable /*
         this.delegator = pDelegator
     }
 
-    override fun isDelegated(): Boolean {
+    fun isDelegated(): Boolean {
         return delegator != null
     }
 
     override fun onMiddleClick(event: MouseEvent?, x: Int, y: Int): Boolean {
         val me = this.modelNode
         if (me != null) {
-            return HtmlController.Companion.getInstance().onMiddleClick(me, event, x, y)
+            return HtmlController.Companion.instance.onMiddleClick(me, event, x, y)
         } else {
             return true
         }

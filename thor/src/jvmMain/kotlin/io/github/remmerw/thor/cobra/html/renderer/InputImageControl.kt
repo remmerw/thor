@@ -35,11 +35,11 @@ import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import javax.swing.SwingUtilities
 
-internal class InputImageControl(modelNode: HTMLBaseInputElement) : BaseInputControl(modelNode),
+abstract class InputImageControl(modelNode: HTMLBaseInputElement) : BaseInputControl(modelNode),
     ImageListener {
     // private JButton button;
     private var mouseBeingPressed = false
-    private var preferredSize: Dimension? = null
+    override var preferredSize: Dimension? = null
     private var declaredWidth = 0
     private var declaredHeight = 0
     private var imageResponse: ImageResponse? = null
@@ -65,7 +65,7 @@ internal class InputImageControl(modelNode: HTMLBaseInputElement) : BaseInputCon
             override fun mouseReleased(e: MouseEvent) {
                 mouseBeingPressed = false
                 repaint()
-                HtmlController.Companion.getInstance().onPressed(modelNode, e, e.getX(), e.getY())
+                HtmlController.Companion.instance.onPressed(modelNode, e, e.getX(), e.getY())
             }
         })
     }
@@ -73,8 +73,8 @@ internal class InputImageControl(modelNode: HTMLBaseInputElement) : BaseInputCon
     override fun reset(availWidth: Int, availHeight: Int) {
         super.reset(availWidth, availHeight)
         val element = this.controlElement
-        val dw = HtmlValues.getOldSyntaxPixelSize(element.getAttribute("width"), availWidth, -1)
-        val dh = HtmlValues.getOldSyntaxPixelSize(element.getAttribute("height"), availHeight, -1)
+        val dw = HtmlValues.getOldSyntaxPixelSize(element?.getAttribute("width"), availWidth, -1)
+        val dh = HtmlValues.getOldSyntaxPixelSize(element?.getAttribute("height"), availHeight, -1)
         this.declaredWidth = dw
         this.declaredHeight = dh
         this.preferredSize = this.createPreferredSize(dw, dh)
@@ -82,12 +82,12 @@ internal class InputImageControl(modelNode: HTMLBaseInputElement) : BaseInputCon
 
     override fun getVAlign(): VerticalAlign? {
         val element = this.controlElement
-        return element.getRenderState().verticalAlign
+        return element?.getRenderState()?.verticalAlign
     }
 
     override fun paintComponent(g: Graphics) {
         super.paintComponent(g)
-        val size = this.size
+        val size = this.size()
         val insets = this.insets
         synchronized(this) {}
         val imageResponse = this.imageResponse!!
@@ -124,7 +124,7 @@ internal class InputImageControl(modelNode: HTMLBaseInputElement) : BaseInputCon
         var dw = dw
         var dh = dh
         val imgResponse = this.imageResponse!!
-        if (!imgResponse.isDecoded()) {
+        if (!imgResponse.isDecoded) {
             return Dimension(if (dw == -1) 0 else dw, if (dh == -1) 0 else dh)
         }
 
@@ -166,7 +166,7 @@ internal class InputImageControl(modelNode: HTMLBaseInputElement) : BaseInputCon
                 if (!checkPreferredSizeChange()) {
                     repaint()
                 } else {
-                    ruicontrol.preferredSizeInvalidated()
+                    ruicontrol?.preferredSizeInvalidated()
                 }
             })
         }
@@ -184,7 +184,7 @@ internal class InputImageControl(modelNode: HTMLBaseInputElement) : BaseInputCon
             if (!checkPreferredSizeChange()) {
                 repaint()
             } else {
-                ruicontrol.preferredSizeInvalidated()
+                ruicontrol?.preferredSizeInvalidated()
             }
         })
     }
@@ -204,7 +204,7 @@ internal class InputImageControl(modelNode: HTMLBaseInputElement) : BaseInputCon
         // ImageIcon imageIcon = new ImageIcon(image);
         // this.button.setIcon(imageIcon);
         this.imageResponse = imageResponseLocal
-        if (imageResponseLocal.isDecoded()) {
+        if (imageResponseLocal.isDecoded) {
             checkNotNull(imageResponseLocal.img)
             val image = imageResponseLocal.img
             val width = image.getWidth(this)
@@ -221,8 +221,8 @@ internal class InputImageControl(modelNode: HTMLBaseInputElement) : BaseInputCon
         // NOP
     }
 
-    override fun isReadyToPaint(): Boolean {
-        return imageResponse!!.isReadyToPaint()
+    fun isReadyToPaint(): Boolean {
+        return imageResponse!!.isReadyToPaint
     } // private static class LocalButton extends JButton {
     // public void revalidate() {
     // // ignore
@@ -233,7 +233,5 @@ internal class InputImageControl(modelNode: HTMLBaseInputElement) : BaseInputCon
     // }
     // }
 
-    companion object {
-        private val serialVersionUID = -2242175570423778798L
-    }
+   
 }

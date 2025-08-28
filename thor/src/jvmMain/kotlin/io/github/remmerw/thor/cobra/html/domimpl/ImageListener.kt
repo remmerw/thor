@@ -23,7 +23,7 @@ package io.github.remmerw.thor.cobra.html.domimpl
 import java.util.EventListener
 
 interface ImageListener : EventListener {
-    fun imageLoaded(event: ImageEvent?)
+    fun imageLoaded(event: ImageEvent)
 
     fun imageAborted()
 

@@ -40,7 +40,7 @@ internal class InputCheckboxControl(modelNode: HTMLBaseInputElement?) :
         // Note: Value attribute cannot be set in reset() method.
         // Otherwise, layout revalidation causes typed values to
         // be lost (including revalidation due to hover.)
-        checkBox.isSelected = this.controlElement.getAttributeAsBoolean("checked")
+        checkBox.isSelected = this.controlElement?.getAttributeAsBoolean("checked") == true
 
         this.add(checkBox)
     }
@@ -54,7 +54,7 @@ internal class InputCheckboxControl(modelNode: HTMLBaseInputElement?) :
         this.widget.doClick()
     }
 
-    var checked: Boolean
+    override var checked: Boolean
         /*
              * (non-Javadoc)
              *
@@ -75,17 +75,17 @@ internal class InputCheckboxControl(modelNode: HTMLBaseInputElement?) :
     *
     * @see org.xamjwg.html.domimpl.InputContext#setDisabled(boolean)
     */
-    override fun setDisabled(disabled: Boolean) {
+    fun setDisabled(disabled: Boolean) {
         super.disabled = disabled
         this.widget.isEnabled = !disabled
     }
 
     override fun resetInput() {
-        this.widget.isSelected = this.controlElement.getAttributeAsBoolean("checked")
+        this.widget.isSelected = this.controlElement?.getAttributeAsBoolean("checked") == true
     }
 
-    val value: String?
-        get() = this.controlElement.getAttribute("value")
+    override var value: String? = null
+        get() = this.controlElement?.getAttribute("value")
 
     companion object {
         private val serialVersionUID = -7156618963339104117L

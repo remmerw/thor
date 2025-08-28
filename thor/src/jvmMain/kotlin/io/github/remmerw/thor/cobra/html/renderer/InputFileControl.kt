@@ -31,11 +31,11 @@ import javax.swing.JButton
 import javax.swing.JFileChooser
 import javax.swing.JTextField
 
-class InputFileControl(modelNode: HTMLBaseInputElement?) : BaseInputControl(modelNode) {
+abstract class InputFileControl(modelNode: HTMLBaseInputElement?) : BaseInputControl(modelNode) {
     private val textField = JTextField()
     private val browseButton = JButton()
-    var fileValue: File? = null
-        private set(file) {
+    override var fileValue: File? = null
+         set(file) {
             field = file
             if (file == null) {
                 this.textField.setText("")
@@ -57,7 +57,7 @@ class InputFileControl(modelNode: HTMLBaseInputElement?) : BaseInputControl(mode
         this.add(browseButton)
     }
 
-    var value: String?
+    override var value: String?
         get() =// This is the way browsers behave, even
             // though this value is not submitted.
             this.textField.text
@@ -65,7 +65,7 @@ class InputFileControl(modelNode: HTMLBaseInputElement?) : BaseInputControl(mode
             // nop - security
         }
 
-    override fun setDisabled(disabled: Boolean) {
+    fun setDisabled(disabled: Boolean) {
         this.browseButton.isEnabled = !disabled
     }
 
@@ -77,18 +77,13 @@ class InputFileControl(modelNode: HTMLBaseInputElement?) : BaseInputControl(mode
         override fun actionPerformed(e: ActionEvent?) {
             val chooser = JFileChooser()
             if (chooser.showOpenDialog(this@InputFileControl) == JFileChooser.APPROVE_OPTION) {
-                this.fileValue = chooser.selectedFile
+                // TODO  this.fileValue = chooser.selectedFile
             } else {
-                this.fileValue = null
+               // TODO   this.fileValue = null
             }
         }
 
-        companion object {
-            private val serialVersionUID = -967133652737594806L
-        }
+
     }
 
-    companion object {
-        private const val serialVersionUID = 4255784506085448850L
-    }
 }

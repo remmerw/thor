@@ -120,7 +120,7 @@ interface BoundableRenderable : Renderable {
      * Returns true if the renderable is fully contained by its modelNode, but
      * said modelNode does not fully contain an ancestor renderable.
      */
-    val isContainedByNode: Boolean
+    val isContainedByNode: kotlin.Boolean
 
     /**
      * Asks the Renderable to paint the selection between two points. Nothing will
@@ -166,9 +166,9 @@ interface BoundableRenderable : Renderable {
 
     fun invalidateLayoutUpTree()
 
-    fun setInnerWidth(newWidth: Int?)
+    fun setInnerWidth(newWidth: Int)
 
-    fun setInnerHeight(newHeight: Int?)
+    fun setInnerHeight(newHeight: Int)
 
     fun setDelegator(pDelegator: BoundableRenderable?)
 
