@@ -37,7 +37,7 @@ object ClientletAccess {
             } else {
                 val td = Thread.currentThread().threadGroup
                 if (td is ClientletThreadGroup) {
-                    return (td as ClientletThreadGroup).getClientletContext()
+                    return (td as ClientletThreadGroup).clientletContext
                 } else {
                     return null
                 }
@@ -50,6 +50,6 @@ object ClientletAccess {
          * @param context A [ClientletContext] instance.
          */
         set(context) {
-            field.set(context)
+            field.set(context as ClientletContext?)
         }
 }

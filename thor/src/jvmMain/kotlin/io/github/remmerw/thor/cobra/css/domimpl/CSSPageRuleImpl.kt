@@ -19,6 +19,7 @@ import cz.vutbr.web.css.Declaration
 import cz.vutbr.web.css.RulePage
 import org.w3c.dom.DOMException
 import org.w3c.dom.css.CSSPageRule
+import org.w3c.dom.css.CSSRule.PAGE_RULE
 import org.w3c.dom.css.CSSStyleDeclaration
 
 internal class CSSPageRuleImpl(

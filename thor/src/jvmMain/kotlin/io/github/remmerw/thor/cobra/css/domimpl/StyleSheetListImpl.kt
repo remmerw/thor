@@ -25,7 +25,7 @@ internal class StyleSheetListImpl(private val bridge: StyleSheetBridge) : StyleS
      * `length-1` inclusive.
      */
     override fun getLength(): Int {
-        return this.bridge.getDocStyleSheets().size
+        return this.bridge.docStyleSheets!!.size
     }
 
     /**
@@ -39,6 +39,6 @@ internal class StyleSheetListImpl(private val bridge: StyleSheetBridge) : StyleS
      * valid index.
      */
     override fun item(index: Int): CSSStyleSheet? {
-        return this.bridge.getDocStyleSheets().get(index)
+        return this.bridge.docStyleSheets!![index]
     }
 }

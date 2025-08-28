@@ -46,6 +46,5 @@ internal class AsyncResultEvent<TResult>
     val result: TResult?
 ) : EventObject(source) {
     companion object {
-        private val serialVersionUID = -4837654436436995017L
     }
 }

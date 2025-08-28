@@ -178,7 +178,7 @@ class FontFactory private constructor() {
                     return font
                 }
             } else {
-                val i: MutableIterator<Locale> = locales.iterator()
+                val i: MutableIterator<Locale> = locales.iterator() as MutableIterator<Locale>
                 var allMatch = true
                 while (i.hasNext()) {
                     val locale = i.next()

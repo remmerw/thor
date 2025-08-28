@@ -65,17 +65,17 @@ class JavaScript {
             // the JavaScript object. Reciprocal linking cannot
             // be done with weak hash maps and without leaking.
             synchronized(this) {
-                var javascriptObject = raw.getScriptable()
+                var javascriptObject = raw.scriptable
                 if (javascriptObject == null) {
                     val jow = JavaObjectWrapper(
-                        JavaClassWrapperFactory.Companion.getInstance()
-                            .getClassWrapper(raw.javaClass), raw
+                        JavaClassWrapperFactory.Companion.instance!!.getClassWrapper(raw.javaClass),
+                        raw
                     )
                     javascriptObject = jow
                     jow.setParentScope(scope)
-                    raw.setScriptable(jow)
+                    raw.scriptable = (jow)
                 } else {
-                    javascriptObject.setParentScope(scope)
+                    javascriptObject.parentScope = scope
                 }
                 return javascriptObject
             }
@@ -95,8 +95,8 @@ class JavaScript {
                 }
                 if (jow == null) {
                     val javaClass: Class<out Any?> = raw.javaClass
-                    val wrapper: JavaClassWrapper? =
-                        JavaClassWrapperFactory.Companion.getInstance().getClassWrapper(javaClass)
+                    val wrapper: JavaClassWrapper =
+                        JavaClassWrapperFactory.Companion.instance!!.getClassWrapper(javaClass)
                     jow = JavaObjectWrapper(wrapper, raw)
                     this.javaObjectToWrapper.put(raw, WeakReference<JavaObjectWrapper?>(jow))
                 }
@@ -158,7 +158,7 @@ class JavaScript {
   */
     fun getJavaObject(javascriptObject: Any?, type: Class<*>?): Any? {
         if (javascriptObject is JavaObjectWrapper) {
-            val rawJavaObject = javascriptObject.getJavaObject()
+            val rawJavaObject = javascriptObject.javaObject
             if (String::class.java == type) {
                 return rawJavaObject.toString()
             } else {

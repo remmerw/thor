@@ -17,6 +17,7 @@ package io.github.remmerw.thor.cobra.css.domimpl
 
 import org.w3c.dom.DOMException
 import org.w3c.dom.css.CSSCharsetRule
+import org.w3c.dom.css.CSSRule.CHARSET_RULE
 
 internal class CSSCharsetRuleImpl(containingStyleSheet: JStyleSheetWrapper?) :
     AbstractCSSRule(containingStyleSheet), CSSCharsetRule {

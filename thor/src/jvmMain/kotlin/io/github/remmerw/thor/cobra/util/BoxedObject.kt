@@ -2,7 +2,7 @@ package io.github.remmerw.thor.cobra.util
 
 class BoxedObject {
     var `object`: Any? = null
-        set(object) {
+        set(`object`) {
             field = this.`object`
         }
 

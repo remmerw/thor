@@ -64,7 +64,7 @@ class JavaObjectWrapper : ScriptableObject {// Cannot retain delegate with a str
 
     override fun setParentScope(m: Scriptable?) {
         // Don't allow Window's parent scope to be changed. Fixes GH #29
-        if (classWrapper.getCanonicalClassName() == Window::class.java.canonicalName) {
+        if (classWrapper.canonicalClassName == Window::class.java.canonicalName) {
             return
         }
 
@@ -138,11 +138,11 @@ class JavaObjectWrapper : ScriptableObject {// Cannot retain delegate with a str
                 }
             })
         }
-        classWrapper.getProperties().forEach { (name: String?, property: PropertyInfo?) ->
+        classWrapper.properties.forEach { (name: String?, property: PropertyInfo?) ->
             // TODO: Don't setup properties if getter is null? Are write-only properties supported in JS?
-            defineProperty(name, null, property!!.getGetter(), property.getSetter(), 0)
+            defineProperty(name, null, property!!.getter, property.setter, 0)
         }
-        classWrapper.getStaticFinalProperties().forEach { (name: String?, field: Field?) ->
+        classWrapper.staticFinalProperties.forEach { (name: String?, field: Field?) ->
             try {
                 defineProperty(name, field!!.get(null), READONLY)
             } catch (e: Exception) {

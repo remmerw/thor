@@ -22,8 +22,12 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package io.github.remmerw.thor.cobra.clientlet
 
+import io.github.remmerw.thor.cobra.ua.RequestType
 import java.io.IOException
+import java.io.InputStream
 import java.io.Serializable
+import java.net.URL
+import java.util.Date
 
 /**
  * Represents a URL response such as an HTTP or file protocol response.
@@ -33,14 +37,14 @@ interface ClientletResponse {
      * Gets the response URL. This may be different to the request URL in the case
      * of a redirect.
      */
-    @JvmField
+
     val responseURL: URL
 
     /**
      * Gets the request method for the response URL. This may be different to the
      * original request method in case of a redirect.
      */
-    @JvmField
+
     val lastRequestMethod: String?
 
     /**

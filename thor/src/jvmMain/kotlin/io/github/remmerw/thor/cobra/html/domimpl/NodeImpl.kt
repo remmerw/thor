@@ -50,6 +50,7 @@ import org.w3c.dom.NodeList
 import org.w3c.dom.ProcessingInstruction
 import org.w3c.dom.Text
 import org.w3c.dom.UserDataHandler
+import org.w3c.dom.html.HTMLCollection
 import org.w3c.dom.html.HTMLDocument
 import java.io.IOException
 import java.lang.Boolean

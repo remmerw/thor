@@ -22,6 +22,8 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package io.github.remmerw.thor.cobra.clientlet
 
+import java.awt.Component
+
 
 /**
  * Content set by a [Clientlet]. To ensure backward compatibility, it is

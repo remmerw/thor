@@ -18,6 +18,7 @@ package io.github.remmerw.thor.cobra.css.domimpl
 import cz.vutbr.web.css.RuleFontFace
 import org.w3c.dom.DOMException
 import org.w3c.dom.css.CSSFontFaceRule
+import org.w3c.dom.css.CSSRule.FONT_FACE_RULE
 import org.w3c.dom.css.CSSStyleDeclaration
 
 internal class CSSFontFaceRuleImpl(

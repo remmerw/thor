@@ -208,7 +208,7 @@ class JStyleSheetWrapper internal constructor(// TODO hide it from JS
      */
     override fun getCssRules(): CSSRuleList {
         if (this.jStyleSheet != null) {
-            return CSSRuleListImpl(jStyleSheet, this)
+            return CSSRuleListImpl(jStyleSheet!!, this)
         }
         throw DOMException(
             DOMException.INVALID_ACCESS_ERR,
@@ -278,7 +278,7 @@ class JStyleSheetWrapper internal constructor(// TODO hide it from JS
          * @return StyleSheetList object constructed from the list of style sheets
          */
         @JvmStatic
-        fun getStyleSheets(bridge: StyleSheetBridge?): StyleSheetList {
+        fun getStyleSheets(bridge: StyleSheetBridge): StyleSheetList {
             return StyleSheetListImpl(bridge)
         }
     }

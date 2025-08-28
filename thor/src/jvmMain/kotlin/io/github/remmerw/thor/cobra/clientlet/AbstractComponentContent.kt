@@ -38,13 +38,13 @@ abstract class AbstractComponentContent : ComponentContent {
         return false
     }
 
-    abstract override fun getComponent(): Component?
+    abstract fun getComponent(): Component?
 
-    abstract override fun getSourceCode(): String?
+    abstract fun getSourceCode(): String?
 
-    abstract override fun getTitle(): String?
+    abstract fun getTitle(): String?
 
-    override fun getDescription(): String {
+    fun getDescription(): String {
         return ""
     }
 
@@ -54,11 +54,11 @@ abstract class AbstractComponentContent : ComponentContent {
     override fun removeNotify() {
     }
 
-    override fun getContentObject(): Any? {
+    fun getContentObject(): Any? {
         return null
     }
 
-    override fun getMimeType(): String? {
+    fun getMimeType(): String? {
         return null
     }
 

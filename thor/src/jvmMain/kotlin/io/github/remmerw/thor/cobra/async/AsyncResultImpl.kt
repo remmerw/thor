@@ -142,7 +142,7 @@ class AsyncResultImpl<TResult> : AsyncResult<TResult?> {
         override fun processEvent(event: EventObject?) {
             // Invoke holding no locks
             val are = event as AsyncResultEvent<*>
-            if (are.getResult() is Exception) {
+            if (are.result is Exception) {
                 val areException = are as AsyncResultEvent<Throwable?>
                 this.listener.exceptionReceived(areException)
             } else {

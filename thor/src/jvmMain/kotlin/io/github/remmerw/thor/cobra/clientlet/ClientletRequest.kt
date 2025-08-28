@@ -23,6 +23,9 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 package io.github.remmerw.thor.cobra.clientlet
 
 import io.github.remmerw.thor.cobra.ua.ParameterInfo
+import io.github.remmerw.thor.cobra.ua.RequestType
+import io.github.remmerw.thor.cobra.ua.UserAgent
+import java.net.URL
 
 /**
  * A URL request such as a HTTP, file or FTP request.

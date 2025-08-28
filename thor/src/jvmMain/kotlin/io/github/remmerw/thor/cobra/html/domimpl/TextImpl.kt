@@ -26,6 +26,7 @@ package io.github.remmerw.thor.cobra.html.domimpl
 import io.github.remmerw.thor.cobra.util.Strings
 import org.w3c.dom.DOMException
 import org.w3c.dom.Node
+import org.w3c.dom.Node.TEXT_NODE
 import org.w3c.dom.Text
 
 open class TextImpl @JvmOverloads constructor(text: String = "") : CharacterDataImpl(), Text {
@@ -68,7 +69,7 @@ open class TextImpl @JvmOverloads constructor(text: String = "") : CharacterData
         if (parent == null) {
             throw DOMException(DOMException.HIERARCHY_REQUEST_ERR, "Text node has no parent")
         }
-        val t = this.text
+        val t = this.text!!
         if ((offset < 0) || (offset > t.length)) {
             throw DOMException(DOMException.INDEX_SIZE_ERR, "Bad offset: " + offset)
         }
@@ -127,7 +128,7 @@ open class TextImpl @JvmOverloads constructor(text: String = "") : CharacterData
      */
     @Throws(DOMException::class)
     override fun getNodeValue(): String {
-        return this.text
+        return this.text!!
     }
 
     /*
@@ -146,7 +147,7 @@ open class TextImpl @JvmOverloads constructor(text: String = "") : CharacterData
     }
 
     override fun createSimilarNode(): Node {
-        return TextImpl(this.text)
+        return TextImpl(this.text!!)
     }
 
     override fun toString(): String {

@@ -161,8 +161,8 @@ object IORoutines {
                 sb = StringBuffer()
             }
             when (b) {
-                '\n'.code.toByte() -> break@OUTER
-                '\r'.code.toByte() -> {}
+                '\n'.code -> break@OUTER
+                '\r'.code -> {}
                 else -> sb.append(b.toChar())
             }
         }

@@ -22,6 +22,8 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package io.github.remmerw.thor.cobra.clientlet
 
+import java.net.URL
+
 /**
  * Undocumented.
  *

@@ -18,6 +18,7 @@ package io.github.remmerw.thor.cobra.css.domimpl
 import cz.vutbr.web.css.RuleBlock
 import org.w3c.dom.DOMException
 import org.w3c.dom.css.CSSImportRule
+import org.w3c.dom.css.CSSRule.IMPORT_RULE
 import org.w3c.dom.css.CSSStyleSheet
 import org.w3c.dom.stylesheets.MediaList
 

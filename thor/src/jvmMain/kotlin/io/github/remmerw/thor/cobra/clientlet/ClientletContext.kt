@@ -26,6 +26,7 @@ import io.github.remmerw.thor.cobra.io.ManagedStore
 import io.github.remmerw.thor.cobra.ua.NavigatorFrame
 import io.github.remmerw.thor.cobra.ua.NavigatorProgressEvent
 import io.github.remmerw.thor.cobra.ua.ProgressType
+import io.github.remmerw.thor.cobra.ua.UserAgent
 import java.io.IOException
 import java.io.UnsupportedEncodingException
 import java.net.MalformedURLException
@@ -84,7 +85,7 @@ interface ClientletContext {
         encoding: String?
     ): ContentBuffer?
 
-    @JvmField
+
     @get:Throws(IOException::class)
     val managedStore: ManagedStore?
 

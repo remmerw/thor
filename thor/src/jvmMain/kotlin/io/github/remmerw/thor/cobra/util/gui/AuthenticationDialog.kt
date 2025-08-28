@@ -115,9 +115,7 @@ class AuthenticationDialog : JDialog {
             this@AuthenticationDialog.dispose()
         }
 
-        companion object {
-            private const val serialVersionUID = 3308644732677944619L
-        }
+
     }
 
     private inner class CancelAction : AbstractAction() {
@@ -126,12 +124,6 @@ class AuthenticationDialog : JDialog {
             this@AuthenticationDialog.dispose()
         }
 
-        companion object {
-            private const val serialVersionUID = 703637268854289240L
-        }
     }
 
-    companion object {
-        private const val serialVersionUID = 5601837809153264164L
-    }
 }

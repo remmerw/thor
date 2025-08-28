@@ -30,7 +30,7 @@ import org.w3c.dom.html.HTMLIFrameElement
 import org.w3c.dom.html.HTMLLinkElement
 
 interface NodeFilter {
-    fun accept(node: Node?): Boolean
+    fun accept(node: Node): Boolean
 
     class ImageFilter : NodeFilter {
         override fun accept(node: Node): Boolean {
@@ -46,7 +46,7 @@ interface NodeFilter {
     }
 
     class LinkFilter : NodeFilter {
-        override fun accept(node: Node?): Boolean {
+        override fun accept(node: Node): Boolean {
             return node is HTMLLinkElement
         }
     }
@@ -69,7 +69,7 @@ interface NodeFilter {
     }
 
     class FrameFilter : NodeFilter {
-        override fun accept(node: Node?): Boolean {
+        override fun accept(node: Node): Boolean {
             return (node is HTMLFrameElement) || (node is HTMLIFrameElement)
         }
     }
@@ -80,20 +80,20 @@ interface NodeFilter {
     // }
     // }
     class ElementNameFilter(private val name: String) : NodeFilter {
-        override fun accept(node: Node?): Boolean {
+        override fun accept(node: Node): Boolean {
             // TODO: Case sensitive?
             return (node is Element) && this.name == node.getAttribute("name")
         }
     }
 
     class ElementFilter : NodeFilter {
-        override fun accept(node: Node?): Boolean {
+        override fun accept(node: Node): Boolean {
             return node is Element
         }
     }
 
     class TagNameFilter(private val name: String) : NodeFilter {
-        override fun accept(node: Node?): Boolean {
+        override fun accept(node: Node): Boolean {
             if (node !is Element) {
                 return false
             }

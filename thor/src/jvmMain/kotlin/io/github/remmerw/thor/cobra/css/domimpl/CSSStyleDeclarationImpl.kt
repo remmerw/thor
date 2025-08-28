@@ -39,7 +39,7 @@ internal class CSSStyleDeclarationImpl(
             declarations.addAll((rule as RuleSet?)!!)
         }
         val styleSheet = parentRule.containingStyleSheet
-        styleSheet.informChanged()
+        styleSheet?.informChanged()
     }
 
     override fun getPropertyValue(propertyName: String?): String? {
@@ -69,7 +69,7 @@ internal class CSSStyleDeclarationImpl(
                 val `val`: String? = currDecl.toString()
                 declarations.remove(currDecl)
                 val styleSheet = parentRule.containingStyleSheet
-                styleSheet.informChanged()
+                styleSheet?.informChanged()
                 return `val`
             }
         }

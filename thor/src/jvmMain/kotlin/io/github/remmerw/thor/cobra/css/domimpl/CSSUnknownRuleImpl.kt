@@ -16,6 +16,7 @@
 package io.github.remmerw.thor.cobra.css.domimpl
 
 import org.w3c.dom.DOMException
+import org.w3c.dom.css.CSSRule.UNKNOWN_RULE
 import org.w3c.dom.css.CSSUnknownRule
 
 internal class CSSUnknownRuleImpl(containingStyleSheet: JStyleSheetWrapper?) :

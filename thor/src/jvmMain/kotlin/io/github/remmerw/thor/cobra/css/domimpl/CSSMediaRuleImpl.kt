@@ -19,6 +19,7 @@ import cz.vutbr.web.css.RuleMedia
 import org.w3c.dom.DOMException
 import org.w3c.dom.css.CSSMediaRule
 import org.w3c.dom.css.CSSRule
+import org.w3c.dom.css.CSSRule.MEDIA_RULE
 import org.w3c.dom.css.CSSRuleList
 import org.w3c.dom.stylesheets.MediaList
 

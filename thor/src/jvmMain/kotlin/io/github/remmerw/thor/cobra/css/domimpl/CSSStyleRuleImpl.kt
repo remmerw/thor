@@ -17,6 +17,7 @@ package io.github.remmerw.thor.cobra.css.domimpl
 
 import cz.vutbr.web.css.RuleSet
 import org.w3c.dom.DOMException
+import org.w3c.dom.css.CSSRule.STYLE_RULE
 import org.w3c.dom.css.CSSStyleDeclaration
 import org.w3c.dom.css.CSSStyleRule
 
@@ -45,7 +46,7 @@ internal class CSSStyleRuleImpl(val ruleSet: RuleSet, containingStyleSheet: JSty
     override fun setSelectorText(selectorText: String?) {
         val combinedSelectors = CSSUtils.createCombinedSelectors(selectorText)
         this.ruleSet.setSelectors(combinedSelectors)
-        this.containingStyleSheet.informChanged()
+        this.containingStyleSheet?.informChanged()
     }
 
     override fun getStyle(): CSSStyleDeclaration {
