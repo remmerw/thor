@@ -456,6 +456,7 @@ import javax.swing.SwingUtilities
     }
 
     companion object {
+        @JvmStatic
         protected val logger: Logger =
             Logger.getLogger(BaseBoundableRenderable::class.java.name)
         @JvmStatic

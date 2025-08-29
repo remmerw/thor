@@ -31,7 +31,7 @@ import javax.swing.JButton
 import javax.swing.JFileChooser
 import javax.swing.JTextField
 
-abstract class InputFileControl(modelNode: HTMLBaseInputElement?) : BaseInputControl(modelNode) {
+ class InputFileControl(modelNode: HTMLBaseInputElement?) : BaseInputControl(modelNode) {
     private val textField = JTextField()
     private val browseButton = JButton()
     override var fileValue: File? = null

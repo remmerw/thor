@@ -20,7 +20,7 @@
  */
 package io.github.remmerw.thor.cobra.html.renderer
 
-class ParentFloatingBoundsSource private constructor(
+class ParentFloatingBoundsSource(
     private val blockShiftRight: Int,
     private val expectedBlockWidth: Int,
     private val newX: Int,

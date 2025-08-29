@@ -151,8 +151,8 @@ object CollectionUtilities {
         return emptyIterator as MutableIterator<T?>
     }
 
-    fun <T> reverseIterator(sr: MutableList<T?>): MutableIterator<T?> {
-        return ListReverser<T?>(sr).iterator()
+    fun <T> reverseIterator(sr: MutableList<T>): MutableIterator<T?> {
+        return ListReverser<T?>(sr as MutableList<T?>).iterator()
     }
 
     // Filter iterator adapted from an implementation found in http://erikras.com/2008/01/18/the-filter-pattern-java-conditional-abstraction-with-iterables/
@@ -167,8 +167,8 @@ object CollectionUtilities {
         fun passes(`object`: T?): Boolean
     }
 
-    class ListReverser<T>(wrappedList: MutableList<T?>) : Iterable<T?> {
-        private val listIterator: MutableListIterator<T?>
+    class ListReverser<T>(wrappedList: MutableList<T>) : Iterable<T?> {
+        private val listIterator: MutableListIterator<T>
 
         init {
             this.listIterator = wrappedList.listIterator(wrappedList.size)

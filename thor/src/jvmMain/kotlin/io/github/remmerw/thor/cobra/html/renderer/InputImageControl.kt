@@ -35,7 +35,7 @@ import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import javax.swing.SwingUtilities
 
-abstract class InputImageControl(modelNode: HTMLBaseInputElement) : BaseInputControl(modelNode),
+ class InputImageControl(modelNode: HTMLBaseInputElement) : BaseInputControl(modelNode),
     ImageListener {
     // private JButton button;
     private var mouseBeingPressed = false

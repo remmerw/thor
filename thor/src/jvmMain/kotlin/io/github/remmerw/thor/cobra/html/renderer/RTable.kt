@@ -39,8 +39,10 @@ import java.util.LinkedList
 import java.util.SortedSet
 import java.util.TreeSet
 
-internal abstract class RTable(
-    modelNode: HTMLElementImpl, pcontext: UserAgentContext?, rcontext: HtmlRendererContext?,
+internal class RTable(
+    modelNode: HTMLElementImpl,
+    pcontext: UserAgentContext?,
+    rcontext: HtmlRendererContext?,
     frameContext: FrameContext?,
     container: RenderableContainer?
 ) : BaseBlockyRenderable(container, modelNode, pcontext) {
