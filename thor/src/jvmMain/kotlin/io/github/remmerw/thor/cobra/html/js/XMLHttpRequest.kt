@@ -15,6 +15,7 @@ import org.mozilla.javascript.Function
 import org.mozilla.javascript.ScriptRuntime
 import org.mozilla.javascript.Scriptable
 import org.w3c.dom.DOMException
+import org.w3c.dom.Document
 import java.io.IOException
 import java.net.MalformedURLException
 import java.net.URL
@@ -48,7 +49,7 @@ class XMLHttpRequest(
     private var onLoad: Function? = null
 
     init {
-        this.request = pcontext.createHttpRequest()
+        this.request = pcontext.createHttpRequest()!!
     }
 
     fun abort() {
@@ -88,14 +89,14 @@ class XMLHttpRequest(
         get() = request.statusText
 
     @Throws(MalformedURLException::class)
-    private fun getFullURL(relativeUrl: String?): URL {
+    private fun getFullURL(relativeUrl: String): URL {
         return Urls.createURL(this.codeSource, relativeUrl)
     }
 
     @Throws(IOException::class)
     fun open(
         method: String?,
-        url: String?,
+        url: String,
         asyncFlag: Boolean,
         userName: String?,
         password: String?
@@ -109,19 +110,19 @@ class XMLHttpRequest(
     }
 
     @Throws(IOException::class)
-    fun open(method: String?, url: String?, asyncFlag: Boolean, userName: String?) {
+    fun open(method: String?, url: String, asyncFlag: Boolean, userName: String?) {
         val adjustedMethod: String? = checkAndAdjustMethod(method)
         request.open(adjustedMethod, this.getFullURL(url), asyncFlag, userName)
     }
 
     @Throws(IOException::class)
-    fun open(method: String?, url: String?, asyncFlag: Boolean) {
+    fun open(method: String?, url: String, asyncFlag: Boolean) {
         val adjustedMethod: String? = checkAndAdjustMethod(method)
         request.open(adjustedMethod, this.getFullURL(url), asyncFlag)
     }
 
     @Throws(IOException::class)
-    fun open(method: String?, url: String?) {
+    fun open(method: String?, url: String) {
         val adjustedMethod: String? = checkAndAdjustMethod(method)
         request.open(adjustedMethod, this.getFullURL(url))
     }
@@ -129,8 +130,8 @@ class XMLHttpRequest(
     // private boolean listenerAddedLoad;
     @Throws(IOException::class)
     fun send(content: String?) {
-        val urlOpt = request.uRL
-        if (urlOpt.isPresent()) {
+        val urlOpt = request.uRL!!
+        if (urlOpt.isPresent) {
             val url = urlOpt.get()
             if (isSameOrigin(url, codeSource)) {
                 // final URLPermission urlPermission = new URLPermission(url.toExternalForm());
@@ -173,7 +174,7 @@ class XMLHttpRequest(
                             val ctx = Executor.createContext(
                                 this.codeSource,
                                 this.pcontext,
-                                window.getContextFactory()
+                                window.contextFactory
                             )
                             try {
                                 val newScope = JavaScript.instance.getJavascriptObject(
@@ -200,7 +201,7 @@ class XMLHttpRequest(
                         val ctx = Executor.createContext(
                             this.codeSource,
                             this.pcontext,
-                            window.getContextFactory()
+                            window.contextFactory
                         )
                         try {
                             val newScope = JavaScript.instance
