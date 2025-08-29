@@ -59,13 +59,13 @@ internal class VirtualCell(cell: RAbstractCell, isTopLeft: Boolean) {
         get() {
             // TODO: Does not consider cellpadding and border
             val cell = this.actualCell
-            val heightText = cell.getHeightText()
+            val heightText = cell.heightText
             var length: HtmlLength?
             try {
                 length = if (heightText == null) null else HtmlLength(
                     HtmlValues.getPixelSize(
                         heightText,
-                        cell.getModelNode().renderState,
+                        cell.getModelNode()?.renderState,
                         0
                     )
                 )
@@ -73,7 +73,7 @@ internal class VirtualCell(cell: RAbstractCell, isTopLeft: Boolean) {
                 length = null
             }
             if (length != null) {
-                length.divideBy(cell.getRowSpan())
+                length.divideBy(cell.rowSpan)
             }
             return length
         }
@@ -81,13 +81,13 @@ internal class VirtualCell(cell: RAbstractCell, isTopLeft: Boolean) {
     val widthLength: HtmlLength?
         get() {
             val cell = this.actualCell
-            val widthText = cell.getWidthText()
+            val widthText = cell.widthText
             var length: HtmlLength?
             try {
                 length = if (widthText == null) null else HtmlLength(
                     HtmlValues.getPixelSize(
                         widthText,
-                        cell.getModelNode().renderState,
+                        cell.getModelNode()?.renderState,
                         0
                     )
                 )
@@ -95,7 +95,7 @@ internal class VirtualCell(cell: RAbstractCell, isTopLeft: Boolean) {
                 length = null
             }
             if (length != null) {
-                length.divideBy(cell.getColSpan())
+                length.divideBy(cell.colSpan)
             }
             return length
         } // public Dimension layoutMinWidth() {

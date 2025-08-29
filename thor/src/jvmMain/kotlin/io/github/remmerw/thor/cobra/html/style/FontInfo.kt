@@ -20,7 +20,7 @@
  */
 package io.github.remmerw.thor.cobra.html.style
 
-internal class FontInfo {
+class FontInfo {
     var fontFamily: String? = null
     var fontStyle: String? = null
     var fontVariant: String? = null

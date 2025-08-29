@@ -36,7 +36,7 @@ import java.util.logging.Logger
 import kotlin.math.max
 
 object HtmlValues {
-    val SYSTEM_FONTS: MutableMap<String?, FontInfo?> = HashMap<String?, FontInfo?>()
+    val SYSTEM_FONTS: MutableMap<String, FontInfo> = HashMap<String, FontInfo>()
     const val DEFAULT_FONT_SIZE: Float = 16.0f
     val DEFAULT_FONT_SIZE_INT: Int = DEFAULT_FONT_SIZE.toInt()
 
@@ -302,9 +302,9 @@ object HtmlValues {
         var tentative: Int
         try {
             if (oldHtmlSpec.startsWith("+")) {
-                tentative = renderState.getFontBase() + oldHtmlSpec.substring(1).toInt()
+                tentative = renderState.fontBase + oldHtmlSpec.substring(1).toInt()
             } else if (oldHtmlSpec.startsWith("-")) {
-                tentative = renderState.getFontBase() + oldHtmlSpec.toInt()
+                tentative = renderState.fontBase + oldHtmlSpec.toInt()
             } else {
                 tentative = oldHtmlSpec.toInt()
             }
@@ -360,7 +360,7 @@ object HtmlValues {
             if (parentRenderState == null) {
                 return DEFAULT_FONT_SIZE
             }
-            val font = parentRenderState.getFont()
+            val font = parentRenderState.font
             val pxText = specTL.substring(0, specTL.length - 2)
             val value: Double
             try {
@@ -368,7 +368,7 @@ object HtmlValues {
             } catch (nfe: NumberFormatException) {
                 return DEFAULT_FONT_SIZE
             }
-            return Math.round(font.getSize() * value).toInt().toFloat()
+            return Math.round(font!!.getSize() * value).toInt().toFloat()
         } else if (specTL.endsWith("px") || specTL.endsWith("pt") || specTL.endsWith("cm") || specTL.endsWith(
                 "pc"
             ) || specTL.endsWith("cm")
@@ -387,7 +387,7 @@ object HtmlValues {
             try {
                 val valued = value.toDouble()
                 val parentFontSize =
-                    if (parentRenderState == null) 14.0 else parentRenderState.getFont().getSize()
+                    if (parentRenderState == null) 14.0 else parentRenderState.font!!.getSize()
                         .toDouble()
                 return ((parentFontSize * valued) / 100.0).toFloat()
             } catch (nfe: NumberFormatException) {
@@ -409,12 +409,12 @@ object HtmlValues {
             return 40.0f
         } else if ("larger" == specTL) {
             val parentFontSize =
-                if (parentRenderState == null) DEFAULT_FONT_SIZE_INT else parentRenderState.getFont()
+                if (parentRenderState == null) DEFAULT_FONT_SIZE_INT else parentRenderState.font!!
                     .getSize()
             return parentFontSize * 1.2f
         } else if ("smaller" == specTL) {
             val parentFontSize =
-                if (parentRenderState == null) DEFAULT_FONT_SIZE_INT else parentRenderState.getFont()
+                if (parentRenderState == null) DEFAULT_FONT_SIZE_INT else parentRenderState.font!!
                     .getSize()
             return parentFontSize / 1.2f
         } else {
@@ -454,12 +454,12 @@ object HtmlValues {
                 return errorValue
             }
         } else if (lcSpec.endsWith("em") && (renderState != null)) {
-            val f = renderState.getFont()
+            val f = renderState.font
             val valText = lcSpec.substring(0, lcSpec.length - 2)
             try {
                 val `val` = valText.toDouble()
                 // Get fontSize in points (1/72 of an inch).
-                val fontSizePt = f.getSize2D()
+                val fontSizePt = f!!.getSize2D()
                 /* Formula: fontSize in CSS pixels = (fontSizePt / 72.0) * 96.0;
                  *          fontSize in device pixels = (font size in css pixels * dpi) / 96.0
                  *                                    = (fontSizePt / 72.0) * dpi
@@ -526,7 +526,7 @@ object HtmlValues {
                 return errorValue
             }
         } else if (lcSpec.endsWith("ex") && (renderState != null)) {
-            val xHeight = renderState.getFontXHeight()
+            val xHeight = renderState.fontXHeight
             val valText = lcSpec.substring(0, lcSpec.length - 2)
             try {
                 val `val` = valText.toDouble()
@@ -714,7 +714,7 @@ object HtmlValues {
   }
   */
     fun splitCssValue(cssValue: String): Array<String> {
-        val tokens = ArrayList<String?>(4)
+        val tokens = ArrayList<String>(4)
         val len = cssValue.length
         var parenCount = 0
         var currentWord: StringBuffer? = null
@@ -762,7 +762,7 @@ object HtmlValues {
         if (currentWord != null) {
             tokens.add(currentWord.toString())
         }
-        return tokens.toTypedArray<String?>()
+        return tokens.toTypedArray()
     }
 
     fun isUrl(token: String): Boolean {
@@ -869,7 +869,7 @@ object HtmlValues {
         binfo.bottomStyle = getBorderStyle(properties.borderBottomStyle)
         binfo.leftStyle = getBorderStyle(properties.borderLeftStyle)
 
-        val cf = ColorFactory.getInstance()
+        val cf = ColorFactory.instance!!
 
         binfo.topColor = getBorderColor(cf, properties.borderTopColor, renderState)
         binfo.rightColor = getBorderColor(cf, properties.borderRightColor, renderState)
@@ -889,7 +889,7 @@ object HtmlValues {
         if (colorSpec != null && (colorSpec.trim { it <= ' ' }.length != 0)) {
             return cf.getColor(colorSpec)
         } else {
-            return renderState.getColor()
+            return renderState.color
         }
     }
 
@@ -948,8 +948,8 @@ object HtmlValues {
     }
 
     private interface InsetUpdater {
-        fun updateValue(insets: HtmlInsets?, value: Int)
+        fun updateValue(insets: HtmlInsets, value: Int)
 
-        fun updateType(insets: HtmlInsets?, type: Int)
+        fun updateType(insets: HtmlInsets, type: Int)
     }
 }
