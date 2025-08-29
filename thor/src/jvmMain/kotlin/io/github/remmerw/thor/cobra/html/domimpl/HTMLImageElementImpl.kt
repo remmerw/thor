@@ -98,8 +98,8 @@ class HTMLImageElementImpl : HTMLAbstractUIElement, HTMLImageElement {
     }
 
     override fun getHeight(): String {
-        val r = this.uiNode
-        val height = if (r == null) 0 else r.getBounds().height
+        val r = this.uINode
+        val height = if (r == null) 0 else r.bounds!!.height
         return height.toString()
     }
 
@@ -115,11 +115,11 @@ class HTMLImageElementImpl : HTMLAbstractUIElement, HTMLImageElement {
         this.setAttribute("hspace", hspace)
     }
 
-    override fun getIsMap(): Boolean {
+    override fun getIsMap(): kotlin.Boolean {
         return this.getAttributeAsBoolean("isMap")
     }
 
-    override fun setIsMap(isMap: Boolean) {
+    override fun setIsMap(isMap: kotlin.Boolean) {
         this.setAttribute("isMap", if (isMap) "isMap" else null)
     }
 
@@ -176,8 +176,8 @@ class HTMLImageElementImpl : HTMLAbstractUIElement, HTMLImageElement {
     }
 
     override fun getWidth(): String {
-        val r = this.uiNode
-        val width = if (r == null) 0 else r.getBounds().width
+        val r = this.uINode
+        val width = if (r == null) 0 else r.bounds!!.width
         return width.toString()
     }
 
@@ -185,7 +185,7 @@ class HTMLImageElementImpl : HTMLAbstractUIElement, HTMLImageElement {
         this.setAttribute("width", width)
     }
 
-    override fun handleAttributeChanged(name: String?, oldValue: String?, newValue: String?) {
+    override fun handleAttributeChanged(name: String, oldValue: String?, newValue: String?) {
         super.handleAttributeChanged(name, oldValue, newValue)
         if ("src" == name) {
             (document as HTMLDocumentImpl).addJob(Runnable { loadImage(src) }, false)
@@ -207,8 +207,8 @@ class HTMLImageElementImpl : HTMLAbstractUIElement, HTMLImageElement {
         }
     }
 
-    override fun setUserData(key: String?, data: Any?, handler: UserDataHandler?): Any? {
-        if (HtmlParser.MODIFYING_KEY == key && (data !== Boolean.TRUE)) {
+    override fun setUserData(key: String, data: Any?, handler: UserDataHandler?): Any? {
+        if (HtmlParser.MODIFYING_KEY == key && (data != Boolean.TRUE)) {
             (document as HTMLDocumentImpl).addJob(Runnable { loadImage(src) }, false)
             // this.loadImage(getSrc());
         }
@@ -263,12 +263,12 @@ class HTMLImageElementImpl : HTMLAbstractUIElement, HTMLImageElement {
         val onload = this.onload
         if (onload != null) {
             // TODO: onload event object?
-            val window = (document as HTMLDocumentImpl).getWindow()
+            val window = (document as HTMLDocumentImpl).window
             Executor.executeFunction(
                 this@HTMLImageElementImpl,
                 onload,
                 null,
-                window.getContextFactory()
+                window.contextFactory
             )
         }
     }
@@ -286,17 +286,17 @@ class HTMLImageElementImpl : HTMLAbstractUIElement, HTMLImageElement {
         // TODO
     }
 
-    private inner class LocalImageListener(private val expectedImgSrc: String) : ImageListener {
+    inner class LocalImageListener(private val expectedImgSrc: String) : ImageListener {
         override fun imageLoaded(event: ImageEvent) {
             dispatchEvent(this.expectedImgSrc, event)
             if (document is HTMLDocumentImpl) {
-                document.markJobsFinished(1, false)
+                (document as HTMLDocumentImpl).markJobsFinished(1, false)
             }
         }
 
         override fun imageAborted() {
             if (document is HTMLDocumentImpl) {
-                document.markJobsFinished(1, false)
+                (document as HTMLDocumentImpl).markJobsFinished(1, false)
             }
         }
     }

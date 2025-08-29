@@ -35,14 +35,14 @@ class GeneratedElement(parent: HTMLElementImpl, nodeData: NodeData?, content: Te
         }
     }
 
-    override fun getChildrenArray(): Array<NodeImpl?> {
+    fun getChildrenArray(): Array<NodeImpl?> {
         val nodeList = ArrayList<NodeImpl?>()
         for (c in content) {
             if (c is TermIdent) {
                 // TODO
             } else if (c is TermString) {
                 val value = c.value
-                val txt = ownerDocument.createTextNode(value)
+                val txt = ownerDocument!!.createTextNode(value)
                 nodeList.add(txt as NodeImpl?)
             } else if (c is TermURI) {
                 // TODO
@@ -53,7 +53,7 @@ class GeneratedElement(parent: HTMLElementImpl, nodeData: NodeData?, content: Te
                         val `val` =
                             (parentNode as ElementImpl).getAttribute(params.get(0).toString())
                         if (`val` != null) {
-                            val txt = ownerDocument.createTextNode(`val`)
+                            val txt = ownerDocument!!.createTextNode(`val`)
                             nodeList.add(txt as NodeImpl?)
                         }
                     }

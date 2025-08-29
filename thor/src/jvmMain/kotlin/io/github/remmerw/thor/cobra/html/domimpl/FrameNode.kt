@@ -6,6 +6,6 @@ import io.github.remmerw.thor.cobra.html.BrowserFrame
  * Tag interface for frame nodes.
  */
 interface FrameNode {
-    @JvmField
+
     var browserFrame: BrowserFrame?
 }

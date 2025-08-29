@@ -32,7 +32,7 @@ class ChildHTMLCollection
  * @param rootNode
  */(private val rootNode: NodeImpl) : AbstractScriptableDelegate(), HTMLCollection {
     override fun getLength(): Int {
-        return this.rootNode.getChildCount()
+        return this.rootNode.childCount
     }
 
     override fun item(index: Int): Node? {

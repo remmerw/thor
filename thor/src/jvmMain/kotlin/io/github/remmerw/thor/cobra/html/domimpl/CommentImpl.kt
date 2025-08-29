@@ -26,8 +26,9 @@ package io.github.remmerw.thor.cobra.html.domimpl
 import org.w3c.dom.Comment
 import org.w3c.dom.DOMException
 import org.w3c.dom.Node
+import org.w3c.dom.Node.COMMENT_NODE
 
-class CommentImpl(text: String?) : CharacterDataImpl(text), Comment {
+class CommentImpl(text: String) : CharacterDataImpl(text), Comment {
     override fun getLocalName(): String? {
         return null
     }
@@ -51,6 +52,6 @@ class CommentImpl(text: String?) : CharacterDataImpl(text), Comment {
     }
 
     override fun createSimilarNode(): Node {
-        return CommentImpl(this.text)
+        return CommentImpl(this.text!!)
     }
 }

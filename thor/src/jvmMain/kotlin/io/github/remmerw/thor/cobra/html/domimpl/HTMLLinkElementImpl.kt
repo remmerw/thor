@@ -102,7 +102,7 @@ class HTMLLinkElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLLink
             return target
         }
         val doc = this.document as HTMLDocumentImpl?
-        return if (doc == null) null else doc.getDefaultTarget()
+        return if (doc == null) null else doc.defaultTarget
     }
 
     override fun setTarget(target: String?) {
@@ -177,9 +177,9 @@ class HTMLLinkElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLLink
         } else {
             val urlOpt = this.absoluteURL
             if (urlOpt.isPresent) {
-                val rcontext = this.getHtmlRendererContext()
+                val rcontext = this.htmlRendererContext
                 val target = this.getTarget()
-                rcontext.linkClicked(this, urlOpt.get(), target)
+                rcontext?.linkClicked(this, urlOpt.get(), target)
                 return true
             }
         }
@@ -257,7 +257,7 @@ class HTMLLinkElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLLink
         return false
     }
 
-    private fun isSameAttributeValue(name: String?, oldValue: String?): Boolean {
+    private fun isSameAttributeValue(name: String, oldValue: String?): Boolean {
         val newValue = this.getAttribute(name)
         if (oldValue == null) {
             return newValue == null
@@ -299,11 +299,12 @@ class HTMLLinkElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLLink
     private fun processLink() {
         val doc = this.ownerDocument as HTMLDocumentImpl
         try {
-            val uacontext = this.getUserAgentContext()
-            if (uacontext.isExternalCSSEnabled()) {
+            val uacontext = this.userAgentContext
+            if (uacontext!!.isExternalCSSEnabled()) {
                 try {
                     val href = this.getHref()
-                    val jSheet = CSSUtilities.jParse(this, href, doc, doc.getBaseURI(), false)
+                    val jSheet = CSSUtilities.jParse(this, href, doc,
+                        doc.baseURI!!, false)
                     if (this.styleSheet != null) {
                         this.styleSheet!!.jStyleSheet = jSheet
                     } else {
@@ -340,7 +341,7 @@ class HTMLLinkElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLLink
         // and processed. But however the style sheet is not in ready state till it is processed. This is
         // indicated by setting the jStyleSheet of the JStyleSheetWrapper to null.
         val doc = this.ownerDocument as HTMLDocumentImpl
-        if (isAttachedToDocument() && this.isWellFormedURL && this.isAllowedRel && this.isAllowedType) {
+        if (isAttachedToDocument && this.isWellFormedURL && this.isAllowedRel && this.isAllowedType) {
             if (defer) {
                 this.styleSheet = this.emptyStyleSheet
                 doc.styleSheetManager.invalidateStyles()
@@ -374,7 +375,7 @@ class HTMLLinkElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLLink
         deferredProcess()
     }
 
-    override fun handleAttributeChanged(name: String?, oldValue: String?, newValue: String?) {
+    override fun handleAttributeChanged(name: String, oldValue: String?, newValue: String?) {
         super.handleAttributeChanged(name, oldValue, newValue)
 
         // TODO according to firefox's behavior whenever a valid attribute is

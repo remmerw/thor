@@ -165,7 +165,7 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
                 val nodeData = AnalyzerUtil.getElementStyle(
                     this,
                     psuedoElement,
-                    doc.getMatcher(),
+                    doc.matcher,
                     elementMatchCondition,
                     cachedRules
                 )
@@ -287,21 +287,21 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
         logger.log(Level.WARNING, message)
     }
 
-    protected fun getAttributeAsInt(name: String?, defaultValue: Int): Int {
+    protected fun getAttributeAsInt(name: String, defaultValue: Int): Int {
         val value = this.getAttribute(name)
         try {
-            return value.toInt()
+            return value!!.toInt()
         } catch (err: Exception) {
             this.warn("Bad integer", err)
             return defaultValue
         }
     }
 
-    fun getAttributeAsBoolean(name: String?): Boolean {
+    fun getAttributeAsBoolean(name: String): Boolean {
         return this.getAttribute(name) != null
     }
 
-    override fun handleAttributeChanged(name: String?, oldValue: String?, newValue: String?) {
+    override fun handleAttributeChanged(name: String, oldValue: String, newValue: String) {
         super.handleAttributeChanged(name, oldValue, newValue)
         forgetStyle(true)
         this.informInvalidRecursive()
@@ -414,7 +414,7 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
             rules,
             this,
             ancestor,
-            doc.getMatcher(),
+            doc.matcher,
             hoverCondition,
             PseudoDeclaration.HOVER
         )
@@ -471,7 +471,7 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
   }*/
     private fun informInvalidRecursive() {
         super.informInvalid()
-        val nodeList = this.getChildrenArray()
+        val nodeList = this.childrenArray
         if (nodeList != null) {
             for (n in nodeList) {
                 if (n is HTMLElementImpl) {
@@ -655,7 +655,7 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
         return null
     }
 
-    protected fun getAncestorForJavaClass(javaClass: Class<HTMLFormElement?>): Any? {
+    protected fun getAncestorForJavaClass(javaClass: Class<HTMLFormElement>): Any? {
         val nodeObj: Any? = this.parentNode
         if ((nodeObj == null) || javaClass.isInstance(nodeObj)) {
             return nodeObj
@@ -709,7 +709,7 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
         val tagName = this.tagName
         buffer.append('<')
         buffer.append(tagName)
-        val attributes: MutableMap<String?, String?>? = this.attributes
+        val attributes: MutableMap<String, String>? = this.attributes
         if (attributes != null) {
             attributes.forEach { (k: String?, v: String?) ->
                 if (v != null) {
@@ -743,29 +743,29 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
         get() {
             // TODO: Sometimes this can be called while parsing, and
             // browsers generally give the right answer.
-            val uiNode = this.getUINode()
-            return if (uiNode == null) 0 else uiNode.getBoundsRelativeToBlock().y
+            val uiNode = this.uINode
+            return if (uiNode == null) 0 else uiNode.boundsRelativeToBlock!!.y
         }
 
     val offsetLeft: Int
         get() {
-            val uiNode = this.getUINode()
-            return if (uiNode == null) 0 else uiNode.getBoundsRelativeToBlock().x
+            val uiNode = this.uINode
+            return if (uiNode == null) 0 else uiNode.boundsRelativeToBlock!!.x
         }
 
     val offsetWidth: Int
         get() {
-            val uiNode = this.getUINode()
-            return if (uiNode == null) 0 else uiNode.getBoundsRelativeToBlock().width
+            val uiNode = this.uINode
+            return if (uiNode == null) 0 else uiNode.boundsRelativeToBlock!!.width
         }
 
     val offsetHeight: Int
         get() {
-            val uiNode = this.getUINode()
-            return if (uiNode == null) 0 else uiNode.getBoundsRelativeToBlock().height
+            val uiNode = this.uINode
+            return if (uiNode == null) 0 else uiNode.boundsRelativeToBlock!!.height
         }
 
-    override fun getDocumentBaseURI(): String? {
+    fun getDocumentBaseURI(): String? {
         val doc = this.document as HTMLDocumentImpl?
         if (doc != null) {
             return doc.getBaseURI()
@@ -775,7 +775,7 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
     }
 
     override fun handleDocumentAttachmentChanged() {
-        if (isAttachedToDocument()) {
+        if (isAttachedToDocument) {
             forgetLocalStyle()
             forgetStyle(false)
             informInvalid()
@@ -788,16 +788,17 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
 
     // Based on http://www.w3.org/TR/dom/#domtokenlist
     inner class DOMTokenList {
-        private val classes: Array<String?>
-            get() = getAttribute("class").split(" ".toRegex()).dropLastWhile { it.isEmpty() }
-                .toTypedArray()
+        private val classes: Array<String>
+            get() = getAttribute("class")?.split(" ".toRegex())?.dropLastWhile { it.isEmpty() }
+                ?.toTypedArray() ?: emptyArray()
 
-        private fun getClasses(max: Int): Array<String?> {
-            return getAttribute("class").split(" ".toRegex(), max.coerceAtLeast(0)).toTypedArray()
+        private fun getClasses(max: Int): Array<String> {
+            return getAttribute("class")?.split(" ".toRegex(), max.coerceAtLeast(0))?.toTypedArray()
+                ?: emptyArray()
         }
 
         val length: Long
-            get() = this.classes.length.toLong()
+            get() = this.classes.size.toLong()
 
         fun item(index: Long): String? {
             val indexInt = index.toInt()
@@ -909,7 +910,7 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
             val genNodeData = AnalyzerUtil.getElementStyle(
                 elem,
                 decl,
-                doc.getMatcher(),
+                doc.matcher,
                 elementMatchCondition,
                 rules
             )
@@ -922,7 +923,7 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
             if (content != null) {
                 genNodeData.inheritFrom(nodeData)
                 genNodeData.concretize()
-                return GeneratedElement(elem, genNodeData, content)
+                return GeneratedElement(elem!!, genNodeData, content)
             } else {
                 return null
             }

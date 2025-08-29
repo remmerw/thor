@@ -18,8 +18,7 @@ import kotlin.concurrent.Volatile
 
 class HTMLIFrameElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLIFrameElement,
     FrameNode {
-    @Volatile
-    private var browserFrame: BrowserFrame? = null
+
     private var jobCreated = false
     private var onload: Function? = null
 
@@ -38,7 +37,7 @@ class HTMLIFrameElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLIF
                     )
                 }
             } else {
-                markJobDone(0, isAttachedToDocument())
+                markJobDone(0, isAttachedToDocument)
             }
         }
     }
@@ -50,13 +49,13 @@ class HTMLIFrameElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLIF
             if (loaded) {
                 if (onload != null) {
                     // TODO: onload event object?
-                    val window = (document as HTMLDocumentImpl).getWindow()
+                    val window = (document as HTMLDocumentImpl).window
                     window.addJSTask(JSRunnableTask(0, "IFrame onload handler", Runnable {
                         Executor.executeFunction(
                             this@HTMLIFrameElementImpl,
-                            onload,
+                            onload!!,
                             Event("load", this@HTMLIFrameElementImpl),
-                            window.getContextFactory()
+                            window.contextFactory
                         )
                     }))
                 }
@@ -66,12 +65,12 @@ class HTMLIFrameElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLIF
         }
     }
 
-    override fun getBrowserFrame(): BrowserFrame? {
+    fun getBrowserFrame(): BrowserFrame? {
         return this.browserFrame
     }
 
     @HideFromJS
-    override fun setBrowserFrame(frame: BrowserFrame?) {
+    fun setBrowserFrame(frame: BrowserFrame?) {
         this.browserFrame = frame
         createJob()
     }
@@ -202,7 +201,7 @@ class HTMLIFrameElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLIF
         this.setAttribute("width", width)
     }
 
-    override fun handleAttributeChanged(name: String?, oldValue: String?, newValue: String?) {
+    override fun handleAttributeChanged(name: String, oldValue: String?, newValue: String?) {
         super.handleAttributeChanged(name, oldValue, newValue)
         if ("src" == name) {
             createJob()
@@ -211,7 +210,7 @@ class HTMLIFrameElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLIF
 
     override fun handleDocumentAttachmentChanged() {
         super.handleDocumentAttachmentChanged()
-        if (isAttachedToDocument()) {
+        if (isAttachedToDocument) {
             if (hasAttribute("onload")) {
                 setOnload(getEventFunction(null, "onload"))
             }
@@ -232,14 +231,14 @@ class HTMLIFrameElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLIF
             try {
                 val fullURL = if (value == null) null else this.getFullURL(value)
                 if (fullURL != null) {
-                    if (getUserAgentContext().isRequestPermitted(
+                    if (userAgentContext!!.isRequestPermitted(
                             UserAgentContext.Request(
                                 fullURL,
                                 RequestKind.Frame
                             )
                         )
                     ) {
-                        frame.htmlRendererContext.setJobFinishedHandler(object : Runnable {
+                        frame.htmlRendererContext!!.setJobFinishedHandler(object : Runnable {
                             override fun run() {
                                 println("Iframes window's job over!")
                                 markJobDone(1, true)
@@ -247,7 +246,7 @@ class HTMLIFrameElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLIF
                         })
                         // frame.loadURL(fullURL);
                         // ^^ Using window.open is better because it fires the various events correctly.
-                        this.contentWindow.open(fullURL.toExternalForm(), "iframe", "", true)
+                        this.contentWindow!!.open(fullURL.toExternalForm(), "iframe", "", true)
                     } else {
                         println("Request not permitted: " + fullURL)
                         markJobDone(1, false)

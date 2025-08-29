@@ -24,11 +24,12 @@
 package io.github.remmerw.thor.cobra.html.domimpl
 
 import org.w3c.dom.CDATASection
+import org.w3c.dom.Node.CDATA_SECTION_NODE
 
-abstract class CDataSectionImpl : TextImpl, CDATASection {
+class CDataSectionImpl : TextImpl, CDATASection {
     constructor() : super()
 
-    constructor(text: String?) : super(text)
+    constructor(text: String) : super(text)
 
     /*
      * (non-Javadoc)

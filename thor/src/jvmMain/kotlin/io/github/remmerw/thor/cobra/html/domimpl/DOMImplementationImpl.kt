@@ -41,7 +41,7 @@ class DOMImplementationImpl(private val context: UserAgentContext?) : DOMImpleme
 
     @Throws(DOMException::class)
     override fun createDocumentType(
-        qualifiedName: String?,
+        qualifiedName: String,
         publicId: String?,
         systemId: String?
     ): DocumentType {
@@ -60,7 +60,7 @@ class DOMImplementationImpl(private val context: UserAgentContext?) : DOMImpleme
         qualifiedName: String?,
         doctype: DocumentType?
     ): Document {
-        return HTMLDocumentImpl(this.context)
+        return HTMLDocumentImpl(this.context!!)
     }
 
     override fun getFeature(feature: String?, version: String): Any? {
@@ -74,7 +74,7 @@ class DOMImplementationImpl(private val context: UserAgentContext?) : DOMImpleme
     @Throws(DOMException::class)
     fun createHTMLDocument(title: String?): Document {
         // TODO: Should a new context / null context be used?
-        val doc = HTMLDocumentImpl(this.context)
+        val doc = HTMLDocumentImpl(this.context!!)
         val parser = HtmlParser(context, doc)
         val escapedTitle = XmlEscape.escapeXml11(title)
         val initString = "<html><head><title>" + escapedTitle + "</title><body></body></html>"

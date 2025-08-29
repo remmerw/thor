@@ -27,8 +27,8 @@ import kotlin.Any
 import kotlin.String
 
 class HTMLBaseElementImpl(name: String?) : HTMLElementImpl(name, true) {
-    override fun setUserData(key: String?, data: Any?, handler: UserDataHandler?): Any? {
-        if (HtmlParser.MODIFYING_KEY == key && (data !== Boolean.TRUE)) {
+    override fun setUserData(key: String, data: Any?, handler: UserDataHandler?): Any? {
+        if (HtmlParser.MODIFYING_KEY == key && (data != Boolean.TRUE)) {
             this.processBaseTag()
         }
         return super.setUserData(key, data, handler)
@@ -38,7 +38,7 @@ class HTMLBaseElementImpl(name: String?) : HTMLElementImpl(name, true) {
         val doc = this.document as HTMLDocumentImpl?
         if (doc != null) {
             doc.setBaseURI(this.getAttribute("href"))
-            doc.setDefaultTarget(this.getAttribute("target"))
+            doc.defaultTarget = (this.getAttribute("target"))
         }
     }
 }

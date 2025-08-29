@@ -292,7 +292,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
      * Should create a node with some cloned properties, like the node name, but
      * not attributes or children.
      */
-    protected abstract fun createSimilarNode(): Node
+    protected abstract fun createSimilarNode(): Node?
 
     override fun cloneNode(deep: kotlin.Boolean): Node {
         // TODO: Synchronize with treeLock?

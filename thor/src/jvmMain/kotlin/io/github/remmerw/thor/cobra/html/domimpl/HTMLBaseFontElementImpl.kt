@@ -54,7 +54,7 @@ class HTMLBaseFontElementImpl(name: String?) : HTMLAbstractUIElement(name), HTML
         var prevRenderState = prevRenderState
         val size = this.getAttribute("size")
         if (size != null) {
-            val fontNumber = HtmlValues.getFontNumberOldStyle(size, prevRenderState)
+            val fontNumber = HtmlValues.getFontNumberOldStyle(size, prevRenderState!!)
             // TODO: Check why the following call is not used.
             // final float fontSize = HtmlValues.getFontSize(fontNumber);
             prevRenderState = BaseFontRenderState(prevRenderState, fontNumber)

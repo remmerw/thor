@@ -25,6 +25,7 @@ package io.github.remmerw.thor.cobra.html.domimpl
 
 import io.github.remmerw.thor.cobra.html.style.BodyRenderState
 import io.github.remmerw.thor.cobra.html.style.RenderState
+import org.mozilla.javascript.Function
 import org.w3c.dom.Document
 import org.w3c.dom.html.HTMLBodyElement
 import org.w3c.dom.html.HTMLDocument
@@ -100,7 +101,7 @@ class HTMLBodyElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLBody
         get() {
             val document: Any? = this.document
             if (document is HTMLDocumentImpl) {
-                return document.getOnloadHandler()
+                return document.onloadHandler
             } else {
                 return null
             }
@@ -110,7 +111,7 @@ class HTMLBodyElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLBody
             if (document is HTMLDocumentImpl) {
                 // Note that body.onload overrides
                 // Window.onload.
-                document.setOnloadHandler(onload)
+                document.onloadHandler = (onload)
             }
         }
 

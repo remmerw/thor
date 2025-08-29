@@ -30,7 +30,7 @@ import java.util.function.Consumer
  * @author J. H. S.
  */
 object ArrayUtilities {
-    fun <T> copy(collection: MutableCollection<T?>, clazz: Class<T?>?): Array<T?> {
+    fun <T> copy(collection: MutableCollection<T>, clazz: Class<T?>?): Array<T?> {
         val castedArray = Array.newInstance(clazz, collection.size) as kotlin.Array<T?>
         return collection.toArray<T?>(castedArray)
     }
@@ -51,7 +51,7 @@ object ArrayUtilities {
     }
 
     fun <T> copySynched(
-        collection: MutableCollection<T?>,
+        collection: MutableCollection<T>,
         syncObj: Any,
         clazz: Class<T?>?
     ): kotlin.Array<T?> {
@@ -70,12 +70,12 @@ object ArrayUtilities {
      */
     @Throws(E::class)
     fun <T, E : Throwable?> forEachSynched(
-        collection: MutableCollection<T?>, syncObj: Any,
+        collection: MutableCollection<T>, syncObj: Any,
         consumer: Consumer<T?>
     ) {
         if (collection.size > 0) {
             val clazz = collection.iterator().next()!!.javaClass as Class<T?>
-            val copy = copySynched<T?>(collection, syncObj, clazz)
+            val copy = copySynched<T>(collection, syncObj, clazz)
             for (element in copy) {
                 consumer.accept(element)
             }

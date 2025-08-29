@@ -452,7 +452,7 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), Element, Even
      * @param oldValue null, if the attribute was absent
      * @param newValue null, if the attribute is now removed
      */
-    protected open fun handleAttributeChanged(name: String?, oldValue: String?, newValue: String?) {
+    protected open fun handleAttributeChanged(name: String, oldValue: String?, newValue: String?) {
         // TODO: Need to move this to a separate function, similar to updateIdMap()
         // TODO: Need to update the name map, whenever attachment changes
         val document = this.document as HTMLDocumentImpl
@@ -481,7 +481,7 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), Element, Even
                 }
             } else {
                 if (attributes == null) {
-                    attributes = HashMap<String?, String?>(2)
+                    attributes = HashMap<String, String>(2)
                 }
 
                 oldValue = attributes!!.put(normalName, newValue)
@@ -492,7 +492,7 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), Element, Even
             updateIdMap(oldValue, newValue)
         }
 
-        if (isAttachedToDocument()) {
+        if (isAttachedToDocument) {
             handleAttributeChanged(normalName, oldValue, newValue)
         }
 
@@ -511,7 +511,7 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), Element, Even
     }
 
     private fun updateIdMap(oldIdValue: String?, newIdValue: String?) {
-        if (isAttachedToDocument() && oldIdValue != newIdValue) {
+        if (isAttachedToDocument && oldIdValue != newIdValue) {
             if (oldIdValue != null) {
                 (document as HTMLDocumentImpl).removeElementById(oldIdValue)
             }
@@ -524,7 +524,7 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), Element, Even
     val firstElementChild: Element?
         // TODO: GH #88 Need to implement these for Document and DocumentFragment as part of ParentNode API
         get() {
-            val nl = this.nodeList
+            val nl = this.nodeList!!
             for (n in nl) {
                 if (n is Element) {
                     return n
@@ -536,7 +536,7 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), Element, Even
 
     val lastElementChild: Element?
         get() {
-            val nl = this.nodeList
+            val nl = this.nodeList !!
             val N = nl.size
             for (i in N - 1 downTo 0) {
                 val n = nl.get(i)
@@ -550,7 +550,7 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), Element, Even
 
     val childElementCount: Int
         get() {
-            val nl = this.nodeList
+            val nl = this.nodeList !!
             var count = 0
             for (n in nl) {
                 if (n is Element) {

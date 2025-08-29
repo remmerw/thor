@@ -187,7 +187,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
     private var domImplementation: DOMImplementation? = null
     private var body: HTMLElement? = null
 
-    @JvmField
+
     var onloadHandler: Function? = null
     private var jobs: MutableList<Runnable?> = LinkedList<Runnable?>()
     private var oldPendingTaskId = -1

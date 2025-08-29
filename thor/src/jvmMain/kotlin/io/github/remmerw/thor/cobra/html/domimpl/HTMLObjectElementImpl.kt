@@ -61,7 +61,7 @@ class HTMLObjectElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLOb
 
     var `object`: String?
         get() = this.getAttribute("object")
-        set(object) {
+        set(`object`) {
             this.setAttribute("object", `object`)
         }
 
@@ -145,7 +145,7 @@ class HTMLObjectElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLOb
 
     override fun getTabIndex(): Int {
         try {
-            return this.getAttribute("tabindex").toInt()
+            return this.getAttribute("tabindex")!!.toInt()
         } catch (err: Exception) {
             return 0
         }

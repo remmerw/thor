@@ -29,6 +29,7 @@ import io.github.remmerw.thor.cobra.html.js.NotGetterSetter
 import io.github.remmerw.thor.cobra.ua.ImageResponse
 import org.mozilla.javascript.Function
 import org.w3c.dom.html.HTMLFormElement
+import java.io.File
 
 abstract class HTMLBaseInputElement(name: String?) : HTMLAbstractUIElement(name) {
     private val imageListeners = ArrayList<ImageListener?>(1)
@@ -55,16 +56,16 @@ abstract class HTMLBaseInputElement(name: String?) : HTMLAbstractUIElement(name)
             defChecked = this.deferredChecked
         }
         if (dv != null) {
-            ic.setValue(dv)
+            ic.value = (dv)
         }
         if (defDisabled != null) {
-            ic.setDisabled(defDisabled)
+            ic.disabled = (defDisabled)
         }
         if (defReadonly != null) {
-            ic.setDisabled(defReadonly)
+            ic.disabled = (defReadonly)
         }
         if (defChecked != null) {
-            ic.setDisabled(defChecked)
+            ic.disabled = (defChecked)
         }
     }
 
@@ -135,13 +136,13 @@ abstract class HTMLBaseInputElement(name: String?) : HTMLAbstractUIElement(name)
                 val db = this.deferredDisabled
                 return db != null && db
             } else {
-                return ic.getDisabled()
+                return ic.disabled
             }
         }
         set(disabled) {
             val ic = this.inputContext
             if (ic != null) {
-                ic.setDisabled(disabled)
+                ic.disabled = (disabled)
             } else {
                 this.deferredDisabled = disabled
             }
@@ -154,13 +155,13 @@ abstract class HTMLBaseInputElement(name: String?) : HTMLAbstractUIElement(name)
                 val db = this.deferredReadonly
                 return db != null && db
             } else {
-                return ic.getReadOnly()
+                return ic.readOnly
             }
         }
         set(readOnly) {
             val ic = this.inputContext
             if (ic != null) {
-                ic.setReadOnly(readOnly)
+                ic.readOnly = (readOnly)
             } else {
                 this.deferredReadonly = readOnly
             }
@@ -173,13 +174,13 @@ abstract class HTMLBaseInputElement(name: String?) : HTMLAbstractUIElement(name)
                 val db = this.deferredChecked
                 return db != null && db
             } else {
-                return ic.getChecked()
+                return ic.checked
             }
         }
         set(value) {
             val ic = this.inputContext
             if (ic != null) {
-                ic.setChecked(value)
+                ic.checked = (value)
             } else {
                 this.deferredChecked = value
             }
@@ -188,12 +189,12 @@ abstract class HTMLBaseInputElement(name: String?) : HTMLAbstractUIElement(name)
     var tabIndex: Int
         get() {
             val ic = this.inputContext
-            return if (ic == null) 0 else ic.getTabIndex()
+            return if (ic == null) 0 else ic.tabIndex
         }
         set(tabIndex) {
             val ic = this.inputContext
             if (ic != null) {
-                ic.setTabIndex(tabIndex)
+                ic.tabIndex = (tabIndex)
             }
         }
 
@@ -202,7 +203,7 @@ abstract class HTMLBaseInputElement(name: String?) : HTMLAbstractUIElement(name)
             val ic = this.inputContext
             if (ic != null) {
                 // Note: Per HTML Spec, setValue does not set attribute.
-                return ic.getValue()
+                return ic.value
             } else {
                 val dv = this.deferredValue
                 if (dv != null) {
@@ -222,7 +223,7 @@ abstract class HTMLBaseInputElement(name: String?) : HTMLAbstractUIElement(name)
                 }
             }
             if (ic != null) {
-                ic.setValue(value)
+                ic.value = (value)
             }
         }
 
@@ -237,7 +238,7 @@ abstract class HTMLBaseInputElement(name: String?) : HTMLAbstractUIElement(name)
         get() {
             val ic = this.inputContext
             if (ic != null) {
-                return ic.getFileValue()
+                return ic.fileValue
             } else {
                 return null
             }
@@ -363,7 +364,7 @@ abstract class HTMLBaseInputElement(name: String?) : HTMLAbstractUIElement(name)
         println("TODO: HTMLBaseInputElement.setCustomValidity() " + message)
     }
 
-    private inner class LocalImageListener(private val expectedImgSrc: String) : ImageListener {
+    public inner class LocalImageListener(private val expectedImgSrc: String) : ImageListener {
         override fun imageLoaded(event: ImageEvent) {
             dispatchEvent(this.expectedImgSrc, event)
         }
