@@ -49,7 +49,7 @@ import javax.swing.JSplitPane
 class FrameSetPanel : JComponent(), NodeRenderer {
     private var rootNode: HTMLElementImpl? = null
     private var htmlContext: HtmlRendererContext? = null
-    private var frameComponents: Array<Component>?
+    private var frameComponents: Array<Component>? = null
     private var domInvalid = true
 
     init {

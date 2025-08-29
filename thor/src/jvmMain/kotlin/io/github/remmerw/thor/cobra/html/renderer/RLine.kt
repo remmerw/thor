@@ -27,7 +27,9 @@ import cz.vutbr.web.css.CSSProperty.VerticalAlign
 import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
 import io.github.remmerw.thor.cobra.html.style.RenderState
 import java.awt.Color
+import java.awt.Dimension
 import java.awt.Graphics
+import java.awt.Point
 import java.awt.Rectangle
 import java.awt.event.MouseEvent
 import kotlin.math.max
@@ -41,6 +43,10 @@ internal class RLine(
     initialAllowOverflow: Boolean
 ) : BaseRCollection(container, modelNode) {
     override val renderables = ArrayList<Renderable>(8)
+    override val clipBounds: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val clipBoundsWithoutInsets: Rectangle?
+        get() = TODO("Not yet implemented")
 
     /*
      * (non-Javadoc)
@@ -63,7 +69,7 @@ internal class RLine(
     private var firstAllowOverflowWord = false
     private var mousePressTarget: BoundableRenderable? = null
     var lineBreak: LineBreak? = null
-
+    var layoutUpTreeCanBeInvalidated = false
     init {
         // Note that in the case of RLine, modelNode is the context node
         // at the beginning of the line, not a node that encloses the whole line.
@@ -107,7 +113,7 @@ internal class RLine(
 
     override fun paint(g: Graphics) {
         // Paint according to render state of the start of line first.
-        val rs = this.modelNode.renderState
+        val rs = this.modelNode!!.renderState
 
         if ((rs != null) && (rs.visibility != RenderState.VISIBILITY_VISIBLE)) {
             // Just don't paint it.
@@ -165,6 +171,9 @@ internal class RLine(
         }
         return result
     }
+
+    override val isDelegated: Boolean
+        get() = TODO("Not yet implemented")
 
     fun addStyleChanger(sc: RStyleChanger) {
         this.renderables.add(sc)
@@ -561,6 +570,33 @@ internal class RLine(
             return true
         }
     }
+
+    override val isContainedByNode: Boolean
+        get() = TODO("Not yet implemented")
+    override val bounds: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val visualBounds: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val size: Dimension?
+        get() = TODO("Not yet implemented")
+    override val origin: Point?
+        get() = TODO("Not yet implemented")
+    override var parent: RCollection?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override var originalParent: RCollection?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override val originalOrCurrentParent: RCollection?
+        get() = TODO("Not yet implemented")
+    override val visualX: Int
+        get() = TODO("Not yet implemented")
+    override val visualY: Int
+        get() = TODO("Not yet implemented")
+    override val visualHeight: Int
+        get() = TODO("Not yet implemented")
+    override val visualWidth: Int
+        get() = TODO("Not yet implemented")
 
     override fun getLowestRenderableSpot(x: Int, y: Int): RenderableSpot? {
         val rarray = this.renderables.toArray<Renderable?>(Renderable.Companion.EMPTY_ARRAY)
