@@ -32,24 +32,24 @@ class PositionedRenderable(
     val renderable: BoundableRenderable, val verticalAlignable: Boolean, val ordinal: Int,
     val isFloat: Boolean, private val isFixed: Boolean, private val isDelegated: Boolean
 ) : Renderable {
-    val originalParent: RCollection
-        get() = this.renderable.getOriginalParent()
+    val originalParent: RCollection?
+        get() = this.renderable.originalParent
 
     override fun paint(gIn: Graphics) {
         if (isDelegated) {
             return
         }
 
-        val originalParent = this.renderable.getOriginalParent()
-        val rparent = renderable.getParent()
+        val originalParent = this.renderable.originalParent
+        val rparent = renderable.parent
 
         /*
     System.out.println("pr: " + this);
     System.out.println("  parent     : " + rparent);
     System.out.println("  orig parent: " + originalParent);
     */
-        val or = originalParent.getOriginRelativeTo(rparent)
-        val pos = this.renderable.getModelNode().renderState!!.position
+        val or = originalParent!!.getOriginRelativeTo(rparent)
+        val pos = this.renderable.getModelNode()!!.renderState!!.position
 
         if (isFloat || pos == RenderState.POSITION_ABSOLUTE || pos == RenderState.POSITION_FIXED) {
             val g2 = gIn.create()
@@ -78,7 +78,7 @@ class PositionedRenderable(
             // System.out.println("  clip bounds: " + bounds);
             val g2: Graphics
             if (bounds != null) {
-                val tx = bounds.x + orNoScroll.x
+                val tx = bounds.x + orNoScroll!!.x
                 val ty = bounds.y + orNoScroll.y
                 g2 = gIn.create(tx, ty, bounds.width, bounds.height)
                 g2.translate(-tx, -ty)
@@ -100,19 +100,19 @@ class PositionedRenderable(
 
     private val relativeBounds: Rectangle?
         get() {
-            val origParent = this.renderable.getOriginalParent()
+            val origParent = this.renderable.originalParent
             var current = origParent
-            var currentBounds = current.getClipBoundsWithoutInsets()
-            val parent = this.renderable.getParent()
+            var currentBounds = current!!.clipBoundsWithoutInsets
+            val parent = this.renderable.parent
             while (current !== parent) {
-                current = current.getParent()
+                current = current!!.parent!!
                 if (current.getModelNode() is HTMLHtmlElement) {
                     break
                 }
-                val newBounds = current.getClipBoundsWithoutInsets()
+                val newBounds = current.clipBoundsWithoutInsets
                 if (newBounds != null) {
                     val or = origParent.getOriginRelativeToNoScroll(current)
-                    newBounds.translate(-or.x, -or.y)
+                    newBounds.translate(-or!!.x, -or!!.y)
                     if (currentBounds == null) {
                         currentBounds = newBounds
                     } else {
@@ -123,11 +123,11 @@ class PositionedRenderable(
             return currentBounds
         }
 
-    override fun getModelNode(): ModelNode? {
+    fun getModelNode(): ModelNode? {
         return this.renderable.getModelNode()
     }
 
-    override fun isFixed(): Boolean {
+    fun isFixed(): Boolean {
         return isFixed
     }
 
@@ -137,7 +137,7 @@ class PositionedRenderable(
 
     val visualBounds: Rectangle
         get() {
-            val bounds = renderable.getVisualBounds()
+            val bounds = renderable.visualBounds!!
             val offset = this.offset
             bounds.translate(offset.x, offset.y)
             return bounds
@@ -146,10 +146,10 @@ class PositionedRenderable(
     val offset: Point
         get() {
             val offset = Point()
-            val pos = this.renderable.getModelNode().renderState!!.position
+            val pos = this.renderable.getModelNode()!!.renderState!!.position
 
-            val originalParent = this.renderable.getOriginalParent()
-            val rparent = renderable.getParent()
+            val originalParent = this.renderable.originalParent!!
+            val rparent = renderable.parent
             val or = originalParent.getOriginRelativeTo(rparent)
             if (isFloat || pos == RenderState.POSITION_ABSOLUTE || pos == RenderState.POSITION_FIXED) {
                 val some = this.some
@@ -165,7 +165,7 @@ class PositionedRenderable(
     private val some: Point?
         // TODO: name this function well: what exactly does it compute?
         get() {
-            val rparent = renderable.getParent()
+            val rparent = renderable.parent!!
             if (!isFixed && rparent.getModelNode() is HTMLDocument) {
                 var htmlRenderable = RenderUtils.findHtmlRenderable(rparent)
                 if (htmlRenderable is PositionedRenderable) {
@@ -193,8 +193,8 @@ class PositionedRenderable(
         return this.visualBounds.contains(x, y)
     }
 
-    override fun isReadyToPaint(): Boolean {
-        return renderable.isReadyToPaint()
+    fun isReadyToPaint(): Boolean {
+        return renderable.isReadyToPaint
     }
 
     companion object {

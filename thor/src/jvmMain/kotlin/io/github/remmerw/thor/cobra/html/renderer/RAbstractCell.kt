@@ -19,8 +19,8 @@ abstract class RAbstractCell(
     var topLeftVirtualCell: VirtualCell? = null
 
     abstract fun setCellBounds(
-        colSizes: Array<ColSizeInfo?>?,
-        rowSizes: Array<RowSizeInfo?>?,
+        colSizes: Array<ColSizeInfo>,
+        rowSizes: Array<RowSizeInfo>,
         hasBorder: Int,
         cellSpacingX: Int,
         cellSpacingY: Int
@@ -47,7 +47,7 @@ abstract class RAbstractCell(
          */
         get() {
             val vc = this.topLeftVirtualCell
-            return if (vc == null) 0 else vc.getColumn()
+            return if (vc == null) 0 else vc.column
         }
 
     val virtualRow: Int
@@ -56,6 +56,6 @@ abstract class RAbstractCell(
          */
         get() {
             val vc = this.topLeftVirtualCell
-            return if (vc == null) 0 else vc.getRow()
+            return if (vc == null) 0 else vc.row
         }
 }

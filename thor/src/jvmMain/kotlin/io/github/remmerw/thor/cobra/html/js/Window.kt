@@ -35,7 +35,6 @@ import io.github.remmerw.thor.cobra.html.domimpl.HTMLOptionElementImpl
 import io.github.remmerw.thor.cobra.html.domimpl.HTMLScriptElementImpl
 import io.github.remmerw.thor.cobra.html.domimpl.HTMLSelectElementImpl
 import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
-import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl.userAgentContext
 import io.github.remmerw.thor.cobra.html.domimpl.TextImpl
 import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate
 import io.github.remmerw.thor.cobra.js.HideFromJS
@@ -356,7 +355,7 @@ class Window // TODO: Probably need to create a new Window instance
         synchronized(this) {
             val taskMap = this.taskMap
             if (taskMap != null) {
-                oldTaskWrappers = taskMap.values.toTypedArray<TaskWrapper?>()
+                oldTaskWrappers = taskMap.values.toTypedArray() as Array<TaskWrapper>?
                 this.taskMap = null
             }
         }
@@ -532,10 +531,12 @@ class Window // TODO: Probably need to create a new Window instance
             override fun run() {
                 try {
                     val scriptURI = "window.eval"
+                    /* TODO
                     val ctx = Executor.createContext(
                         this.currURL, this@Window.userAgentContext, windowContextFactory
                     )
                     ctx.evaluateString(getWindowScope(), javascript, scriptURI, 1, null)
+                    */
                 } finally {
                     Context.exit()
                 }
@@ -558,7 +559,7 @@ class Window // TODO: Probably need to create a new Window instance
         // Special Javascript class: XMLHttpRequest
         val ws = this.getWindowScope()
         val xi: JavaInstantiator = object : JavaInstantiator {
-            override fun newInstance(args: Array<Any?>?): Any {
+            override fun newInstance(args: Array<Any>): Any {
                 val d = doc
                 checkNotNull(d) { "Cannot perform operation when document is unset." }
                 val hd: HTMLDocumentImpl?
@@ -567,27 +568,27 @@ class Window // TODO: Probably need to create a new Window instance
                 } catch (err: ClassCastException) {
                     throw IllegalStateException("Cannot perform operation with documents of type " + d.javaClass.name + ".")
                 }
-                return XMLHttpRequest(this.userAgentContext, hd.getDocumentURL(), ws, this@Window)
+                return XMLHttpRequest(userAgentContext, hd.documentURL!!, ws, this@Window)
             }
         }
-        defineInstantiator(ws, "XMLHttpRequest", XMLHTTPREQUEST_WRAPPER, xi)
+        defineInstantiator(ws, "XMLHttpRequest", XMLHTTPREQUEST_WRAPPER!!, xi)
 
         val pi: JavaInstantiator = object : JavaInstantiator {
-            override fun newInstance(args: Array<Any?>?): Any {
+            override fun newInstance(args: Array<Any>): Any {
                 return CanvasPath2D()
             }
         }
-        defineInstantiator(ws, "Path2D", PATH2D_WRAPPER, pi)
+        defineInstantiator(ws, "Path2D", PATH2D_WRAPPER!!, pi)
 
         val ei: JavaInstantiator = object : JavaInstantiator {
-            override fun newInstance(args: Array<Any?>): Any {
+            override fun newInstance(args: Array<Any>): Any {
                 if (args.size > 0) {
                     return Event(args[0].toString(), doc)
                 }
                 throw ScriptRuntime.constructError("TypeError", "An event name must be provided")
             }
         }
-        defineInstantiator(ws, "Event", EVENT_WRAPPER, ei)
+        defineInstantiator(ws, "Event", EVENT_WRAPPER!!, ei)
 
         // We can use a single shared instance since it is dummy for now
         ScriptableObject.putProperty(ws, "localStorage", STORAGE)
@@ -607,12 +608,12 @@ class Window // TODO: Probably need to create a new Window instance
         defineElementClass(ws, doc, "HTMLDivElement", "div", HTMLDivElementImpl::class.java)
 
         defineInstantiator(
-            ws, "Text", JavaClassWrapperFactory.getInstance().getClassWrapper(
+            ws, "Text", JavaClassWrapperFactory.instance!!.getClassWrapper(
                 TextImpl::class.java
             ), object : JavaInstantiator {
-                override fun newInstance(args: Array<Any?>?): Any? {
+                override fun newInstance(args: Array<Any>): Any {
                     val data: String? =
-                        if (args != null && args.size > 0 && args[0] != null) args[0].toString() else ""
+                        if (args.size > 0 && args[0] != null) args[0].toString() else ""
                     return documentNode!!.createTextNode(data)
                 }
             })
@@ -884,7 +885,7 @@ class Window // TODO: Probably need to create a new Window instance
         get() = this
 
     fun setLocation(location: String?) {
-        this.location!!.setHref(location)
+        this.location!!.href = (location)
     }
 
     fun getComputedStyle(element: HTMLElement?, pseudoElement: String?): CSS2Properties {
@@ -963,7 +964,7 @@ class Window // TODO: Probably need to create a new Window instance
     }
 
     @Throws(EventException::class)
-    fun dispatchEvent(evt: Event): Boolean {
+    override fun dispatchEvent(evt: Event): Boolean {
         // TODO
         println("TODO: window dispatch event")
         eventTargetManager.dispatchEvent(this.documentNode as NodeImpl?, evt)
@@ -988,7 +989,7 @@ class Window // TODO: Probably need to create a new Window instance
             addJSTask(JSRunnableTask(0, object : Runnable {
                 override fun run() {
                     Executor.executeFunction(
-                        this.documentNode as NodeImpl?,
+                        documentNode as NodeImpl,
                         handler,
                         windowLoadEvent,
                         windowContextFactory
@@ -1002,11 +1003,11 @@ class Window // TODO: Probably need to create a new Window instance
     }
 
     @get:PropertyName("Element")
-    val element: Class<Element?>
+    val element: Class<Element>
         get() = Element::class.java
 
     @get:PropertyName("Node")
-    val node: Class<Node?>
+    val node: Class<Node>
         get() = Node::class.java
 
     fun addEventListener(type: String?, listener: EventListener?) {
@@ -1057,8 +1058,8 @@ class Window // TODO: Probably need to create a new Window instance
     }
 
     // private Function windowLoadListeners;
-    private abstract class JSTask(protected val priority: Int, protected val description: String?) :
-        Comparable<JSTask?> {
+    abstract class JSTask(protected val priority: Int, protected val description: String?) :
+        Comparable<JSTask> {
         protected val creationTime: Long
 
 
@@ -1070,8 +1071,8 @@ class Window // TODO: Probably need to create a new Window instance
 
         // TODO: Add a way to stop a task. It should return false if the task can't be stopped in which case a thread kill will be performed by the task scheduler.
         // TODO: Sorting by priority
-        override fun compareTo(o: JSTask): Int {
-            val diffCreation = (o.creationTime - creationTime)
+        override fun compareTo(other: JSTask): Int {
+            val diffCreation = (other.creationTime - creationTime)
             if (diffCreation < 0) {
                 return 1
             } else if (diffCreation == 0L) {
@@ -1110,8 +1111,8 @@ class Window // TODO: Probably need to create a new Window instance
     }
 
     private class JSScheduler(window: Window) : Thread("JS Scheduler") {
-        private val jsQueue: PriorityBlockingQueue<ScheduledTask?> =
-            PriorityBlockingQueue<ScheduledTask?>()
+        private val jsQueue: PriorityBlockingQueue<ScheduledTask> =
+            PriorityBlockingQueue<ScheduledTask>()
         private val running = AtomicBoolean(false)
 
         // TODO: This is not water tight for one reason, Windows are reused for different documents.
@@ -1129,7 +1130,6 @@ class Window // TODO: Probably need to create a new Window instance
         }
 
         override fun run() {
-            name = name
             while (!this.isWindowClosing) {
                 try {
                     val scheduledTask: ScheduledTask?
@@ -1216,7 +1216,7 @@ class Window // TODO: Probably need to create a new Window instance
             return (!jsQueue.isEmpty()) || running.get()
         }
 
-        private class ScheduledTask(val id: Int, val task: JSTask) : Comparable<ScheduledTask?> {
+        private class ScheduledTask(val id: Int, val task: JSTask) : Comparable<ScheduledTask> {
             override fun compareTo(other: ScheduledTask): Int {
                 return task.compareTo(other.task)
             }
@@ -1238,7 +1238,7 @@ class Window // TODO: Probably need to create a new Window instance
         private const val serialVersionUID = 5375592396498284425L
     }
 
-    object Console {
+    class Console {
         fun log(obj: Any?) {
             println("> " + obj)
         }
@@ -1395,7 +1395,7 @@ class Window // TODO: Probably need to create a new Window instance
             val jsSchedulerLocal = jsScheduler
             if (jsSchedulerLocal != null) {
                 if (jsSchedulerLocal.isWindowClosing) {
-                    throw WindowClosingError()
+                    throw java.lang.Exception()
                 }
             }
         }
@@ -1418,13 +1418,13 @@ class Window // TODO: Probably need to create a new Window instance
         // private static final JavaClassWrapper IMAGE_WRAPPER =
         // JavaClassWrapperFactory.getInstance().getClassWrapper(Image.class);
         private val XMLHTTPREQUEST_WRAPPER: JavaClassWrapper? =
-            JavaClassWrapperFactory.getInstance()
+            JavaClassWrapperFactory.instance!!
                 .getClassWrapper(XMLHttpRequest::class.java)
 
-        private val PATH2D_WRAPPER: JavaClassWrapper? = JavaClassWrapperFactory.getInstance()
+        private val PATH2D_WRAPPER: JavaClassWrapper? = JavaClassWrapperFactory.instance!!
             .getClassWrapper(CanvasPath2D::class.java)
 
-        private val EVENT_WRAPPER: JavaClassWrapper? = JavaClassWrapperFactory.getInstance()
+        private val EVENT_WRAPPER: JavaClassWrapper? = JavaClassWrapperFactory.instance!!
             .getClassWrapper(io.github.remmerw.thor.cobra.html.js.Event::class.java)
         private const val JS_SCHED_POLL_INTERVAL_MILLIS = 100
         private val JS_SCHED_JOIN_INTERVAL_MILLIS: Int = JS_SCHED_POLL_INTERVAL_MILLIS * 2
@@ -1442,8 +1442,8 @@ class Window // TODO: Probably need to create a new Window instance
         private fun defineInstantiator(
             ws: Scriptable,
             name: String?,
-            wrapper: JavaClassWrapper?,
-            ji: JavaInstantiator?
+            wrapper: JavaClassWrapper,
+            ji: JavaInstantiator
         ) {
             val constructor = JavaObjectWrapper.getConstructor(name, wrapper, ws, ji)
             ScriptableObject.defineProperty(ws, name, constructor, ScriptableObject.READONLY)
@@ -1455,13 +1455,13 @@ class Window // TODO: Probably need to create a new Window instance
             javaClass: Class<*>?
         ) {
             val ji: JavaInstantiator = object : JavaInstantiator {
-                override fun newInstance(args: Array<Any?>?): Any? {
+                override fun newInstance(args: Array<Any>): Any {
                     val d = document
                     checkNotNull(d) { "Document not set in current context." }
                     return d.createElement(elementName)
                 }
             }
-            val classWrapper = JavaClassWrapperFactory.getInstance().getClassWrapper(javaClass)
+            val classWrapper = JavaClassWrapperFactory.instance!!.getClassWrapper(javaClass!!)
             val constructorFunction =
                 JavaObjectWrapper.getConstructor(jsClassName, classWrapper, scope, ji)
             ScriptableObject.defineProperty(

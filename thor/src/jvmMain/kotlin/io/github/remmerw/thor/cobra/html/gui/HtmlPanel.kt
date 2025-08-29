@@ -158,7 +158,7 @@ class HtmlPanel : JComponent(), FrameContext, DefferedLayoutSupport {
      * @param yIfNeeded If this parameter is true, scrolling will only occur if the
      * requested bounds are not currently visible vertically.
      */
-    fun scrollTo(bounds: Rectangle?, xIfNeeded: Boolean, yIfNeeded: Boolean) {
+    fun scrollTo(bounds: Rectangle, xIfNeeded: Boolean, yIfNeeded: Boolean) {
         val htmlBlock = this.htmlBlockPanel
         if (htmlBlock != null) {
             htmlBlock.scrollTo(bounds, xIfNeeded, yIfNeeded)
@@ -188,7 +188,7 @@ class HtmlPanel : JComponent(), FrameContext, DefferedLayoutSupport {
          */
         get() {
             val htmlBlock = this.htmlBlockPanel
-            return if (htmlBlock == null) null else htmlBlock.getRootRenderable()
+            return if (htmlBlock == null) null else htmlBlock.rootRenderable
         }
 
     /**
@@ -392,7 +392,7 @@ class HtmlPanel : JComponent(), FrameContext, DefferedLayoutSupport {
     */
 
         if (this.rootNode is HTMLDocumentImpl) {
-            rootNode.removeDocumentNotificationListener(this.notificationListener)
+            (rootNode as HTMLDocumentImpl).removeDocumentNotificationListener(this.notificationListener)
         }
         if (node is HTMLDocumentImpl) {
             node.addDocumentNotificationListener(this.notificationListener)
@@ -563,7 +563,7 @@ class HtmlPanel : JComponent(), FrameContext, DefferedLayoutSupport {
             this.selectionDispatch.fireEvent(
                 SelectionChangeEvent(
                     this,
-                    block.isSelectionAvailable()
+                    block.isSelectionAvailable
                 )
             )
         }
@@ -621,7 +621,7 @@ class HtmlPanel : JComponent(), FrameContext, DefferedLayoutSupport {
             if (block == null) {
                 return null
             } else {
-                return block.getSelectionNode()
+                return block.selectionNode
             }
         }
 
@@ -771,7 +771,7 @@ class HtmlPanel : JComponent(), FrameContext, DefferedLayoutSupport {
         get() {
             val htmlBlock = this.htmlBlockPanel
             if (htmlBlock != null) {
-                return (notifications.size == 0) && htmlBlock.isReadyToPaint()
+                return (notifications.size == 0) && htmlBlock.isReadyToPaint
             }
             return false
         }
@@ -803,7 +803,7 @@ class HtmlPanel : JComponent(), FrameContext, DefferedLayoutSupport {
             )
         }
 
-        override fun invalidated(node: NodeImpl?) {
+        override fun invalidated(node: NodeImpl) {
             this@HtmlPanel.addNotification(
                 DocumentNotification(
                     DocumentNotification.Companion.GENERIC,
@@ -812,7 +812,7 @@ class HtmlPanel : JComponent(), FrameContext, DefferedLayoutSupport {
             )
         }
 
-        override fun lookInvalidated(node: NodeImpl?) {
+        override fun lookInvalidated(node: NodeImpl) {
             this@HtmlPanel.addNotification(
                 DocumentNotification(
                     DocumentNotification.Companion.LOOK,
@@ -821,7 +821,7 @@ class HtmlPanel : JComponent(), FrameContext, DefferedLayoutSupport {
             )
         }
 
-        override fun positionInvalidated(node: NodeImpl?) {
+        override fun positionInvalidated(node: NodeImpl) {
             this@HtmlPanel.addNotification(
                 DocumentNotification(
                     DocumentNotification.Companion.POSITION,
@@ -830,7 +830,7 @@ class HtmlPanel : JComponent(), FrameContext, DefferedLayoutSupport {
             )
         }
 
-        override fun sizeInvalidated(node: NodeImpl?) {
+        override fun sizeInvalidated(node: NodeImpl) {
             this@HtmlPanel.addNotification(
                 DocumentNotification(
                     DocumentNotification.Companion.SIZE,
@@ -839,11 +839,11 @@ class HtmlPanel : JComponent(), FrameContext, DefferedLayoutSupport {
             )
         }
 
-        override fun externalScriptLoading(node: NodeImpl?) {
+        override fun externalScriptLoading(node: NodeImpl) {
             // Ignorable here.
         }
 
-        override fun nodeLoaded(node: NodeImpl?) {
+        override fun nodeLoaded(node: NodeImpl) {
             this@HtmlPanel.addNotification(
                 DocumentNotification(
                     DocumentNotification.Companion.GENERIC,
@@ -852,7 +852,7 @@ class HtmlPanel : JComponent(), FrameContext, DefferedLayoutSupport {
             )
         }
 
-        override fun structureInvalidated(node: NodeImpl?) {
+        override fun structureInvalidated(node: NodeImpl) {
             this@HtmlPanel.addNotification(
                 DocumentNotification(
                     DocumentNotification.Companion.GENERIC,
@@ -869,7 +869,7 @@ class HtmlPanel : JComponent(), FrameContext, DefferedLayoutSupport {
     }
 
     companion object {
-        private val serialVersionUID = -8342517547909796721L
+
         private const val NOTIF_TIMER_DELAY = 150
     }
 }

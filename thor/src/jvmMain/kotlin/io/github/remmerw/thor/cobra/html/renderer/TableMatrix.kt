@@ -39,7 +39,7 @@ import java.awt.Insets
 import java.awt.event.MouseEvent
 import kotlin.math.max
 
-internal class TableMatrix(
+class TableMatrix(
     element: HTMLElementImpl, uaContext: UserAgentContext?, rcontext: HtmlRendererContext?,
     frameContext: FrameContext?,
     tableAsContainer: RenderableContainer?, relement: RElement?
@@ -1867,7 +1867,7 @@ internal class TableMatrix(
         }
     }
 
-    internal class ColSizeInfo {
+    class ColSizeInfo {
         var htmlLength: HtmlLength? = null
         var actualSize: Int = 0
         var fullActualSize: Int = 0 // Full size including border and padding
@@ -1877,7 +1877,7 @@ internal class TableMatrix(
         var offsetX: Int = 0
     }
 
-    internal class RowSizeInfo {
+    class RowSizeInfo {
         var insetLeft: Int = 0
         var insetRight: Int = 0
         var htmlLength: HtmlLength? = null

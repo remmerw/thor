@@ -79,7 +79,7 @@ abstract class BaseElementRenderable(
 
     @Volatile
     protected var backgroundImageError: Boolean = false
-    protected var zIndex: Int = 0
+    override var zIndex: Int = 0
     protected var borderTopColor: Color? = null
     protected var borderLeftColor: Color? = null
     protected var borderBottomColor: Color? = null
@@ -375,15 +375,15 @@ abstract class BaseElementRenderable(
         this.updateWidgetBounds(guiPoint.x, guiPoint.y)
     }
 
-    val boundsRelativeToBlock: Rectangle?
+    override val boundsRelativeToBlock: Rectangle?
         get() {
             var parent: RCollection? = this
             var x = 0
             var y = 0
             while (parent != null) {
-                x += parent.getX()
-                y += parent.getY()
-                parent = parent.getParent()
+                x += parent.x
+                y += parent.y
+                parent = parent.parent
                 if (parent is RElement) {
                     break
                 }
@@ -621,7 +621,7 @@ abstract class BaseElementRenderable(
         val ctx = this.userAgentContext
         if (ctx != null) {
             val request = ctx.createHttpRequest()
-            request.addNetworkRequestListener(NetworkRequestListener { event: NetworkRequestEvent? ->
+            request?.addNetworkRequestListener { event: NetworkRequestEvent? ->
                 val readyState = request.readyState
                 if (readyState == NetworkRequest.STATE_COMPLETE) {
                     val status = request.status
@@ -650,13 +650,13 @@ abstract class BaseElementRenderable(
                 } else if (readyState == NetworkRequest.STATE_ABORTED) {
                     backgroundImageError = true
                 }
-            })
+            }
 
             SecurityUtil.doPrivileged<Any?>(PrivilegedAction {
                 // Code might have restrictions on accessing items from elsewhere.
                 try {
-                    request.open("GET", imageURL)
-                    request.send(null, UserAgentContext.Request(imageURL, RequestKind.Image))
+                    request?.open("GET", imageURL)
+                    request?.send(null, UserAgentContext.Request(imageURL, RequestKind.Image))
                 } catch (thrown: IOException) {
                     println("Caught exception")
                     // logger.log(Level.WARNING, "loadBackgroundImage()", thrown);
@@ -667,7 +667,7 @@ abstract class BaseElementRenderable(
         }
     }
 
-    override fun getZIndex(): Int {
+    fun getZIndex(): Int {
         return this.zIndex
     }
 
@@ -698,7 +698,7 @@ abstract class BaseElementRenderable(
         var totalHeight = startHeight
         var startX = 0
         var startY = 0
-        val node = this.modelNode
+        val node = this.modelNode!!
         val rs = node.renderState
         val marginInsets = this.marginInsets
         if (marginInsets != null) {
@@ -1008,11 +1008,11 @@ abstract class BaseElementRenderable(
         val gc = this.delayedPairs
         if (gc != null) {
             val rc = this.container
-            val i: MutableIterator<DelayedPair> = gc.iterator()
+            val i: MutableIterator<DelayedPair?> = gc.iterator()
             while (i.hasNext()) {
                 val pair = i.next()
-                if (pair.containingBlock !== this) {
-                    rc.addDelayedPair(pair)
+                if (pair!!.containingBlock !== this) {
+                    rc?.addDelayedPair(pair)
                 }
             }
         }
@@ -1025,7 +1025,7 @@ abstract class BaseElementRenderable(
         }
     }
 
-    override fun getDelayedPairs(): MutableCollection<DelayedPair?>? {
+    fun getDelayedPairs(): MutableCollection<DelayedPair?>? {
         return this.delayedPairs
     }
 
@@ -1051,15 +1051,15 @@ abstract class BaseElementRenderable(
         gc.add(pair)
     }
 
-    override fun getParentContainer(): RenderableContainer {
-        return this.container
+    fun getParentContainer(): RenderableContainer {
+        return this.container!!
     }
 
-    override fun isContainedByNode(): Boolean {
+    fun isContainedByNode(): Boolean {
         return true
     }
 
-    override fun getCollapsibleMarginBottom(): Int {
+    fun getCollapsibleMarginBottom(): Int {
         var cm: Int
         val paddingInsets = this.paddingInsets
         if ((paddingInsets != null) && (paddingInsets.bottom > 0)) {
@@ -1076,7 +1076,7 @@ abstract class BaseElementRenderable(
             val rs = this.modelNode?.renderState
             if (rs != null) {
                 val fm = rs.fontMetrics
-                val fontHeight = fm.getHeight()
+                val fontHeight = fm!!.getHeight()
                 if (fontHeight > cm) {
                     cm = fontHeight
                 }
@@ -1089,7 +1089,7 @@ abstract class BaseElementRenderable(
         get() = ((this.overflowY != RenderState.OVERFLOW_VISIBLE) && (this.overflowX != RenderState.OVERFLOW_NONE))
                 || (this.modelNode is HTMLDocumentImpl)
 
-    override fun getCollapsibleMarginTop(): Int {
+    fun getCollapsibleMarginTop(): Int {
         var cm: Int
         val paddingInsets = this.paddingInsets
         if ((paddingInsets != null) && (paddingInsets.top > 0)) {
@@ -1103,9 +1103,9 @@ abstract class BaseElementRenderable(
             }
         }
         if (this.isMarginBoundary) {
-            val rs = this.modelNode.renderState
+            val rs = this.modelNode!!.renderState
             if (rs != null) {
-                val fm = rs.fontMetrics
+                val fm = rs.fontMetrics!!
                 val fontHeight = fm.getHeight()
                 if (fontHeight > cm) {
                     cm = fontHeight
@@ -1115,22 +1115,22 @@ abstract class BaseElementRenderable(
         return cm
     }
 
-    override fun getMarginBottom(): Int {
+    fun getMarginBottom(): Int {
         val marginInsets = this.marginInsets
         return if (marginInsets == null) 0 else marginInsets.bottom
     }
 
-    override fun getMarginLeft(): Int {
+    fun getMarginLeft(): Int {
         val marginInsets = this.marginInsets
         return if (marginInsets == null) 0 else marginInsets.left
     }
 
-    override fun getMarginRight(): Int {
+    fun getMarginRight(): Int {
         val marginInsets = this.marginInsets
         return if (marginInsets == null) 0 else marginInsets.right
     }
 
-    override fun getMarginTop(): Int {
+    fun getMarginTop(): Int {
         val marginInsets = this.marginInsets
         return if (marginInsets == null) 0 else marginInsets.top
     }
@@ -1313,7 +1313,7 @@ abstract class BaseElementRenderable(
             }
         }
 
-        private fun drawHorizBorder(
+        fun drawHorizBorder(
             borderStyle: Int, normalColor: Color, width: Int, widthBy2: Int, vertMid: Int,
             yComputer: Function<Int?, Int?>, mirror: Boolean
         ) {

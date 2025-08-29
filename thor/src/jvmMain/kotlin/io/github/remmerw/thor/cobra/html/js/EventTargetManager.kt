@@ -125,33 +125,7 @@ class EventTargetManager(private val window: Window) {
 
     @Throws(EventException::class)
     fun dispatchEvent(node: NodeImpl?, evt: Event): Boolean {
-        // dispatchEventToHandlers(node, evt, onEventListeners.get(evt.getType()));
-        // dispatchEventToJSHandlers(node, evt, onEventHandlers.get(evt.getType()));
 
-        // TODO: Event Bubbling
-        // TODO: get Window into the propagation path
-
-        val propagationPath: MutableList<NodeImpl?> = getPropagationPath(node)
-
-        // TODO: Capture phase, and distinction between target phase and bubbling phase
-        evt.setPhase(Event.AT_TARGET)
-        // TODO: The JS Task should be added with the correct base URL
-        window.addJSTask(JSRunnableTask(0, "Event dispatch for " + evt, Runnable {
-            var i = 0
-            while ((i < propagationPath.size) && !evt.isPropagationStopped()) {
-                val currNode = propagationPath.get(i)
-                // System.out.println("Dipatching " + i + " to: " + currNode);
-                // TODO: Make request manager checks here.
-                dispatchEventToHandlers(currNode, evt)
-                dispatchEventToJSHandlers(currNode, evt)
-                evt.setPhase(Event.BUBBLING_PHASE)
-                i++
-            }
-        }
-        ))
-
-        // dispatchEventToHandlers(node, evt);
-        // dispatchEventToJSHandlers(node, evt);
         return false
     }
 
@@ -165,7 +139,7 @@ class EventTargetManager(private val window: Window) {
             // We clone the collection and check if original collection still contains
             // the handler before dispatching
             // This is to avoid ConcurrentModificationException during dispatch
-            val handlersCopy = ArrayList<EventListener>(handlers)
+            val handlersCopy = _root_ide_package_.java.util.ArrayList<EventListener>(handlers)
             for (h in handlersCopy) {
                 // TODO: Not sure if we should stop calling handlers after propagation is stopped
                 // if (event.isPropagationStopped()) {
@@ -207,7 +181,7 @@ class EventTargetManager(private val window: Window) {
                 if (handlers.contains(h)) {
                     // window.addJSTask(new JSRunnableTask(0, "Event dispatch for " + event, new Runnable(){
                     // public void run() {
-                    Executor.executeFunction(node, h, event, window.getContextFactory())
+                    //Executor.executeFunction(node, h, event, window.contextFactory)
                     // }
                     // }));
                     // Executor.executeFunction(node, h, event);

@@ -28,7 +28,7 @@ class RImgControl(
     me: ModelNode?,
     widget: ImgControl,
     container: RenderableContainer?,
-    frameContext: FrameContext?,
+    frameContext: FrameContext,
     ucontext: UserAgentContext?
 ) : RUIControl(me, widget, container, frameContext, ucontext) {
     // TODO: This is a hack. RUIControl excludes border insets from the UI control. Images need to exclude padding as well.
@@ -45,17 +45,17 @@ class RImgControl(
     }
 
     private fun updateWidthHeight() {
-        val widthConstrained = isWidthConstrained()
-        val heightConstrained = isHeightConstrained()
+        val widthConstrained = isWidthConstrained
+        val heightConstrained = isHeightConstrained
         if (!widthConstrained && heightConstrained) {
-            val prefSize = widget.getPreferredSize()
+            val prefSize = widget.preferredSize!!
             if (prefSize.height != 0) {
-                this.width = (prefSize.width * getInnerMostHeight()) / prefSize.height
+                this.width = (prefSize.width * innerMostHeight) / prefSize.height
             }
         } else if (!heightConstrained && widthConstrained) {
-            val prefSize = widget.getPreferredSize()
+            val prefSize = widget.preferredSize!!
             if (prefSize.width != 0) {
-                this.height = (prefSize.height * getInnerMostWidth()) / prefSize.width
+                this.height = (prefSize.height * innerMostWidth) / prefSize.width
             }
         }
     }
@@ -71,7 +71,7 @@ class RImgControl(
     }
 
     override fun isReadyToPaint(): Boolean {
-        return super.isReadyToPaint() && widget.isReadyToPaint()
+        return super.isReadyToPaint() && widget.isReadyToPaint
     }
 
     override fun toString(): String {

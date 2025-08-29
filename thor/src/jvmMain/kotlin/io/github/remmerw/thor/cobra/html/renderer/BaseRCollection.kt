@@ -11,7 +11,7 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
     private var renderableWithMouse: BoundableRenderable? = null
 
     override fun focus() {
-        this.container.focus()
+        this.container?.focus()
         // TODO: Plus local focus
     }
 
@@ -150,7 +150,7 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
     }
 
     override fun extractSelectionText(
-        buffer: StringBuffer?, inSelection: Boolean, startPoint: RenderableSpot,
+        buffer: StringBuffer, inSelection: Boolean, startPoint: RenderableSpot,
         endPoint: RenderableSpot
     ): Boolean {
         var inSelection = inSelection
@@ -181,7 +181,7 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
                 val robj = if (rn is PositionedRenderable) rn.renderable else rn
                 if (robj is BoundableRenderable) {
                     if (!inSelection) {
-                        val bounds = robj.getVisualBounds()
+                        val bounds = robj.visualBounds!!
                         if ((checkPoint1 != null) && checkStartSelection(bounds, checkPoint1)) {
                             if (checkPoint2 != null) {
                                 checkPoint1 = checkPoint2
@@ -200,7 +200,7 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
                             inSelection = true
                         }
                     } else if (inSelection && (checkPoint1 != null) && checkEndSelection(
-                            robj.getBounds(),
+                            robj.bounds!!,
                             checkPoint1
                         )
                     ) {
@@ -255,7 +255,7 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
         val r: Renderable? = this.getRenderable(x, y)
         val newRenderable = if (r is BoundableRenderable) r else null
         val newLimit: ModelNode?
-        if (this.isContainedByNode()) {
+        if (this.isContainedByNode) {
             newLimit = this.modelNode
         } else {
             newLimit = limit
@@ -265,8 +265,8 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
             if (oldRenderable != null) {
                 oldRenderable.onMouseOut(
                     event,
-                    x - oldRenderable.getVisualX(),
-                    y - oldRenderable.getVisualY(),
+                    x - oldRenderable.visualX,
+                    y - oldRenderable.visualY,
                     newLimit
                 )
             }
@@ -289,7 +289,7 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
                 return false
             }
         }
-        return HtmlController.Companion.getInstance().onMouseDown(this.modelNode, event, x, y)
+        return HtmlController.Companion.instance.onMouseDown(this.modelNode!!, event, x, y)
     }
 
     override fun onMouseClick(event: MouseEvent?, x: Int, y: Int): Boolean {
@@ -301,7 +301,7 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
                 return false
             }
         }
-        return HtmlController.Companion.getInstance().onMouseClick(this.modelNode, event, x, y)
+        return HtmlController.Companion.instance.onMouseClick(this.modelNode!!, event, x, y)
     }
 
     override fun onMouseOut(event: MouseEvent?, x: Int, y: Int, limit: ModelNode?) {
@@ -310,7 +310,7 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
         if (oldRenderable != null) {
             this.renderableWithMouse = null
             val newLimit: ModelNode?
-            if (this.isContainedByNode()) {
+            if (this.isContainedByNode) {
                 newLimit = this.modelNode
             } else {
                 newLimit = limit
@@ -331,7 +331,7 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
           if (br instanceof RBlockViewport) {
             return br;
           }*/
-                    if ((!r.isDelegated()) && r.contains(x, y)) {
+                    if ((!r.isDelegated) && r.contains(x, y)) {
                         return r
                     }
                 } else if (r is PositionedRenderable) {
@@ -347,7 +347,7 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
     override fun onMiddleClick(event: MouseEvent?, x: Int, y: Int): Boolean {
         val br = this.getRenderable(x, y)
         if (br == null) {
-            return HtmlController.Companion.getInstance().onMiddleClick(this.modelNode, event, x, y)
+            return HtmlController.Companion.instance.onMiddleClick(this.modelNode!!, event, x, y)
         } else {
             val or = br.getOriginRelativeTo(this)
             return br.onMiddleClick(event, x - or.x, y - or.y)
@@ -357,26 +357,26 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
     override fun onRightClick(event: MouseEvent?, x: Int, y: Int): Boolean {
         val br = this.getRenderable(x, y)
         if (br == null) {
-            return HtmlController.Companion.getInstance().onContextMenu(this.modelNode, event, x, y)
+            return HtmlController.Companion.instance.onContextMenu(this.modelNode!!, event, x, y)
         } else {
             val or = br.getOriginRelativeTo(this)
             return br.onRightClick(event, x - or.x, y - or.y)
         }
     }
 
-    override fun getClipBoundsWithoutInsets(): Rectangle? {
+    fun getClipBoundsWithoutInsets(): Rectangle? {
         // TODO
-        return getClipBounds()
+        return clipBounds
     }
 
-    override fun isReadyToPaint(): Boolean {
-        val renderables = getRenderables()
+    fun isReadyToPaint(): Boolean {
+        val renderables = renderables
         if (renderables == null) {
             return true
         }
         while (renderables.hasNext()) {
             val next = renderables.next()
-            if (!next.isReadyToPaint()) {
+            if (!next.isReadyToPaint) {
                 return false
             }
         }

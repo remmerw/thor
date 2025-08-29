@@ -39,7 +39,7 @@ internal class RAnonTableCell
     frameContext: FrameContext?,
     tableAsContainer: RenderableContainer?
 ) : RAbstractCell(cellNode, 0, pcontext, rcontext, frameContext, tableAsContainer) {
-    protected override fun doCellLayout(
+    override fun doCellLayout(
         width: Int, height: Int, expandWidth: Boolean, expandHeight: Boolean,
         sizeOnly: Boolean
     ): Dimension {
@@ -87,23 +87,23 @@ internal class RAnonTableCell
     }
 
 
-    override fun getColSpan(): Int {
+    fun getColSpan(): Int {
         return 1
     }
 
-    override fun getRowSpan(): Int {
+    fun getRowSpan(): Int {
         return 1
     }
 
-    override fun setRowSpan(rowSpan: Int) {
+    fun setRowSpan(rowSpan: Int) {
         throw IllegalStateException()
     }
 
-    override fun getHeightText(): String? {
+    fun getHeightText(): String? {
         return null
     }
 
-    override fun getWidthText(): String? {
+    fun getWidthText(): String? {
         return null
     }
 
@@ -112,8 +112,8 @@ internal class RAnonTableCell
         cellSpacingX: Int,
         cellSpacingY: Int
     ) {
-        val vcol = this.getVirtualColumn()
-        val vrow = this.getVirtualRow()
+        val vcol = this.virtualColumn
+        val vrow = this.virtualRow
         val colSize = colSizes[vcol]
         val rowSize = rowSizes[vrow]
         val x = colSize.offsetX + rowSize.offsetX
@@ -149,11 +149,11 @@ internal class RAnonTableCell
         this.setBounds(x, y, width, height)
     }
 
-    override fun isMarginBoundary(): Boolean {
+    fun isMarginBoundary(): Boolean {
         return true
     }
 
-    override fun getRenderState(): RenderState {
+    fun getRenderState(): RenderState {
         return cellNode.getRenderState()
     }
 }

@@ -62,7 +62,7 @@ internal open class RUIControl(
 
     override fun focus() {
         super.focus()
-        val c = this.widget.getComponent()
+        val c = this.widget.component
         c.requestFocus()
     }
 
@@ -76,8 +76,8 @@ internal open class RUIControl(
         this.lastLayoutValue = null
     }
 
-    override fun getVAlign(): VerticalAlign? {
-        return this.widget.getVAlign()
+    fun getVAlign(): VerticalAlign? {
+        return this.widget.vAlign
     }
 
     fun hasBackground(): Boolean {

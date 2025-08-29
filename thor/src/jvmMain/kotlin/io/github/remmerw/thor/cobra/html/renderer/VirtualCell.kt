@@ -26,7 +26,7 @@ package io.github.remmerw.thor.cobra.html.renderer
 import io.github.remmerw.thor.cobra.html.style.HtmlLength
 import io.github.remmerw.thor.cobra.html.style.HtmlValues
 
-internal class VirtualCell(cell: RAbstractCell, isTopLeft: Boolean) {
+class VirtualCell(cell: RAbstractCell, isTopLeft: Boolean) {
     /**
      * @return Returns the actualCell.
      */

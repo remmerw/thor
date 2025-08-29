@@ -100,7 +100,7 @@ internal class InputRadioControl(modelNode: HTMLBaseInputElement?) : BaseInputCo
     }
 
     override fun resetInput() {
-        this.widget.isSelected = this.controlElement.getAttributeAsBoolean("checked")
+        this.widget.isSelected = this.controlElement!!.getAttributeAsBoolean("checked")
     }
 
     override var value: String? = null
