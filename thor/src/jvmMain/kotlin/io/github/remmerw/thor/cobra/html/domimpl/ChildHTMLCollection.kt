@@ -23,14 +23,14 @@
  */
 package io.github.remmerw.thor.cobra.html.domimpl
 
-import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate
+import io.github.remmerw.thor.cobra.js.ScriptableDelegate
 import org.w3c.dom.Node
 import org.w3c.dom.html.HTMLCollection
 
 class ChildHTMLCollection
 /**
  * @param rootNode
- */(private val rootNode: NodeImpl) : AbstractScriptableDelegate(), HTMLCollection {
+ */(private val rootNode: NodeImpl) : ScriptableDelegate(), HTMLCollection {
     override fun getLength(): Int {
         return this.rootNode.childCount
     }

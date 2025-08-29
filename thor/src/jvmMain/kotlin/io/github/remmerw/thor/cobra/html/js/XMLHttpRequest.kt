@@ -1,8 +1,8 @@
 package io.github.remmerw.thor.cobra.html.js
 
 import io.github.remmerw.thor.cobra.html.js.Window.JSRunnableTask
-import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate
 import io.github.remmerw.thor.cobra.js.JavaScript
+import io.github.remmerw.thor.cobra.js.ScriptableDelegate
 import io.github.remmerw.thor.cobra.ua.NetworkRequest
 import io.github.remmerw.thor.cobra.ua.NetworkRequestEvent
 import io.github.remmerw.thor.cobra.ua.NetworkRequestListener
@@ -28,8 +28,8 @@ class XMLHttpRequest(
     private val codeSource: URL,
     private val scope: Scriptable?, // TODO: This is a quick hack
     private val window: Window
-) : AbstractScriptableDelegate() {
-    private val request: NetworkRequest
+) : ScriptableDelegate() {
+    private val request: NetworkRequest = pcontext.createHttpRequest()!!
     var onreadystatechange: Function? = null
         get() {
             synchronized(this) {
@@ -47,10 +47,6 @@ class XMLHttpRequest(
         }
     private var listenerAdded = false
     private var onLoad: Function? = null
-
-    init {
-        this.request = pcontext.createHttpRequest()!!
-    }
 
     fun abort() {
         request.abort()

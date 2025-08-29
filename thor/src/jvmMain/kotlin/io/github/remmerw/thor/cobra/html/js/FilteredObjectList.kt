@@ -23,18 +23,14 @@
  */
 package io.github.remmerw.thor.cobra.html.js
 
-import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate
+import io.github.remmerw.thor.cobra.js.ScriptableDelegate
 
 // TODO: Remove if not used
-class FilteredObjectList
-/**
- * @param filter
- * @param sourceNodeList
- */(
+class FilteredObjectList(
     private val filter: ObjectFilter,
     private val sourceNodeList: MutableCollection<Any?>,
     private val lock: Any
-) : AbstractScriptableDelegate() {
+) : ScriptableDelegate() {
     fun item(index: Int): Any? {
         synchronized(this.lock) {
             var count = 0

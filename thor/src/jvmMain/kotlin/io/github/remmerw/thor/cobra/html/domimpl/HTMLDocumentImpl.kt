@@ -31,9 +31,6 @@ import cz.vutbr.web.csskit.ElementMatcherSafeStd
 import cz.vutbr.web.csskit.antlr4.CSSParserFactory
 import cz.vutbr.web.domassign.Analyzer
 import cz.vutbr.web.domassign.AnalyzerUtil
-import io.github.remmerw.thor.css.JStyleSheetWrapper
-import io.github.remmerw.thor.css.JStyleSheetWrapper.Companion.getStyleSheets
-import io.github.remmerw.thor.css.StyleSheetBridge
 import io.github.remmerw.thor.cobra.html.HtmlRendererContext
 import io.github.remmerw.thor.cobra.html.domimpl.NodeFilter.AnchorFilter
 import io.github.remmerw.thor.cobra.html.domimpl.NodeFilter.AppletFilter
@@ -61,7 +58,9 @@ import io.github.remmerw.thor.cobra.ua.UserAgentContext.RequestKind
 import io.github.remmerw.thor.cobra.util.SecurityUtil
 import io.github.remmerw.thor.cobra.util.Urls
 import io.github.remmerw.thor.cobra.util.io.EmptyReader
-
+import io.github.remmerw.thor.css.JStyleSheetWrapper
+import io.github.remmerw.thor.css.JStyleSheetWrapper.Companion.getStyleSheets
+import io.github.remmerw.thor.css.StyleSheetBridge
 import org.mozilla.javascript.Function
 import org.w3c.dom.Attr
 import org.w3c.dom.CDATASection
@@ -323,7 +322,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
 
     fun setDomain(domain: String) {
         val oldDomain = this.domain
-        if ((oldDomain != null) ) {
+        if ((oldDomain != null)) {
             this.domain = domain
         } else {
             throw SecurityException("Cannot set domain to '" + domain + "' when current domain is '" + oldDomain + "'")

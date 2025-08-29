@@ -20,10 +20,10 @@
  */
 package io.github.remmerw.thor.cobra.html.domimpl
 
-import io.github.remmerw.thor.css.JStyleSheetWrapper
 import io.github.remmerw.thor.cobra.html.js.Window
 import io.github.remmerw.thor.cobra.html.style.CSSUtilities
 import io.github.remmerw.thor.cobra.util.Urls
+import io.github.remmerw.thor.css.JStyleSheetWrapper
 import org.w3c.dom.css.CSSStyleSheet
 import org.w3c.dom.html.HTMLLinkElement
 import org.w3c.dom.stylesheets.LinkStyle

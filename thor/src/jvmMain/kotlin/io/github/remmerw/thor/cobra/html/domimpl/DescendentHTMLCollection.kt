@@ -23,8 +23,8 @@
  */
 package io.github.remmerw.thor.cobra.html.domimpl
 
-import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate
 import io.github.remmerw.thor.cobra.js.JavaScript
+import io.github.remmerw.thor.cobra.js.ScriptableDelegate
 import io.github.remmerw.thor.cobra.util.Nodes
 import io.github.remmerw.thor.cobra.util.Objects
 import org.w3c.dom.Node
@@ -36,7 +36,7 @@ open class DescendentHTMLCollection @JvmOverloads constructor(
     private val nodeFilter: NodeFilter?,
     private val treeLock: Any,
     private val nestIntoMatchingNodes: Boolean = true
-) : AbstractScriptableDelegate(), HTMLCollection {
+) : ScriptableDelegate(), HTMLCollection {
     private var itemsByName: MutableMap<String?, ElementImpl?>? = null
     private var itemsByIndex: MutableList<NodeImpl?>? = null
 

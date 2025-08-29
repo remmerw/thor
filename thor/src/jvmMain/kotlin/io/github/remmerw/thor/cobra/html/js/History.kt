@@ -20,9 +20,9 @@
  */
 package io.github.remmerw.thor.cobra.html.js
 
-import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate
+import io.github.remmerw.thor.cobra.js.ScriptableDelegate
 
-class History internal constructor(private val window: Window) : AbstractScriptableDelegate() {
+class History internal constructor(private val window: Window) : ScriptableDelegate() {
     val current: String?
         get() {
             val ctx = this.window.htmlRendererContext

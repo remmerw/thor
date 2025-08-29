@@ -23,7 +23,7 @@
  */
 package io.github.remmerw.thor.cobra.html.domimpl
 
-import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate
+import io.github.remmerw.thor.cobra.js.ScriptableDelegate
 import org.w3c.dom.Attr
 import org.w3c.dom.DOMException
 import org.w3c.dom.Element
@@ -31,7 +31,7 @@ import org.w3c.dom.NamedNodeMap
 import org.w3c.dom.Node
 
 class NamedNodeMapImpl(owner: Element?, attribs: MutableMap<String, String>) :
-    AbstractScriptableDelegate(), NamedNodeMap {
+    ScriptableDelegate(), NamedNodeMap {
     // Note: class must be public for reflection to work.
     private val attributes: MutableMap<String, Node> = HashMap()
     private val attributeList = ArrayList<Node>()

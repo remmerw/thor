@@ -20,7 +20,7 @@
  */
 package io.github.remmerw.thor.cobra.html.js
 
-import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate
+import io.github.remmerw.thor.cobra.js.ScriptableDelegate
 import org.w3c.dom.Node
 import org.w3c.dom.events.Event
 import org.w3c.dom.events.EventTarget
@@ -29,7 +29,7 @@ import java.awt.event.InputEvent
 import java.awt.event.KeyEvent
 import java.awt.event.MouseEvent
 
-class Event : AbstractScriptableDelegate, Event {
+class Event : ScriptableDelegate, Event {
     private val inputEvent: InputEvent?
     var isCancelBubble: Boolean = false
         set(cancelBubble) {

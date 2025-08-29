@@ -635,7 +635,6 @@ class HTMLCanvasElementImpl : HTMLAbstractUIElement("CANVAS"), HTMLElement {
         }
 
 
-
         fun restore() {
             if (drawingStateStack.empty()) {
                 // Do nothing

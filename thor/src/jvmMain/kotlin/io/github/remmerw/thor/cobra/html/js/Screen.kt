@@ -1,10 +1,10 @@
 package io.github.remmerw.thor.cobra.html.js
 
-import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate
+import io.github.remmerw.thor.cobra.js.ScriptableDelegate
 import java.awt.GraphicsDevice
 import java.awt.GraphicsEnvironment
 
-class Screen internal constructor() : AbstractScriptableDelegate() {
+class Screen internal constructor() : ScriptableDelegate() {
     private val graphicsEnvironment: GraphicsEnvironment?
     private val graphicsDevice: GraphicsDevice?
 

@@ -23,7 +23,7 @@
  */
 package io.github.remmerw.thor.cobra.html.domimpl
 
-import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate
+import io.github.remmerw.thor.cobra.js.ScriptableDelegate
 import org.w3c.dom.Node
 import org.w3c.dom.NodeList
 
@@ -36,7 +36,7 @@ internal class FilteredNodeListImpl
     private val filter: NodeFilter,
     private val sourceNodeList: MutableCollection<Node?>,
     private val lock: Any
-) : AbstractScriptableDelegate(), NodeList {
+) : ScriptableDelegate(), NodeList {
     override fun item(index: Int): Node? {
         synchronized(this.lock) {
             var count = 0

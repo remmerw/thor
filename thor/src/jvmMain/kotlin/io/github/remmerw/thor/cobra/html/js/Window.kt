@@ -36,12 +36,12 @@ import io.github.remmerw.thor.cobra.html.domimpl.HTMLScriptElementImpl
 import io.github.remmerw.thor.cobra.html.domimpl.HTMLSelectElementImpl
 import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
 import io.github.remmerw.thor.cobra.html.domimpl.TextImpl
-import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate
 import io.github.remmerw.thor.cobra.js.JavaClassWrapper
 import io.github.remmerw.thor.cobra.js.JavaClassWrapperFactory
 import io.github.remmerw.thor.cobra.js.JavaInstantiator
 import io.github.remmerw.thor.cobra.js.JavaObjectWrapper
 import io.github.remmerw.thor.cobra.js.JavaScript
+import io.github.remmerw.thor.cobra.js.ScriptableDelegate
 import io.github.remmerw.thor.cobra.ua.UserAgentContext
 import io.github.remmerw.thor.cobra.ua.UserAgentContext.RequestKind
 import io.github.remmerw.thor.cobra.util.ID
@@ -84,7 +84,7 @@ class Window // TODO: Probably need to create a new Window instance
 // for every document. Sharing of Window state between
 // different documents is not correct.
     (val htmlRendererContext: HtmlRendererContext?, val userAgentContext: UserAgentContext) :
-    AbstractScriptableDelegate(), AbstractView, EventTarget {
+    ScriptableDelegate(), AbstractView, EventTarget {
     private val windowContextFactory = MyContextFactory()
     val eventTargetManager: EventTargetManager = EventTargetManager(this)
 

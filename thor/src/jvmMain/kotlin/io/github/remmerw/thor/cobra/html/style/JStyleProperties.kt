@@ -22,7 +22,7 @@ package io.github.remmerw.thor.cobra.html.style
 import cz.vutbr.web.css.CSSProperty
 import cz.vutbr.web.css.NodeData
 import cz.vutbr.web.csskit.TermURIImpl
-import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate
+import io.github.remmerw.thor.cobra.js.ScriptableDelegate
 import io.github.remmerw.thor.cobra.util.Urls
 import org.w3c.dom.css.CSS2Properties
 import java.net.MalformedURLException
@@ -32,7 +32,7 @@ abstract class JStyleProperties(
     private val context: CSS2PropertiesContext, // TODO: this flag can be removed when the layout can handle empty strings
     // currently there is only a check for null and not for empty string
     protected val nullIfAbsent: Boolean
-) : AbstractScriptableDelegate(), CSS2Properties {
+) : ScriptableDelegate(), CSS2Properties {
     var overlayColor: String? = null
         set(value) {
             field = value

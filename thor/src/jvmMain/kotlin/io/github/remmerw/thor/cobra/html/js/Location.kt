@@ -1,13 +1,13 @@
 package io.github.remmerw.thor.cobra.html.js
 
 import io.github.remmerw.thor.cobra.html.domimpl.HTMLDocumentImpl
-import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate
+import io.github.remmerw.thor.cobra.js.ScriptableDelegate
 import java.net.MalformedURLException
 import java.net.URL
 import java.util.logging.Level
 import java.util.logging.Logger
 
-class Location internal constructor(private val window: Window) : AbstractScriptableDelegate() {
+class Location internal constructor(private val window: Window) : ScriptableDelegate() {
     var target: String? = null
 
     private val uRL: URL?

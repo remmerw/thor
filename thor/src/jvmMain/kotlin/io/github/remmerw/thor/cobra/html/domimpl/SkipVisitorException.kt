@@ -32,7 +32,4 @@ internal class SkipVisitorException : RuntimeException {
 
     constructor(cause: Throwable?) : super(cause)
 
-    companion object {
-        private const val serialVersionUID = 4031730152218808122L
-    }
 }
