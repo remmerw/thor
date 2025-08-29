@@ -457,14 +457,14 @@ internal class HtmlController {
                     val rs = node.getRenderState()
                     val cursorOpt = rs.cursor
                     if (rcontext != null) {
-                        if (cursorOpt.isPresent()) {
+                        if (cursorOpt!!.isPresent()) {
                             rcontext.setCursor(cursorOpt)
                             break
                         } else {
                             if (node.parentModelNode === limit) {
                                 if ((renderable is RWord) || (renderable is RBlank)) {
                                     rcontext.setCursor(
-                                        Optional.of<Cursor?>(
+                                        Optional.of<Cursor>(
                                             Cursor.getPredefinedCursor(
                                                 Cursor.TEXT_CURSOR
                                             )
@@ -491,14 +491,14 @@ internal class HtmlController {
   }
   */
         private fun resetCursorOnMouseOut(nodeStart: ModelNode?, limit: ModelNode?) {
-            var foundCursorOpt: Optional<Cursor?>? = Optional.empty<Cursor?>()
+            var foundCursorOpt: Optional<Cursor> = Optional.empty<Cursor>()
             var node = limit
             while (node != null) {
                 if (node is NodeImpl) {
                     val rs = node.getRenderState()
                     val cursorOpt = rs.cursor
-                    foundCursorOpt = cursorOpt
-                    if (cursorOpt.isPresent()) {
+                    foundCursorOpt = cursorOpt!!
+                    if (cursorOpt.isPresent) {
                         break
                     }
                 }

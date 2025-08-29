@@ -383,7 +383,7 @@ interface HtmlRendererContext {
      */
     fun goToHistoryURL(url: String?)
 
-    fun setCursor(cursorOpt: Optional<Cursor?>?)
+    fun setCursor(cursorOpt: Optional<Cursor>)
 
     fun jobsFinished()
 
