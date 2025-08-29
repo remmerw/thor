@@ -634,17 +634,7 @@ class HTMLCanvasElementImpl : HTMLAbstractUIElement("CANVAS"), HTMLElement {
             return linearGradient
         }
 
-        fun save() {
-            try {
-                val cloneDrawingState: CanvasState = currDrawingState.clone() as CanvasState
-                cloneDrawingState.currTransformMatrix = this.currentTransformMatrix
-                cloneDrawingState.currClippingRegion = this.currClip
-                drawingStateStack.push(cloneDrawingState)
-            } catch (e: CloneNotSupportedException) {
-                e.printStackTrace()
-                throw IllegalStateException(e)
-            }
-        }
+
 
         fun restore() {
             if (drawingStateStack.empty()) {

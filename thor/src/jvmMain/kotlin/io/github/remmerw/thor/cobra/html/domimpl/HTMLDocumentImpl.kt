@@ -61,7 +61,7 @@ import io.github.remmerw.thor.cobra.ua.UserAgentContext.RequestKind
 import io.github.remmerw.thor.cobra.util.SecurityUtil
 import io.github.remmerw.thor.cobra.util.Urls
 import io.github.remmerw.thor.cobra.util.io.EmptyReader
-import io.github.remmerw.thor.cobra.validation.DomainValidation.isValidCookieDomain
+
 import org.mozilla.javascript.Function
 import org.w3c.dom.Attr
 import org.w3c.dom.CDATASection
@@ -323,7 +323,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
 
     fun setDomain(domain: String) {
         val oldDomain = this.domain
-        if ((oldDomain != null) && isValidCookieDomain(domain, oldDomain)) {
+        if ((oldDomain != null) ) {
             this.domain = domain
         } else {
             throw SecurityException("Cannot set domain to '" + domain + "' when current domain is '" + oldDomain + "'")
