@@ -106,7 +106,7 @@ class HTMLScriptElementImpl : HTMLElementImpl, HTMLScriptElement {
                 return
             }
         }
-        val bcontext = this.getUserAgentContext()
+        val bcontext = this.userAgentContext
         checkNotNull(bcontext) { "No user agent context." }
         val docObj = this.document
         check(docObj is HTMLDocumentImpl) { "no valid document" }
@@ -133,7 +133,7 @@ class HTMLScriptElementImpl : HTMLElementImpl, HTMLScriptElement {
                     val scriptURL = docObj.getFullURL(src)
                     scriptURI = scriptURL.toExternalForm()
                     // Perform a synchronous request
-                    val request = bcontext.createHttpRequest()
+                    val request = bcontext.createHttpRequest() !!
                     SecurityUtil.doPrivileged<Any?>(PrivilegedAction {
                         // Code might have restrictions on accessing
                         // items from elsewhere.
@@ -148,19 +148,19 @@ class HTMLScriptElementImpl : HTMLElementImpl, HTMLScriptElement {
                         }
                         null
                     })
-                    val status = request.getStatus()
+                    val status = request.status
                     if ((status != 200) && (status != 0)) {
                         this.warn("Script at [" + scriptURI + "] failed to load; HTTP status: " + status + ".")
                         return
                     }
-                    text = request.getResponseText()
+                    text = request.responseText
                     baseLineNumber = 1
                 } catch (mfe: MalformedURLException) {
                     throw IllegalArgumentException(mfe)
                 }
             }
 
-            val window = docObj.getWindow()
+            val window = docObj.window
             if (text != null) {
                 val textSub = text.substring(0, min(50, text.length)).replace("\n".toRegex(), "")
                 window.addJSTaskUnchecked(
@@ -171,9 +171,9 @@ class HTMLScriptElementImpl : HTMLElementImpl, HTMLScriptElement {
                             override fun run() {
                                 // final Context ctx = Executor.createContext(HTMLScriptElementImpl.this.getDocumentURL(), bcontext);
                                 val ctx = Executor.createContext(
-                                    this@HTMLScriptElementImpl.getDocumentURL(),
+                                    this@HTMLScriptElementImpl.documentURL,
                                     bcontext,
-                                    window.getContextFactory()
+                                    window.contextFactory
                                 )
                                 try {
                                     val scope = window.getWindowScope()
@@ -209,12 +209,12 @@ class HTMLScriptElementImpl : HTMLElementImpl, HTMLScriptElement {
         }
     }
 
-    override fun appendInnerTextImpl(buffer: StringBuffer?) {
+    override fun appendInnerTextImpl(buffer: StringBuffer) {
         // nop
     }
 
     override fun handleDocumentAttachmentChanged() {
-        if (isAttachedToDocument()) {
+        if (isAttachedToDocument) {
             (document as HTMLDocumentImpl).addJob(Runnable { processScript() }, false)
         } else {
             // TODO What does script element do when detached?

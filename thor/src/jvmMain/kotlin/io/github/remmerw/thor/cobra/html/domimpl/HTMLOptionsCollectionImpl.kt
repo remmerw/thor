@@ -14,7 +14,7 @@ class HTMLOptionsCollectionImpl(selectElement: HTMLElementImpl) :
     }
 
     private class OptionFilter : NodeFilter {
-        override fun accept(node: Node?): Boolean {
+        override fun accept(node: Node): Boolean {
             return node is HTMLOptionElement
         }
     }
