@@ -183,10 +183,10 @@ open class RBlock(
         }
 
     val firstLineHeight: Int
-        get() = this.rBlockViewport.getFirstLineHeight()
+        get() = this.rBlockViewport.firstLineHeight
 
     val firstBaselineOffset: Int
-        get() = this.rBlockViewport.getFirstBaselineOffset()
+        get() = this.rBlockViewport.firstBaselineOffset
 
     fun setSelectionEnd(rpoint: RenderableSpot?) {
         this.endSelection = rpoint
@@ -1024,7 +1024,7 @@ open class RBlock(
             if (declaredHeight == -1) availHeight else declaredHeight + insetsTotalHeight + paddingTotalHeight
 
         if ((declaredWidth == -1) && !expandWidth && (availWidth > (insetsTotalWidth + paddingTotalWidth))) {
-            val state = RenderThreadState.getState()
+            val state = RenderThreadState.state
             val prevOverrideNoWrap = state.overrideNoWrap
             if (!prevOverrideNoWrap) {
                 state.overrideNoWrap = true
@@ -1066,7 +1066,7 @@ open class RBlock(
         if (blockFloatBoundsSource != null) {
             blockFloatBounds = blockFloatBoundsSource.getChildBlockFloatingBounds(tentativeWidth)
             viewportFloatBounds =
-                ShiftedFloatingBounds(blockFloatBounds, -insets.left, -insets.right, -insets.top)
+                ShiftedFloatingBounds(blockFloatBounds!!, -insets.left, -insets.right, -insets.top)
         }
         if (declaredMaxWidth != null) {
             tentativeWidth =

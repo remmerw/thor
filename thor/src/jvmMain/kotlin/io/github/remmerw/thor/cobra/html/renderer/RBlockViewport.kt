@@ -218,10 +218,10 @@ class RBlockViewport(
         val lastSeqBlock = this.lastSeqBlock
         if (lastSeqBlock != null) {
             val effBlockHeight = this.getEffectiveBlockHeight(lastSeqBlock)
-            if ((lastSeqBlock.getY() + effBlockHeight) > maxY) {
-                maxY = lastSeqBlock.getY() + effBlockHeight
+            if ((lastSeqBlock.y + effBlockHeight) > maxY) {
+                maxY = lastSeqBlock.y+ effBlockHeight
                 this.maxY = maxY
-                maxYWholeBlock = lastSeqBlock.getY() + lastSeqBlock.getHeight()
+                maxYWholeBlock = lastSeqBlock.y + lastSeqBlock.height
             }
         }
 
@@ -250,12 +250,12 @@ class RBlockViewport(
             while (i.hasNext()) {
                 val pr = i.next()
                 val br = pr.renderable
-                if ((br.getX() + br.getWidth()) > this.maxX) {
-                    this.maxX = br.getX() + br.getWidth()
+                if ((br.x + br.width) > this.maxX) {
+                    this.maxX = br.x + br.getWidth()
                 }
                 if (isFloatLimit || !pr.isFloat) {
-                    if ((br.getY() + br.getHeight()) > maxY) {
-                        maxY = br.getY() + br.getHeight()
+                    if ((br.y + br.getHeight()) > maxY) {
+                        maxY = br.y + br.getHeight()
                         this.maxY = maxY
                     }
                 }
@@ -313,7 +313,7 @@ class RBlockViewport(
                 for (i in 0..<numRenderables) {
                     val r: Any = renderables.get(i)
                     if (r is BoundableRenderable) {
-                        val y = r.getY()
+                        val y = r.y
                         val newY: Int
                         if (yoffset > 0) {
                             newY = y + yoffset
@@ -381,7 +381,7 @@ class RBlockViewport(
                     while (renderables.hasNext()) {
                         val r: Any? = renderables.next()
                         if (r is BoundableRenderable) {
-                            val newY = r.getY() + shift
+                            val newY = r.y + shift
                             r.setY(newY)
                             if ((newY + r.getHeight()) > this.maxY) {
                                 this.maxY = newY + r.getHeight()
@@ -399,7 +399,7 @@ class RBlockViewport(
                         val pr = i2.next()
                         if (pr.verticalAlignable) {
                             val br = pr.renderable
-                            val newY = br.getY() + shift
+                            val newY = br.y + shift
                             br.setY(newY)
                             if ((newY + br.getHeight()) > this.maxY) {
                                 this.maxY = newY + br.getHeight()
@@ -1251,7 +1251,7 @@ class RBlockViewport(
         } else {
             initialAllowOverflow = false
         }
-        val lineNode = block.getModelNode().parentModelNode
+        val lineNode = block.getModelNode()!!.parentModelNode
         val newLineY = block.getY() + block.getHeight()
         this.checkY(newLineY)
         val leftOffset = this.fetchLeftOffset(newLineY)
@@ -1268,7 +1268,7 @@ class RBlockViewport(
         val text = textNode.getNodeValue()
         val length = text!!.length
         val renderState = textNode.getRenderState()
-        val fm = renderState.fontMetrics
+        val fm = renderState.fontMetrics!!
         val descent = fm.getDescent()
         val ascentPlusLeading = fm.getAscent() + fm.getLeading()
         val wordHeight = fm.getHeight()
