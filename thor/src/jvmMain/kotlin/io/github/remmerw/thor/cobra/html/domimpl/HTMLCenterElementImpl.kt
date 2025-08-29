@@ -21,4 +21,4 @@
 package io.github.remmerw.thor.cobra.html.domimpl
 
 // TODO: Can be chopped off; this class is now a shell after removing createRenderState
-class HTMLCenterElementImpl(name: String?) : HTMLAbstractUIElement(name)
+class HTMLCenterElementImpl(name: String) : HTMLAbstractUIElement(name)

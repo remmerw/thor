@@ -42,7 +42,7 @@ class HTMLFormElementImpl : HTMLAbstractUIElement, HTMLFormElement {
     var onsubmit: Function? = null
         get() = this.getEventFunction(field, "onsubmit")
 
-    constructor(name: String?) : super(name)
+    constructor(name: String) : super(name)
 
     constructor() : super("FORM")
 
@@ -229,7 +229,7 @@ class HTMLFormElementImpl : HTMLAbstractUIElement, HTMLFormElement {
 
     override fun reset() {
         this.visit(object : NodeVisitor {
-            override fun visit(node: Node?) {
+            override fun visit(node: Node) {
                 if (node is HTMLBaseInputElement) {
                     node.resetInput()
                 }

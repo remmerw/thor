@@ -27,7 +27,7 @@ import io.github.remmerw.thor.cobra.html.style.RenderState
 import io.github.remmerw.thor.cobra.html.style.TableCellRenderState
 import org.w3c.dom.html.HTMLTableCellElement
 
-open class HTMLTableCellElementImpl(name: String?) : HTMLAbstractUIElement(name),
+open class HTMLTableCellElementImpl(name: String) : HTMLAbstractUIElement(name),
     HTMLTableCellElement {
     override fun getCellIndex(): Int {
         // TODO Cell index in row

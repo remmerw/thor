@@ -27,7 +27,7 @@ import io.github.remmerw.thor.cobra.html.FormInput
 import org.w3c.dom.html.HTMLTextAreaElement
 
 class HTMLTextAreaElementImpl : HTMLBaseInputElement, HTMLTextAreaElement {
-    constructor(name: String?) : super(name)
+    constructor(name: String) : super(name)
 
     constructor() : super("TEXTAREA")
 

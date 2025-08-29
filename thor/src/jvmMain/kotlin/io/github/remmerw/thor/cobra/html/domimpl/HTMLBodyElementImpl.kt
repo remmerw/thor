@@ -30,7 +30,7 @@ import org.w3c.dom.Document
 import org.w3c.dom.html.HTMLBodyElement
 import org.w3c.dom.html.HTMLDocument
 
-class HTMLBodyElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLBodyElement {
+class HTMLBodyElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLBodyElement {
     override fun setOwnerDocument(value: Document?, deep: Boolean) {
         super.setOwnerDocument(value, deep)
         if (value is HTMLDocument) {

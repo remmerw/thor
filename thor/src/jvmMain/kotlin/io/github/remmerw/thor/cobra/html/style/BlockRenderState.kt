@@ -20,8 +20,14 @@
  */
 package io.github.remmerw.thor.cobra.html.style
 
+import cz.vutbr.web.css.CSSProperty
 import io.github.remmerw.thor.cobra.html.domimpl.HTMLDocumentImpl
 import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
+import java.awt.Color
+import java.awt.Cursor
+import java.awt.Font
+import java.awt.FontMetrics
+import java.util.Optional
 
 /**
  * Render state for elements that are displayed as blocks by default.
@@ -37,4 +43,60 @@ class BlockRenderState : StyleSheetRenderState {
     public fun getDefaultDisplay(): Int {
         return RenderState.Companion.DISPLAY_BLOCK
     }
+
+    override val position: Int
+        get() = TODO("Not yet implemented")
+    override val float: Int
+        get() = TODO("Not yet implemented")
+    override val clear: Int
+        get() = TODO("Not yet implemented")
+    override val visibility: Int
+        get() = TODO("Not yet implemented")
+    override val font: Font?
+        get() = TODO("Not yet implemented")
+    override val fontBase: Int
+        get() = TODO("Not yet implemented")
+    override val color: Color?
+        get() = TODO("Not yet implemented")
+    override val backgroundColor: Color?
+        get() = TODO("Not yet implemented")
+    override val textBackgroundColor: Color?
+        get() = TODO("Not yet implemented")
+    override val backgroundInfo: BackgroundInfo?
+        get() = TODO("Not yet implemented")
+    override val overlayColor: Color?
+        get() = TODO("Not yet implemented")
+    override val textTransform: Int
+        get() = TODO("Not yet implemented")
+    override val textDecorationMask: Int
+        get() = TODO("Not yet implemented")
+    override val fontMetrics: FontMetrics?
+        get() = TODO("Not yet implemented")
+    override val fontXHeight: Double
+        get() = TODO("Not yet implemented")
+    override val blankWidth: Int
+        get() = TODO("Not yet implemented")
+    override var isHighlight: Boolean
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override val alignYPercent: Int
+        get() = TODO("Not yet implemented")
+    override val display: Int
+        get() = TODO("Not yet implemented")
+    override val textIndentText: String?
+        get() = TODO("Not yet implemented")
+    override val whiteSpace: Int
+        get() = TODO("Not yet implemented")
+    override val cursor: Optional<Cursor>?
+        get() = TODO("Not yet implemented")
+    override val left: String?
+        get() = TODO("Not yet implemented")
+    override val top: String?
+        get() = TODO("Not yet implemented")
+    override val right: String?
+        get() = TODO("Not yet implemented")
+    override val bottom: String?
+        get() = TODO("Not yet implemented")
+    override val verticalAlign: CSSProperty.VerticalAlign?
+        get() = TODO("Not yet implemented")
 }

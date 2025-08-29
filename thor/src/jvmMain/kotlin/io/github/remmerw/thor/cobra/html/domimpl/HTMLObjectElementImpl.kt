@@ -4,7 +4,7 @@ import org.w3c.dom.Document
 import org.w3c.dom.html.HTMLFormElement
 import org.w3c.dom.html.HTMLObjectElement
 
-class HTMLObjectElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLObjectElement {
+class HTMLObjectElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLObjectElement {
     override fun getAlign(): String? {
         return this.getAttribute("align")
     }

@@ -26,9 +26,9 @@ package io.github.remmerw.thor.cobra.html.domimpl
 import org.w3c.dom.html.HTMLFrameSetElement
 
 class HTMLFrameSetElementImpl : HTMLElementImpl, HTMLFrameSetElement {
-    constructor(name: String?, noStyleSheet: Boolean) : super(name, noStyleSheet)
+    constructor(name: String, noStyleSheet: Boolean) : super(name, noStyleSheet)
 
-    constructor(name: String?) : super(name)
+    constructor(name: String) : super(name)
 
     override fun getCols(): String? {
         return this.getAttribute("cols")

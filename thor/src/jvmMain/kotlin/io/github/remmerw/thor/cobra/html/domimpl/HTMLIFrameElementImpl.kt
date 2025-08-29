@@ -16,7 +16,7 @@ import org.w3c.dom.html.HTMLIFrameElement
 import java.net.MalformedURLException
 import kotlin.concurrent.Volatile
 
-class HTMLIFrameElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLIFrameElement,
+class HTMLIFrameElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLIFrameElement,
     FrameNode {
 
     private var jobCreated = false

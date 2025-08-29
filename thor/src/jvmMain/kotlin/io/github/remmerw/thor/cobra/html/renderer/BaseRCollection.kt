@@ -374,12 +374,13 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
         if (renderables == null) {
             return true
         }
+        /*
         while (renderables.hasNext()) {
             val next = renderables.next()
             if (!next.isReadyToPaint) {
                 return false
             }
-        }
+        }*/
         return true
     }
 

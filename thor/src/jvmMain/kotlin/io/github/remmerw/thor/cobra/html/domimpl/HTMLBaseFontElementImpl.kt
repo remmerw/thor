@@ -25,7 +25,7 @@ import io.github.remmerw.thor.cobra.html.style.HtmlValues
 import io.github.remmerw.thor.cobra.html.style.RenderState
 import org.w3c.dom.html.HTMLBaseFontElement
 
-class HTMLBaseFontElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLBaseFontElement {
+class HTMLBaseFontElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLBaseFontElement {
     override fun getColor(): String? {
         return this.getAttribute("color")
     }

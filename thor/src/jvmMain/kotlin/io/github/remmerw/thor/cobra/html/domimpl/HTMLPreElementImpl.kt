@@ -25,7 +25,7 @@ package io.github.remmerw.thor.cobra.html.domimpl
 
 import org.w3c.dom.html.HTMLPreElement
 
-class HTMLPreElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLPreElement {
+class HTMLPreElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLPreElement {
     override fun getWidth(): Int {
         val widthText = this.getAttribute("width")
         if (widthText == null) {

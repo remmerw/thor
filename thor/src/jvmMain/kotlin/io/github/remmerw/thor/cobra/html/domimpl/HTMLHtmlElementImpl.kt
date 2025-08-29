@@ -28,7 +28,7 @@ import org.w3c.dom.html.HTMLHtmlElement
 class HTMLHtmlElementImpl : HTMLElementImpl, HTMLHtmlElement {
     constructor() : super("HTML", true)
 
-    constructor(name: String?) : super(name, true)
+    constructor(name: String) : super(name, true)
 
     override fun getVersion(): String? {
         return this.getAttribute("version")

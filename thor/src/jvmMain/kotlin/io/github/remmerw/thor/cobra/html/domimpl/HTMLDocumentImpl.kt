@@ -244,7 +244,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
     /**
      * Caller should synchronize on document.
      */
-    fun setElementById(id: String?, element: Element?) {
+    fun setElementById(id: String, element: Element?) {
         synchronized(this) {
             // TODO: Need to take care of document order. The following check is crude and only takes
             //       care of document order for elements in static HTML.

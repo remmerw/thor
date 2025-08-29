@@ -35,21 +35,6 @@ object ArrayUtilities {
         return collection.toArray<T?>(castedArray)
     }
 
-    /**
-     * Slightly more efficient version of the below version. Since it doesn't need
-     * to create an array if size is zero. But that is so only if the passed array
-     * is a static zero sized array
-     */
-    fun <T> copySynched(
-        collection: MutableCollection<T?>,
-        syncObj: Any,
-        initArray: kotlin.Array<T?>
-    ): kotlin.Array<T?> {
-        synchronized(syncObj) {
-            return collection.toArray<T?>(initArray)
-        }
-    }
-
     fun <T> copySynched(
         collection: MutableCollection<T>,
         syncObj: Any,
@@ -68,8 +53,8 @@ object ArrayUtilities {
      * @param syncObj The object to synchronize upon.
      * @param func    The function to call on each element.
      */
-    @Throws(E::class)
-    fun <T, E : Throwable?> forEachSynched(
+
+    fun <T> forEachSynched(
         collection: MutableCollection<T>, syncObj: Any,
         consumer: Consumer<T?>
     ) {

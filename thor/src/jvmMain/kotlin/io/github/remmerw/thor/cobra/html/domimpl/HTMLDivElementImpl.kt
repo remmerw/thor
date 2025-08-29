@@ -22,7 +22,7 @@ package io.github.remmerw.thor.cobra.html.domimpl
 
 import org.w3c.dom.html.HTMLDivElement
 
-class HTMLDivElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLDivElement {
+class HTMLDivElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLDivElement {
     override fun getAlign(): String? {
         return this.getAttribute("align")
     }

@@ -25,7 +25,7 @@ package io.github.remmerw.thor.cobra.html.domimpl
 
 import org.w3c.dom.html.HTMLLIElement
 
-class HTMLLIElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLLIElement {
+class HTMLLIElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLLIElement {
     override fun getType(): String? {
         return this.getAttribute("type")
     }

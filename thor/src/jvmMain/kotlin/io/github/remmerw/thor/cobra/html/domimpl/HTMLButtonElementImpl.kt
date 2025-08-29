@@ -20,4 +20,4 @@
  */
 package io.github.remmerw.thor.cobra.html.domimpl
 
-class HTMLButtonElementImpl(name: String?) : HTMLBaseInputElement(name)
+class HTMLButtonElementImpl(name: String) : HTMLBaseInputElement(name)

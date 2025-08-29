@@ -11,7 +11,7 @@ import java.util.logging.Level
 /**
  * Implements common functionality of most elements.
  */
-open class HTMLAbstractUIElement(name: String?) : HTMLElementImpl(name) {
+open class HTMLAbstractUIElement(name: String) : HTMLElementImpl(name) {
     var onfocus: Function? = null
         get() = this.getEventFunction(field, "onfocus")
     var onblur: Function? = null
@@ -127,7 +127,7 @@ open class HTMLAbstractUIElement(name: String?) : HTMLElementImpl(name) {
         }
     }
 
-    override fun handleAttributeChanged(name: String, oldValue: String, newValue: String) {
+    override fun handleAttributeChanged(name: String, oldValue: String?, newValue: String?) {
         super.handleAttributeChanged(name, oldValue, newValue)
         if (name.startsWith("on")) {
             synchronized(this) {

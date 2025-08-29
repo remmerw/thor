@@ -75,9 +75,9 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
     private var isMouseOver = false
 
     // TODO: noStyleSheet is not used. Consider removing.
-    constructor(name: String?, noStyleSheet: Boolean) : super(name)
+    constructor(name: String, noStyleSheet: Boolean) : super(name)
 
-    constructor(name: String?) : super(name)
+    constructor(name: String) : super(name)
 
     protected fun forgetLocalStyle() {
         synchronized(this) {
@@ -251,6 +251,38 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
         )
     }
 
+    override fun getId(): String? {
+        TODO("Not yet implemented")
+    }
+
+    override fun setId(p0: String?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getTitle(): String? {
+        TODO("Not yet implemented")
+    }
+
+    override fun setTitle(p0: String?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getLang(): String? {
+        TODO("Not yet implemented")
+    }
+
+    override fun setLang(p0: String?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getDir(): String? {
+        TODO("Not yet implemented")
+    }
+
+    override fun setDir(p0: String?) {
+        TODO("Not yet implemented")
+    }
+
     override fun getClassName(): String {
         val className = this.getAttribute("class")
         // Blank required instead of null.
@@ -301,7 +333,7 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
         return this.getAttribute(name) != null
     }
 
-    override fun handleAttributeChanged(name: String, oldValue: String, newValue: String) {
+    override fun handleAttributeChanged(name: String, oldValue: String?, newValue: String?) {
         super.handleAttributeChanged(name, oldValue, newValue)
         forgetStyle(true)
         this.informInvalidRecursive()
@@ -441,6 +473,9 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
         this.forgetStyle(false)
         super.informInvalid()
     }
+
+    override val documentBaseURI: String?
+        get() = TODO("Not yet implemented")
 
     fun informLocalInvalid() {
         // TODO: forgetStyle can call informInvalid() since informInvalid() seems to always follow forgetStyle()

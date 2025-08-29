@@ -54,8 +54,8 @@ class TableMatrix(
     private val relement: RElement?
     private val container: RenderableContainer?
 
-    private var columnSizes: Array<ColSizeInfo>
-    private var rowSizes: Array<RowSizeInfo>
+    private val columnSizes: MutableList<ColSizeInfo> = mutableListOf()
+    private val rowSizes: MutableList<RowSizeInfo> = mutableListOf()
 
     /**
      * @return Returns the tableWidth.
@@ -422,8 +422,7 @@ class TableMatrix(
         val numRows = rows.size
 
         run {
-            val rowSizes: Array<RowSizeInfo> = arrayOfNulls<RowSizeInfo>(numRows)
-            this.rowSizes = rowSizes
+
             for (i in 0..<numRows) {
                 val row = rows.get(i)
                 val numColsInThisRow = row.size()
@@ -460,8 +459,7 @@ class TableMatrix(
             }
         }
 
-        val columnSizes: Array<ColSizeInfo> = arrayOfNulls<ColSizeInfo>(numCols)
-        this.columnSizes = columnSizes
+
         for (i in 0..<numCols) {
             var bestWidthLength: HtmlLength? = null
 
@@ -579,7 +577,7 @@ class TableMatrix(
     }
 
     private fun layoutColumn(
-        columnSizes: Array<ColSizeInfo>,
+        columnSizes: List<ColSizeInfo>,
         colSize: ColSizeInfo,
         col: Int,
         cellSpacingX: Int,
@@ -667,7 +665,7 @@ class TableMatrix(
     }
 
     private fun adjustWidthsForExpectedMax(
-        columnSizes: Array<ColSizeInfo>,
+        columnSizes: List<ColSizeInfo>,
         cellAvailWidth: Int,
         expand: Boolean
     ): Int {
@@ -1811,7 +1809,7 @@ class TableMatrix(
         }
     }
 
-    internal class RTableRowGroup(
+    class RTableRowGroup(
         container: RenderableContainer?,
         modelNode: ModelNode?,
         ucontext: UserAgentContext?,
@@ -2029,7 +2027,7 @@ class TableMatrix(
          * @param cellAvailWidth
          */
         private fun determineTentativeSizes(
-            columnSizes: Array<ColSizeInfo>, widthsOfExtras: Int, cellAvailWidth: Int,
+            columnSizes: List<ColSizeInfo>, widthsOfExtras: Int, cellAvailWidth: Int,
             setNoWidthColumns: Boolean
         ) {
             val numCols = columnSizes.size
@@ -2139,7 +2137,7 @@ class TableMatrix(
          * Expands column sizes according to layout sizes.
          */
         private fun adjustForLayoutWidths(
-            columnSizes: Array<ColSizeInfo>, hasBorder: Int, cellSpacing: Int,
+            columnSizes: List<ColSizeInfo>, hasBorder: Int, cellSpacing: Int,
             tableWidthKnown: Boolean
         ) {
             val numCols = columnSizes.size

@@ -77,7 +77,7 @@ import kotlin.run
 import kotlin.synchronized
 
 // TODO: Implement org.w3c.dom.events.EventTarget ?
-abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
+ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
     // Called in GUI thread always.
     // Called in GUI thread always.
 
@@ -1135,6 +1135,9 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
         return if (document == null) null else document.getUserData(name)
     }
 
+    override val nodeName: String?
+        get() = TODO("Not yet implemented")
+
     /*
      * (non-Javadoc)
      *
@@ -1168,6 +1171,12 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
             return false
         }
     }
+
+    override val parentModelNode: ModelNode?
+        get() = TODO("Not yet implemented")
+    override var renderState: RenderState?
+        get() = TODO("Not yet implemented")
+        set(value) {}
 
     fun getParentModelNode(): ModelNode? {
         return this.parentNode as ModelNode?

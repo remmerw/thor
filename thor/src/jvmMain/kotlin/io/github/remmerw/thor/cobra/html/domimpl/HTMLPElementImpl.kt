@@ -2,7 +2,7 @@ package io.github.remmerw.thor.cobra.html.domimpl
 
 import org.w3c.dom.html.HTMLParagraphElement
 
-class HTMLPElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLParagraphElement {
+class HTMLPElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLParagraphElement {
     override fun getAlign(): String? {
         return this.getAttribute("align")
     }

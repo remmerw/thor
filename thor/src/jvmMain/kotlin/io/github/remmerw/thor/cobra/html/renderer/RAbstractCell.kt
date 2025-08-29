@@ -19,8 +19,8 @@ abstract class RAbstractCell(
     var topLeftVirtualCell: VirtualCell? = null
 
     abstract fun setCellBounds(
-        colSizes: Array<ColSizeInfo>,
-        rowSizes: Array<RowSizeInfo>,
+        colSizes: List<ColSizeInfo>,
+        rowSizes: List<RowSizeInfo>,
         hasBorder: Int,
         cellSpacingX: Int,
         cellSpacingY: Int

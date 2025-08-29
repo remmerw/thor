@@ -46,7 +46,7 @@ class HTMLImageElementImpl : HTMLAbstractUIElement, HTMLImageElement {
 
     constructor() : super("IMG")
 
-    constructor(name: String?) : super(name)
+    constructor(name: String) : super(name)
 
     override fun getName(): String? {
         return this.getAttribute("name")

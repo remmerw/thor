@@ -25,7 +25,7 @@ package io.github.remmerw.thor.cobra.html.domimpl
 
 import org.w3c.dom.html.HTMLOListElement
 
-class HTMLOListElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLOListElement {
+class HTMLOListElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLOListElement {
     override fun getCompact(): Boolean {
         val compactText = this.getAttribute("compact")
         return "compact".equals(compactText, ignoreCase = true)

@@ -26,16 +26,13 @@ import org.mozilla.javascript.GeneratedClassLoader
 import org.mozilla.javascript.Scriptable
 import org.mozilla.javascript.SecurityController
 import java.net.URL
-import java.security.AccessControlContext
-import java.security.AccessController
 import java.security.CodeSource
-import java.security.Policy
 import java.security.PrivilegedAction
 import java.security.ProtectionDomain
 import java.security.SecureClassLoader
 import java.security.cert.Certificate
 
-class SecurityControllerImpl(private val url: URL?, private val policy: Policy) :
+class SecurityControllerImpl(private val url: URL?) :
     SecurityController() {
     private val codesource: CodeSource
 
@@ -54,8 +51,7 @@ class SecurityControllerImpl(private val url: URL?, private val policy: Policy) 
             val action: PrivilegedAction<*> =
                 PrivilegedAction { callable.call(ctx, scope, thisObj, args) }
             val protectionDomain = securityDomain as ProtectionDomain
-            val acctx = AccessControlContext(arrayOf<ProtectionDomain>(protectionDomain))
-            return AccessController.doPrivileged(action, acctx)
+            return null // todo
         }
     }
 
@@ -64,16 +60,9 @@ class SecurityControllerImpl(private val url: URL?, private val policy: Policy) 
     }
 
     override fun getDynamicSecurityDomain(securityDomain: Any?): Any {
-        val policy = this.policy
-        if (policy == null) {
-            // TODO: The check for null may not be required anymore.
-            throw RuntimeException("No policy has been set in a security controller!")
-            // return Policy.getPolicy();
-            // return null;
-        } else {
-            val permissions = this.policy.getPermissions(codesource)
-            return ProtectionDomain(codesource, permissions)
-        }
+
+       return securityDomain!!
+
     }
 
     private inner class LocalSecureClassLoader(parent: ClassLoader?) : SecureClassLoader(parent),

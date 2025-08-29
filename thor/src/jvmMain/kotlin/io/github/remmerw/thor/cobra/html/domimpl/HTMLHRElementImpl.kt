@@ -2,7 +2,7 @@ package io.github.remmerw.thor.cobra.html.domimpl
 
 import org.w3c.dom.html.HTMLHRElement
 
-class HTMLHRElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLHRElement {
+class HTMLHRElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLHRElement {
     override fun getAlign(): String? {
         return this.getAttribute("align")
     }

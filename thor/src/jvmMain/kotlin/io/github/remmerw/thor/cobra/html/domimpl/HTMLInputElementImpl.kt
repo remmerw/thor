@@ -28,7 +28,7 @@ import org.w3c.dom.html.HTMLInputElement
 import java.util.Locale
 import java.util.logging.Level
 
-class HTMLInputElementImpl(name: String?) : HTMLBaseInputElement(name), HTMLInputElement {
+class HTMLInputElementImpl(name: String) : HTMLBaseInputElement(name), HTMLInputElement {
     private var defaultChecked = false
 
     override fun getDefaultChecked(): Boolean {

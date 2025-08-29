@@ -2,7 +2,7 @@ package io.github.remmerw.thor.cobra.html.domimpl
 
 import org.w3c.dom.html.HTMLBRElement
 
-class HTMLBRElementImpl(name: String?) : HTMLElementImpl(name), HTMLBRElement {
+class HTMLBRElementImpl(name: String) : HTMLElementImpl(name), HTMLBRElement {
     override fun getClear(): String? {
         return this.getAttribute("clear")
     }

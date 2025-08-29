@@ -43,7 +43,7 @@ class HTMLScriptElementImpl : HTMLElementImpl, HTMLScriptElement {
 
     constructor() : super("SCRIPT", true)
 
-    constructor(name: String?) : super(name, true)
+    constructor(name: String) : super(name, true)
 
     override fun getText(): String? {
         val t = this.text

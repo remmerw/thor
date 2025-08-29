@@ -42,7 +42,7 @@ class HTMLTableElementImpl : HTMLAbstractUIElement, HTMLTableElement {
 
     constructor() : super("TABLE")
 
-    constructor(name: String?) : super(name)
+    constructor(name: String) : super(name)
 
     override fun getCaption(): HTMLTableCaptionElement? {
         return this.caption

@@ -31,7 +31,7 @@ import org.mozilla.javascript.Function
 import org.w3c.dom.html.HTMLFormElement
 import java.io.File
 
-abstract class HTMLBaseInputElement(name: String?) : HTMLAbstractUIElement(name) {
+abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) {
     private val imageListeners = ArrayList<ImageListener>()
     protected var inputContext: InputContext? = null
     protected var deferredValue: String? = null

@@ -27,6 +27,8 @@ import io.github.remmerw.thor.cobra.html.domimpl.ElementImpl
 import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement
 import io.github.remmerw.thor.cobra.util.Strings
 import io.github.remmerw.thor.cobra.util.gui.WrapperLayout
+import java.awt.Color
+import java.awt.Component
 import java.awt.Dimension
 import javax.swing.JScrollPane
 import javax.swing.JTextArea
@@ -73,6 +75,15 @@ internal class InputTextAreaControl(modelNode: HTMLBaseInputElement?) :
             }
         }
     }
+
+    override var preferredSize: Dimension?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override val backgroundColor: Color?
+        get() = TODO("Not yet implemented")
+    override var component: Component?
+        get() = TODO("Not yet implemented")
+        set(value) {}
 
     protected fun createTextField(): JTextComponent {
         return JTextArea()
@@ -143,6 +154,10 @@ internal class InputTextAreaControl(modelNode: HTMLBaseInputElement?) :
         }
         return Dimension(pw, ph)
     }
+
+    override var name: String?
+        get() = TODO("Not yet implemented")
+        set(value) {}
 
     override var readOnly: Boolean
         /*

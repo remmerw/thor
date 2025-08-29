@@ -34,7 +34,7 @@ import java.util.Locale
 import java.util.Optional
 import java.util.function.Function
 
-class HTMLLinkElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLLinkElement, LinkStyle {
+class HTMLLinkElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLLinkElement, LinkStyle {
     private var styleSheet: JStyleSheetWrapper? = null
     private var disabled = false
 

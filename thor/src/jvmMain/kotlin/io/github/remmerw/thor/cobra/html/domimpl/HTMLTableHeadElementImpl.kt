@@ -24,4 +24,4 @@ package io.github.remmerw.thor.cobra.html.domimpl
  * Element used for TH.
  */
 // TODO: Can be chopped off; this class is now a shell after removing createRenderState
-class HTMLTableHeadElementImpl(name: String?) : HTMLTableCellElementImpl(name)
+class HTMLTableHeadElementImpl(name: String) : HTMLTableCellElementImpl(name)

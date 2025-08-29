@@ -54,6 +54,18 @@ open class StyleSheetRenderState : RenderState {
     override var overflowX: Int = -1
     override var overflowY: Int = -1
     override var borderInfo: BorderInfo? = INVALID_BORDER_INFO
+    override val cursor: Optional<Cursor>?
+        get() = TODO("Not yet implemented")
+    override val left: String?
+        get() = TODO("Not yet implemented")
+    override val top: String?
+        get() = TODO("Not yet implemented")
+    override val right: String?
+        get() = TODO("Not yet implemented")
+    override val bottom: String?
+        get() = TODO("Not yet implemented")
+    override val verticalAlign: VerticalAlign?
+        get() = TODO("Not yet implemented")
     var iWordInfoMap: MutableMap<String?, WordInfo?>? = null
     private var iFont: Font? = null
     private var iFontMetrics: FontMetrics? = null
@@ -72,6 +84,8 @@ open class StyleSheetRenderState : RenderState {
     private var iHighlight = false
     private var iDisplay: Int? = null
     override var alignXPercent = -1
+    override val alignYPercent: Int
+        get() = TODO("Not yet implemented")
     private var counters: MutableMap<String?, ArrayList<Int?>>? = null
     private var iTextIndentText: String? = null
     private var cachedVisibility: Int? = null
@@ -426,6 +440,19 @@ open class StyleSheetRenderState : RenderState {
         this.iHighlight = highlight
     }
 
+    override val position: Int
+        get() = TODO("Not yet implemented")
+    override val float: Int
+        get() = TODO("Not yet implemented")
+    override val clear: Int
+        get() = TODO("Not yet implemented")
+    override val visibility: Int
+        get() = TODO("Not yet implemented")
+    override val font: Font?
+        get() = TODO("Not yet implemented")
+    override val fontBase: Int
+        get() = TODO("Not yet implemented")
+
     override fun getWordInfo(word: String): WordInfo {
         // Expected to be called only in the GUI (rendering) thread.
         // No synchronization necessary.
@@ -448,6 +475,30 @@ open class StyleSheetRenderState : RenderState {
         map.put(word, wi)
         return wi
     }
+
+    override val color: Color?
+        get() = TODO("Not yet implemented")
+    override val backgroundColor: Color?
+        get() = TODO("Not yet implemented")
+    override val textBackgroundColor: Color?
+        get() = TODO("Not yet implemented")
+    override val backgroundInfo: BackgroundInfo?
+        get() = TODO("Not yet implemented")
+    override val overlayColor: Color?
+        get() = TODO("Not yet implemented")
+    override val textTransform: Int
+        get() = TODO("Not yet implemented")
+    override val textDecorationMask: Int
+        get() = TODO("Not yet implemented")
+    override val fontMetrics: FontMetrics?
+        get() = TODO("Not yet implemented")
+    override val fontXHeight: Double
+        get() = TODO("Not yet implemented")
+    override val blankWidth: Int
+        get() = TODO("Not yet implemented")
+    override var isHighlight: Boolean
+        get() = TODO("Not yet implemented")
+        set(value) {}
 
     open fun getAlignXPercent(): Int {
         var axp = this.alignXPercent
@@ -503,6 +554,9 @@ open class StyleSheetRenderState : RenderState {
         val integer = counterArray.get(nesting)
         return if (integer == null) 0 else integer
     }
+
+    override val display: Int
+        get() = TODO("Not yet implemented")
 
     override fun resetCount(counter: String?, nesting: Int, value: Int) {
         // Expected to be called only in the GUI thread.
@@ -641,6 +695,11 @@ open class StyleSheetRenderState : RenderState {
             return HtmlValues.getPixelSize(tiText, this, 0, availSize)
         }
     }
+
+    override val textIndentText: String?
+        get() = TODO("Not yet implemented")
+    override val whiteSpace: Int
+        get() = TODO("Not yet implemented")
 
     open fun getWhiteSpace(): Int {
         if (RenderThreadState.Companion.state.overrideNoWrap) {

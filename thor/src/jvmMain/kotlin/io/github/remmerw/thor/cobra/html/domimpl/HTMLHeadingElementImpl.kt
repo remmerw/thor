@@ -22,7 +22,7 @@ package io.github.remmerw.thor.cobra.html.domimpl
 
 import org.w3c.dom.html.HTMLHeadingElement
 
-class HTMLHeadingElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLHeadingElement {
+class HTMLHeadingElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLHeadingElement {
     override fun getAlign(): String? {
         return this.getAttribute("align")
     }

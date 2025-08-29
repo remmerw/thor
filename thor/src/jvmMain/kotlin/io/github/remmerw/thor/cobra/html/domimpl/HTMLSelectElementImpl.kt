@@ -7,7 +7,7 @@ import org.w3c.dom.html.HTMLCollection
 import org.w3c.dom.html.HTMLElement
 import org.w3c.dom.html.HTMLSelectElement
 
-open class HTMLSelectElementImpl(name: String?) : HTMLBaseInputElement(name), HTMLSelectElement {
+open class HTMLSelectElementImpl(name: String) : HTMLBaseInputElement(name), HTMLSelectElement {
     private var multipleState: Boolean? = null
 
     // private HTMLOptionsCollection options;

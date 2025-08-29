@@ -39,7 +39,7 @@ class HTMLStyleElementImpl : HTMLElementImpl, HTMLStyleElement, LinkStyle {
 
     constructor() : super("STYLE", true)
 
-    constructor(name: String?) : super(name, true)
+    constructor(name: String) : super(name, true)
 
     override fun getDisabled(): Boolean {
         return this.disabled

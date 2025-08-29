@@ -25,4 +25,4 @@ package io.github.remmerw.thor.cobra.html.domimpl
 
 import org.w3c.dom.html.HTMLElement
 
-class HTMLSpanElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLElement
+class HTMLSpanElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLElement

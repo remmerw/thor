@@ -29,7 +29,10 @@ import io.github.remmerw.thor.cobra.html.renderer.TableMatrix.ColSizeInfo
 import io.github.remmerw.thor.cobra.html.renderer.TableMatrix.RowSizeInfo
 import io.github.remmerw.thor.cobra.html.style.RenderState
 import io.github.remmerw.thor.cobra.ua.UserAgentContext
+import java.awt.Color
 import java.awt.Dimension
+import java.awt.Point
+import java.awt.Rectangle
 
 internal class RAnonTableCell
 /**
@@ -39,12 +42,35 @@ internal class RAnonTableCell
     frameContext: FrameContext?,
     tableAsContainer: RenderableContainer?
 ) : RAbstractCell(cellNode, 0, pcontext, rcontext, frameContext, tableAsContainer) {
+    override fun setCellBounds(
+        colSizes: List<ColSizeInfo>,
+        rowSizes: List<RowSizeInfo>,
+        hasBorder: Int,
+        cellSpacingX: Int,
+        cellSpacingY: Int
+    ) {
+        TODO("Not yet implemented")
+    }
+
+    override val widthText: String?
+        get() = TODO("Not yet implemented")
+    override val heightText: String?
+        get() = TODO("Not yet implemented")
+    override var rowSpan: Int
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override val colSpan: Int
+        get() = TODO("Not yet implemented")
+
     override fun doCellLayout(
         width: Int, height: Int, expandWidth: Boolean, expandHeight: Boolean,
         sizeOnly: Boolean
     ): Dimension {
         return this.doCellLayout(width, height, expandWidth, expandHeight, sizeOnly, true)
     }
+
+    override val renderState: RenderState
+        get() = TODO("Not yet implemented")
 
     /**
      * @param width    The width available, including insets.
@@ -156,4 +182,53 @@ internal class RAnonTableCell
     fun getRenderState(): RenderState {
         return cellNode.getRenderState()
     }
+
+    override val bounds: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val visualBounds: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val size: Dimension?
+        get() = TODO("Not yet implemented")
+    override val origin: Point?
+        get() = TODO("Not yet implemented")
+    override var parent: RCollection?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override var originalParent: RCollection?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override val originalOrCurrentParent: RCollection?
+        get() = TODO("Not yet implemented")
+    override val visualX: Int
+        get() = TODO("Not yet implemented")
+    override val visualY: Int
+        get() = TODO("Not yet implemented")
+    override val visualHeight: Int
+        get() = TODO("Not yet implemented")
+    override val visualWidth: Int
+        get() = TODO("Not yet implemented")
+    override val isContainedByNode: Boolean
+        get() = TODO("Not yet implemented")
+    override val isDelegated: Boolean
+        get() = TODO("Not yet implemented")
+    override val clipBounds: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val clipBoundsWithoutInsets: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val marginTop: Int
+        get() = TODO("Not yet implemented")
+    override val marginLeft: Int
+        get() = TODO("Not yet implemented")
+    override val marginBottom: Int
+        get() = TODO("Not yet implemented")
+    override val marginRight: Int
+        get() = TODO("Not yet implemented")
+    override val collapsibleMarginTop: Int
+        get() = TODO("Not yet implemented")
+    override val collapsibleMarginBottom: Int
+        get() = TODO("Not yet implemented")
+    override val paintedBackgroundColor: Color?
+        get() = TODO("Not yet implemented")
+    override val parentContainer: RenderableContainer?
+        get() = TODO("Not yet implemented")
 }

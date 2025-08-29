@@ -131,6 +131,10 @@ open class TextImpl @JvmOverloads constructor(text: String = "") : CharacterData
         return this.text!!
     }
 
+    override fun setNodeValue(nodeValue: String?) {
+        TODO("Not yet implemented")
+    }
+
     /*
      * (non-Javadoc)
      *

@@ -34,19 +34,19 @@ import kotlin.concurrent.Volatile
 
 class HTMLFrameElementImpl : HTMLElementImpl, HTMLFrameElement, FrameNode {
     @Volatile
-    private var browserFrame: BrowserFrame? = null
+    override var browserFrame: BrowserFrame? = null
     private var noResize = false
 
-    constructor(name: String?, noStyleSheet: Boolean) : super(name, noStyleSheet)
+    constructor(name: String, noStyleSheet: Boolean) : super(name, noStyleSheet)
 
-    constructor(name: String?) : super(name)
+    constructor(name: String) : super(name)
 
     private fun loadURL() {
         val src = getAttribute("src")
         if (src != null) {
             try {
                 val fullURL = getFullURL(src)
-                if (getUserAgentContext().isRequestPermitted(
+                if (userAgentContext!!.isRequestPermitted(
                         UserAgentContext.Request(
                             fullURL,
                             RequestKind.Frame
@@ -61,11 +61,11 @@ class HTMLFrameElementImpl : HTMLElementImpl, HTMLFrameElement, FrameNode {
         }
     }
 
-    override fun getBrowserFrame(): BrowserFrame {
+    fun getBrowserFrame(): BrowserFrame {
         return this.browserFrame!!
     }
 
-    override fun setBrowserFrame(frame: BrowserFrame) {
+    fun setBrowserFrame(frame: BrowserFrame) {
         this.browserFrame = frame
         loadURL()
     }

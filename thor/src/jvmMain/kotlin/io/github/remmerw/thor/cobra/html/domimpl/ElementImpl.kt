@@ -387,24 +387,7 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), Element, Even
         }
     }
 
-    override fun toString(): String {
-        val sb = StringBuffer()
-        sb.append(this.nodeName)
-        sb.append(" [")
-        val attribs = this.attributes
-        val length = attribs!!.size
-        for (i in 0..<length) {
-            val attr = attribs.item(i) as Attr
-            sb.append(attr.nodeName)
-            sb.append('=')
-            sb.append(attr.nodeValue)
-            if ((i + 1) < length) {
-                sb.append(',')
-            }
-        }
-        sb.append("]")
-        return sb.toString()
-    }
+
 
     fun setInnerText(newText: String?) {
         // TODO: Is this check for owner document really required?

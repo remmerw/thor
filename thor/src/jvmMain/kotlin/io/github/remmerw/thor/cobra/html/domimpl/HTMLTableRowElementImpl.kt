@@ -31,7 +31,7 @@ import org.w3c.dom.html.HTMLTableCellElement
 import org.w3c.dom.html.HTMLTableRowElement
 
 class HTMLTableRowElementImpl : HTMLElementImpl, HTMLTableRowElement {
-    constructor(name: String?) : super(name, true)
+    constructor(name: String) : super(name, true)
 
     constructor() : super("TR", true)
 

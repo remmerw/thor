@@ -30,7 +30,7 @@ import java.awt.Rectangle
 
 class PositionedRenderable(
     val renderable: BoundableRenderable, val verticalAlignable: Boolean, val ordinal: Int,
-    val isFloat: Boolean, private val isFixed: Boolean, private val isDelegated: Boolean
+    val isFloat: Boolean, override val isFixed: Boolean, private val isDelegated: Boolean
 ) : Renderable {
     val originalParent: RCollection?
         get() = this.renderable.originalParent
@@ -97,6 +97,10 @@ class PositionedRenderable(
             }
         }
     }
+
+    override var modelNode: ModelNode?
+        get() = TODO("Not yet implemented")
+        set(value) {}
 
     private val relativeBounds: Rectangle?
         get() {

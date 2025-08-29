@@ -24,6 +24,9 @@
 package io.github.remmerw.thor.cobra.html.renderer
 
 import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement
+import java.awt.Color
+import java.awt.Component
+import java.awt.Dimension
 import java.awt.event.ActionEvent
 import java.awt.event.ActionListener
 import javax.swing.JTextField
@@ -43,6 +46,18 @@ internal open class InputTextControl(modelNode: HTMLBaseInputElement?) :
     override fun createTextField(): JTextComponent {
         return JTextField()
     }
+
+    override var preferredSize: Dimension?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override val backgroundColor: Color?
+        get() = TODO("Not yet implemented")
+    override var component: Component?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override var name: String?
+        get() = TODO("Not yet implemented")
+        set(value) {}
 
     companion object {
         private const val serialVersionUID = 5851737733843879185L

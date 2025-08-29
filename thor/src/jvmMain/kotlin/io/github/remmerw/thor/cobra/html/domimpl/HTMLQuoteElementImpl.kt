@@ -22,7 +22,7 @@ package io.github.remmerw.thor.cobra.html.domimpl
 
 import org.w3c.dom.html.HTMLQuoteElement
 
-class HTMLQuoteElementImpl(name: String?) : HTMLElementImpl(name), HTMLQuoteElement {
+class HTMLQuoteElementImpl(name: String) : HTMLElementImpl(name), HTMLQuoteElement {
     override fun getCite(): String? {
         return getAttribute("cite")
     }
