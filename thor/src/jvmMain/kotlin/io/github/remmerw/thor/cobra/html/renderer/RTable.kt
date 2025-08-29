@@ -84,12 +84,12 @@ internal abstract class RTable(
 
     override fun doLayout(availWidth: Int, availHeight: Int, sizeOnly: Boolean) {
         val cachedLayout = this.cachedLayout
-        val rs = this.modelNode.renderState
+        val rs = this.modelNode!!.renderState
         val whitespace = if (rs == null) RenderState.WS_NORMAL else rs.whiteSpace
         val font = if (rs == null) null else rs.font
         // Having whiteSpace == NOWRAP and having a NOWRAP override
         // are not exactly the same thing.
-        val overrideNoWrap = RenderThreadState.getState().overrideNoWrap
+        val overrideNoWrap = RenderThreadState.state.overrideNoWrap
         val layoutKey = LayoutKey(availWidth, availHeight, whitespace, font, overrideNoWrap)
         var layoutValue: LayoutValue?
         if (sizeOnly) {
@@ -129,7 +129,7 @@ internal abstract class RTable(
                     }
                 }
             }
-            layoutValue = LayoutValue(tm.getTableWidth(), tm.getTableHeight())
+            layoutValue = LayoutValue(tm.tableWidth, tm.tableHeight)
             if (sizeOnly) {
                 if (cachedLayout.size > MAX_CACHE_SIZE) {
                     // Unlikely, but we should ensure it's bounded.
@@ -169,8 +169,8 @@ internal abstract class RTable(
             while (i.hasNext()) {
                 val pr = i.next()
                 val r = pr.renderable
-                val childX = x - r.getVisualX()
-                val childY = y - r.getVisualY()
+                val childX = x - r.visualX
+                val childY = y - r.visualY
                 val rs = r.getLowestRenderableSpot(childX, childY)
                 if (rs != null) {
                     return rs
@@ -198,10 +198,10 @@ internal abstract class RTable(
             while (i.hasNext()) {
                 val pr = i.next()
                 val r = pr.renderable
-                val bounds = r.getVisualBounds()
+                val bounds = r.visualBounds!!
                 if (bounds.contains(x, y)) {
-                    val childX = x - r.getVisualX()
-                    val childY = y - r.getVisualY()
+                    val childX = x - r.visualX
+                    val childY = y - r.visualY
                     if (!r.onMouseClick(event, childX, childY)) {
                         return false
                     }
@@ -218,10 +218,10 @@ internal abstract class RTable(
             while (i.hasNext()) {
                 val pr = i.next()
                 val r = pr.renderable
-                val bounds = r.getVisualBounds()
+                val bounds = r.visualBounds!!
                 if (bounds.contains(x, y)) {
-                    val childX = x - r.getVisualX()
-                    val childY = y - r.getVisualY()
+                    val childX = x - r.visualX
+                    val childY = y - r.visualY
                     if (!r.onDoubleClick(event, childX, childY)) {
                         return false
                     }
@@ -256,10 +256,10 @@ internal abstract class RTable(
             while (i.hasNext()) {
                 val pr = i.next()
                 val r = pr.renderable
-                val bounds = r.getVisualBounds()
+                val bounds = r.visualBounds!!
                 if (bounds.contains(x, y)) {
-                    val childX = x - r.getVisualX()
-                    val childY = y - r.getVisualY()
+                    val childX = x - r.visualX
+                    val childY = y - r.visualY
                     if (!r.onMousePressed(event, childX, childY)) {
                         return false
                     }
@@ -283,10 +283,10 @@ internal abstract class RTable(
             while (i.hasNext()) {
                 val pr = i.next()
                 val r = pr.renderable
-                val bounds = r.getVisualBounds()
+                val bounds = r.visualBounds!!
                 if (bounds.contains(x, y)) {
-                    val childX = x - r.getVisualX()
-                    val childY = y - r.getVisualY()
+                    val childX = x - r.visualX
+                    val childY = y - r.visualY
                     if (!r.onMouseReleased(event, childX, childY)) {
                         return false
                     }
@@ -311,12 +311,12 @@ internal abstract class RTable(
                 val r = pr.renderable
                 c.add(r)
             }
-            val i2 = this.tableMatrix.getCells()
+            val i2 = this.tableMatrix.cells
             while (i2.hasNext()) {
                 c.add(i2.next())
             }
 
-            val i3 = this.tableMatrix.getRowGroups()
+            val i3 = this.tableMatrix.rowGroups
             while (i3.hasNext()) {
                 c.add(i3.next())
             }
@@ -328,8 +328,8 @@ internal abstract class RTable(
             return c.iterator()
         } else {
             val rs: Array<MutableIterator<Renderable>?> = arrayOf<MutableIterator<*>>(
-                this.tableMatrix.getCells(),
-                this.tableMatrix.getRowGroups()
+                this.tableMatrix.cells,
+                this.tableMatrix.rowGroups
             )
             return CollectionUtilities.iteratorUnion<Renderable>(rs)
         }
@@ -344,8 +344,8 @@ internal abstract class RTable(
      *
      * @see org.xamjwg.html.renderer.RenderableContainer#getBackground()
      */
-    override fun getPaintedBackgroundColor(): Color? {
-        return this.container.getPaintedBackgroundColor()
+    fun getPaintedBackgroundColor(): Color? {
+        return this.container.paintedBackgroundColor
     }
 
     private fun addPositionedRenderable(
@@ -370,9 +370,9 @@ internal abstract class RTable(
                 false
             )
         )
-        renderable.setParent(this)
+        renderable.parent = (this)
         if (renderable is RUIControl) {
-            this.container.addComponent(renderable.widget.getComponent())
+            this.container!!.addComponent(renderable.widget.component!!)
         }
     }
 

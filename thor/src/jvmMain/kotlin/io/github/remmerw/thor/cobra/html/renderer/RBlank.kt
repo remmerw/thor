@@ -49,7 +49,7 @@ internal class RBlank(
     override fun onMouseClick(event: MouseEvent?, x: Int, y: Int): Boolean {
         val me = this.modelNode
         if (me != null) {
-            return HtmlController.Companion.getInstance().onMouseClick(me, event, x, y)
+            return HtmlController.Companion.instance.onMouseClick(me, event, x, y)
         } else {
             return true
         }
@@ -58,7 +58,7 @@ internal class RBlank(
     override fun onDoubleClick(event: MouseEvent?, x: Int, y: Int): Boolean {
         val me = this.modelNode
         if (me != null) {
-            return HtmlController.Companion.getInstance().onDoubleClick(me, event, x, y)
+            return HtmlController.Companion.instance.onDoubleClick(me, event, x, y)
         } else {
             return true
         }
@@ -67,7 +67,7 @@ internal class RBlank(
     override fun onMousePressed(event: MouseEvent?, x: Int, y: Int): Boolean {
         val me = this.modelNode
         if (me != null) {
-            return HtmlController.Companion.getInstance().onMouseDown(me, event, x, y)
+            return HtmlController.Companion.instance.onMouseDown(me, event, x, y)
         } else {
             return true
         }
@@ -76,7 +76,7 @@ internal class RBlank(
     override fun onMouseReleased(event: MouseEvent?, x: Int, y: Int): Boolean {
         val me = this.modelNode
         if (me != null) {
-            return HtmlController.Companion.getInstance().onMouseUp(me, event, x, y)
+            return HtmlController.Companion.instance.onMouseUp(me, event, x, y)
         } else {
             return true
         }
@@ -85,7 +85,7 @@ internal class RBlank(
     override fun onMouseDisarmed(event: MouseEvent?): Boolean {
         val me = this.modelNode
         if (me != null) {
-            return HtmlController.Companion.getInstance().onMouseDisarmed(me, event)
+            return HtmlController.Companion.instance.onMouseDisarmed(me, event)
         } else {
             return true
         }
@@ -98,7 +98,7 @@ internal class RBlank(
      * net.sourceforge.xamj.domimpl.markup.Renderable#paint(java.awt.Graphics)
      */
     override fun paint(g: Graphics) {
-        val rs: RenderState = this.modelNode.renderState!!
+        val rs: RenderState = this.modelNode?.renderState!!
 
         if (rs.visibility != RenderState.VISIBILITY_VISIBLE) {
             // Just don't paint it.
@@ -198,14 +198,14 @@ internal class RBlank(
         return RenderableSpot(this, x, y)
     }
 
-    override fun isContainedByNode(): Boolean {
+    fun isContainedByNode(): Boolean {
         return true
     }
 
     override fun onRightClick(event: MouseEvent?, x: Int, y: Int): Boolean {
         val me = this.modelNode
         if (me != null) {
-            return HtmlController.Companion.getInstance().onContextMenu(me, event, x, y)
+            return HtmlController.Companion.instance.onContextMenu(me, event, x, y)
         } else {
             return true
         }

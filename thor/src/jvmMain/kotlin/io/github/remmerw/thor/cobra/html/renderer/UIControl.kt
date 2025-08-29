@@ -29,7 +29,7 @@ import java.awt.Component
 import java.awt.Dimension
 import java.awt.Graphics
 
-internal interface UIControl {
+interface UIControl {
     fun setRUIControl(ruicontrol: RUIControl?)
 
     /**
@@ -54,7 +54,7 @@ internal interface UIControl {
     // RenderableSpot startPoint, RenderableSpot endPoint);
     fun paint(g: Graphics?)
 
-    val component: Component?
+    var component: Component?
 
     val isReadyToPaint: Boolean
         get() = true

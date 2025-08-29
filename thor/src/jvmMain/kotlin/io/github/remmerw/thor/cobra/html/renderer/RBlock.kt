@@ -59,7 +59,7 @@ open class RBlock(
     pcontext: UserAgentContext?,
     rcontext: HtmlRendererContext?,
 // private static final int MAX_CACHE_SIZE = 10;
-    protected val frameContext: FrameContext?,
+    protected var frameContext: FrameContext?,
     parentContainer: RenderableContainer?
 ) : BaseBlockyRenderable(parentContainer, modelNode, pcontext) {
     // protected final HtmlRendererContext rendererContext;
@@ -1382,8 +1382,8 @@ open class RBlock(
     override fun paintSelection(
         g: Graphics,
         inSelection: Boolean,
-        startPoint: RenderableSpot?,
-        endPoint: RenderableSpot?
+        startPoint: RenderableSpot,
+        endPoint: RenderableSpot
     ): Boolean {
         val newG = g.create()
         try {
@@ -1556,13 +1556,13 @@ open class RBlock(
                 br.onMouseDisarmed(event)
             }
         }
-        if (!HtmlController.Companion.getInstance().onMouseUp(this.modelNode, event, x, y)) {
+        if (!HtmlController.Companion.instance.onMouseUp(this.modelNode!!, event, x, y)) {
             return false
         }
         return this.backgroundColor == null
     }
 
-    override fun getPaintedBackgroundColor(): Color? {
+    fun getPaintedBackgroundColor(): Color? {
         return this.backgroundColor
     }
 
@@ -1759,8 +1759,8 @@ open class RBlock(
     }
 
     override fun extractSelectionText(
-        buffer: StringBuffer, inSelection: Boolean, startPoint: RenderableSpot?,
-        endPoint: RenderableSpot?
+        buffer: StringBuffer, inSelection: Boolean, startPoint: RenderableSpot,
+        endPoint: RenderableSpot
     ): Boolean {
         val result = super.extractSelectionText(buffer, inSelection, startPoint, endPoint)
         val br = System.getProperty("line.separator")
@@ -1833,7 +1833,7 @@ open class RBlock(
 
     val exportableFloatingInfo: FloatingInfo?
         get() {
-            val info = this.rBlockViewport.getExportableFloatingInfo()
+            val info = this.rBlockViewport.exportableFloatingInfo
             if (info == null) {
                 return null
             }
@@ -1864,16 +1864,16 @@ open class RBlock(
         collapseBottomMargin = set
     }
 
-    protected override fun applyStyle(availWidth: Int, availHeight: Int, updateLayout: Boolean) {
+     override fun applyStyle(availWidth: Int, availHeight: Int, updateLayout: Boolean) {
         super.applyStyle(availWidth, availHeight, updateLayout)
 
         if (collapseTopMargin) {
-            val mi = this.marginInsets
+            val mi = this.marginInsets!!
             this.marginTopOriginal = mi.top
             this.marginInsets = Insets(0, mi.left, mi.bottom, mi.right)
         }
         if (collapseBottomMargin) {
-            val mi = this.marginInsets
+            val mi = this.marginInsets!!
             this.marginBottomOriginal = mi.bottom
             this.marginInsets = Insets(mi.top, mi.left, 0, mi.right)
         }
@@ -1919,11 +1919,11 @@ open class RBlock(
         }
     }
 
-    override fun getHorizontalScrollBarHeight(): Int {
+    fun getHorizontalScrollBarHeight(): Int {
         return if (hasHScrollBar) SCROLL_BAR_THICKNESS else 0
     }
 
-    override fun getVerticalScrollBarHeight(): Int {
+    fun getVerticalScrollBarHeight(): Int {
         return if (hasVScrollBar) SCROLL_BAR_THICKNESS else 0
     }
 
@@ -1951,7 +1951,7 @@ open class RBlock(
     companion object {
         private fun getVUnitIncrement(renderState: RenderState?): Int {
             if (renderState != null) {
-                return renderState.fontMetrics.getHeight()
+                return renderState.fontMetrics!!.height
             } else {
                 return BlockRenderState(null).getFontMetrics().height
             }
@@ -1995,20 +1995,20 @@ open class RBlock(
                     }
                 } else {
                     if (r is RCollection) {
-                        if ((!condense) || !r.isDelegated()) {
+                        if ((!condense) || !r.isDelegated) {
                             val rnds = r.getRenderables()
                             if (rnds == null) {
                                 println(indentStr + selfIndentStr + " [empty]")
                             } else {
                                 val filteredRnds = CollectionUtilities.filter(
                                     rnds,
-                                    { fr: Renderable -> !isSimpleLine(fr) })
+                                    { fr: Renderable -> !isSimpleLine(fr) } as CollectionUtilities.FilterFunction<Renderable>)
                                 while (filteredRnds.hasNext()) {
                                     val rnd = filteredRnds.next()
                                     dumpRndTree(
                                         nextIndentStr,
                                         !filteredRnds.hasNext(),
-                                        rnd,
+                                        rnd!!,
                                         condense
                                     )
                                 }
@@ -2028,7 +2028,7 @@ open class RBlock(
                 return "Trans-Rend"
             } else {
                 val delgStr =
-                    if (r is RCollection) (if (r.isDelegated()) "<deleg> " else "") else ""
+                    if (r is RCollection) (if (r.isDelegated) "<deleg> " else "") else ""
                 return delgStr + r.toString()
             }
         }

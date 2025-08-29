@@ -8,7 +8,7 @@ object RenderUtils {
         if (rs != null) {
             while (rs.hasNext()) {
                 val r = rs.next()
-                if (r.getModelNode() is HTMLHtmlElement) {
+                if (r.modelNode is HTMLHtmlElement) {
                     return r
                 }
             }

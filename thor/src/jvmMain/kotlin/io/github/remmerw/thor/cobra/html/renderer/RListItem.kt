@@ -28,6 +28,7 @@ import io.github.remmerw.thor.cobra.ua.UserAgentContext
 import org.w3c.dom.html.HTMLElement
 import java.awt.Graphics
 
+
 internal class RListItem(
     modelNode: NodeImpl?,
     listNesting: Int,
@@ -84,7 +85,7 @@ internal class RListItem(
             sizeOnly
         )
         // Note: Count must be calculated even if layout is valid.
-        val renderState: RenderState = this.modelNode.renderState!!
+        val renderState: RenderState = this.modelNode!!.renderState!!
         val value = this.getValue()
         if (value === UNSET) {
             this.count = renderState.incrementCount(
@@ -113,7 +114,7 @@ internal class RListItem(
             if (bulletType == ListStyle.TYPE_UNSET) {
                 var parent = this.getOriginalOrCurrentParent()
                 if (parent !is RList) {
-                    parent = parent.getOriginalOrCurrentParent()
+                    parent = parent?.originalOrCurrentParent
                 }
                 if (parent is RList) {
                     val parentListStyle = parent.listStyle

@@ -43,7 +43,7 @@ internal class RStyleChanger(modelNode: ModelNode) : BaseRenderable() {
         this.modelNode = modelNode
     }
 
-    override fun getModelNode(): ModelNode {
+    fun getModelNode(): ModelNode {
         return this.modelNode
     }
 

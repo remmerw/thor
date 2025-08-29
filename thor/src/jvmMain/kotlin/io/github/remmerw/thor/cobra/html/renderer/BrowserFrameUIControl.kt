@@ -14,7 +14,7 @@ internal class BrowserFrameUIControl(
     private val element: HTMLElement,
     private val browserFrame: BrowserFrame
 ) : UIControl {
-    private val component: Component
+
     private var ruiControl: RUIControl? = null
     private var availWidth = 0
     private var availHeight = 0
@@ -23,12 +23,12 @@ internal class BrowserFrameUIControl(
         this.component = browserFrame.component
     }
 
-    override fun getBackgroundColor(): Color? {
-        return this.component.getBackground()
+    fun getBackgroundColor(): Color? {
+        return this.component?.getBackground()
     }
 
-    override fun getComponent(): Component {
-        return this.component
+    fun getComponent(): Component {
+        return this.component!!
     }
 
     override fun reset(availWidth: Int, availHeight: Int) {
@@ -38,7 +38,7 @@ internal class BrowserFrameUIControl(
         if (ruiControl != null) {
             val node = ruiControl.getModelNode()
             val element = node as HTMLElement?
-            val renderState: RenderState = node.renderState!!
+            val renderState: RenderState = node?.renderState!!
             var insets: HtmlInsets? = null
             var marginwidth = element!!.getAttribute("marginwidth")
             var marginheight = element.getAttribute("marginheight")
@@ -114,7 +114,7 @@ internal class BrowserFrameUIControl(
         }
     }
 
-    override fun getPreferredSize(): Dimension {
+    fun getPreferredSize(): Dimension {
         val width =
             HtmlValues.getOldSyntaxPixelSize(element.getAttribute("width"), this.availWidth, 100)
         val height =
@@ -123,12 +123,12 @@ internal class BrowserFrameUIControl(
     }
 
     override fun invalidate() {
-        this.component.invalidate()
+        this.component!!.invalidate()
     }
 
     override fun paint(g: Graphics?) {
         // We actually have to paint it.
-        this.component.paint(g)
+        this.component!!.paint(g)
     }
 
     fun paintSelection(
@@ -142,7 +142,7 @@ internal class BrowserFrameUIControl(
     }
 
     override fun setBounds(x: Int, y: Int, width: Int, height: Int) {
-        this.component.setBounds(x, y, width, height)
+        this.component!!.setBounds(x, y, width, height)
     }
 
     override fun setRUIControl(ruicontrol: RUIControl?) {

@@ -3,7 +3,7 @@ package io.github.remmerw.thor.cobra.html.renderer
 import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
 import io.github.remmerw.thor.cobra.ua.UserAgentContext
 
-internal abstract class BaseBlockyRenderable(
+abstract class BaseBlockyRenderable(
     container: RenderableContainer?,
     modelNode: ModelNode?,
     ucontext: UserAgentContext?

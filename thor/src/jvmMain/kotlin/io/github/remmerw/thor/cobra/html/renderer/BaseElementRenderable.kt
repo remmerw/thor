@@ -303,7 +303,7 @@ abstract class BaseElementRenderable(
         }
     }
 
-    protected abstract fun paintShifted(g: Graphics?)
+    protected abstract fun paintShifted(g: Graphics)
 
     /**
      * Lays out children, and deals with "valid" state. Override doLayout method
@@ -1164,7 +1164,7 @@ abstract class BaseElementRenderable(
     */
     }
 
-    fun getClipBounds(): Rectangle? {
+    open fun getClipBounds(): Rectangle? {
         // TODO: Check when this is called and see whether to use margin-border insets just as in rblock's override
         val insets = this.getInsetsPadding(false, false)
         val hInset = insets.left + insets.right

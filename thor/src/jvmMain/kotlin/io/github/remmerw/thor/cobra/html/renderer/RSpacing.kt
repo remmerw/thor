@@ -44,7 +44,7 @@ internal class RSpacing(me: ModelNode?, container: RenderableContainer?, width: 
     override fun onMouseClick(event: MouseEvent?, x: Int, y: Int): Boolean {
         val me = this.modelNode
         if (me != null) {
-            return HtmlController.Companion.getInstance().onMouseClick(me, event, x, y)
+            return HtmlController.Companion.instance.onMouseClick(me, event, x, y)
         } else {
             return true
         }
@@ -53,7 +53,7 @@ internal class RSpacing(me: ModelNode?, container: RenderableContainer?, width: 
     override fun onDoubleClick(event: MouseEvent?, x: Int, y: Int): Boolean {
         val me = this.modelNode
         if (me != null) {
-            return HtmlController.Companion.getInstance().onDoubleClick(me, event, x, y)
+            return HtmlController.Companion.instance.onDoubleClick(me, event, x, y)
         } else {
             return true
         }
@@ -62,7 +62,7 @@ internal class RSpacing(me: ModelNode?, container: RenderableContainer?, width: 
     override fun onMousePressed(event: MouseEvent?, x: Int, y: Int): Boolean {
         val me = this.modelNode
         if (me != null) {
-            return HtmlController.Companion.getInstance().onMouseDown(me, event, x, y)
+            return HtmlController.Companion.instance.onMouseDown(me, event, x, y)
         } else {
             return true
         }
@@ -71,7 +71,7 @@ internal class RSpacing(me: ModelNode?, container: RenderableContainer?, width: 
     override fun onMouseReleased(event: MouseEvent?, x: Int, y: Int): Boolean {
         val me = this.modelNode
         if (me != null) {
-            return HtmlController.Companion.getInstance().onMouseUp(me, event, x, y)
+            return HtmlController.Companion.instance.onMouseUp(me, event, x, y)
         } else {
             return true
         }
@@ -80,7 +80,7 @@ internal class RSpacing(me: ModelNode?, container: RenderableContainer?, width: 
     override fun onMouseDisarmed(event: MouseEvent?): Boolean {
         val me = this.modelNode
         if (me != null) {
-            return HtmlController.Companion.getInstance().onMouseDisarmed(me, event)
+            return HtmlController.Companion.instance.onMouseDisarmed(me, event)
         } else {
             return true
         }
@@ -92,7 +92,7 @@ internal class RSpacing(me: ModelNode?, container: RenderableContainer?, width: 
      * @see
      * net.sourceforge.xamj.domimpl.markup.Renderable#paint(java.awt.Graphics)
      */
-    override fun paint(g: Graphics?) {
+    override fun paint(g: Graphics) {
         // Nothing to paint in spacing.
     }
 
@@ -125,7 +125,7 @@ internal class RSpacing(me: ModelNode?, container: RenderableContainer?, width: 
     }
 
     override fun extractSelectionText(
-        buffer: StringBuffer?, inSelection: Boolean, startPoint: RenderableSpot,
+        buffer: StringBuffer, inSelection: Boolean, startPoint: RenderableSpot,
         endPoint: RenderableSpot
     ): Boolean {
         if ((this == startPoint.renderable) || (this == endPoint.renderable)) {
@@ -142,14 +142,14 @@ internal class RSpacing(me: ModelNode?, container: RenderableContainer?, width: 
         return RenderableSpot(this, x, y)
     }
 
-    override fun isContainedByNode(): Boolean {
+    fun isContainedByNode(): Boolean {
         return true
     }
 
     override fun onRightClick(event: MouseEvent?, x: Int, y: Int): Boolean {
         val me = this.modelNode
         if (me != null) {
-            return HtmlController.Companion.getInstance().onContextMenu(me, event, x, y)
+            return HtmlController.Companion.instance.onContextMenu(me, event, x, y)
         } else {
             return true
         }

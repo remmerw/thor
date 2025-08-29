@@ -20,6 +20,6 @@
  */
 package io.github.remmerw.thor.cobra.html.renderer
 
-internal interface FloatingBoundsSource {
+interface FloatingBoundsSource {
     fun getChildBlockFloatingBounds(apparentBlockWidth: Int): FloatingBounds?
 }

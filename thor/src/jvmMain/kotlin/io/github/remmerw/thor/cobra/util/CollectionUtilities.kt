@@ -157,8 +157,8 @@ object CollectionUtilities {
 
     // Filter iterator adapted from an implementation found in http://erikras.com/2008/01/18/the-filter-pattern-java-conditional-abstraction-with-iterables/
     fun <T> filter(
-        iterator: MutableIterator<T?>,
-        filterFunction: FilterFunction<T?>
+        iterator: MutableIterator<T>,
+        filterFunction: FilterFunction<T>
     ): MutableIterator<T?> {
         return CollectionUtilities.FilterIterator<T>(iterator, filterFunction)
     }
@@ -192,8 +192,8 @@ object CollectionUtilities {
     }
 
     class FilterIterator<T>(
-        private val iterator: MutableIterator<T?>,
-        private val filterFunction: FilterFunction<T?>
+        private val iterator: MutableIterator<T>,
+        private val filterFunction: FilterFunction<T>
     ) : MutableIterator<T?> {
         private var next: T? = null
 

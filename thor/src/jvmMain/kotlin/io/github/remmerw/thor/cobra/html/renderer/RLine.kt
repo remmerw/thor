@@ -40,7 +40,7 @@ internal class RLine(
     height: Int,
     initialAllowOverflow: Boolean
 ) : BaseRCollection(container, modelNode) {
-    private val renderables = ArrayList<Renderable>(8)
+    val renderables = ArrayList<Renderable>(8)
 
     /*
      * (non-Javadoc)

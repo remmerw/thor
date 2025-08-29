@@ -31,14 +31,14 @@ import io.github.remmerw.thor.cobra.html.style.RenderState
 import io.github.remmerw.thor.cobra.ua.UserAgentContext
 import java.awt.Dimension
 
-internal class RTableCell(
+internal open class RTableCell(
     element: HTMLElementImpl, pcontext: UserAgentContext?, rcontext: HtmlRendererContext?,
     frameContext: FrameContext?,
     tableAsContainer: RenderableContainer?
 ) : RAbstractCell(element, 0, pcontext, rcontext, frameContext, tableAsContainer) {
     private val cellElement: HTMLElementImpl
-    private var colSpan = -1
-    private var rowSpan = -1
+    override var colSpan = -1
+    override var rowSpan = -1
 
     /**
      * @param element
@@ -47,7 +47,7 @@ internal class RTableCell(
         this.cellElement = element
     }
 
-    protected override fun doCellLayout(
+    override fun doCellLayout(
         width: Int, height: Int, expandWidth: Boolean, expandHeight: Boolean,
         sizeOnly: Boolean
     ): Dimension {
@@ -90,7 +90,7 @@ internal class RTableCell(
         return null
     }
 
-    override fun getColSpan(): Int {
+    fun getColSpan(): Int {
         var cs = this.colSpan
         if (cs == -1) {
             cs = getColSpan(this.cellElement)
@@ -102,7 +102,7 @@ internal class RTableCell(
         return cs
     }
 
-    override fun getRowSpan(): Int {
+    fun getRowSpan(): Int {
         var rs = this.rowSpan
         if (rs == -1) {
             rs = getRowSpan(this.cellElement)
@@ -114,16 +114,16 @@ internal class RTableCell(
         return rs
     }
 
-    override fun setRowSpan(rowSpan: Int) {
+    fun setRowSpan(rowSpan: Int) {
         this.rowSpan = rowSpan
     }
 
-    override fun getHeightText(): String? {
+    fun getHeightText(): String? {
         return this.cellElement.getCurrentStyle().height
         // return this.cellElement.getHeight();
     }
 
-    override fun getWidthText(): String? {
+    fun getWidthText(): String? {
         return this.cellElement.getCurrentStyle().width
         // return this.cellElement.getWidth();
     }
@@ -140,8 +140,8 @@ internal class RTableCell(
         cellSpacingX: Int,
         cellSpacingY: Int
     ) {
-        val vcol = this.getVirtualColumn()
-        val vrow = this.getVirtualRow()
+        val vcol = this.virtualColumn
+        val vrow = this.virtualRow
         val colSize = colSizes[vcol]
         val rowSize = rowSizes[vrow]
         val x = colSize.offsetX + rowSize.offsetX
@@ -177,11 +177,11 @@ internal class RTableCell(
         this.setBounds(x, y, width, height)
     }
 
-    override fun isMarginBoundary(): Boolean {
+    fun isMarginBoundary(): Boolean {
         return true
     }
 
-    override fun getRenderState(): RenderState {
+    fun getRenderState(): RenderState {
         return cellElement.getRenderState()
     }
 
