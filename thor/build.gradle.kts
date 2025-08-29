@@ -62,8 +62,6 @@ kotlin {
         jvmMain {
             dependencies {
                 implementation("com.squareup.okhttp:okhttp:2.2.0")
-                implementation("org.bouncycastle:bcprov-jdk15to18:1.64")
-                implementation("org.bouncycastle:bcmail-jdk15to18:1.64")
                 implementation("net.sf.cssbox:jstyleparser:1.23")
             }
         }
