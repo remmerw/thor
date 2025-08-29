@@ -119,7 +119,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
     private val ucontext: UserAgentContext,
     private val rcontext: HtmlRendererContext? = null,
     private var reader: WritableLineReader? = null,
-    private var documentURI: String = null,
+    private var documentURI: String? = null,
     private val contentType: String? = null
 ) : NodeImpl(), HTMLDocument, DocumentView, DocumentStyle, EventTarget {
     @JvmField
@@ -220,7 +220,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
         // Get Window object
         val window: Window
         if (rcontext != null) {
-            window = Window.getWindow(rcontext)
+            window = Window.getWindow(rcontext)!!
         } else {
             // Plain parsers may use Javascript too.
             window = Window(null, ucontext)
@@ -236,7 +236,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
             return if (docUrl == null) null else docUrl.host
         }
 
-    override fun getDocumentURL(): URL? {
+    fun getDocumentURL(): URL? {
         // TODO: Security considerations?
         return this.documentURL
     }
@@ -765,7 +765,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
         this.strictErrorChecking = strictErrorChecking
     }
 
-    override fun getDocumentURI(): String {
+    override fun getDocumentURI(): String? {
         return this.documentURI
     }
 
@@ -897,7 +897,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
         this.location!!.href = (location)
     }
 
-    override fun getURL(): String {
+    override fun getURL(): String? {
         return this.documentURI
     }
 
