@@ -25,51 +25,51 @@ import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate
 class History internal constructor(private val window: Window) : AbstractScriptableDelegate() {
     val current: String?
         get() {
-            val ctx = this.window.getHtmlRendererContext()
-            return if (ctx != null) ctx.getCurrentURL() else null
+            val ctx = this.window.htmlRendererContext
+            return if (ctx != null) ctx.currentURL else null
         }
 
     val next: String?
         get() {
-            val ctx = this.window.getHtmlRendererContext()
-            return if (ctx != null) ctx.getNextURL().orElse(null) else null
+            val ctx = this.window.htmlRendererContext
+            return if (ctx != null) ctx.nextURL!!.orElse(null) else null
         }
 
     val previous: String?
         get() {
-            val ctx = this.window.getHtmlRendererContext()
-            return if (ctx != null) ctx.getPreviousURL().orElse(null) else null
+            val ctx = this.window.htmlRendererContext
+            return if (ctx != null) ctx.previousURL?.orElse(null) else null
         }
 
     val length: Int
         get() {
-            val ctx = this.window.getHtmlRendererContext()
-            return if (ctx != null) ctx.getHistoryLength() else 0
+            val ctx = this.window.htmlRendererContext
+            return if (ctx != null) ctx.historyLength else 0
         }
 
     fun back() {
-        val ctx = this.window.getHtmlRendererContext()
+        val ctx = this.window.htmlRendererContext
         if (ctx != null) {
             ctx.back()
         }
     }
 
     fun forward() {
-        val ctx = this.window.getHtmlRendererContext()
+        val ctx = this.window.htmlRendererContext
         if (ctx != null) {
             ctx.forward()
         }
     }
 
     fun go(offset: Int) {
-        val ctx = this.window.getHtmlRendererContext()
+        val ctx = this.window.htmlRendererContext
         if (ctx != null) {
             ctx.moveInHistory(offset)
         }
     }
 
     fun go(url: String?) {
-        val ctx = this.window.getHtmlRendererContext()
+        val ctx = this.window.htmlRendererContext
         if (ctx != null) {
             ctx.goToHistoryURL(url)
         }
