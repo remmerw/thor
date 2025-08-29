@@ -36,17 +36,17 @@ import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import javax.swing.SwingUtilities
 
- class InputImageControl(modelNode: HTMLBaseInputElement) : BaseInputControl(modelNode),
+class InputImageControl(modelNode: HTMLBaseInputElement) : BaseInputControl(modelNode),
     ImageListener {
     // private JButton button;
     private var mouseBeingPressed = false
     override var preferredSize: Dimension? = null
-     override val backgroundColor: Color?
-         get() = TODO("Not yet implemented")
-     override var component: Component?
-         get() = TODO("Not yet implemented")
-         set(value) {}
-     private var declaredWidth = 0
+    override val backgroundColor: Color?
+        get() = TODO("Not yet implemented")
+    override var component: Component?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    private var declaredWidth = 0
     private var declaredHeight = 0
     private var imageResponse: ImageResponse? = null
 
@@ -223,14 +223,14 @@ import javax.swing.SwingUtilities
         // do nothing
     }
 
-     override var name: String?
-         get() = TODO("Not yet implemented")
-         set(value) {}
-     override var value: String?
-         get() = TODO("Not yet implemented")
-         set(value) {}
+    override var name: String?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override var value: String?
+        get() = TODO("Not yet implemented")
+        set(value) {}
 
-     override fun resetInput() {
+    override fun resetInput() {
         // NOP
     }
 
@@ -246,5 +246,5 @@ import javax.swing.SwingUtilities
     // }
     // }
 
-   
+
 }

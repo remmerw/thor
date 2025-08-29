@@ -20,7 +20,6 @@
 package io.github.remmerw.thor.cobra.html.domimpl
 
 import io.github.remmerw.thor.cobra.html.js.NotGetterSetter
-import io.github.remmerw.thor.cobra.js.HideFromJS
 import io.github.remmerw.thor.cobra.util.gui.ColorFactory
 import org.mozilla.javascript.typedarrays.NativeUint8ClampedArray
 import org.w3c.dom.html.HTMLElement
@@ -97,7 +96,7 @@ class HTMLCanvasElementImpl : HTMLAbstractUIElement("CANVAS"), HTMLElement {
         refreshImageDimension()
     }
 
-    @HideFromJS
+
     fun paintComponent(g: Graphics) {
         if (image != null) {
             // Draw a grid if debugging
@@ -115,7 +114,7 @@ class HTMLCanvasElementImpl : HTMLAbstractUIElement("CANVAS"), HTMLElement {
         }
     }
 
-    @HideFromJS
+
     fun setBounds(x: Int, y: Int, width: Int, height: Int) {
         offsetX = x
         offsetY = y
@@ -610,7 +609,6 @@ class HTMLCanvasElementImpl : HTMLAbstractUIElement("CANVAS"), HTMLElement {
             }
         }
 
-        @HideFromJS
         @Synchronized
         fun invalidate() {
             cachedGraphics = null
@@ -683,7 +681,7 @@ class HTMLCanvasElementImpl : HTMLAbstractUIElement("CANVAS"), HTMLElement {
             var globalCompositeOperation: String? = "source-over"
 
             @Throws(CloneNotSupportedException::class)
-            public override fun clone(): Any {
+            override fun clone(): Any {
                 return super.clone()
             }
         }

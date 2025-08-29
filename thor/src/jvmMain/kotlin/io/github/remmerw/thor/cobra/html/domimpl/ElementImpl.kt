@@ -388,7 +388,6 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), Element, Even
     }
 
 
-
     fun setInnerText(newText: String?) {
         // TODO: Is this check for owner document really required?
         val document = this.document
@@ -519,7 +518,7 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), Element, Even
 
     val lastElementChild: Element?
         get() {
-            val nl = this.nodeList !!
+            val nl = this.nodeList!!
             val N = nl.size
             for (i in N - 1 downTo 0) {
                 val n = nl.get(i)
@@ -533,7 +532,7 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), Element, Even
 
     val childElementCount: Int
         get() {
-            val nl = this.nodeList !!
+            val nl = this.nodeList!!
             var count = 0
             for (n in nl) {
                 if (n is Element) {

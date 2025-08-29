@@ -6,8 +6,10 @@ import java.awt.Component
 import java.awt.Dimension
 import java.awt.Graphics
 
- class UIControlWrapper(val htmlObject: HtmlObject,
-                        override var component: Component?) : UIControl {
+class UIControlWrapper(
+    val htmlObject: HtmlObject,
+    override var component: Component?
+) : UIControl {
 
 
     override fun reset(availWidth: Int, availHeight: Int) {

@@ -45,6 +45,5 @@ class AsyncResultEvent<TResult>
      */
     val result: TResult?
 ) : EventObject(source) {
-    companion object {
-    }
+    companion object
 }

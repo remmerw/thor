@@ -33,7 +33,7 @@ import java.awt.Rectangle
 import java.awt.event.MouseEvent
 import java.util.Locale
 
- open class RWord(
+open class RWord(
     me: ModelNode?, word: String, container: RenderableContainer?, fontMetrics: FontMetrics,
     descent: Int, ascentPlusLeading: Int,
     height: Int, textTransform: Int
@@ -85,7 +85,7 @@ import java.util.Locale
         if (bkg != null) {
             val oldColor = g.color
             try {
-                g.setColor(bkg)
+                g.color = bkg
                 g.fillRect(0, 0, width, height)
             } finally {
                 g.color = oldColor
@@ -116,7 +116,7 @@ import java.util.Locale
         if (over != null) {
             val oldColor = g.color
             try {
-                g.setColor(over)
+                g.color = over
                 g.fillRect(0, 0, width, height)
             } finally {
                 g.color = oldColor
@@ -269,10 +269,10 @@ import java.util.Locale
         }
     }
 
-     override val isDelegated: Boolean
-         get() = TODO("Not yet implemented")
+    override val isDelegated: Boolean
+        get() = TODO("Not yet implemented")
 
-     override fun onMouseClick(event: MouseEvent?, x: Int, y: Int): Boolean {
+    override fun onMouseClick(event: MouseEvent?, x: Int, y: Int): Boolean {
         val me = this.modelNode
         if (me != null) {
             return HtmlController.Companion.instance.onMouseClick(me, event, x, y)
@@ -317,32 +317,32 @@ import java.util.Locale
         }
     }
 
-     override val bounds: Rectangle?
-         get() = TODO("Not yet implemented")
-     override val visualBounds: Rectangle?
-         get() = TODO("Not yet implemented")
-     override val size: Dimension?
-         get() = TODO("Not yet implemented")
-     override val origin: Point?
-         get() = TODO("Not yet implemented")
-     override var parent: RCollection?
-         get() = TODO("Not yet implemented")
-         set(value) {}
-     override var originalParent: RCollection?
-         get() = TODO("Not yet implemented")
-         set(value) {}
-     override val originalOrCurrentParent: RCollection?
-         get() = TODO("Not yet implemented")
-     override val visualX: Int
-         get() = TODO("Not yet implemented")
-     override val visualY: Int
-         get() = TODO("Not yet implemented")
-     override val visualHeight: Int
-         get() = TODO("Not yet implemented")
-     override val visualWidth: Int
-         get() = TODO("Not yet implemented")
+    override val bounds: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val visualBounds: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val size: Dimension?
+        get() = TODO("Not yet implemented")
+    override val origin: Point?
+        get() = TODO("Not yet implemented")
+    override var parent: RCollection?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override var originalParent: RCollection?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override val originalOrCurrentParent: RCollection?
+        get() = TODO("Not yet implemented")
+    override val visualX: Int
+        get() = TODO("Not yet implemented")
+    override val visualY: Int
+        get() = TODO("Not yet implemented")
+    override val visualHeight: Int
+        get() = TODO("Not yet implemented")
+    override val visualWidth: Int
+        get() = TODO("Not yet implemented")
 
-     override fun getLowestRenderableSpot(x: Int, y: Int): RenderableSpot {
+    override fun getLowestRenderableSpot(x: Int, y: Int): RenderableSpot {
         return RenderableSpot(this, x, y)
     }
 
@@ -359,10 +359,10 @@ import java.util.Locale
         }
     }
 
-     override val isContainedByNode: Boolean
-         get() = TODO("Not yet implemented")
+    override val isContainedByNode: Boolean
+        get() = TODO("Not yet implemented")
 
-     override fun toString(): String {
+    override fun toString(): String {
         return "RWord[word=" + this.shownWord + "]"
     }
 

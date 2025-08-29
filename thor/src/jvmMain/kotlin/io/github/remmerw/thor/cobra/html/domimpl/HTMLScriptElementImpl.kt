@@ -141,7 +141,7 @@ class HTMLScriptElementImpl : HTMLElementImpl, HTMLScriptElement {
                     val scriptURL = docObj.getFullURL(src)
                     scriptURI = scriptURL.toExternalForm()
                     // Perform a synchronous request
-                    val request = bcontext.createHttpRequest() !!
+                    val request = bcontext.createHttpRequest()!!
                     SecurityUtil.doPrivileged<Any?>(PrivilegedAction {
                         // Code might have restrictions on accessing
                         // items from elsewhere.

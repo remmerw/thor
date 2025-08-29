@@ -37,7 +37,7 @@ import javax.swing.SwingUtilities
 /**
  * @author J. H. S.
  */
- abstract class BaseBoundableRenderable /*
+abstract class BaseBoundableRenderable /*
   public Point getRenderablePoint(final int guiX, final int guiY) {
     final Renderable parent = this.getParent();
     if (parent instanceof BoundableRenderable) {
@@ -61,7 +61,6 @@ import javax.swing.SwingUtilities
      */
     var isValid: Boolean = true
         protected set
-
 
 
     private var delegator: BoundableRenderable? = null
@@ -459,8 +458,10 @@ import javax.swing.SwingUtilities
         @JvmStatic
         protected val logger: Logger =
             Logger.getLogger(BaseBoundableRenderable::class.java.name)
+
         @JvmStatic
         protected val SELECTION_COLOR: Color? = Color.BLUE
+
         @JvmStatic
         protected val SELECTION_XOR: Color? = Color.LIGHT_GRAY
     }

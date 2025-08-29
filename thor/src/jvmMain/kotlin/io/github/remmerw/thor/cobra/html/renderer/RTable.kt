@@ -29,7 +29,6 @@ import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
 import io.github.remmerw.thor.cobra.html.style.RenderState
 import io.github.remmerw.thor.cobra.html.style.RenderThreadState
 import io.github.remmerw.thor.cobra.ua.UserAgentContext
-import io.github.remmerw.thor.cobra.util.CollectionUtilities
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.Font
@@ -367,7 +366,7 @@ internal class RTable(
                 rs.add(i)
 
             }
-            tableMatrix.rowGroups.forEach { i->
+            tableMatrix.rowGroups.forEach { i ->
                 rs.add(i)
             }
 

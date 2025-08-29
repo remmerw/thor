@@ -121,7 +121,7 @@ open class HTMLSelectElementImpl(name: String) : HTMLBaseInputElement(name), HTM
     override fun setSize(size: Int) {
         val ic = this.inputContext
         if (ic != null) {
-            ic.visibleSize=(size)
+            ic.visibleSize = (size)
         }
     }
 

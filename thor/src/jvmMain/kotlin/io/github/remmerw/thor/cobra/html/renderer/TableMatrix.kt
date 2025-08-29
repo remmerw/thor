@@ -257,7 +257,7 @@ class TableMatrix(
         ac.setParent(this.relement)
         ce.uINode = ac
         val vc = VirtualCell(ac, true)
-        ac.topLeftVirtualCell=(vc)
+        ac.topLeftVirtualCell = (vc)
         rowRelation.associate(rowGroupElem, rowElem, vc)
         this.ALL_CELLS.add(ac)
     }
@@ -638,8 +638,10 @@ class TableMatrix(
                         }
                     } else {
                         // TODO: better height possible
-                        val size = ac.doCellLayout(actualSize, 0,
-                            true, true, true)!!
+                        val size = ac.doCellLayout(
+                            actualSize, 0,
+                            true, true, true
+                        )!!
                         if (size.width > colSize.layoutSize) {
                             colSize.layoutSize = size.width
                         }

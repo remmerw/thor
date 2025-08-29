@@ -42,7 +42,7 @@ internal class RLine(
     height: Int,
     initialAllowOverflow: Boolean
 ) : BaseRCollection(container, modelNode) {
-     val renderabl = ArrayList<Renderable>(8)
+    val renderabl = ArrayList<Renderable>(8)
     override val clipBounds: Rectangle?
         get() = TODO("Not yet implemented")
     override val clipBoundsWithoutInsets: Rectangle?
@@ -70,6 +70,7 @@ internal class RLine(
     private var mousePressTarget: BoundableRenderable? = null
     var lineBreak: LineBreak? = null
     var layoutUpTreeCanBeInvalidated = false
+
     init {
         // Note that in the case of RLine, modelNode is the context node
         // at the beginning of the line, not a node that encloses the whole line.
@@ -486,17 +487,17 @@ internal class RLine(
         val renderables = this.renderabl
         // Find max baseline
         val firstFm = this.modelNode!!.renderState!!.fontMetrics
-        var maxDescent = firstFm!!.getDescent()
-        var maxAscentPlusLeading = firstFm.getAscent() + firstFm.getLeading()
+        var maxDescent = firstFm!!.descent
+        var maxAscentPlusLeading = firstFm.ascent + firstFm.leading
         for (renderable in renderables) {
             val r: Any? = renderable
             if (r is RStyleChanger) {
                 val fm = r.getModelNode().renderState!!.fontMetrics!!
-                val descent = fm.getDescent()
+                val descent = fm.descent
                 if (descent > maxDescent) {
                     maxDescent = descent
                 }
-                val ascentPlusLeading = fm.getAscent() + fm.getLeading()
+                val ascentPlusLeading = fm.ascent + fm.leading
                 if (ascentPlusLeading > maxAscentPlusLeading) {
                     maxAscentPlusLeading = ascentPlusLeading
                 }

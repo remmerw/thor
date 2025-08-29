@@ -37,7 +37,6 @@ import io.github.remmerw.thor.cobra.html.domimpl.HTMLSelectElementImpl
 import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
 import io.github.remmerw.thor.cobra.html.domimpl.TextImpl
 import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate
-import io.github.remmerw.thor.cobra.js.HideFromJS
 import io.github.remmerw.thor.cobra.js.JavaClassWrapper
 import io.github.remmerw.thor.cobra.js.JavaClassWrapperFactory
 import io.github.remmerw.thor.cobra.js.JavaInstantiator
@@ -216,7 +215,6 @@ class Window // TODO: Probably need to create a new Window instance
         return this.documentNode as DocumentView?
     }
 
-    @HideFromJS
     fun setDocument(document: Document) {
         synchronized(this) {
             val prevDocument = this.documentNode
@@ -262,7 +260,6 @@ class Window // TODO: Probably need to create a new Window instance
             }
         }
 
-    @HideFromJS
     fun addJSTask(task: JSTask) {
         /*
       final URL urlContext = new URL(rcontext.getCurrentURL());
@@ -301,7 +298,7 @@ class Window // TODO: Probably need to create a new Window instance
     //       2. Event listeners. Logic is similar to Timer task
     //       3. Script elements. They are doing the checks themselves, but it would better to move the check here.
     //       4. XHR handler. Logic similar to timer task.
-    @HideFromJS
+
     fun addJSTaskUnchecked(task: JSTask) {
         // System.out.println("Adding task: " + task);
         synchronized(this) {
@@ -309,7 +306,7 @@ class Window // TODO: Probably need to create a new Window instance
         }
     }
 
-    @HideFromJS
+
     fun addJSUniqueTask(oldId: Int, task: JSTask): Int {
         println("Adding unique task: " + task)
 
@@ -525,7 +522,7 @@ class Window // TODO: Probably need to create a new Window instance
     }
 
     // Making public for link element
-    @HideFromJS
+
     fun evalInScope(javascript: String?) {
         addJSTask(JSRunnableTask(0, object : Runnable {
             override fun run() {
@@ -551,7 +548,7 @@ class Window // TODO: Probably need to create a new Window instance
         }
     }
 
-    @get:HideFromJS
+
     val contextFactory: ContextFactory
         get() = windowContextFactory
 
@@ -619,7 +616,6 @@ class Window // TODO: Probably need to create a new Window instance
             })
     }
 
-    @HideFromJS
     fun getWindowScope(): Scriptable {
         synchronized(this) {
             var ws = this.windowScope
@@ -972,12 +968,12 @@ class Window // TODO: Probably need to create a new Window instance
         return false
     }
 
-    // TODO: Hide from JS
+
     fun domContentLoaded(domContentLoadedEvent: Event) {
         eventTargetManager.dispatchEvent(this.documentNode as NodeImpl?, domContentLoadedEvent)
     }
 
-    @HideFromJS
+
     fun jobsFinished() {
         val windowLoadEvent = Event(
             "load",
@@ -1053,7 +1049,6 @@ class Window // TODO: Probably need to create a new Window instance
     }
 
 
-    @HideFromJS
     fun hasPendingTasks(): Boolean {
         return (!jobsOver.get()) || jsScheduler!!.hasPendingTasks()
     }
@@ -1473,7 +1468,7 @@ class Window // TODO: Probably need to create a new Window instance
             )
         }
 
-        @HideFromJS
+
         fun getWindow(rcontext: HtmlRendererContext?): Window? {
             if (rcontext == null) {
                 return null

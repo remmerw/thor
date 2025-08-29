@@ -457,7 +457,7 @@ internal class HtmlController {
                     val rs = node.getRenderState()
                     val cursorOpt = rs.cursor
                     if (rcontext != null) {
-                        if (cursorOpt!!.isPresent()) {
+                        if (cursorOpt!!.isPresent) {
                             rcontext.setCursor(cursorOpt)
                             break
                         } else {

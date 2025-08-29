@@ -1902,7 +1902,7 @@ open class RBlock(
         collapseBottomMargin = set
     }
 
-     override fun applyStyle(availWidth: Int, availHeight: Int, updateLayout: Boolean) {
+    override fun applyStyle(availWidth: Int, availHeight: Int, updateLayout: Boolean) {
         super.applyStyle(availWidth, availHeight, updateLayout)
 
         if (collapseTopMargin) {

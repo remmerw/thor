@@ -23,6 +23,5 @@ package io.github.remmerw.thor.cobra.util
 import java.util.EventObject
 
 class RemovalEvent(source: Any, val valueRemoved: Any?) : EventObject(source) {
-    companion object {
-    }
+    companion object
 }

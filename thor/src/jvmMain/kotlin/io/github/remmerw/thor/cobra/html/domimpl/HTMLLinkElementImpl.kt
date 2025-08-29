@@ -23,7 +23,6 @@ package io.github.remmerw.thor.cobra.html.domimpl
 import io.github.remmerw.thor.cobra.css.domimpl.JStyleSheetWrapper
 import io.github.remmerw.thor.cobra.html.js.Window
 import io.github.remmerw.thor.cobra.html.style.CSSUtilities
-import io.github.remmerw.thor.cobra.js.HideFromJS
 import io.github.remmerw.thor.cobra.util.Urls
 import org.w3c.dom.css.CSSStyleSheet
 import org.w3c.dom.html.HTMLLinkElement
@@ -156,14 +155,14 @@ class HTMLLinkElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLLinkE
             return Optional.empty<URL>()
         }
 
-    @get:HideFromJS
+
     val absoluteHref: String?
         get() =// TODO: Use Either in getAbsoluteURL and use the branch type for javascript
             this.absoluteURL.map<String?>(Function { u: URL? -> u!!.toExternalForm() })
                 .orElse(getHref())
 
     // TODO: Should HTMLLinkElement actually support navigation? The Link element seems to be conflated with <a> elements
-    @HideFromJS
+
     fun navigate(): Boolean {
         // If there is no href attribute, chromium only dispatches the handlers without starting a navigation
 
@@ -311,8 +310,10 @@ class HTMLLinkElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLLinkE
             if (uacontext!!.isExternalCSSEnabled()) {
                 try {
                     val href = this.getHref()
-                    val jSheet = CSSUtilities.jParse(this, href, doc,
-                        doc.baseURI!!, false)
+                    val jSheet = CSSUtilities.jParse(
+                        this, href, doc,
+                        doc.baseURI!!, false
+                    )
                     if (this.styleSheet != null) {
                         this.styleSheet!!.jStyleSheet = jSheet
                     } else {

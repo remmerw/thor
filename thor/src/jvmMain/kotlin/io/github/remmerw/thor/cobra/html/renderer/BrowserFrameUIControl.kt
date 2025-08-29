@@ -20,8 +20,6 @@ internal class BrowserFrameUIControl(
     private var availHeight = 0
 
 
-
-
     fun getBackgroundColor(): Color? {
         return this.browserFrame.component?.getBackground()
     }

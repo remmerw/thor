@@ -34,7 +34,7 @@ interface RCollection : BoundableRenderable {
      */
     fun getRenderables(topFirst: Boolean): MutableIterator<Renderable?>?
 
-    val renderables:  MutableIterator<Renderable?>?
+    val renderables: MutableIterator<Renderable?>?
         /**
          * Gets the collection of [Renderable] children in unspecified order.
          * Call this variant when the order of the result doesn't matter.

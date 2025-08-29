@@ -23,7 +23,6 @@
  */
 package io.github.remmerw.thor.cobra.util
 
-import org.eclipse.jdt.annotation.NonNull
 import java.util.Enumeration
 import java.util.LinkedList
 
@@ -160,7 +159,7 @@ object CollectionUtilities {
         iterator: MutableIterator<T>,
         filterFunction: FilterFunction<T>
     ): MutableIterator<T?> {
-        return CollectionUtilities.FilterIterator<T>(iterator, filterFunction)
+        return FilterIterator<T>(iterator, filterFunction)
     }
 
     interface FilterFunction<T> {

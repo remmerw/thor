@@ -34,7 +34,6 @@ import io.github.remmerw.thor.cobra.html.parser.HtmlParser
 import io.github.remmerw.thor.cobra.html.style.RenderState
 import io.github.remmerw.thor.cobra.html.style.StyleSheetRenderState
 import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate
-import io.github.remmerw.thor.cobra.js.HideFromJS
 import io.github.remmerw.thor.cobra.ua.UserAgentContext
 import io.github.remmerw.thor.cobra.util.Strings
 import io.github.remmerw.thor.cobra.util.Urls
@@ -67,6 +66,7 @@ import kotlin.IndexOutOfBoundsException
 import kotlin.Int
 import kotlin.Short
 import kotlin.String
+import kotlin.TODO
 import kotlin.Throwable
 import kotlin.Throws
 import kotlin.also
@@ -121,7 +121,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
      * tries ancestors recursively. This method will return the closest
      * *block-level* renderer node, if any.
      */
-    @HideFromJS
+
     fun findUINode(): UINode? {
         // Called in GUI thread always.
         val uiNode: UINode? = this.uINode
@@ -609,7 +609,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
         return oldChild
     }
 
-    @HideFromJS
+
     @Throws(DOMException::class)
     fun removeChildAt(index: Int): Node {
         try {
@@ -893,7 +893,6 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
         }
     }
 
-    @HideFromJS
     fun insertAfter(newChild: Node?, refChild: Node?): Node? {
         synchronized(this.treeLock) {
             val nl = this.nodeList
@@ -912,7 +911,6 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
         return newChild
     }
 
-    @HideFromJS
     fun replaceAdjacentTextNodes(node: Text, textContent: String?): Text {
         try {
             synchronized(this.treeLock) {
@@ -956,7 +954,6 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
         }
     }
 
-    @HideFromJS
     fun replaceAdjacentTextNodes(node: Text): Text {
         try {
             synchronized(this.treeLock) {

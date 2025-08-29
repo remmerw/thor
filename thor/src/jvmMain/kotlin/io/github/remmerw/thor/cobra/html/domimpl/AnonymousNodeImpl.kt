@@ -1,6 +1,5 @@
 package io.github.remmerw.thor.cobra.html.domimpl
 
-import io.github.remmerw.thor.cobra.js.HideFromJS
 import io.github.remmerw.thor.cobra.util.NotImplementedYetException
 import org.w3c.dom.DOMException
 import org.w3c.dom.Node
@@ -40,7 +39,7 @@ class AnonymousNodeImpl(parentNode: Node?) : NodeImpl() {
     /**
      * Append child without informing the child of the new parent
      */
-    @HideFromJS
+
     fun appendChildSilently(c: NodeImpl) {
         synchronized(this.treeLock) {
             var nl = this.nodeList

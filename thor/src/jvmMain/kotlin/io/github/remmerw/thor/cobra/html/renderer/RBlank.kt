@@ -112,7 +112,7 @@ internal class RBlank(
         if (bkg != null) {
             val oldColor = g.color
             try {
-                g.setColor(bkg)
+                g.color = bkg
                 g.fillRect(0, 0, this.width, this.height)
             } finally {
                 g.color = oldColor
@@ -141,7 +141,7 @@ internal class RBlank(
         if (over != null) {
             val oldColor = g.color
             try {
-                g.setColor(over)
+                g.color = over
                 g.fillRect(0, 0, width, height)
             } finally {
                 g.color = oldColor

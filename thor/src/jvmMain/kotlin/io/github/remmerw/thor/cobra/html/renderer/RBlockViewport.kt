@@ -225,7 +225,7 @@ class RBlockViewport(
         if (lastSeqBlock != null) {
             val effBlockHeight = this.getEffectiveBlockHeight(lastSeqBlock)
             if ((lastSeqBlock.y + effBlockHeight) > maxY) {
-                maxY = lastSeqBlock.y+ effBlockHeight
+                maxY = lastSeqBlock.y + effBlockHeight
                 this.maxY = maxY
                 maxYWholeBlock = lastSeqBlock.y + lastSeqBlock.height
             }
@@ -847,7 +847,7 @@ class RBlockViewport(
         }
         if (line!!.getHeight() == 0) {
             val rs: RenderState = startNode.renderState!!
-            val fontHeight = rs.fontMetrics!!.getHeight()
+            val fontHeight = rs.fontMetrics!!.height
             line.setHeight(fontHeight)
         }
         line.lineBreak = (LineBreak(breakType))
@@ -1275,9 +1275,9 @@ class RBlockViewport(
         val length = text!!.length
         val renderState = textNode.getRenderState()
         val fm = renderState.fontMetrics!!
-        val descent = fm.getDescent()
-        val ascentPlusLeading = fm.getAscent() + fm.getLeading()
-        val wordHeight = fm.getHeight()
+        val descent = fm.descent
+        val ascentPlusLeading = fm.ascent + fm.leading
+        val wordHeight = fm.height
         val blankWidth = fm.charWidth(' ')
         val whiteSpace =
             if (this.overrideNoWrap) RenderState.WS_NOWRAP else renderState.whiteSpace
@@ -1442,8 +1442,10 @@ class RBlockViewport(
                     allRenderables
                 )
             } else {
-                populateZIndexGroups(others as MutableCollection<PositionedRenderable>,
-                    srIterator, allRenderables)
+                populateZIndexGroups(
+                    others as MutableCollection<PositionedRenderable>,
+                    srIterator, allRenderables
+                )
             }
             return allRenderables.iterator()
         }
@@ -1573,8 +1575,10 @@ class RBlockViewport(
         control: UIControl
     ): RElement {
         val renderable: RElement =
-            RUIControl(element, control, container,
-                this.frameContext!!, this.userAgentContext)
+            RUIControl(
+                element, control, container,
+                this.frameContext!!, this.userAgentContext
+            )
         element.uINode = renderable
         return renderable
     }
@@ -2580,17 +2584,17 @@ class RBlockViewport(
                     // final Insets rcInsets = rc.getInsetsMarginBorder(false, false);
                     // double rcMaxY = rc.getY() + rc.getVisualHeight() + rcInsets.top + rcInsets.bottom;
                     // double rcMaxY = rc.getVisualBounds().getMaxY() + rcInsets.top + rcInsets.bottom;
-                    val rcMaxY = r.visualBounds!!.getMaxY() //  + rcInsets.bottom;
+                    val rcMaxY = r.visualBounds!!.maxY //  + rcInsets.bottom;
                     if (rcMaxY > maxY) {
                         maxY = rcMaxY
                     }
                 } else if (r is BoundableRenderable) {
-                    val brMaxY = r.visualBounds!!.getMaxY()
+                    val brMaxY = r.visualBounds!!.maxY
                     if (brMaxY > maxY) {
                         maxY = brMaxY
                     }
                 } else if (r is PositionedRenderable) {
-                    val rcMaxY = r.renderable.visualBounds!!.getMaxY()
+                    val rcMaxY = r.renderable.visualBounds!!.maxY
                     if (rcMaxY > maxY) {
                         maxY = rcMaxY
                     }
@@ -2610,7 +2614,7 @@ class RBlockViewport(
         var maxX = getWidth().toDouble()
         val renderables = renderables
         if (renderables != null) {
-            renderables.forEach {  r ->
+            renderables.forEach { r ->
 
                 if (r is RenderableContainer) {
                     val rcInsets = r.getInsetsMarginBorder(false, false)!!
@@ -2620,12 +2624,12 @@ class RBlockViewport(
                         maxX = rcMaxX
                     }
                 } else if (r is BoundableRenderable) {
-                    val brMaxX = r.visualBounds!!.getMaxX()
+                    val brMaxX = r.visualBounds!!.maxX
                     if (brMaxX > maxX) {
                         maxX = brMaxX
                     }
                 } else if (r is PositionedRenderable) {
-                    val rcMaxX = r.renderable.visualBounds!!.getMaxX()
+                    val rcMaxX = r.renderable.visualBounds!!.maxX
                     if (rcMaxX > maxX) {
                         maxX = rcMaxX
                     }
@@ -2787,7 +2791,8 @@ class RBlockViewport(
             )
         }
 
-        class CanvasControl(private val canvasNode: HTMLCanvasElementImpl) : BaseControl(canvasNode) {
+        class CanvasControl(private val canvasNode: HTMLCanvasElementImpl) :
+            BaseControl(canvasNode) {
 
             override fun paintComponent(g: Graphics) {
                 canvasNode.paintComponent(g)
@@ -3197,7 +3202,8 @@ class RBlockViewport(
             destination: ArrayList<Renderable>
         ) {
             // First, others with z-index >= 0
-            val i1 = CollectionUtilities.reverseIterator<PositionedRenderable?>(others as MutableList<PositionedRenderable?>)
+            val i1 =
+                CollectionUtilities.reverseIterator<PositionedRenderable?>(others as MutableList<PositionedRenderable?>)
             var pending: Renderable? = null
             while (i1.hasNext()) {
                 val pr = i1.next()!!

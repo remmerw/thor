@@ -36,7 +36,6 @@ internal class RStyleChanger(override var modelNode: ModelNode?) : BaseRenderabl
     // private final static Logger logger = Logger.getLogger(RStyleChanger.class);
 
 
-
     fun getModelNode(): ModelNode {
         return this.modelNode!!
     }

@@ -33,11 +33,11 @@ import javax.swing.JButton
 import javax.swing.JFileChooser
 import javax.swing.JTextField
 
- class InputFileControl(modelNode: HTMLBaseInputElement?) : BaseInputControl(modelNode) {
+class InputFileControl(modelNode: HTMLBaseInputElement?) : BaseInputControl(modelNode) {
     private val textField = JTextField()
     private val browseButton = JButton()
     override var fileValue: File? = null
-         set(file) {
+        set(file) {
             field = file
             if (file == null) {
                 this.textField.setText("")
@@ -45,11 +45,11 @@ import javax.swing.JTextField
                 this.textField.setText(file.absolutePath)
             }
         }
-     override var name: String?
-         get() = TODO("Not yet implemented")
-         set(value) {}
+    override var name: String?
+        get() = TODO("Not yet implemented")
+        set(value) {}
 
-     init {
+    init {
         this.layout = BoxLayout(this, BoxLayout.X_AXIS)
         val browseButton = this.browseButton
         browseButton.action = BrowseAction()
@@ -78,22 +78,22 @@ import javax.swing.JTextField
         this.fileValue = null
     }
 
-     override var preferredSize: Dimension?
-         get() = TODO("Not yet implemented")
-         set(value) {}
-     override val backgroundColor: Color?
-         get() = TODO("Not yet implemented")
-     override var component: Component?
-         get() = TODO("Not yet implemented")
-         set(value) {}
+    override var preferredSize: Dimension?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override val backgroundColor: Color?
+        get() = TODO("Not yet implemented")
+    override var component: Component?
+        get() = TODO("Not yet implemented")
+        set(value) {}
 
-     private inner class BrowseAction : AbstractAction() {
+    private inner class BrowseAction : AbstractAction() {
         override fun actionPerformed(e: ActionEvent?) {
             val chooser = JFileChooser()
             if (chooser.showOpenDialog(this@InputFileControl) == JFileChooser.APPROVE_OPTION) {
                 // TODO  this.fileValue = chooser.selectedFile
             } else {
-               // TODO   this.fileValue = null
+                // TODO   this.fileValue = null
             }
         }
 

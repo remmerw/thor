@@ -34,8 +34,6 @@ import org.w3c.dom.html.HTMLFormElement
 import java.net.MalformedURLException
 import java.util.Collections
 import java.util.Locale
-import java.util.function.Consumer
-import java.util.function.Supplier
 
 class HTMLFormElementImpl : HTMLAbstractUIElement, HTMLFormElement {
     private var elements: HTMLCollection? = null
@@ -237,7 +235,7 @@ class HTMLFormElementImpl : HTMLAbstractUIElement, HTMLFormElement {
         })
     }
 
-     open inner class InputFilter : NodeFilter {
+    open inner class InputFilter : NodeFilter {
         /*
          * (non-Javadoc)
          *

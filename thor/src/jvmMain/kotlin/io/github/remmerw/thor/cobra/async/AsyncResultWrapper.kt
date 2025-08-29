@@ -23,9 +23,7 @@
  */
 package io.github.remmerw.thor.cobra.async
 
-import io.github.remmerw.thor.cobra.util.ArrayUtilities
 import java.util.LinkedList
-import java.util.function.Consumer
 
 /**
  * Internal class.
@@ -100,7 +98,7 @@ internal class AsyncResultWrapper<TResult>(private var ar: AsyncResult<TResult>)
      * org.xamjwg.clientlet.AsyncResultListener#resultReceived(org.xamjwg.clientlet.AsyncResultEvent)
      */
     override fun resultReceived(event: AsyncResultEvent<TResult>) {
-       // todo
+        // todo
     }
 
     /*

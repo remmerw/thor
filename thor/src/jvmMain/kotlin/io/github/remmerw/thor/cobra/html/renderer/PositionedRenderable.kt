@@ -177,7 +177,7 @@ class PositionedRenderable(
                 }
                 // TODO: Handle other renderable types such as RTable
                 if (htmlRenderable is RBlock) {
-                    val htmlOffset = Point(0,0) // TODO htmlRenderable.bodyLayout.getOrigin()
+                    val htmlOffset = Point(0, 0) // TODO htmlRenderable.bodyLayout.getOrigin()
                     val htmlInsets = htmlRenderable.getInsetsMarginBorder(
                         htmlRenderable.hasHScrollBar,
                         htmlRenderable.hasVScrollBar

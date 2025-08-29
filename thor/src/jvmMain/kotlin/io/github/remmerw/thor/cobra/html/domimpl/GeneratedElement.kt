@@ -8,7 +8,6 @@ import cz.vutbr.web.css.TermString
 import cz.vutbr.web.css.TermURI
 import io.github.remmerw.thor.cobra.html.style.ComputedJStyleProperties
 import io.github.remmerw.thor.cobra.html.style.JStyleProperties
-import io.github.remmerw.thor.cobra.js.HideFromJS
 
 // TODO: Extend a common interface or a minimal class instead of HTMLElementImpl
 class GeneratedElement(parent: HTMLElementImpl, nodeData: NodeData?, content: TermList) :
@@ -24,7 +23,6 @@ class GeneratedElement(parent: HTMLElementImpl, nodeData: NodeData?, content: Te
         this.content = content
     }
 
-    @HideFromJS
     override fun getCurrentStyle(): JStyleProperties {
         synchronized(this) {
             if (currentStyle != null) {

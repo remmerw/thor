@@ -85,7 +85,7 @@ class JavaClassWrapper(private val javaClass: Class<*>) {
             val method = methods[i]
             // TODO: Need a more robust blocking mechanism. GH #125
             val blocked = method.declaringClass.canonicalName.startsWith("java")
-            if (!(blocked || method.isAnnotationPresent(HideFromJS::class.java))) {
+            if (!(blocked)) {
                 val name = method.name
                 if (isPropertyMethod(name, method)) {
                     this.ensurePropertyKnown(name, method)

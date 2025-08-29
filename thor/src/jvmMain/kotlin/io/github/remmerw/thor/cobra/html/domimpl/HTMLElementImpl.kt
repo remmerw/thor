@@ -41,7 +41,6 @@ import io.github.remmerw.thor.cobra.html.style.LocalJStyleProperties
 import io.github.remmerw.thor.cobra.html.style.RenderState
 import io.github.remmerw.thor.cobra.html.style.StyleElements
 import io.github.remmerw.thor.cobra.html.style.StyleSheetRenderState
-import io.github.remmerw.thor.cobra.js.HideFromJS
 import io.github.remmerw.thor.cobra.util.Strings
 import org.w3c.css.sac.InputSource
 import org.w3c.dom.DOMException
@@ -121,7 +120,7 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
      * if the type of element does not handle stylesheets.
      * Hiding from JS because it is not a standard property. See GH #141
      */
-    @HideFromJS
+
     open fun getCurrentStyle(): JStyleProperties {
         synchronized(this) {
             if (currentStyle != null) {
@@ -198,12 +197,12 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
         }
     }
 
-    @HideFromJS
+
     fun getBeforeNode(): NodeImpl? {
         return beforeNode
     }
 
-    @HideFromJS
+
     fun getAfterNode(): NodeImpl? {
         return afterNode
     }

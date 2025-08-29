@@ -23,7 +23,6 @@ import cz.vutbr.web.css.CSSProperty
 import cz.vutbr.web.css.NodeData
 import cz.vutbr.web.csskit.TermURIImpl
 import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate
-import io.github.remmerw.thor.cobra.js.HideFromJS
 import io.github.remmerw.thor.cobra.util.Urls
 import org.w3c.dom.css.CSS2Properties
 import java.net.MalformedURLException
@@ -641,7 +640,6 @@ abstract class JStyleProperties(
         }
     }
 
-    @HideFromJS
     fun helperTryBoth(propertyName: String?): String? {
         // These two implementations were deprecated after the changes in https://github.com/radkovo/jStyleParser/issues/50
 

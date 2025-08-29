@@ -53,11 +53,9 @@ import io.github.remmerw.thor.cobra.html.style.CSSNorm
 import io.github.remmerw.thor.cobra.html.style.RenderState
 import io.github.remmerw.thor.cobra.html.style.StyleElements
 import io.github.remmerw.thor.cobra.html.style.StyleSheetRenderState
-import io.github.remmerw.thor.cobra.js.HideFromJS
 import io.github.remmerw.thor.cobra.ua.ImageResponse
 import io.github.remmerw.thor.cobra.ua.NetworkRequest
 import io.github.remmerw.thor.cobra.ua.NetworkRequestEvent
-import io.github.remmerw.thor.cobra.ua.NetworkRequestListener
 import io.github.remmerw.thor.cobra.ua.UserAgentContext
 import io.github.remmerw.thor.cobra.ua.UserAgentContext.RequestKind
 import io.github.remmerw.thor.cobra.util.SecurityUtil
@@ -488,7 +486,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
         }
     }
 
-    @get:HideFromJS
+
     val isXML: Boolean
         get() = isDocTypeXHTML || "application/xhtml+xml" == contentType
 
@@ -1218,7 +1216,10 @@ class HTMLDocumentImpl @JvmOverloads constructor(
                     SecurityUtil.doPrivileged<Any?>(PrivilegedAction {
                         try {
                             httpRequest?.open("GET", url)
-                            httpRequest?.send(null, UserAgentContext.Request(url, RequestKind.Image))
+                            httpRequest?.send(
+                                null,
+                                UserAgentContext.Request(url, RequestKind.Image)
+                            )
                         } catch (thrown: IOException) {
                             logger.log(Level.WARNING, "loadImage()", thrown)
                         }
@@ -1273,17 +1274,17 @@ class HTMLDocumentImpl @JvmOverloads constructor(
         )
     }
 
-    @HideFromJS
+
     fun addLoadHandler(handler: Function?) {
         onloadHandlers.add(handler)
     }
 
-    @HideFromJS
+
     fun removeLoadHandler(handler: Function?) {
         onloadHandlers.remove(handler)
     }
 
-    @HideFromJS
+
     fun stopEverything() {
         check(!stopRequested.get()) { "Stop requested twice!" }
         stopRequested.set(true)
@@ -1300,12 +1301,10 @@ class HTMLDocumentImpl @JvmOverloads constructor(
         }
     }
 
-    @HideFromJS
     fun addJob(job: Runnable?, layoutBlocker: Boolean) {
         addJob(job, layoutBlocker, 1)
     }
 
-    @HideFromJS
     fun addJob(job: Runnable?, layoutBlocker: Boolean, incr: Int) {
         synchronized(jobs) {
             registeredJobs.addAndGet(incr)
@@ -1382,7 +1381,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
      * computing them separately when needed. Note: If styles were to be stored as
      * soft / weak references, this method will lose its value.
      */
-    @HideFromJS
+
     fun primeNodeData() {
         visit({ node: Node ->
             if (node is HTMLElementImpl) {
@@ -1400,8 +1399,6 @@ class HTMLDocumentImpl @JvmOverloads constructor(
         }
     }
 
-    // TODO: Synchronize?
-    @HideFromJS
     fun markJobsFinished(numJobs: Int, layoutBlocker: Boolean) {
         val curr = registeredJobs.addAndGet(-numJobs)
         val layoutBlockers =
@@ -1425,7 +1422,6 @@ class HTMLDocumentImpl @JvmOverloads constructor(
         }
     }
 
-    @HideFromJS
     fun finishModifications() {
         StyleElements.normalizeHTMLTree(this)
         // TODO: Not sure if this should be run in new thread. But this blocks the UI sometimes when it is in the same thread, and a network request hangs.

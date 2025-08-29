@@ -39,7 +39,7 @@ interface RElement : RCollection, UINode {
      */
     fun layout(availWidth: Int, availHeight: Int, sizeOnly: Boolean)
 
-    val vAlign: CSSProperty.VerticalAlign?
+    val vAlign: VerticalAlign?
         /**
          * Vertical alignment for elements rendered in a line. Returns one of the
          * constants defined in this class.

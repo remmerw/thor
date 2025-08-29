@@ -7,14 +7,12 @@ import io.github.remmerw.thor.cobra.html.js.Window
 import io.github.remmerw.thor.cobra.html.js.Window.JSRunnableTask
 import io.github.remmerw.thor.cobra.html.style.IFrameRenderState
 import io.github.remmerw.thor.cobra.html.style.RenderState
-import io.github.remmerw.thor.cobra.js.HideFromJS
 import io.github.remmerw.thor.cobra.ua.UserAgentContext
 import io.github.remmerw.thor.cobra.ua.UserAgentContext.RequestKind
 import org.mozilla.javascript.Function
 import org.w3c.dom.Document
 import org.w3c.dom.html.HTMLIFrameElement
 import java.net.MalformedURLException
-import kotlin.concurrent.Volatile
 
 class HTMLIFrameElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLIFrameElement,
     FrameNode {
@@ -69,7 +67,6 @@ class HTMLIFrameElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLIFr
         return this.browserFrame
     }
 
-    @HideFromJS
     fun setBrowserFrame(frame: BrowserFrame?) {
         this.browserFrame = frame
         createJob()

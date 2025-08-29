@@ -21,7 +21,6 @@
 package io.github.remmerw.thor.cobra.html.js
 
 import io.github.remmerw.thor.cobra.js.AbstractScriptableDelegate
-import io.github.remmerw.thor.cobra.js.HideFromJS
 import org.w3c.dom.Node
 import org.w3c.dom.events.Event
 import org.w3c.dom.events.EventTarget
@@ -160,7 +159,6 @@ class Event : AbstractScriptableDelegate, Event {
         return currentPhase
     }
 
-    @HideFromJS
     fun setPhase(newPhase: Short) {
         currentPhase = newPhase
     }

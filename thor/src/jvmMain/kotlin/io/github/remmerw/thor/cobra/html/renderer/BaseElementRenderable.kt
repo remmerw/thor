@@ -30,7 +30,6 @@ import io.github.remmerw.thor.cobra.html.style.RenderState
 import io.github.remmerw.thor.cobra.ua.ImageResponse
 import io.github.remmerw.thor.cobra.ua.NetworkRequest
 import io.github.remmerw.thor.cobra.ua.NetworkRequestEvent
-import io.github.remmerw.thor.cobra.ua.NetworkRequestListener
 import io.github.remmerw.thor.cobra.ua.UserAgentContext
 import io.github.remmerw.thor.cobra.ua.UserAgentContext.RequestKind
 import io.github.remmerw.thor.cobra.util.SecurityUtil
@@ -60,7 +59,7 @@ abstract class BaseElementRenderable(
     modelNode: ModelNode?,
     protected val userAgentContext: UserAgentContext?
 ) : BaseRCollection(container, modelNode), RElement, RenderableContainer, ImageObserver {
-    protected val renderStyleCanBeInvalidated = true;
+    protected val renderStyleCanBeInvalidated = true
     val borderOverrider: BorderOverrider = BorderOverrider()
 
     /**
@@ -107,6 +106,7 @@ abstract class BaseElementRenderable(
     private var lastAvailHeightForDeclared = -1
 
     var layoutUpTreeCanBeInvalidated = false
+
     /**
      * Invalidates this Renderable and all descendents. This is only used in
      * special cases, such as when a new style sheet is added.
@@ -1075,7 +1075,7 @@ abstract class BaseElementRenderable(
             val rs = this.modelNode?.renderState
             if (rs != null) {
                 val fm = rs.fontMetrics
-                val fontHeight = fm!!.getHeight()
+                val fontHeight = fm!!.height
                 if (fontHeight > cm) {
                     cm = fontHeight
                 }
@@ -1105,7 +1105,7 @@ abstract class BaseElementRenderable(
             val rs = this.modelNode!!.renderState
             if (rs != null) {
                 val fm = rs.fontMetrics!!
-                val fontHeight = fm.getHeight()
+                val fontHeight = fm.height
                 if (fontHeight > cm) {
                     cm = fontHeight
                 }

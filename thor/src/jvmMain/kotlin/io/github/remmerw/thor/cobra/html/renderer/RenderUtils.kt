@@ -6,7 +6,7 @@ object RenderUtils {
     fun findHtmlRenderable(root: RCollection): Renderable? {
         val rs = root.renderables
         if (rs != null) {
-           rs.forEach { r ->
+            rs.forEach { r ->
                 if (r?.modelNode is HTMLHtmlElement) {
                     return r
                 }
