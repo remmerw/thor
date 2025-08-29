@@ -127,7 +127,7 @@ abstract class BaseElementRenderable(
         }
     }
 
-    override fun invalidateLayoutLocal() {
+    public override fun invalidateLayoutLocal() {
         val rs = this.modelNode?.renderState
         if (rs != null) {
             rs.invalidate()
@@ -665,7 +665,7 @@ abstract class BaseElementRenderable(
         }
     }
 
-    fun getZIndex(): Int {
+    open fun getZIndex(): Int {
         return this.zIndex
     }
 

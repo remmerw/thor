@@ -52,7 +52,7 @@ class RInlineBlock(
         this.height = child.getHeight()
     }
 
-    override fun getRenderables(topFirst: Boolean): MutableIterator<out Renderable> {
+    override fun getRenderables(topFirst: Boolean): MutableIterator<Renderable?> {
         return CollectionUtilities.singletonIterator<Renderable?>(this.child as Renderable)
     }
 
@@ -80,7 +80,7 @@ class RInlineBlock(
         return this.child.onMouseReleased(event, x, y)
     }
 
-    public override fun paintShifted(g: Graphics?) {
+    public override fun paintShifted(g: Graphics) {
         this.child.paint(g)
     }
 
@@ -89,7 +89,7 @@ class RInlineBlock(
         this.child.repaint(modelNode)
     }
 
-    override fun getPaintedBackgroundColor(): Color? {
+    fun getPaintedBackgroundColor(): Color? {
         return this.backgroundColor
     }
 
@@ -102,7 +102,7 @@ class RInlineBlock(
     }
 
     override fun addComponent(component: Component?): Component? {
-        this.container.addComponent(component)
+        this.container!!.addComponent(component)
         return super.addComponent(component)
     }
 
@@ -110,7 +110,7 @@ class RInlineBlock(
         return "RInlineBlock [" + this.child + "]"
     }
 
-    protected override fun applyLook() {
+    override fun applyLook() {
         this.child.applyLook()
     }
 

@@ -32,9 +32,9 @@ interface RCollection : BoundableRenderable {
      * @param topFirst If true, then the renderable that is visually on top comes first in the iterator.
      * Currently, topFirst=true is worse for performance, as it requires reversing.
      */
-    fun getRenderables(topFirst: Boolean): MutableIterator<out Renderable>?
+    fun getRenderables(topFirst: Boolean): MutableIterator<Renderable?>?
 
-    val renderables: MutableIterator<out Renderable>?
+    val renderables: MutableIterator<Renderable?>?
         /**
          * Gets the collection of [Renderable] children in unspecified order.
          * Call this variant when the order of the result doesn't matter.
