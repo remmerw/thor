@@ -37,7 +37,7 @@ import java.awt.event.MouseEvent
 /**
  * @author J. H. S.
  */
-internal open class RUIControl(
+open class RUIControl(
     me: ModelNode?, widget: UIControl, container: RenderableContainer?, frameContext: FrameContext,
     ucontext: UserAgentContext?
 ) : BaseElementRenderable(container, me, ucontext) {
