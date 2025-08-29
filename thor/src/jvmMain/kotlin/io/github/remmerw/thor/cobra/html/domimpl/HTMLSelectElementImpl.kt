@@ -160,7 +160,7 @@ open class HTMLSelectElementImpl(name: String) : HTMLBaseInputElement(name), HTM
         var values = if (ic == null) null else ic.values
         if (values == null) {
             val value = this.value
-            values = if (value == null) null else arrayOf<String>(value)
+            values = if (value == null) null else arrayOf<String?>(value)
             if (values == null) {
                 return null
             }

@@ -49,7 +49,7 @@ import javax.swing.JSplitPane
 class FrameSetPanel : JComponent(), NodeRenderer {
     private var rootNode: HTMLElementImpl? = null
     private var htmlContext: HtmlRendererContext? = null
-    private var frameComponents: Array<Component>? = null
+    private var frameComponents: MutableList<Component> = mutableListOf()
     private var domInvalid = true
 
     init {
@@ -86,7 +86,7 @@ class FrameSetPanel : JComponent(), NodeRenderer {
         toValidate.validate()
     }
 
-    fun processDocumentNotifications(notifications: Array<DocumentNotification?>) {
+    fun processDocumentNotifications(notifications: List<DocumentNotification>) {
         // Called in the GUI thread.
         if (notifications.size > 0) {
             // Not very efficient, but it will do.
@@ -115,8 +115,7 @@ class FrameSetPanel : JComponent(), NodeRenderer {
                 val rowLengths: Array<HtmlLength> = getLengths(rows)
                 val colLengths: Array<HtmlLength> = getLengths(cols)
                 val subframes: Array<HTMLElementImpl> = getSubFrames(element)
-                val frameComponents = arrayOfNulls<Component>(subframes.size)
-                this.frameComponents = frameComponents
+
                 for (i in subframes.indices) {
                     val frameElement = subframes[i]
                     if ((frameElement != null) && "FRAMESET".equals(
@@ -132,9 +131,9 @@ class FrameSetPanel : JComponent(), NodeRenderer {
                             if (frameElement.browserFrame == null) {
                                 val frame = context.createBrowserFrame()
                                 frameElement.browserFrame = frame
-                                frameComponents[i] = frame?.component
+                                frameComponents[i] = frame?.component!!
                             } else {
-                                frameComponents[i] = frameElement.browserFrame!!.component
+                                frameComponents[i] = frameElement.browserFrame!!.component!!
                             }
                         } else {
                             frameComponents[i] = JPanel()
@@ -172,7 +171,7 @@ class FrameSetPanel : JComponent(), NodeRenderer {
     private fun getSplitPane(
         context: HtmlRendererContext?, colLengths: IntArray, firstCol: Int, numCols: Int,
         rowLengths: IntArray, firstRow: Int,
-        numRows: Int, frameComponents: Array<Component>
+        numRows: Int, frameComponents: List<Component>
     ): Component? {
         if (numCols == 1) {
             val frameindex = (colLengths.size * firstRow) + firstCol
@@ -232,7 +231,7 @@ class FrameSetPanel : JComponent(), NodeRenderer {
 
         private fun getSubFrames(parent: HTMLElementImpl): Array<HTMLElementImpl> {
             val children = parent.childrenArray
-            val subFrames = ArrayList<NodeImpl>()
+            val subFrames = ArrayList<HTMLElementImpl>()
             for (child in children!!) {
                 if (child is HTMLElementImpl) {
                     val nodeName = child.nodeName
@@ -245,7 +244,7 @@ class FrameSetPanel : JComponent(), NodeRenderer {
                     }
                 }
             }
-            return subFrames.toTypedArray<HTMLElementImpl>()
+            return subFrames.toTypedArray()
         }
 
         private fun getAbsoluteLengths(htmlLengths: Array<HtmlLength>, totalSize: Int): IntArray {

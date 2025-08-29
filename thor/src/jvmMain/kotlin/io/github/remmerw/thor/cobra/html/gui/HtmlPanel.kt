@@ -733,17 +733,20 @@ class HtmlPanel : JComponent(), FrameContext, DefferedLayoutSupport {
     private fun processNotifications() {
         // This is called in the GUI thread.
         val notifs = this.notifications
-        var notifsArray: Array<DocumentNotification>?
+        val notifsArray: MutableList<DocumentNotification> = mutableListOf()
         synchronized(notifs) {
             val size = notifs.size
             if (size == 0) {
                 return
             }
-            notifsArray = arrayOfNulls<DocumentNotification>(size)
-            notifsArray = notifs.toArray<DocumentNotification?>(notifsArray)
+            notifs.forEach { i ->
+                if(i != null) {
+                    notifsArray.add(i)
+                }
+            }
             notifs.clear()
         }
-        val length = notifsArray!!.size
+        val length = notifsArray.size
         for (i in 0..<length) {
             val dn = notifsArray[i]
             if ((dn.node is HTMLFrameSetElement) && (this.htmlBlockPanel != null)) {

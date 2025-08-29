@@ -42,6 +42,9 @@ import io.github.remmerw.thor.cobra.util.CollectionUtilities
 import org.w3c.dom.Node
 import org.w3c.dom.html.HTMLDocument
 import org.w3c.dom.html.HTMLHtmlElement
+import java.awt.Color
+import java.awt.Component
+import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.Insets
 import java.awt.Point
@@ -1445,6 +1448,11 @@ class RBlockViewport(
         }
     }
 
+    override val clipBounds: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val clipBoundsWithoutInsets: Rectangle?
+        get() = TODO("Not yet implemented")
+
     private fun getRenderables(clipBounds: Rectangle): MutableIterator<Renderable?>? {
         val sr = this.seqRenderables
         var baseIterator: MutableIterator<Renderable?>? = null
@@ -1806,6 +1814,30 @@ class RBlockViewport(
             }
             return 0
         }
+    override val bounds: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val visualBounds: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val size: Dimension?
+        get() = TODO("Not yet implemented")
+    override val origin: Point?
+        get() = TODO("Not yet implemented")
+    override var parent: RCollection?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override var originalParent: RCollection?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override val originalOrCurrentParent: RCollection?
+        get() = TODO("Not yet implemented")
+    override val visualX: Int
+        get() = TODO("Not yet implemented")
+    override val visualY: Int
+        get() = TODO("Not yet implemented")
+    override val visualHeight: Int
+        get() = TODO("Not yet implemented")
+    override val visualWidth: Int
+        get() = TODO("Not yet implemented")
 
     override fun getLowestRenderableSpot(x: Int, y: Int): RenderableSpot? {
         val br = this.getRenderable(Point(x, y))
@@ -1833,6 +1865,11 @@ class RBlockViewport(
         }
         return true
     }
+
+    override val isContainedByNode: Boolean
+        get() = TODO("Not yet implemented")
+    override val isDelegated: Boolean
+        get() = TODO("Not yet implemented")
 
     // ----------------------------------------------------------------
     /*
@@ -2574,8 +2611,8 @@ class RBlockViewport(
         var maxX = getWidth().toDouble()
         val renderables = renderables
         if (renderables != null) {
-            while (renderables.hasNext()) {
-                val r = renderables.next()
+            renderables.forEach {  r ->
+
                 if (r is RenderableContainer) {
                     val rcInsets = r.getInsetsMarginBorder(false, false)!!
                     val rcMaxX =
@@ -2751,6 +2788,10 @@ class RBlockViewport(
                 canvasNode.paintComponent(g)
             }
 
+            override var preferredSize: Dimension?
+                get() = TODO("Not yet implemented")
+                set(value) {}
+
             override fun setBounds(x: Int, y: Int, width: Int, height: Int) {
                 super.setBounds(x, y, width, height)
                 val insets = ruicontrol?.insetsMarginPadding!!
@@ -2761,6 +2802,12 @@ class RBlockViewport(
                     height - (insets.top + insets.bottom)
                 )
             }
+
+            override val backgroundColor: Color?
+                get() = TODO("Not yet implemented")
+            override var component: Component?
+                get() = TODO("Not yet implemented")
+                set(value) {}
 
 
         }

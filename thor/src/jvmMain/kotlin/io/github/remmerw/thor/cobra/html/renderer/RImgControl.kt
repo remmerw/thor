@@ -22,7 +22,11 @@ package io.github.remmerw.thor.cobra.html.renderer
 
 import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
 import io.github.remmerw.thor.cobra.ua.UserAgentContext
+import java.awt.Color
+import java.awt.Dimension
 import java.awt.Insets
+import java.awt.Point
+import java.awt.Rectangle
 
 class RImgControl(
     me: ModelNode?,
@@ -60,15 +64,45 @@ class RImgControl(
         }
     }
 
-    override fun setInnerWidth(newWidth: Int?) {
+    override val bounds: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val visualBounds: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val size: Dimension?
+        get() = TODO("Not yet implemented")
+    override val origin: Point?
+        get() = TODO("Not yet implemented")
+    override var parent: RCollection?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override var originalParent: RCollection?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override val originalOrCurrentParent: RCollection?
+        get() = TODO("Not yet implemented")
+    override val visualX: Int
+        get() = TODO("Not yet implemented")
+    override val visualY: Int
+        get() = TODO("Not yet implemented")
+    override val visualHeight: Int
+        get() = TODO("Not yet implemented")
+    override val visualWidth: Int
+        get() = TODO("Not yet implemented")
+    override val isContainedByNode: Boolean
+        get() = TODO("Not yet implemented")
+
+    override fun setInnerWidth(newWidth: Int) {
         super.setInnerWidth(newWidth)
         updateWidthHeight()
     }
 
-    override fun setInnerHeight(newHeight: Int?) {
+    override fun setInnerHeight(newHeight: Int) {
         super.setInnerHeight(newHeight)
         updateWidthHeight()
     }
+
+    override val isDelegated: Boolean
+        get() = TODO("Not yet implemented")
 
     override fun isReadyToPaint(): Boolean {
         return super.isReadyToPaint() && widget.isReadyToPaint
@@ -77,4 +111,25 @@ class RImgControl(
     override fun toString(): String {
         return "RImgControl : " + modelNode
     }
+
+    override val clipBounds: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val clipBoundsWithoutInsets: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val marginTop: Int
+        get() = TODO("Not yet implemented")
+    override val marginLeft: Int
+        get() = TODO("Not yet implemented")
+    override val marginBottom: Int
+        get() = TODO("Not yet implemented")
+    override val marginRight: Int
+        get() = TODO("Not yet implemented")
+    override val collapsibleMarginTop: Int
+        get() = TODO("Not yet implemented")
+    override val collapsibleMarginBottom: Int
+        get() = TODO("Not yet implemented")
+    override val paintedBackgroundColor: Color?
+        get() = TODO("Not yet implemented")
+    override val parentContainer: RenderableContainer?
+        get() = TODO("Not yet implemented")
 }

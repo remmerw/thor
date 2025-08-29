@@ -25,12 +25,15 @@ package io.github.remmerw.thor.cobra.html.renderer
 
 import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
 import io.github.remmerw.thor.cobra.html.style.RenderState
+import java.awt.Dimension
 import java.awt.FontMetrics
 import java.awt.Graphics
+import java.awt.Point
+import java.awt.Rectangle
 import java.awt.event.MouseEvent
 import java.util.Locale
 
-internal open class RWord(
+ open class RWord(
     me: ModelNode?, word: String, container: RenderableContainer?, fontMetrics: FontMetrics,
     descent: Int, ascentPlusLeading: Int,
     height: Int, textTransform: Int
@@ -266,7 +269,10 @@ internal open class RWord(
         }
     }
 
-    override fun onMouseClick(event: MouseEvent?, x: Int, y: Int): Boolean {
+     override val isDelegated: Boolean
+         get() = TODO("Not yet implemented")
+
+     override fun onMouseClick(event: MouseEvent?, x: Int, y: Int): Boolean {
         val me = this.modelNode
         if (me != null) {
             return HtmlController.Companion.instance.onMouseClick(me, event, x, y)
@@ -311,7 +317,32 @@ internal open class RWord(
         }
     }
 
-    override fun getLowestRenderableSpot(x: Int, y: Int): RenderableSpot {
+     override val bounds: Rectangle?
+         get() = TODO("Not yet implemented")
+     override val visualBounds: Rectangle?
+         get() = TODO("Not yet implemented")
+     override val size: Dimension?
+         get() = TODO("Not yet implemented")
+     override val origin: Point?
+         get() = TODO("Not yet implemented")
+     override var parent: RCollection?
+         get() = TODO("Not yet implemented")
+         set(value) {}
+     override var originalParent: RCollection?
+         get() = TODO("Not yet implemented")
+         set(value) {}
+     override val originalOrCurrentParent: RCollection?
+         get() = TODO("Not yet implemented")
+     override val visualX: Int
+         get() = TODO("Not yet implemented")
+     override val visualY: Int
+         get() = TODO("Not yet implemented")
+     override val visualHeight: Int
+         get() = TODO("Not yet implemented")
+     override val visualWidth: Int
+         get() = TODO("Not yet implemented")
+
+     override fun getLowestRenderableSpot(x: Int, y: Int): RenderableSpot {
         return RenderableSpot(this, x, y)
     }
 
@@ -328,7 +359,10 @@ internal open class RWord(
         }
     }
 
-    override fun toString(): String {
+     override val isContainedByNode: Boolean
+         get() = TODO("Not yet implemented")
+
+     override fun toString(): String {
         return "RWord[word=" + this.shownWord + "]"
     }
 

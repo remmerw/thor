@@ -362,11 +362,17 @@ internal class RTable(
 
             return c.iterator()
         } else {
-            val rs: Array<MutableIterator<Renderable>?> = arrayOf<MutableIterator<*>>(
-                this.tableMatrix.cells,
-                this.tableMatrix.rowGroups
-            )
-            return CollectionUtilities.iteratorUnion<Renderable>(rs)
+            val rs: MutableList<Renderable> = mutableListOf()
+            tableMatrix.cells.forEach { i ->
+                rs.add(i)
+
+            }
+            tableMatrix.rowGroups.forEach { i->
+                rs.add(i)
+            }
+
+
+            return rs.iterator()
         }
     }
 

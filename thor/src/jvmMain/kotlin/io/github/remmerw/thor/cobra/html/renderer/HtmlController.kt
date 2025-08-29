@@ -111,12 +111,12 @@ internal class HtmlController {
                 type = rawType.trim { it <= ' ' }.lowercase(Locale.getDefault())
             }
             if ("submit" == type) {
-                val formInputs: Array<FormInput?>?
+                val formInputs: Array<FormInput>?
                 val name = node.name
                 if (name == null) {
                     formInputs = null
                 } else {
-                    formInputs = arrayOf<FormInput>(FormInput(name, node.value))
+                    formInputs = arrayOf(FormInput(name, node.value))
                 }
                 node.submitForm(formInputs)
                 return false
@@ -382,7 +382,7 @@ internal class HtmlController {
             } else if (node.isImageInput) {
                 val name = node.name
                 val prefix = if (name == null) "" else name + "."
-                val extraFormInputs: Array<FormInput?> = arrayOf<FormInput>(
+                val extraFormInputs: Array<FormInput> = arrayOf<FormInput>(
                     FormInput(prefix + "x", x.toString()),
                     FormInput(prefix + "y", y.toString())
                 )

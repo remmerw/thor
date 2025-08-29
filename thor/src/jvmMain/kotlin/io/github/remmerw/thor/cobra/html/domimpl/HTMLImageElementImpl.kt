@@ -200,7 +200,7 @@ class HTMLImageElementImpl : HTMLAbstractUIElement, HTMLImageElement {
                 this.imageResponse = ImageResponse()
             }
             if (src != null) {
-                document.loadImage(src, HTMLImageElementImpl.LocalImageListener(src))
+                document.loadImage(src, LocalImageListener(src))
             } else {
                 document.markJobsFinished(1, false)
             }

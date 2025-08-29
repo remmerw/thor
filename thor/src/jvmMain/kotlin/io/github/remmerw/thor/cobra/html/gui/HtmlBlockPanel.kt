@@ -874,7 +874,7 @@ class HtmlBlockPanel(
         this.grabFocus()
     }
 
-    fun processDocumentNotifications(notifications: Array<DocumentNotification>) {
+    fun processDocumentNotifications(notifications: List<DocumentNotification>) {
         // Called in the GUI thread.
         check(!this.processingDocumentNotification) { "Recursive" }
         this.processingDocumentNotification = true
@@ -1106,7 +1106,7 @@ class HtmlBlockPanel(
         return Rectangle(x, y, getVisualWidth(), getVisualHeight())
     }
 
-    fun translateDescendentPoint(descendent: BoundableRenderable, x: Int, y: Int): Point? {
+    override fun translateDescendentPoint(descendent: BoundableRenderable, x: Int, y: Int): Point {
         return rblock!!.translateDescendentPoint(descendent, x, y)
     }
 

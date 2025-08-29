@@ -40,7 +40,8 @@ import java.awt.image.BufferedImage
 import javax.swing.SwingUtilities
 import kotlin.concurrent.Volatile
 
-internal class ImgControl(modelNode: HTMLImageElementImpl) : BaseControl(modelNode), ImageListener {
+
+class ImgControl(modelNode: HTMLImageElementImpl) : BaseControl(modelNode), ImageListener {
     @Volatile
     private var imageResponse = ImageResponse()
 
