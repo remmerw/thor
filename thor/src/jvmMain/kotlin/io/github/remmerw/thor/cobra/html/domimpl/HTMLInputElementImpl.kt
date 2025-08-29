@@ -44,26 +44,26 @@ class HTMLInputElementImpl(name: String?) : HTMLBaseInputElement(name), HTMLInpu
         if (ic == null) {
             return this.getAttributeAsBoolean("checked")
         } else {
-            return ic.getChecked()
+            return ic.checked
         }
     }
 
     override fun setChecked(checked: Boolean) {
         val ic = this.inputContext
         if (ic != null) {
-            ic.setChecked(checked)
+            ic.checked = (checked)
         }
     }
 
     override fun getMaxLength(): Int {
         val ic = this.inputContext
-        return if (ic == null) 0 else ic.getMaxLength()
+        return if (ic == null) 0 else ic.maxLength
     }
 
     override fun setMaxLength(maxLength: Int) {
         val ic = this.inputContext
         if (ic != null) {
-            ic.setMaxLength(maxLength)
+            ic.maxLength = (maxLength)
         }
     }
 
@@ -80,14 +80,14 @@ class HTMLInputElementImpl(name: String?) : HTMLBaseInputElement(name), HTMLInpu
   }*/
     override fun getSize(): String {
         val ic = this.inputContext
-        val size = if (ic == null) 0 else ic.getControlSize()
+        val size = if (ic == null) 0 else ic.controlSize
         return size.toString()
     }
 
     override fun setSize(size: String) {
         val ic = this.inputContext
         if (ic != null) {
-            ic.setControlSize(size.toInt())
+            ic.controlSize = (size.toInt())
         }
     }
 
@@ -163,7 +163,7 @@ class HTMLInputElementImpl(name: String?) : HTMLBaseInputElement(name), HTMLInpu
         }
     }
 
-    protected override fun getFormInputs(): Array<FormInput?>? {
+    protected fun getFormInputs(): Array<FormInput>? {
         val type = this.getType()
         val name = this.name
         if (name == null) {
@@ -191,7 +191,7 @@ class HTMLInputElementImpl(name: String?) : HTMLBaseInputElement(name), HTMLInpu
                 // It's done as an "extra" form input
                 return null
             } else if ("file" == type) {
-                val file = this.getFileValue()
+                val file = this.fileValue
                 if (file == null) {
                     if (logger.isLoggable(Level.INFO)) {
                         logger.info("getFormInputs(): File input named " + name + " has null file.")

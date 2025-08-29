@@ -41,7 +41,7 @@ internal class InputRadioControl(modelNode: HTMLBaseInputElement?) : BaseInputCo
         // Note: Value attribute cannot be set in reset() method.
         // Otherwise, layout revalidation causes typed values to
         // be lost (including revalidation due to hover.)
-        val controlElement = this.controlElement
+        val controlElement = this.controlElement!!
         val name = controlElement.getAttribute("name")
         val prevGroup = this.buttonGroup
         if (prevGroup != null) {
@@ -73,7 +73,7 @@ internal class InputRadioControl(modelNode: HTMLBaseInputElement?) : BaseInputCo
         this.widget.doClick()
     }
 
-    var checked: Boolean
+    override var checked: Boolean
         /*
              * (non-Javadoc)
              *
@@ -94,7 +94,7 @@ internal class InputRadioControl(modelNode: HTMLBaseInputElement?) : BaseInputCo
     *
     * @see org.xamjwg.html.domimpl.InputContext#setDisabled(boolean)
     */
-    override fun setDisabled(disabled: Boolean) {
+    fun setDisabled(disabled: Boolean) {
         super.disabled = disabled
         this.widget.isEnabled = !disabled
     }
@@ -103,8 +103,8 @@ internal class InputRadioControl(modelNode: HTMLBaseInputElement?) : BaseInputCo
         this.widget.isSelected = this.controlElement.getAttributeAsBoolean("checked")
     }
 
-    val value: String?
-        get() = this.controlElement.getAttribute("value")
+    override var value: String? = null
+        get() = this.controlElement?.getAttribute("value")
 
     companion object {
         private const val serialVersionUID = 8518656510826949865L

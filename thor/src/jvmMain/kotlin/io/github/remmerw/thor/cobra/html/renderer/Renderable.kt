@@ -32,7 +32,7 @@ import java.awt.Graphics
 interface Renderable {
     fun paint(g: Graphics)
 
-    val modelNode: ModelNode?
+    var modelNode: ModelNode?
 
     val isFixed: Boolean
         get() = false

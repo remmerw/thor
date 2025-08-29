@@ -20,6 +20,7 @@
  */
 package io.github.remmerw.thor.cobra.html.renderer
 
+import cz.vutbr.web.css.CSSProperty
 import cz.vutbr.web.css.CSSProperty.VerticalAlign
 import io.github.remmerw.thor.cobra.html.domimpl.UINode
 

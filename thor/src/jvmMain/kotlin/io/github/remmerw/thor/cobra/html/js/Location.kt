@@ -14,7 +14,7 @@ class Location internal constructor(private val window: Window) : AbstractScript
         get() {
             var url: URL?
             try {
-                val document = this.window.getDocumentNode()
+                val document = this.window.documentNode
                 url = if (document == null) null else URL(document.getDocumentURI())
             } catch (mfu: MalformedURLException) {
                 url = null
@@ -81,17 +81,17 @@ class Location internal constructor(private val window: Window) : AbstractScript
 
     var href: String?
         get() {
-            val document = this.window.getDocumentNode()
+            val document = this.window.documentNode
             return if (document == null) null else document.getDocumentURI()
         }
         set(uri) {
-            val rcontext = this.window.getHtmlRendererContext()
+            val rcontext = this.window.htmlRendererContext
             if (rcontext != null) {
                 try {
                     val url: URL?
-                    val document = this.window.getDocumentNode()
+                    val document = this.window.documentNode
                     if (document is HTMLDocumentImpl) {
-                        url = document.getFullURL(uri)
+                        url = document.getFullURL(uri!!)
                     } else {
                         url = URL(uri)
                     }
@@ -108,7 +108,7 @@ class Location internal constructor(private val window: Window) : AbstractScript
 
     fun reload() {
         // TODO: This is not really reload.
-        val document = this.window.getDocumentNode()
+        val document = this.window.documentNode
         if (document is HTMLDocumentImpl) {
             val rcontext = document.getHtmlRendererContext()
             if (rcontext != null) {

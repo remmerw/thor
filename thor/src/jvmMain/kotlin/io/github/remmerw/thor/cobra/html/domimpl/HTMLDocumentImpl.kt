@@ -45,6 +45,7 @@ import io.github.remmerw.thor.cobra.html.domimpl.NodeFilter.TagNameFilter
 import io.github.remmerw.thor.cobra.html.io.WritableLineReader
 import io.github.remmerw.thor.cobra.html.js.Event
 import io.github.remmerw.thor.cobra.html.js.EventTargetManager
+import io.github.remmerw.thor.cobra.html.js.Location
 import io.github.remmerw.thor.cobra.html.js.Window
 import io.github.remmerw.thor.cobra.html.js.Window.JSRunnableTask
 import io.github.remmerw.thor.cobra.html.parser.HtmlParser
@@ -75,6 +76,7 @@ import org.w3c.dom.DocumentType
 import org.w3c.dom.Element
 import org.w3c.dom.EntityReference
 import org.w3c.dom.Node
+import org.w3c.dom.Node.DOCUMENT_NODE
 import org.w3c.dom.NodeList
 import org.w3c.dom.ProcessingInstruction
 import org.w3c.dom.Text
@@ -140,7 +142,6 @@ class HTMLDocumentImpl @JvmOverloads constructor(
     private val modificationsStarted = AtomicBoolean(false)
     private val modificationsOver = AtomicBoolean(false)
     private val loadOver = AtomicBoolean(false)
-    private var documentURL: URL? = null
     /**
      * Gets an *immutable* set of locales previously set for this document.
      */
@@ -196,12 +197,12 @@ class HTMLDocumentImpl @JvmOverloads constructor(
         rcontext.userAgentContext,
         rcontext,
         null,
-        null,
+        documentURI = null,
         null
     )
 
     init {
-        this.factory = ElementFactory.Companion.getInstance()
+        this.factory = ElementFactory.Companion.instance
         try {
             val docURL = URL(documentURI)
 
@@ -563,7 +564,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
      * Gets the collection of elements whose `name` attribute is
      * `elementName`.
      */
-    override fun getElementsByName(elementName: String?): NodeList? {
+    override fun getElementsByName(elementName: String): NodeList? {
         return this.getNodeList(ElementNameFilter(elementName))
     }
 
@@ -612,20 +613,20 @@ class HTMLDocumentImpl @JvmOverloads constructor(
         return node
     }
 
-    override fun createTextNode(data: String?): Text {
+    override fun createTextNode(data: String): Text {
         val node = TextImpl(data)
         node.setOwnerDocument(this)
         return node
     }
 
-    override fun createComment(data: String?): Comment {
+    override fun createComment(data: String): Comment {
         val node = CommentImpl(data)
         node.setOwnerDocument(this)
         return node
     }
 
     @Throws(DOMException::class)
-    override fun createCDATASection(data: String?): CDATASection {
+    override fun createCDATASection(data: String): CDATASection {
         val node = CDataSectionImpl(data)
         node.setOwnerDocument(this)
         return node
@@ -633,7 +634,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
 
     @Throws(DOMException::class)
     override fun createProcessingInstruction(
-        target: String?,
+        target: String,
         data: String?
     ): ProcessingInstruction {
         val node = HTMLProcessingInstruction(target, data)
@@ -642,7 +643,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
     }
 
     @Throws(DOMException::class)
-    override fun createAttribute(name: String?): Attr {
+    override fun createAttribute(name: String): Attr {
         return AttrImpl(name)
     }
 
@@ -657,7 +658,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
      * @param tagname The element tag name or an asterisk character (*) to match all
      * elements.
      */
-    override fun getElementsByTagName(tagname: String?): NodeList? {
+    override fun getElementsByTagName(tagname: String): NodeList {
         if ("*" == tagname) {
             return this.getNodeList(NodeFilter.ElementFilter())
         } else {
@@ -841,11 +842,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
         return "#document"
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.NodeImpl#getNodeType()
-     */
+
     override fun getNodeType(): Short {
         return DOCUMENT_NODE
     }
@@ -874,11 +871,11 @@ class HTMLDocumentImpl @JvmOverloads constructor(
         )
     }
 
-    override fun getHtmlRendererContext(): HtmlRendererContext {
+    fun getHtmlRendererContext(): HtmlRendererContext {
         return this.rcontext!!
     }
 
-    override fun getUserAgentContext(): UserAgentContext {
+    fun getUserAgentContext(): UserAgentContext {
         return this.ucontext
     }
 
@@ -894,10 +891,10 @@ class HTMLDocumentImpl @JvmOverloads constructor(
     }
 
     val location: Location?
-        get() = this.window.getLocation()
+        get() = this.window.location
 
     fun setLocation(location: String?) {
-        this.location.setHref(location)
+        this.location!!.href = (location)
     }
 
     override fun getURL(): String {
@@ -950,7 +947,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
         }
     }
 
-    fun sizeInvalidated(node: NodeImpl?) {
+    fun sizeInvalidated(node: NodeImpl) {
         val listenersList = this.documentNotificationListeners
         val size: Int
         synchronized(listenersList) {
@@ -977,7 +974,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
      *
      * @param node
      */
-    fun lookInvalidated(node: NodeImpl?) {
+    fun lookInvalidated(node: NodeImpl) {
         val listenersList = this.documentNotificationListeners
         val size: Int
         synchronized(listenersList) {
@@ -1002,7 +999,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
      *
      * @param node
      */
-    fun positionInParentInvalidated(node: NodeImpl?) {
+    fun positionInParentInvalidated(node: NodeImpl) {
         val listenersList = this.documentNotificationListeners
         val size: Int
         synchronized(listenersList) {
@@ -1028,7 +1025,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
      *
      * @param node
      */
-    fun invalidated(node: NodeImpl?) {
+    fun invalidated(node: NodeImpl) {
         val listenersList = this.documentNotificationListeners
         val size: Int
         synchronized(listenersList) {
@@ -1053,7 +1050,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
      *
      * @param node
      */
-    fun structureInvalidated(node: NodeImpl?) {
+    fun structureInvalidated(node: NodeImpl) {
         val listenersList = this.documentNotificationListeners
         val size: Int
         synchronized(listenersList) {
@@ -1073,7 +1070,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
         }
     }
 
-    fun nodeLoaded(node: NodeImpl?) {
+    fun nodeLoaded(node: NodeImpl) {
         val listenersList = this.documentNotificationListeners
         val size: Int
         synchronized(listenersList) {
@@ -1093,7 +1090,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
         }
     }
 
-    fun externalScriptLoading(node: NodeImpl?) {
+    fun externalScriptLoading(node: NodeImpl) {
         val listenersList = this.documentNotificationListeners
         val size: Int
         synchronized(listenersList) {
@@ -1177,7 +1174,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
                     val newInfo = ImageInfo()
                     map.put(urlText, newInfo)
                     newInfo.addListener(imageListener)
-                    httpRequest.addNetworkRequestListener(NetworkRequestListener { netEvent: NetworkRequestEvent? ->
+                    httpRequest?.addNetworkRequestListener({ netEvent: NetworkRequestEvent? ->
                         if (httpRequest.readyState == NetworkRequest.STATE_COMPLETE) {
                             val imageResponse = httpRequest.responseImage
                             val newEvent = ImageEvent(this@HTMLDocumentImpl, imageResponse)
@@ -1220,8 +1217,8 @@ class HTMLDocumentImpl @JvmOverloads constructor(
 
                     SecurityUtil.doPrivileged<Any?>(PrivilegedAction {
                         try {
-                            httpRequest.open("GET", url)
-                            httpRequest.send(null, UserAgentContext.Request(url, RequestKind.Image))
+                            httpRequest?.open("GET", url)
+                            httpRequest?.send(null, UserAgentContext.Request(url, RequestKind.Image))
                         } catch (thrown: IOException) {
                             logger.log(Level.WARNING, "loadImage()", thrown)
                         }
@@ -1238,7 +1235,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
         }
     }
 
-    override fun setUserData(key: String?, data: Any?, handler: UserDataHandler?): Any? {
+    override fun setUserData(key: String, data: Any?, handler: UserDataHandler?): Any? {
         // if (org.cobraparser.html.parser.HtmlParser.MODIFYING_KEY.equals(key) && data == Boolean.FALSE) {
         // dispatchLoadEvent();
         // }
@@ -1387,7 +1384,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
      */
     @HideFromJS
     fun primeNodeData() {
-        visit(NodeVisitor { node: Node? ->
+        visit({ node: Node ->
             if (node is HTMLElementImpl) {
                 node.getCurrentStyle()
             }
@@ -1511,12 +1508,12 @@ class HTMLDocumentImpl @JvmOverloads constructor(
         /**
          * @param reader
          */
-        constructor(reader: LineNumberReader?) : super(reader)
+        constructor(reader: LineNumberReader) : super(reader)
 
         /**
          * @param reader
          */
-        constructor(reader: Reader?) : super(reader)
+        constructor(reader: Reader) : super(reader)
 
         @Throws(IOException::class)
         override fun write(text: String?) {
@@ -1527,7 +1524,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
         }
     }
 
-    internal inner class StyleSheetManager {
+    inner class StyleSheetManager {
         @Volatile
         private var styleSheets: MutableList<JStyleSheetWrapper>? = null
 
@@ -1552,8 +1549,10 @@ class HTMLDocumentImpl @JvmOverloads constructor(
                 allInvalidated()
             }
 
-            val docStyleSheets: MutableList<JStyleSheetWrapper>
-                get() = this.docStyleSheetList
+            override val docStyleSheets: MutableList<JStyleSheetWrapper>?
+                get() = TODO("Not yet implemented")
+
+
         }
 
         private val docStyleSheetList: MutableList<JStyleSheetWrapper>
@@ -1561,8 +1560,8 @@ class HTMLDocumentImpl @JvmOverloads constructor(
                 synchronized(this) {
                     if (styleSheets == null) {
                         styleSheets = ArrayList<JStyleSheetWrapper>()
-                        val docStyles: MutableList<JStyleSheetWrapper?> =
-                            ArrayList<JStyleSheetWrapper?>()
+                        val docStyles: MutableList<JStyleSheetWrapper> =
+                            ArrayList<JStyleSheetWrapper>()
                         synchronized(treeLock) {
                             scanElementStyleSheets(docStyles, this@HTMLDocumentImpl)
                         }
@@ -1573,7 +1572,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
                 }
             }
 
-        private fun scanElementStyleSheets(styles: MutableList<JStyleSheetWrapper?>, node: Node) {
+        private fun scanElementStyleSheets(styles: MutableList<JStyleSheetWrapper>, node: Node) {
             if (node is LinkStyle) {
                 val sheet = node.sheet as JStyleSheetWrapper?
                 if (sheet != null) {

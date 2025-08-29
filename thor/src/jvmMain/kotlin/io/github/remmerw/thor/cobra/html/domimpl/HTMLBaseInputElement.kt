@@ -32,7 +32,7 @@ import org.w3c.dom.html.HTMLFormElement
 import java.io.File
 
 abstract class HTMLBaseInputElement(name: String?) : HTMLAbstractUIElement(name) {
-    private val imageListeners = ArrayList<ImageListener?>(1)
+    private val imageListeners = ArrayList<ImageListener>()
     protected var inputContext: InputContext? = null
     protected var deferredValue: String? = null
     protected var deferredChecked: Boolean? = null
@@ -84,7 +84,7 @@ abstract class HTMLBaseInputElement(name: String?) : HTMLAbstractUIElement(name)
             return parent
         }
 
-    fun submitForm(extraFormInputs: Array<FormInput?>?) {
+    fun submitForm(extraFormInputs: Array<FormInput>?) {
         val form = this.form as HTMLFormElementImpl?
         if (form != null) {
             form.submit(extraFormInputs)
@@ -265,7 +265,7 @@ abstract class HTMLBaseInputElement(name: String?) : HTMLAbstractUIElement(name)
         }
     }
 
-    override fun handleAttributeChanged(name: String?, oldValue: String?, newValue: String?) {
+    override fun handleAttributeChanged(name: String, oldValue: String?, newValue: String?) {
         super.handleAttributeChanged(name, oldValue, newValue)
         if ("value" == name) {
             this.value = newValue
@@ -316,7 +316,7 @@ abstract class HTMLBaseInputElement(name: String?) : HTMLAbstractUIElement(name)
         }
     }
 
-    fun removeImageListener(listener: ImageListener?) {
+    fun removeImageListener(listener: ImageListener) {
         val l = this.imageListeners
         synchronized(l) {
             l.remove(l)

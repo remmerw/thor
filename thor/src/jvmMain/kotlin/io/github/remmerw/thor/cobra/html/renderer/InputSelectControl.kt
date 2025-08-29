@@ -22,7 +22,7 @@ internal class InputSelectControl(modelNode: HTMLBaseInputElement?) : BaseInputC
     private var inSelectionEvent = false
     private var state: Int = STATE_NONE
     private var suspendSelections = false
-    var selectedIndex: Int = -1
+    override var selectedIndex: Int = -1
         set(value) {
             field = value
             val prevSuspend = this.suspendSelections
@@ -78,7 +78,7 @@ internal class InputSelectControl(modelNode: HTMLBaseInputElement?) : BaseInputC
                             } finally {
                                 inSelectionEvent = false
                             }
-                            HtmlController.Companion.getInstance().onChange(modelNode)
+                            HtmlController.Companion.instance.onChange(modelNode)
                         }
 
                         ItemEvent.DESELECTED -> {}
@@ -112,7 +112,7 @@ internal class InputSelectControl(modelNode: HTMLBaseInputElement?) : BaseInputC
                         inSelectionEvent = false
                     }
                     if (changed) {
-                        HtmlController.Companion.getInstance().onChange(modelNode)
+                        HtmlController.Companion.instance.onChange(modelNode)
                     }
                 }
             }
@@ -195,8 +195,8 @@ internal class InputSelectControl(modelNode: HTMLBaseInputElement?) : BaseInputC
                 }
             } else {
                 val list = this.list
-                var defaultSelectedIndexes: MutableCollection<Int?>? = null
-                var selectedIndexes: MutableCollection<Int?>? = null
+                var defaultSelectedIndexes: MutableCollection<Int>? = null
+                var selectedIndexes: MutableCollection<Int>? = null
                 var firstItem: OptionItem? = null
                 val listModel = this.listModel
                 listModel.clear()
@@ -214,13 +214,13 @@ internal class InputSelectControl(modelNode: HTMLBaseInputElement?) : BaseInputC
                     }
                     if (option.selected) {
                         if (selectedIndexes == null) {
-                            selectedIndexes = LinkedList<Int?>()
+                            selectedIndexes = LinkedList<Int>()
                         }
                         selectedIndexes.add(index)
                     }
                     if (option.defaultSelected) {
                         if (defaultSelectedIndexes == null) {
-                            defaultSelectedIndexes = LinkedList<Int?>()
+                            defaultSelectedIndexes = LinkedList<Int>()
                         }
                         defaultSelectedIndexes.add(index)
                     }
@@ -251,7 +251,7 @@ internal class InputSelectControl(modelNode: HTMLBaseInputElement?) : BaseInputC
         this.resetItemList()
     }
 
-    val value: String?
+    override var value: String? = null
         get() {
             if (this.state == STATE_COMBO) {
                 val item: OptionItem? = this.comboBox.selectedItem as OptionItem?
@@ -262,7 +262,7 @@ internal class InputSelectControl(modelNode: HTMLBaseInputElement?) : BaseInputC
             }
         }
 
-    var visibleSize: Int
+    override var visibleSize: Int
         get() = this.comboBox.getMaximumRowCount()
         set(value) {
             this.comboBox.setMaximumRowCount(value)
@@ -273,7 +273,7 @@ internal class InputSelectControl(modelNode: HTMLBaseInputElement?) : BaseInputC
         this.comboBox.selectedIndex = -1
     }
 
-    val values: Array<String?>?
+    override val values: Array<String?>?
         get() {
             if (this.state == STATE_COMBO) {
                 val item: OptionItem? = this.comboBox.selectedItem as OptionItem?

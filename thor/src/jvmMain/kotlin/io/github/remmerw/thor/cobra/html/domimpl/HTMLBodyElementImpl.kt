@@ -127,7 +127,7 @@ class HTMLBodyElementImpl(name: String?) : HTMLAbstractUIElement(name), HTMLBody
       super.assignAttributeField(normalName, value);
     }
   }*/
-    override fun handleAttributeChanged(name: String?, oldValue: String?, newValue: String?) {
+    override fun handleAttributeChanged(name: String, oldValue: String?, newValue: String?) {
         super.handleAttributeChanged(name, oldValue, newValue)
         if ("onload" == name) {
             val onload = this.getEventFunction(null, name)

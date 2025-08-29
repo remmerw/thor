@@ -9,7 +9,7 @@ interface DocumentNotificationListener {
      *
      * @param node
      */
-    fun sizeInvalidated(node: NodeImpl?)
+    fun sizeInvalidated(node: NodeImpl)
 
     /**
      * Called if something such as a color or decoration has changed. This would
@@ -17,14 +17,14 @@ interface DocumentNotificationListener {
      *
      * @param node
      */
-    fun lookInvalidated(node: NodeImpl?)
+    fun lookInvalidated(node: NodeImpl)
 
     /**
      * Changed if the position of the node in a parent has changed.
      *
      * @param node
      */
-    fun positionInvalidated(node: NodeImpl?)
+    fun positionInvalidated(node: NodeImpl)
 
     /**
      * This is called when the node has changed, but it is unclear if it's a size
@@ -33,7 +33,7 @@ interface DocumentNotificationListener {
      *
      * @param node
      */
-    fun invalidated(node: NodeImpl?)
+    fun invalidated(node: NodeImpl)
 
     /**
      * Called when the node (with all its contents) is first created by the
@@ -41,14 +41,14 @@ interface DocumentNotificationListener {
      *
      * @param node
      */
-    fun nodeLoaded(node: NodeImpl?)
+    fun nodeLoaded(node: NodeImpl)
 
     /**
      * The children of the node might have changed.
      *
      * @param node
      */
-    fun structureInvalidated(node: NodeImpl?)
+    fun structureInvalidated(node: NodeImpl)
 
     /**
      * Called when a external script (a SCRIPT tag with a src attribute) is about
@@ -56,7 +56,7 @@ interface DocumentNotificationListener {
      *
      * @param node
      */
-    fun externalScriptLoading(node: NodeImpl?)
+    fun externalScriptLoading(node: NodeImpl)
 
     /**
      * This is called when the whole document is potentially invalid, e.g. when a

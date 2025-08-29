@@ -35,19 +35,12 @@ internal open class InputTextControl(modelNode: HTMLBaseInputElement?) :
         val w = this.widget as JTextField
         w.addActionListener(object : ActionListener {
             override fun actionPerformed(event: ActionEvent?) {
-                HtmlController.Companion.getInstance().onEnterPressed(modelNode, null)
+                HtmlController.Companion.instance.onEnterPressed(modelNode, null)
             }
         })
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.xamjwg.html.renderer.BaseInputTextControl#createTextField(java.lang
-     * .String)
-     */
-    override fun createTextField(): JTextComponent? {
+    override fun createTextField(): JTextComponent {
         return JTextField()
     }
 

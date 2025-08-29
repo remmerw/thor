@@ -39,7 +39,4 @@ internal class InputPasswordControl(modelNode: HTMLBaseInputElement?) :
         return JPasswordField()
     }
 
-    companion object {
-        private val serialVersionUID = -5595867004382157867L
-    }
 }

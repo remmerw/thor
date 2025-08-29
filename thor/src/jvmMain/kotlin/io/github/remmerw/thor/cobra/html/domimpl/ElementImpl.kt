@@ -298,7 +298,7 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), Element, Even
      *
      * @see org.xamjwg.html.domimpl.NodeImpl#getLocalName()
      */
-    override fun getLocalName(): String {
+    override fun getLocalName(): String? {
         return this.nodeName!!
     }
 

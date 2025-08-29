@@ -20,7 +20,7 @@
  */
 package io.github.remmerw.thor.cobra.html.renderer
 
-internal interface FloatingBounds {
+interface FloatingBounds {
     /**
      * The offset from the left at the given Y, not counting insets.
      */

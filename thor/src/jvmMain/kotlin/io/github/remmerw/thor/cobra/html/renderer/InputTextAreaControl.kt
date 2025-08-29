@@ -35,8 +35,8 @@ import javax.swing.text.JTextComponent
 internal class InputTextAreaControl(modelNode: HTMLBaseInputElement?) :
     BaseInputControl(modelNode) {
     private val widget: JTextComponent
-    private var cols = -1
-    private var rows = -1
+    override var cols = -1
+    override var rows = -1
 
     init {
         this.layout = WrapperLayout.instance
@@ -47,7 +47,7 @@ internal class InputTextAreaControl(modelNode: HTMLBaseInputElement?) :
         // Note: Value attribute cannot be set in reset() method.
         // Otherwise, layout revalidation causes typed values to
         // be lost (including revalidation due to hover.)
-        val element: ElementImpl = this.controlElement
+        val element: ElementImpl = this.controlElement!!
         val value = element.getTextContent()
         (widget as JTextArea).lineWrap = true
         widget.text = value
@@ -55,7 +55,7 @@ internal class InputTextAreaControl(modelNode: HTMLBaseInputElement?) :
 
     override fun reset(availWidth: Int, availHeight: Int) {
         super.reset(availWidth, availHeight)
-        val element: ElementImpl = this.controlElement
+        val element: ElementImpl = this.controlElement!!
         val colsStr = element.getAttribute("cols")
         if (colsStr != null) {
             try {
@@ -83,7 +83,7 @@ internal class InputTextAreaControl(modelNode: HTMLBaseInputElement?) :
      *
      * @see org.xamjwg.html.renderer.BaseInputControl#getCols()
      */
-    override fun getCols(): Int {
+    fun getCols(): Int {
         return this.cols
     }
 
@@ -92,7 +92,7 @@ internal class InputTextAreaControl(modelNode: HTMLBaseInputElement?) :
      *
      * @see org.xamjwg.html.renderer.BaseInputControl#setCols(int)
      */
-    override fun setCols(cols: Int) {
+    fun setCols(cols: Int) {
         if (cols != this.cols) {
             this.cols = cols
             this.invalidate()
@@ -104,7 +104,7 @@ internal class InputTextAreaControl(modelNode: HTMLBaseInputElement?) :
      *
      * @see org.xamjwg.html.renderer.BaseInputControl#getRows()
      */
-    override fun getRows(): Int {
+    fun getRows(): Int {
         return this.rows
     }
 
@@ -113,7 +113,7 @@ internal class InputTextAreaControl(modelNode: HTMLBaseInputElement?) :
      *
      * @see org.xamjwg.html.renderer.BaseInputControl#setRows(int)
      */
-    override fun setRows(rows: Int) {
+    fun setRows(rows: Int) {
         if (rows != this.rows) {
             this.rows = rows
             this.invalidate()
@@ -144,7 +144,7 @@ internal class InputTextAreaControl(modelNode: HTMLBaseInputElement?) :
         return Dimension(pw, ph)
     }
 
-    var readOnly: Boolean
+    override var readOnly: Boolean
         /*
              * (non-Javadoc)
              *
@@ -160,7 +160,7 @@ internal class InputTextAreaControl(modelNode: HTMLBaseInputElement?) :
             this.widget.setEditable(readOnly)
         }
 
-    var value: String?
+    override var value: String?
         /*
              * (non-Javadoc)
              *
@@ -183,7 +183,4 @@ internal class InputTextAreaControl(modelNode: HTMLBaseInputElement?) :
         this.widget.text = ""
     }
 
-    companion object {
-        private val serialVersionUID = -3789900200642578384L
-    }
 }

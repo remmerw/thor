@@ -291,7 +291,7 @@ internal class HtmlController {
      */
     fun onMouseDisarmed(node: ModelNode, event: MouseEvent?): Boolean {
         if (node is HTMLLinkElementImpl) {
-            node.getCurrentStyle().setOverlayColor(null)
+            node.getCurrentStyle().overlayColor = (null)
             return false
         }
         val parent = node.parentModelNode
@@ -314,7 +314,7 @@ internal class HtmlController {
             }
         }
         if (node is HTMLLinkElementImpl) {
-            node.getCurrentStyle().setOverlayColor("#9090FF80")
+            node.getCurrentStyle().overlayColor = ("#9090FF80")
             return false
         }
         if (!pass) {
@@ -340,7 +340,7 @@ internal class HtmlController {
             }
         }
         if (node is HTMLLinkElementImpl) {
-            node.getCurrentStyle().setOverlayColor(null)
+            node.getCurrentStyle().overlayColor = (null)
             return false
         }
         if (!pass) {
@@ -371,7 +371,7 @@ internal class HtmlController {
         }
         if (node is HTMLInputElementImpl) {
             if (node.isSubmitInput) {
-                val formInputs: Array<FormInput?>?
+                val formInputs: Array<FormInput>?
                 val name = node.name
                 if (name == null) {
                     formInputs = null

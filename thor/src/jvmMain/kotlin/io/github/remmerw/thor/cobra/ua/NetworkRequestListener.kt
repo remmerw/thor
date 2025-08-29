@@ -30,7 +30,7 @@ import java.util.EventListener
  *
  * @see NetworkRequest.addNetworkRequestListener
  */
-interface NetworkRequestListener : EventListener {
+fun interface NetworkRequestListener : EventListener {
     /**
      * This method is called when the `readyState` property of the
      * request changes.

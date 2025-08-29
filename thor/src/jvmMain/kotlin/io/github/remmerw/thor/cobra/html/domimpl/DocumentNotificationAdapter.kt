@@ -28,24 +28,24 @@ abstract class DocumentNotificationAdapter : DocumentNotificationListener {
     override fun allInvalidated() {
     }
 
-    override fun externalScriptLoading(node: NodeImpl?) {
+    override fun externalScriptLoading(node: NodeImpl) {
     }
 
-    override fun invalidated(node: NodeImpl?) {
+    override fun invalidated(node: NodeImpl) {
     }
 
-    override fun lookInvalidated(node: NodeImpl?) {
+    override fun lookInvalidated(node: NodeImpl) {
     }
 
-    override fun nodeLoaded(node: NodeImpl?) {
+    override fun nodeLoaded(node: NodeImpl) {
     }
 
-    override fun positionInvalidated(node: NodeImpl?) {
+    override fun positionInvalidated(node: NodeImpl) {
     }
 
-    override fun sizeInvalidated(node: NodeImpl?) {
+    override fun sizeInvalidated(node: NodeImpl) {
     }
 
-    override fun structureInvalidated(node: NodeImpl?) {
+    override fun structureInvalidated(node: NodeImpl) {
     }
 }

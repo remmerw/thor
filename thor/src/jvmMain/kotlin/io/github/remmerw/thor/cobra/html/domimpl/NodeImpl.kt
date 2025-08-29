@@ -823,7 +823,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
      * Gets the text content of this node and its descendents.
      */
     @Throws(DOMException::class)
-    override fun getTextContent(): String {
+    override fun getTextContent(): String? {
         val sb = StringBuffer()
         synchronized(this.treeLock) {
             val nl = this.nodeList
@@ -1113,7 +1113,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
         }
     }
 
-    open val documentURL: URL?
+    open var documentURL: URL?
         get() {
             val doc: Any? = this.document
             if (doc is HTMLDocumentImpl) {

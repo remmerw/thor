@@ -52,7 +52,7 @@ open class DescendentHTMLCollection @JvmOverloads constructor(
     private fun ensurePopulatedImpl() {
         if (this.itemsByName == null) {
             val descendents =
-                this.rootNode.getDescendents(this.nodeFilter, this.nestIntoMatchingNodes)
+                this.rootNode.getDescendents(this.nodeFilter!!, this.nestIntoMatchingNodes)
             this.itemsByIndex = if (descendents == null) mutableListOf<NodeImpl?>() else descendents
             val size = if (descendents == null) 0 else descendents.size
             val itemsByName: MutableMap<String?, ElementImpl?> =
@@ -61,7 +61,7 @@ open class DescendentHTMLCollection @JvmOverloads constructor(
             for (i in 0..<size) {
                 val descNode = descendents!!.get(i)
                 if (descNode is ElementImpl) {
-                    val id = descNode.getId()
+                    val id = descNode.id
                     if ((id != null) && (id.length != 0)) {
                         itemsByName.put(id, descNode)
                     }

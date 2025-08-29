@@ -79,7 +79,7 @@ class HTMLFormElementImpl : HTMLAbstractUIElement, HTMLFormElement {
                 }
             })
         } catch (sve: StopVisitorException) {
-            return sve.getTag()
+            return sve.tag
         }
         return null
     }
@@ -165,12 +165,12 @@ class HTMLFormElementImpl : HTMLAbstractUIElement, HTMLFormElement {
      * @param extraFormInputs Any additional form inputs that need to be submitted, e.g. the
      * submit button parameter.
      */
-    fun submit(extraFormInputs: Array<FormInput?>?) {
+    fun submit(extraFormInputs: Array<FormInput>?) {
         val onsubmit = this.onsubmit
         if (onsubmit != null) {
             // TODO: onsubmit event object?
             // dispatchEvent(new Event("submit", this));
-            val window = (document as HTMLDocumentImpl).getWindow()
+            val window = (document as HTMLDocumentImpl).window
             window.addJSTask(
                 JSSupplierTask<Boolean?>(
                     0,
@@ -179,7 +179,7 @@ class HTMLFormElementImpl : HTMLAbstractUIElement, HTMLFormElement {
                             this,
                             onsubmit,
                             null,
-                            window.getContextFactory()
+                            window.contextFactory
                         )
                     },
                     Consumer { result: Boolean? ->
@@ -193,8 +193,8 @@ class HTMLFormElementImpl : HTMLAbstractUIElement, HTMLFormElement {
         }
     }
 
-    private fun submitFormImpl(extraFormInputs: Array<FormInput?>?) {
-        val context = this.getHtmlRendererContext()
+    private fun submitFormImpl(extraFormInputs: Array<FormInput>?) {
+        val context = this.htmlRendererContext
         if (context != null) {
             val formInputs = ArrayList<FormInput?>()
             if (extraFormInputs != null) {
@@ -203,10 +203,10 @@ class HTMLFormElementImpl : HTMLAbstractUIElement, HTMLFormElement {
             this.visit(object : NodeVisitor {
                 override fun visit(node: Node?) {
                     if (node is HTMLElementImpl) {
-                        val fis = node.getFormInputs()
+                        val fis = node.formInputs
                         if (fis != null) {
                             for (fi in fis) {
-                                checkNotNull(fi.getName()) { "Form input does not have a name: " + node }
+                                checkNotNull(fi?.name) { "Form input does not have a name: " + node }
                                 formInputs.add(fi)
                             }
                         }
@@ -219,7 +219,7 @@ class HTMLFormElementImpl : HTMLAbstractUIElement, HTMLFormElement {
                 href = this.getBaseURI()
             }
             try {
-                val url = this.getFullURL(href)
+                val url = this.getFullURL(href!!)
                 context.submitForm(this.getMethod(), url, this.target, this.enctype, fia)
             } catch (mfu: MalformedURLException) {
                 this.warn("submit()", mfu)
@@ -237,7 +237,7 @@ class HTMLFormElementImpl : HTMLAbstractUIElement, HTMLFormElement {
         })
     }
 
-    private inner class InputFilter : NodeFilter {
+     inner class InputFilter : NodeFilter {
         /*
          * (non-Javadoc)
          *

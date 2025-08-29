@@ -20,12 +20,12 @@
  */
 package io.github.remmerw.thor.cobra.html.renderer
 
-class ParentFloatingBoundsSource(
+class ParentFloatingBoundsSource private constructor(
     private val blockShiftRight: Int,
     private val expectedBlockWidth: Int,
     private val newX: Int,
     private val newY: Int,
-    private val floatBounds: FloatingBounds?
+    private val floatBounds: FloatingBounds
 ) : FloatingBoundsSource {
     override fun getChildBlockFloatingBounds(apparentBlockWidth: Int): FloatingBounds {
         val actualRightShift = this.blockShiftRight + (this.expectedBlockWidth - apparentBlockWidth)

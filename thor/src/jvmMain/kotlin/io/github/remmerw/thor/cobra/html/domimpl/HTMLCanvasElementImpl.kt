@@ -143,7 +143,7 @@ class HTMLCanvasElementImpl : HTMLAbstractUIElement("CANVAS"), HTMLElement {
     }
 
     private fun repaint() {
-        getUINode().repaint(this@HTMLCanvasElementImpl)
+        uINode?.repaint(this@HTMLCanvasElementImpl)
     }
 
     private fun drawGrid(g: Graphics?) {
@@ -669,21 +669,21 @@ class HTMLCanvasElementImpl : HTMLAbstractUIElement("CANVAS"), HTMLElement {
         }
 
         private inner class CanvasState : Cloneable {
-            private var currTransformMatrix: AffineTransform? = null
-            private var currClippingRegion: Shape? = null
-            private var paintFill: Paint? = Color.BLACK
-            private var paintStroke: Paint? = Color.BLACK
-            private var lineWidth = 1f
-            private var lineCap = BasicStroke.CAP_BUTT
-            private var lineJoin = BasicStroke.JOIN_MITER
-            private var miterLimit = 10f
-            private var lineDash: FloatArray? = null
-            private var lineDashOffset = 0f
-            private var globalAlpha = 1f
-            private var globalCompositeOperation: String? = "source-over"
+            var currTransformMatrix: AffineTransform? = null
+            var currClippingRegion: Shape? = null
+            var paintFill: Paint? = Color.BLACK
+            var paintStroke: Paint? = Color.BLACK
+            var lineWidth = 1f
+            var lineCap = BasicStroke.CAP_BUTT
+            var lineJoin = BasicStroke.JOIN_MITER
+            var miterLimit = 10f
+            var lineDash: FloatArray? = null
+            var lineDashOffset = 0f
+            var globalAlpha = 1f
+            var globalCompositeOperation: String? = "source-over"
 
             @Throws(CloneNotSupportedException::class)
-            override fun clone(): Any {
+            public override fun clone(): Any {
                 return super.clone()
             }
         }
@@ -738,7 +738,7 @@ class HTMLCanvasElementImpl : HTMLAbstractUIElement("CANVAS"), HTMLElement {
         }
 
         private fun parseColor(color: String): Color? {
-            return ColorFactory.getInstance().getColor(color)
+            return ColorFactory.instance?.getColor(color)
         }
     }
 }
