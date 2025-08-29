@@ -20,6 +20,7 @@
  */
 package io.github.remmerw.thor.cobra.html.renderer
 
+import java.awt.Color
 import java.awt.Component
 import java.awt.Insets
 import java.awt.Point
@@ -99,7 +100,7 @@ interface RenderableContainer {
 
     val visualHeight: Int
 
-    fun translateDescendentPoint(descendent: BoundableRenderable?, x: Int, y: Int): Point?
+    fun translateDescendentPoint(descendent: BoundableRenderable, x: Int, y: Int): Point
 
     fun getOriginRelativeTo(bodyLayout: RCollection?): Point?
 

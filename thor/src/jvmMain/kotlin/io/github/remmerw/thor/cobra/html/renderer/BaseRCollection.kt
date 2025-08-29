@@ -364,12 +364,12 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
         }
     }
 
-    fun getClipBoundsWithoutInsets(): Rectangle? {
+    open fun getClipBoundsWithoutInsets(): Rectangle? {
         // TODO
         return clipBounds
     }
 
-    fun isReadyToPaint(): Boolean {
+    open fun isReadyToPaint(): Boolean {
         val renderables = renderables
         if (renderables == null) {
             return true

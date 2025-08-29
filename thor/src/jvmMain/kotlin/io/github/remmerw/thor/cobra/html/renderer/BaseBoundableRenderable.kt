@@ -49,7 +49,7 @@ import javax.swing.SwingUtilities
     }
   }*/(// protected final Rectangle bounds = new Rectangle();
     protected val container: RenderableContainer?,
-    override val modelNode: ModelNode?
+    override var modelNode: ModelNode?
 ) : BaseRenderable(), BoundableRenderable {
     override var width: Int = 0
     override var height: Int = 0

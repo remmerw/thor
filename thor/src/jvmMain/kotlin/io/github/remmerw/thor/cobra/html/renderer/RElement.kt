@@ -60,7 +60,7 @@ interface RElement : RCollection, UINode {
 
     fun invalidateRenderStyle()
 
-    fun setupRelativePosition(container: RenderableContainer?)
+    fun setupRelativePosition(container: RenderableContainer)
 
     companion object {
         const val VALIGN_TOP: Int = 0

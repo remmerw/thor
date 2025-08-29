@@ -60,7 +60,7 @@ abstract class BaseElementRenderable(
     modelNode: ModelNode?,
     protected val userAgentContext: UserAgentContext?
 ) : BaseRCollection(container, modelNode), RElement, RenderableContainer, ImageObserver {
-    // protected boolean renderStyleCanBeInvalidated = true;
+    protected val renderStyleCanBeInvalidated = true;
     val borderOverrider: BorderOverrider = BorderOverrider()
 
     /**
@@ -128,7 +128,7 @@ abstract class BaseElementRenderable(
     }
 
     override fun invalidateLayoutLocal() {
-        val rs = this.modelNode.renderState
+        val rs = this.modelNode?.renderState
         if (rs != null) {
             rs.invalidate()
         }
@@ -175,7 +175,7 @@ abstract class BaseElementRenderable(
     private val isParentHeightDeclared: Boolean
         get() {
             val parentNode =
-                getModelNode().parentModelNode
+                getModelNode()?.parentModelNode
             if (parentNode is HTMLElementImpl) {
                 val props: CSS2Properties = parentNode.getCurrentStyle()
                 val decHeight = props.height
@@ -187,7 +187,7 @@ abstract class BaseElementRenderable(
     private val isParentWidthDeclared: Boolean
         get() {
             val parentNode =
-                getModelNode().parentModelNode
+                getModelNode()?.parentModelNode
             if (parentNode is HTMLElementImpl) {
                 val props: CSS2Properties = parentNode.getCurrentStyle()
                 val decWidth = props.width
@@ -326,7 +326,7 @@ abstract class BaseElementRenderable(
         // below this renderer node. (Parent expected to have removed them).
         val gc = this.guiComponents
         if (gc != null) {
-            val rc = this.container
+            val rc = this.container!!
             for (c in gc) {
                 rc.addComponent(c)
             }
@@ -335,9 +335,7 @@ abstract class BaseElementRenderable(
 
     protected fun clearGUIComponents() {
         val gc = this.guiComponents
-        if (gc != null) {
-            gc.clear()
-        }
+        gc?.clear()
     }
 
     /*
@@ -363,7 +361,7 @@ abstract class BaseElementRenderable(
     }
 
     override fun updateAllWidgetBounds() {
-        this.container.updateAllWidgetBounds()
+        this.container?.updateAllWidgetBounds()
     }
 
     /**
@@ -371,7 +369,7 @@ abstract class BaseElementRenderable(
      * general rendering.
      */
     fun updateWidgetBounds() {
-        val guiPoint = this.getGUIPoint(0, 0)
+        val guiPoint = this.getGUIPoint(0, 0)!!
         this.updateWidgetBounds(guiPoint.x, guiPoint.y)
     }
 
@@ -1144,6 +1142,7 @@ abstract class BaseElementRenderable(
         px: Int,
         py: Int
     ): Point {
+
         val p = descendent.getOriginRelativeTo(this)
         p.translate(px, py)
         return p
@@ -1165,7 +1164,7 @@ abstract class BaseElementRenderable(
     */
     }
 
-    override fun getClipBounds(): Rectangle? {
+    fun getClipBounds(): Rectangle? {
         // TODO: Check when this is called and see whether to use margin-border insets just as in rblock's override
         val insets = this.getInsetsPadding(false, false)
         val hInset = insets.left + insets.right
@@ -1233,21 +1232,22 @@ abstract class BaseElementRenderable(
     }
 
     override fun setupRelativePosition(container: RenderableContainer) {
+
         // TODO Use parent height
         setupRelativePosition(
-            getModelNode().renderState!!,
-            container.getInnerMostWidth(),
-            container.getInnerMostHeight()
+            getModelNode()!!.renderState!!,
+            container.innerMostWidth,
+            container.innerMostHeight
         )
     }
 
     override fun isReadyToPaint(): Boolean {
-        val superReady: Boolean = super.isReadyToPaint()
+        val superReady: Boolean = isReadyToPaint
         if (!superReady) {
             return false
         }
 
-        val node = this.modelNode
+        val node = this.modelNode!!
         val rs = node.renderState
         val binfo = if (rs == null) null else rs.backgroundInfo
         if (binfo != null && binfo.backgroundImage != null) {
