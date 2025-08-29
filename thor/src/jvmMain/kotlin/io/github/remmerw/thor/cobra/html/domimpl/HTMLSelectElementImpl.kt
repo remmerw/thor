@@ -7,7 +7,7 @@ import org.w3c.dom.html.HTMLCollection
 import org.w3c.dom.html.HTMLElement
 import org.w3c.dom.html.HTMLSelectElement
 
-class HTMLSelectElementImpl(name: String?) : HTMLBaseInputElement(name), HTMLSelectElement {
+open class HTMLSelectElementImpl(name: String?) : HTMLBaseInputElement(name), HTMLSelectElement {
     private var multipleState: Boolean? = null
 
     // private HTMLOptionsCollection options;
@@ -17,7 +17,7 @@ class HTMLSelectElementImpl(name: String?) : HTMLBaseInputElement(name), HTMLSel
         get() = this.getEventFunction(field, "onchange")
 
     @Throws(DOMException::class)
-    override fun add(element: HTMLElement?, before: HTMLElement?) {
+    override fun add(element: HTMLElement, before: HTMLElement?) {
         this.insertBefore(element, before)
     }
 
@@ -30,7 +30,7 @@ class HTMLSelectElementImpl(name: String?) : HTMLBaseInputElement(name), HTMLSel
     }
   }*/
     override fun getLength(): Int {
-        return this.options.length
+        return this.options!!.length
     }
 
     override fun getMultiple(): Boolean {
@@ -61,7 +61,7 @@ class HTMLSelectElementImpl(name: String?) : HTMLBaseInputElement(name), HTMLSel
     override fun getSelectedIndex(): Int {
         val ic = this.inputContext
         if (ic != null) {
-            return ic.getSelectedIndex()
+            return ic.selectedIndex
         } else {
             return this.deferredSelectedIndex
         }
@@ -73,7 +73,7 @@ class HTMLSelectElementImpl(name: String?) : HTMLBaseInputElement(name), HTMLSel
     override fun setSelectedIndex(selectedIndex: Int) {
         this.setSelectedIndexImpl(selectedIndex)
         val options = this.options
-        val length = options.length
+        val length = options!!.length
         for (i in 0..<length) {
             val option = options.item(i) as HTMLOptionElementImpl
             option.setSelectedImpl(i == selectedIndex)
@@ -83,7 +83,7 @@ class HTMLSelectElementImpl(name: String?) : HTMLBaseInputElement(name), HTMLSel
     override fun getSize(): Int {
         val ic = this.inputContext
         if (ic != null) {
-            return ic.getVisibleSize()
+            return ic.visibleSize
         } else {
             return 0
         }
@@ -92,7 +92,7 @@ class HTMLSelectElementImpl(name: String?) : HTMLBaseInputElement(name), HTMLSel
     override fun setSize(size: Int) {
         val ic = this.inputContext
         if (ic != null) {
-            ic.setVisibleSize(size)
+            ic.visibleSize=(size)
         }
     }
 
@@ -102,7 +102,7 @@ class HTMLSelectElementImpl(name: String?) : HTMLBaseInputElement(name), HTMLSel
 
     override fun remove(index: Int) {
         try {
-            this.removeChild(this.options.item(index))
+            this.removeChild(this.options?.item(index))
         } catch (de: DOMException) {
             this.warn("remove(): Unable to remove option at index " + index + ".", de)
         }
@@ -111,16 +111,16 @@ class HTMLSelectElementImpl(name: String?) : HTMLBaseInputElement(name), HTMLSel
     fun setSelectedIndexImpl(selectedIndex: Int) {
         val ic = this.inputContext
         if (ic != null) {
-            ic.setSelectedIndex(selectedIndex)
+            ic.selectedIndex = (selectedIndex)
         } else {
             this.deferredSelectedIndex = selectedIndex
         }
     }
 
-    protected override fun getFormInputs(): Array<FormInput?>? {
+    protected fun getFormInputs(): Array<FormInput>? {
         // Needs to be overriden for forms to submit.
         val ic = this.inputContext
-        var values = if (ic == null) null else ic.getValues()
+        var values = if (ic == null) null else ic.values
         if (values == null) {
             val value = this.value
             values = if (value == null) null else arrayOf<String>(value)
@@ -136,7 +136,7 @@ class HTMLSelectElementImpl(name: String?) : HTMLBaseInputElement(name), HTMLSel
         for (value in values) {
             formInputs.add(FormInput(name, value))
         }
-        return formInputs.toArray<FormInput?>(FormInput.EMPTY_ARRAY)
+        return formInputs.toArray<FormInput>(FormInput.EMPTY_ARRAY)
     }
 
     override fun resetInput() {
@@ -148,6 +148,6 @@ class HTMLSelectElementImpl(name: String?) : HTMLBaseInputElement(name), HTMLSel
 
     override fun setInputContext(ic: InputContext) {
         super.setInputContext(ic)
-        ic.setSelectedIndex(this.deferredSelectedIndex)
+        ic.selectedIndex = (this.deferredSelectedIndex)
     }
 }

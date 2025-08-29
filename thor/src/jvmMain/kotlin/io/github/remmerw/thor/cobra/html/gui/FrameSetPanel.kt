@@ -49,7 +49,7 @@ import javax.swing.JSplitPane
 class FrameSetPanel : JComponent(), NodeRenderer {
     private var rootNode: HTMLElementImpl? = null
     private var htmlContext: HtmlRendererContext? = null
-    private var frameComponents: Array<Component?>?
+    private var frameComponents: Array<Component>?
     private var domInvalid = true
 
     init {
@@ -114,7 +114,7 @@ class FrameSetPanel : JComponent(), NodeRenderer {
                 val cols = element.getAttribute("cols")
                 val rowLengths: Array<HtmlLength> = getLengths(rows)
                 val colLengths: Array<HtmlLength> = getLengths(cols)
-                val subframes: Array<HTMLElementImpl?> = getSubFrames(element)
+                val subframes: Array<HTMLElementImpl> = getSubFrames(element)
                 val frameComponents = arrayOfNulls<Component>(subframes.size)
                 this.frameComponents = frameComponents
                 for (i in subframes.indices) {
@@ -132,7 +132,7 @@ class FrameSetPanel : JComponent(), NodeRenderer {
                             if (frameElement.browserFrame == null) {
                                 val frame = context.createBrowserFrame()
                                 frameElement.browserFrame = frame
-                                frameComponents[i] = frame.component
+                                frameComponents[i] = frame?.component
                             } else {
                                 frameComponents[i] = frameElement.browserFrame!!.component
                             }
@@ -172,7 +172,7 @@ class FrameSetPanel : JComponent(), NodeRenderer {
     private fun getSplitPane(
         context: HtmlRendererContext?, colLengths: IntArray, firstCol: Int, numCols: Int,
         rowLengths: IntArray, firstRow: Int,
-        numRows: Int, frameComponents: Array<Component?>
+        numRows: Int, frameComponents: Array<Component>
     ): Component? {
         if (numCols == 1) {
             val frameindex = (colLengths.size * firstRow) + firstCol
@@ -230,9 +230,9 @@ class FrameSetPanel : JComponent(), NodeRenderer {
             return lengths.toArray<HtmlLength?>(HtmlLength.EMPTY_ARRAY)
         }
 
-        private fun getSubFrames(parent: HTMLElementImpl): Array<HTMLElementImpl?> {
+        private fun getSubFrames(parent: HTMLElementImpl): Array<HTMLElementImpl> {
             val children = parent.childrenArray
-            val subFrames = ArrayList<NodeImpl?>()
+            val subFrames = ArrayList<NodeImpl>()
             for (child in children!!) {
                 if (child is HTMLElementImpl) {
                     val nodeName = child.nodeName
@@ -245,7 +245,7 @@ class FrameSetPanel : JComponent(), NodeRenderer {
                     }
                 }
             }
-            return subFrames.toTypedArray<HTMLElementImpl?>()
+            return subFrames.toTypedArray<HTMLElementImpl>()
         }
 
         private fun getAbsoluteLengths(htmlLengths: Array<HtmlLength>, totalSize: Int): IntArray {
@@ -256,7 +256,7 @@ class FrameSetPanel : JComponent(), NodeRenderer {
                 val htmlLength = htmlLengths[i]
                 val lengthType = htmlLength.lengthType
                 if (lengthType == HtmlLength.PIXELS) {
-                    val absLength = htmlLength.getRawValue()
+                    val absLength = htmlLength.rawValue
                     totalSizeNonMulti += absLength
                     absLengths[i] = absLength
                 } else if (lengthType == HtmlLength.LENGTH) {
@@ -264,7 +264,7 @@ class FrameSetPanel : JComponent(), NodeRenderer {
                     totalSizeNonMulti += absLength
                     absLengths[i] = absLength
                 } else {
-                    sumMulti += htmlLength.getRawValue()
+                    sumMulti += htmlLength.rawValue
                 }
             }
             val remaining = totalSize - totalSizeNonMulti
@@ -272,7 +272,7 @@ class FrameSetPanel : JComponent(), NodeRenderer {
                 for (i in htmlLengths.indices) {
                     val htmlLength = htmlLengths[i]
                     if (htmlLength.lengthType == HtmlLength.MULTI_LENGTH) {
-                        val absLength = (remaining * htmlLength.getRawValue()) / sumMulti
+                        val absLength = (remaining * htmlLength.rawValue) / sumMulti
                         absLengths[i] = absLength
                     }
                 }

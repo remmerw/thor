@@ -303,7 +303,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
             for (i in 0..<length) {
                 val child = children.item(i)
                 val newChild = if (deep) child.cloneNode(deep) else child
-                newNode.appendChild(newChild)
+                newNode?.appendChild(newChild)
             }
             if (newNode is Element) {
                 val nnmap = this.attributes
@@ -329,7 +329,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
                 }
             }
 
-            return newNode
+            return newNode!!
         } catch (err: Exception) {
             throw IllegalStateException(err.message)
         }
@@ -1113,7 +1113,7 @@ abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
         }
     }
 
-    open var documentURL: URL?
+    open var documentURL: URL? = null
         get() {
             val doc: Any? = this.document
             if (doc is HTMLDocumentImpl) {

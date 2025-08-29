@@ -44,7 +44,7 @@ class HTMLTableRowElementImpl : HTMLElementImpl, HTMLTableRowElement {
             parent.visit(object : NodeVisitor {
                 private var count = 0
 
-                override fun visit(node: Node?) {
+                override fun visit(node: Node) {
                     if (node is HTMLTableRowElementImpl) {
                         if (this@HTMLTableRowElementImpl === node) {
                             throw StopVisitorException(this.count)
@@ -54,7 +54,7 @@ class HTMLTableRowElementImpl : HTMLElementImpl, HTMLTableRowElement {
                 }
             })
         } catch (sve: StopVisitorException) {
-            return (sve.getTag() as Int)
+            return (sve.tag as Int)
         }
         return -1
     }
@@ -66,7 +66,7 @@ class HTMLTableRowElementImpl : HTMLElementImpl, HTMLTableRowElement {
 
     override fun getCells(): HTMLCollection {
         val filter: NodeFilter = object : NodeFilter {
-            override fun accept(node: Node?): Boolean {
+            override fun accept(node: Node): Boolean {
                 return node is HTMLTableCellElementImpl
             }
         }

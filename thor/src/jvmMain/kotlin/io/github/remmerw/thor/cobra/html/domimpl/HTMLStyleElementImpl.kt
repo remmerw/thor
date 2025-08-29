@@ -82,7 +82,7 @@ class HTMLStyleElementImpl : HTMLElementImpl, HTMLStyleElement, LinkStyle {
     @Throws(DOMException::class)
     override fun setAttribute(name: String, value: String?) {
         super.setAttribute(name, value)
-        if (isAttachedToDocument()) {
+        if (isAttachedToDocument) {
             val nameLowerCase = name.lowercase(Locale.getDefault())
             if ("type" == nameLowerCase || "media" == nameLowerCase || "title" == nameLowerCase) {
                 this.disabled = false
@@ -116,14 +116,14 @@ class HTMLStyleElementImpl : HTMLElementImpl, HTMLStyleElement, LinkStyle {
 
     // TODO: check if this method can be made private
     protected fun processStyle() {
-        if (isAttachedToDocument()) {
+        if (isAttachedToDocument) {
             /* check if type == "text/css" or no, empty value is also allowed as well.
        if it is something other than empty or "text/css" set the style sheet to null
        we need not check for the media type here, jStyle parser should take care of this.
        */
             if (this.isAllowedType) {
-                val uacontext = this.getUserAgentContext()
-                if (uacontext.isInternalCSSEnabled()) {
+                val uacontext = this.userAgentContext
+                if (uacontext!!.isInternalCSSEnabled()) {
                     val doc = this.ownerDocument as HTMLDocumentImpl
                     val newStyleSheet = processStyleHelper()
                     newStyleSheet.setDisabled(this.disabled)
@@ -147,7 +147,7 @@ class HTMLStyleElementImpl : HTMLElementImpl, HTMLStyleElement, LinkStyle {
             // TODO if the new StyleSheet contains any @import rules, then we should queue them for further processing. GH #137
             val jSheet = CSSUtilities.jParseStyleSheet(
                 this,
-                baseURI,
+                baseURI!!,
                 processedText,
                 doc.getUserAgentContext()
             )
@@ -170,7 +170,7 @@ class HTMLStyleElementImpl : HTMLElementImpl, HTMLStyleElement, LinkStyle {
         get() {
             val doc = this.ownerDocument as HTMLDocumentImpl
             return JStyleSheetWrapper(
-                CSSUtilities.getEmptyStyleSheet(),
+                CSSUtilities.emptyStyleSheet,
                 this.media,
                 null,
                 this.type,
@@ -198,7 +198,7 @@ class HTMLStyleElementImpl : HTMLElementImpl, HTMLStyleElement, LinkStyle {
     }
 
     override fun handleDocumentAttachmentChanged() {
-        if (isAttachedToDocument()) {
+        if (isAttachedToDocument) {
             this.processStyle()
         } else {
             this.detachStyleSheet()

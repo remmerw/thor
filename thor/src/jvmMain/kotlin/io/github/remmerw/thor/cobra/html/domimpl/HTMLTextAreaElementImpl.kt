@@ -31,7 +31,7 @@ class HTMLTextAreaElementImpl : HTMLBaseInputElement, HTMLTextAreaElement {
 
     constructor() : super("TEXTAREA")
 
-    protected override fun getFormInputs(): Array<FormInput?>? {
+    protected fun getFormInputs(): Array<FormInput>? {
         val name = this.name
         if (name == null) {
             return null
@@ -46,7 +46,7 @@ class HTMLTextAreaElementImpl : HTMLBaseInputElement, HTMLTextAreaElement {
      */
     override fun getCols(): Int {
         val ic = this.inputContext
-        return if (ic == null) 0 else ic.getCols()
+        return if (ic == null) 0 else ic.cols
     }
 
     /*
@@ -57,7 +57,7 @@ class HTMLTextAreaElementImpl : HTMLBaseInputElement, HTMLTextAreaElement {
     override fun setCols(cols: Int) {
         val ic = this.inputContext
         if (ic != null) {
-            ic.setCols(cols)
+            ic.cols = (cols)
         }
     }
 
@@ -68,7 +68,7 @@ class HTMLTextAreaElementImpl : HTMLBaseInputElement, HTMLTextAreaElement {
      */
     override fun getRows(): Int {
         val ic = this.inputContext
-        return if (ic == null) 0 else ic.getRows()
+        return if (ic == null) 0 else ic.rows
     }
 
     /*
@@ -79,7 +79,7 @@ class HTMLTextAreaElementImpl : HTMLBaseInputElement, HTMLTextAreaElement {
     override fun setRows(rows: Int) {
         val ic = this.inputContext
         if (ic != null) {
-            ic.setRows(rows)
+            ic.rows = (rows)
         }
     }
 

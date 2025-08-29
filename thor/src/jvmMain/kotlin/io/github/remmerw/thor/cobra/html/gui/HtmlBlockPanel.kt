@@ -916,7 +916,7 @@ class HtmlBlockPanel(
                     DocumentNotification.Companion.POSITION -> {
                         // TODO: Could be more efficient.
                         val node = dn.node
-                        val parent = node.getParentNode() as NodeImpl?
+                        val parent = node?.getParentNode() as NodeImpl?
                         if (parent != null) {
                             val uiNode = parent.findUINode()
                             if (uiNode != null) {
@@ -959,7 +959,7 @@ class HtmlBlockPanel(
         }
     }
 
-    override fun getParentContainer(): RenderableContainer? {
+    fun getParentContainer(): RenderableContainer? {
         return null
     }
 
@@ -967,7 +967,7 @@ class HtmlBlockPanel(
         throw UnsupportedOperationException("Delayed pairs are not being handled at this level.")
     }
 
-    override fun getDelayedPairs(): MutableCollection<DelayedPair?>? {
+    fun getDelayedPairs(): MutableCollection<DelayedPair?>? {
         throw UnsupportedOperationException("Delayed pairs are not being handled at this level.")
     }
 
@@ -1116,7 +1116,7 @@ class HtmlBlockPanel(
         private val loggableInfo: Boolean = logger.isLoggable(Level.INFO)
 
         @Suppress("unused")
-        private fun dumpRndTree(root: Renderable?) {
+        private fun dumpRndTree(root: Renderable) {
             println("------------------------------")
             RBlock.dumpRndTree("", true, root, true)
             println("------------------------------")

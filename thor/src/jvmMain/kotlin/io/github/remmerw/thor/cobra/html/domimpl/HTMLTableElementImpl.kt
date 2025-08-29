@@ -167,7 +167,7 @@ class HTMLTableElementImpl : HTMLAbstractUIElement, HTMLTableElement {
                 // TODO: convert attributes to CSS properties
                 return HtmlLength(
                     HtmlValues.getPixelSize(
-                        this.getAttribute("height"),
+                        this.getAttribute("height")!!,
                         this.getRenderState(),
                         0,
                         availHeight
@@ -202,7 +202,7 @@ class HTMLTableElementImpl : HTMLAbstractUIElement, HTMLTableElement {
                 // TODO: convert attributes to CSS properties
                 return HtmlLength(
                     HtmlValues.getPixelSize(
-                        this.getAttribute("width"),
+                        this.getAttribute("width")!!,
                         this.getRenderState(),
                         0,
                         availWidth
