@@ -155,8 +155,10 @@ internal open class RTableCell(
     // }
     //
     //
-    override fun setCellBounds(
-        colSizes: Array<ColSizeInfo>, rowSizes: Array<RowSizeInfo>, hasBorder: Int,
+    fun setCellBounds(
+        colSizes: Array<ColSizeInfo>,
+        rowSizes: Array<RowSizeInfo>,
+        hasBorder: Int,
         cellSpacingX: Int,
         cellSpacingY: Int
     ) {

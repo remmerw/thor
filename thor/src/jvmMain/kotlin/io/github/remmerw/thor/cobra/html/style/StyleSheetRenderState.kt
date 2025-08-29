@@ -1122,8 +1122,10 @@ open class StyleSheetRenderState : RenderState {
     companion object {
         @JvmStatic
         protected val INVALID_INSETS: HtmlInsets = HtmlInsets()
+
         @JvmStatic
         protected val INVALID_BACKGROUND_INFO: BackgroundInfo = BackgroundInfo()
+
         @JvmStatic
         protected val INVALID_BORDER_INFO: BorderInfo = BorderInfo()
         protected val INVALID_COLOR: Color = Color(100, 0, 100)

@@ -15,7 +15,7 @@ class Location internal constructor(private val window: Window) : AbstractScript
             var url: URL?
             try {
                 val document = this.window.documentNode
-                url = if (document == null) null else URL(document.getDocumentURI())
+                url = if (document == null) null else URL(document.documentURI)
             } catch (mfu: MalformedURLException) {
                 url = null
             }
@@ -82,7 +82,7 @@ class Location internal constructor(private val window: Window) : AbstractScript
     var href: String?
         get() {
             val document = this.window.documentNode
-            return if (document == null) null else document.getDocumentURI()
+            return if (document == null) null else document.documentURI
         }
         set(uri) {
             val rcontext = this.window.htmlRendererContext

@@ -40,7 +40,7 @@ class BlockRenderState : StyleSheetRenderState {
 
     constructor(document: HTMLDocumentImpl?) : super(document)
 
-    public fun getDefaultDisplay(): Int {
+    fun getDefaultDisplay(): Int {
         return RenderState.Companion.DISPLAY_BLOCK
     }
 

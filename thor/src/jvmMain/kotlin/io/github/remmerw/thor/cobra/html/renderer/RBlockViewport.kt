@@ -71,7 +71,8 @@ import kotlin.math.min
 class RBlockViewport(
     modelNode: ModelNode?, container: RenderableContainer?, listNesting: Int,
     pcontext: UserAgentContext,
-    rcontext: HtmlRendererContext, frameContext: FrameContext?, parent: RCollection?
+    rcontext: HtmlRendererContext, frameContext: FrameContext?,
+    override var parent: RCollection?
 ) : BaseRCollection(container, modelNode) {
     // private final ArrayList awtComponents = new ArrayList();
     private val listNesting: Int
@@ -80,7 +81,7 @@ class RBlockViewport(
     private val frameContext: FrameContext?
     var scrollX: Int = 0
     var scrollY: Int = 0
-    private var positionedRenderables: SortedSet<PositionedRenderable?>? = null
+    private var positionedRenderables: SortedSet<PositionedRenderable>? = null
     private var seqRenderables: ArrayList<BoundableRenderable>? = null
     private var exportableFloats: ArrayList<ExportableFloat?>? = null
 
@@ -130,7 +131,7 @@ class RBlockViewport(
      * @param parent       This is usually going to be the parent of `container`.
      */
     init {
-        this.parent = parent
+
         this.userAgentContext = pcontext
         this.rendererContext = rcontext
         this.frameContext = frameContext
@@ -1491,16 +1492,16 @@ class RBlockViewport(
         return this.getRenderable(point.x, point.y)
     }
 
-    fun getRenderables(point: Point): MutableIterator<out Renderable?>? {
+    fun getRenderables(point: Point): MutableIterator<Renderable?>? {
         return this.getRenderables(point.x, point.y)
     }
 
-    fun getRenderables(pointx: Int, pointy: Int): MutableIterator<out Renderable?>? {
+    fun getRenderables(pointx: Int, pointy: Int): MutableIterator<Renderable?>? {
         var result: MutableCollection<BoundableRenderable?>? = null
         val others = this.positionedRenderables
         val size = if (others == null) 0 else others.size
         val otherArray: Array<PositionedRenderable>? =
-            if (size == 0) null else others.toArray<PositionedRenderable?>(PositionedRenderable.Companion.EMPTY_ARRAY)
+            if (size == 0) null else emptyArray()
         // Try to find in other renderables with z-index >= 0 first.
         var index = 0
         if (otherArray != null) {
@@ -1756,7 +1757,7 @@ class RBlockViewport(
         // System.out.println("  to: " + this);
         var others = this.positionedRenderables
         if (others == null) {
-            others = TreeSet<PositionedRenderable?>(ZIndexComparator())
+            others = TreeSet(ZIndexComparator())
             this.positionedRenderables = others
         }
         others.add(pr)
@@ -1822,9 +1823,7 @@ class RBlockViewport(
         get() = TODO("Not yet implemented")
     override val origin: Point?
         get() = TODO("Not yet implemented")
-    override var parent: RCollection?
-        get() = TODO("Not yet implemented")
-        set(value) {}
+
     override var originalParent: RCollection?
         get() = TODO("Not yet implemented")
         set(value) {}
@@ -2742,7 +2741,13 @@ class RBlockViewport(
             markupElement: HTMLElementImpl
         ): RElement {
             val ho = this.htmlObject.get()
-            val uiControl: UIControl = UIControlWrapper(ho)
+            val c: Component
+            if (ho == null) {
+                c = BrokenComponent()
+            } else {
+                c = ho.component!!
+            }
+            val uiControl: UIControl = UIControlWrapper(ho!!, c)
             val ruiControl = RUIControl(
                 markupElement, uiControl, bodyLayout.container, bodyLayout.frameContext!!,
                 bodyLayout.userAgentContext

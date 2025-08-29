@@ -27,7 +27,7 @@ import java.awt.Font
 import java.awt.FontMetrics
 import java.util.Optional
 
- abstract class RenderStateDelegator(protected val delegate: RenderState) : RenderState {
+abstract class RenderStateDelegator(protected val delegate: RenderState) : RenderState {
     fun getAlignXPercent(): Int {
         return delegate.alignXPercent
     }
@@ -72,71 +72,71 @@ import java.util.Optional
         return delegate.textTransform
     }
 
-     override val position: Int
-         get() = TODO("Not yet implemented")
-     override val float: Int
-         get() = TODO("Not yet implemented")
-     override val clear: Int
-         get() = TODO("Not yet implemented")
-     override val visibility: Int
-         get() = TODO("Not yet implemented")
-     override val font: Font?
-         get() = TODO("Not yet implemented")
-     override val fontBase: Int
-         get() = TODO("Not yet implemented")
+    override val position: Int
+        get() = TODO("Not yet implemented")
+    override val float: Int
+        get() = TODO("Not yet implemented")
+    override val clear: Int
+        get() = TODO("Not yet implemented")
+    override val visibility: Int
+        get() = TODO("Not yet implemented")
+    override val font: Font?
+        get() = TODO("Not yet implemented")
+    override val fontBase: Int
+        get() = TODO("Not yet implemented")
 
-     override fun getWordInfo(word: String): WordInfo {
+    override fun getWordInfo(word: String): WordInfo {
         return delegate.getWordInfo(word)
     }
 
-     override val color: Color?
-         get() = TODO("Not yet implemented")
-     override val backgroundColor: Color?
-         get() = TODO("Not yet implemented")
-     override val textBackgroundColor: Color?
-         get() = TODO("Not yet implemented")
-     override val backgroundInfo: BackgroundInfo?
-         get() = TODO("Not yet implemented")
-     override val overlayColor: Color?
-         get() = TODO("Not yet implemented")
-     override val textTransform: Int
-         get() = TODO("Not yet implemented")
-     override val textDecorationMask: Int
-         get() = TODO("Not yet implemented")
-     override val fontMetrics: FontMetrics?
-         get() = TODO("Not yet implemented")
-     override val fontXHeight: Double
-         get() = TODO("Not yet implemented")
-     override val blankWidth: Int
-         get() = TODO("Not yet implemented")
-     override var isHighlight: Boolean
-         get() = TODO("Not yet implemented")
-         set(value) {}
-     override val alignXPercent: Int
-         get() = TODO("Not yet implemented")
-     override val alignYPercent: Int
-         get() = TODO("Not yet implemented")
+    override val color: Color?
+        get() = TODO("Not yet implemented")
+    override val backgroundColor: Color?
+        get() = TODO("Not yet implemented")
+    override val textBackgroundColor: Color?
+        get() = TODO("Not yet implemented")
+    override val backgroundInfo: BackgroundInfo?
+        get() = TODO("Not yet implemented")
+    override val overlayColor: Color?
+        get() = TODO("Not yet implemented")
+    override val textTransform: Int
+        get() = TODO("Not yet implemented")
+    override val textDecorationMask: Int
+        get() = TODO("Not yet implemented")
+    override val fontMetrics: FontMetrics?
+        get() = TODO("Not yet implemented")
+    override val fontXHeight: Double
+        get() = TODO("Not yet implemented")
+    override val blankWidth: Int
+        get() = TODO("Not yet implemented")
+    override var isHighlight: Boolean
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override val alignXPercent: Int
+        get() = TODO("Not yet implemented")
+    override val alignYPercent: Int
+        get() = TODO("Not yet implemented")
 
-     override fun invalidate() {
+    override fun invalidate() {
         delegate.invalidate()
     }
 
-     override val borderInfo: BorderInfo?
-         get() = TODO("Not yet implemented")
-     override val cursor: Optional<Cursor>?
-         get() = TODO("Not yet implemented")
-     override val left: String?
-         get() = TODO("Not yet implemented")
-     override val top: String?
-         get() = TODO("Not yet implemented")
-     override val right: String?
-         get() = TODO("Not yet implemented")
-     override val bottom: String?
-         get() = TODO("Not yet implemented")
-     override val verticalAlign: VerticalAlign?
-         get() = TODO("Not yet implemented")
+    override val borderInfo: BorderInfo?
+        get() = TODO("Not yet implemented")
+    override val cursor: Optional<Cursor>?
+        get() = TODO("Not yet implemented")
+    override val left: String?
+        get() = TODO("Not yet implemented")
+    override val top: String?
+        get() = TODO("Not yet implemented")
+    override val right: String?
+        get() = TODO("Not yet implemented")
+    override val bottom: String?
+        get() = TODO("Not yet implemented")
+    override val verticalAlign: VerticalAlign?
+        get() = TODO("Not yet implemented")
 
-     fun isHighlight(): Boolean {
+    fun isHighlight(): Boolean {
         return delegate.isHighlight
     }
 
@@ -148,10 +148,10 @@ import java.util.Optional
         return this.delegate.getCount(counter, nesting)
     }
 
-     override val display: Int
-         get() = TODO("Not yet implemented")
+    override val display: Int
+        get() = TODO("Not yet implemented")
 
-     override fun resetCount(counter: String?, nesting: Int, value: Int) {
+    override fun resetCount(counter: String?, nesting: Int, value: Int) {
         this.delegate.resetCount(counter, nesting, value)
     }
 
@@ -175,20 +175,20 @@ import java.util.Optional
         return this.delegate.getTextIndent(availWidth)
     }
 
-     override val textIndentText: String?
-         get() = TODO("Not yet implemented")
-     override val whiteSpace: Int
-         get() = TODO("Not yet implemented")
-     override val marginInsets: HtmlInsets?
-         get() = TODO("Not yet implemented")
-     override val paddingInsets: HtmlInsets?
-         get() = TODO("Not yet implemented")
-     override val overflowX: Int
-         get() = TODO("Not yet implemented")
-     override val overflowY: Int
-         get() = TODO("Not yet implemented")
+    override val textIndentText: String?
+        get() = TODO("Not yet implemented")
+    override val whiteSpace: Int
+        get() = TODO("Not yet implemented")
+    override val marginInsets: HtmlInsets?
+        get() = TODO("Not yet implemented")
+    override val paddingInsets: HtmlInsets?
+        get() = TODO("Not yet implemented")
+    override val overflowX: Int
+        get() = TODO("Not yet implemented")
+    override val overflowY: Int
+        get() = TODO("Not yet implemented")
 
-     fun getTextIndentText(): String? {
+    fun getTextIndentText(): String? {
         return this.delegate.textIndentText
     }
 

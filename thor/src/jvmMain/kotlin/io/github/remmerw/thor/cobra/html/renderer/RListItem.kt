@@ -107,7 +107,7 @@ internal class RListItem(
         super.paintShifted(g)
         val rs: RenderState = this.modelNode!!.renderState!!
         val marginInsets = this.marginInsets
-        val layout = this.bodyLayout
+        // TODO val layout = this.bodyLayout
         val listStyle = this.listStyle
         var bulletType = if (listStyle == null) ListStyle.TYPE_UNSET else listStyle.type
         if (bulletType != ListStyle.TYPE_NONE) {
@@ -130,7 +130,7 @@ internal class RListItem(
             try {
                 val insets = this.getInsets(this.hasHScrollBar, this.hasVScrollBar)
                 val paddingInsets = this.paddingInsets
-                val baselineOffset = layout.getFirstBaselineOffset()
+                val baselineOffset = 0 // TODO layout.getFirstBaselineOffset()
                 val bulletRight: Int =
                     (if (marginInsets == null) 0 else marginInsets.left) - BULLET_RMARGIN
                 val bulletBottom =

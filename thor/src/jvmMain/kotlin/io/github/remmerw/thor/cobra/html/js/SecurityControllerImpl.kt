@@ -48,9 +48,8 @@ class SecurityControllerImpl(private val url: URL?) :
             // TODO: Investigate
             return callable.call(ctx, scope, thisObj, args)
         } else {
-            val action: PrivilegedAction<*> =
-                PrivilegedAction { callable.call(ctx, scope, thisObj, args) }
-            val protectionDomain = securityDomain as ProtectionDomain
+            PrivilegedAction { callable.call(ctx, scope, thisObj, args) }
+            securityDomain as ProtectionDomain
             return null // todo
         }
     }
@@ -61,7 +60,7 @@ class SecurityControllerImpl(private val url: URL?) :
 
     override fun getDynamicSecurityDomain(securityDomain: Any?): Any {
 
-       return securityDomain!!
+        return securityDomain!!
 
     }
 

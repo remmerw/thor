@@ -459,7 +459,7 @@ object HtmlValues {
             try {
                 val `val` = valText.toDouble()
                 // Get fontSize in points (1/72 of an inch).
-                val fontSizePt = f!!.getSize2D()
+                val fontSizePt = f!!.size2D
                 /* Formula: fontSize in CSS pixels = (fontSizePt / 72.0) * 96.0;
                  *          fontSize in device pixels = (font size in css pixels * dpi) / 96.0
                  *                                    = (fontSizePt / 72.0) * dpi

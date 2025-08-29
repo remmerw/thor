@@ -740,7 +740,7 @@ class HtmlPanel : JComponent(), FrameContext, DefferedLayoutSupport {
                 return
             }
             notifs.forEach { i ->
-                if(i != null) {
+                if (i != null) {
                     notifsArray.add(i)
                 }
             }

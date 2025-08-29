@@ -2014,7 +2014,7 @@ open class RBlock(
 
         private fun isSimpleLine(r: Renderable?): Boolean {
             if (r is RLine) {
-                val rends = r.renderables
+                val rends = r.renderabl
                 rends.forEach { rend ->
                     if (!(rend is RWord || rend is RBlank || rend is RStyleChanger)) {
                         return false
@@ -2056,7 +2056,7 @@ open class RBlock(
                                 println(indentStr + selfIndentStr + " [empty]")
                             } else {
                                 val filteredRnds = CollectionUtilities.filter(
-                                    rnds.iterator(),
+                                    rnds,
                                     { fr: Renderable -> !isSimpleLine(fr) } as CollectionUtilities.FilterFunction<Renderable?>)
                                 while (filteredRnds.hasNext()) {
                                     val rnd = filteredRnds.next()

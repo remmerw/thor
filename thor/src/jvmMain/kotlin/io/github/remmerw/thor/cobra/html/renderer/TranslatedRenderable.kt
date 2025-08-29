@@ -282,7 +282,7 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
     val child: Renderable
         get() = translatedChild
 
-    override fun getRenderables(topFirst: Boolean): MutableIterator<Renderable> {
+    override fun getRenderables(topFirst: Boolean): MutableIterator<Renderable?> {
         return CollectionUtilities.singletonIterator<BoundableRenderable>(translatedChild)
     }
 

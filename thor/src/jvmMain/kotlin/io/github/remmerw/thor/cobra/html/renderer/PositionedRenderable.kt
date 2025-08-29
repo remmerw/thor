@@ -177,7 +177,7 @@ class PositionedRenderable(
                 }
                 // TODO: Handle other renderable types such as RTable
                 if (htmlRenderable is RBlock) {
-                    val htmlOffset = htmlRenderable.bodyLayout.getOrigin()
+                    val htmlOffset = Point(0,0) // TODO htmlRenderable.bodyLayout.getOrigin()
                     val htmlInsets = htmlRenderable.getInsetsMarginBorder(
                         htmlRenderable.hasHScrollBar,
                         htmlRenderable.hasVScrollBar
@@ -199,9 +199,5 @@ class PositionedRenderable(
 
     fun isReadyToPaint(): Boolean {
         return renderable.isReadyToPaint
-    }
-
-    companion object {
-        val EMPTY_ARRAY: Array<PositionedRenderable?> = arrayOfNulls<PositionedRenderable>(0)
     }
 }

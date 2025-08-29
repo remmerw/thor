@@ -4,11 +4,10 @@ import org.w3c.dom.html.HTMLHtmlElement
 
 object RenderUtils {
     fun findHtmlRenderable(root: RCollection): Renderable? {
-        val rs = root.getRenderables()
+        val rs = root.renderables
         if (rs != null) {
-            while (rs.hasNext()) {
-                val r = rs.next()
-                if (r.modelNode is HTMLHtmlElement) {
+           rs.forEach { r ->
+                if (r?.modelNode is HTMLHtmlElement) {
                     return r
                 }
             }

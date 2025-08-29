@@ -530,7 +530,7 @@ class Window // TODO: Probably need to create a new Window instance
         addJSTask(JSRunnableTask(0, object : Runnable {
             override fun run() {
                 try {
-                    val scriptURI = "window.eval"
+                    "window.eval"
                     /* TODO
                     val ctx = Executor.createContext(
                         this.currURL, this@Window.userAgentContext, windowContextFactory
@@ -1197,7 +1197,7 @@ class Window // TODO: Probably need to create a new Window instance
             // synchronized (this) {
             if (oldId != -1) {
                 //if (jsQueue.contains(oldId)) {
-                  //  return oldId
+                //  return oldId
                 //}
                 /*
         for (ScheduledTask t : jsQueue) {

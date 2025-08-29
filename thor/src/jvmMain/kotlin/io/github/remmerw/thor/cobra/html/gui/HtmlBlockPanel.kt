@@ -919,7 +919,7 @@ class HtmlBlockPanel(
                     DocumentNotification.Companion.POSITION -> {
                         // TODO: Could be more efficient.
                         val node = dn.node
-                        val parent = node?.getParentNode() as NodeImpl?
+                        val parent = node?.parentNode as NodeImpl?
                         if (parent != null) {
                             val uiNode = parent.findUINode()
                             if (uiNode != null) {

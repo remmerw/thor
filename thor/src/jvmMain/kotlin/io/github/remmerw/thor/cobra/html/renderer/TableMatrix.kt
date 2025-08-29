@@ -1888,10 +1888,6 @@ class TableMatrix(
             return null
         }
 
-        override fun paintShifted(g: Graphics?) {
-            // TODO Auto-generated method stub
-        }
-
         override fun paintShifted(g: Graphics) {
             TODO("Not yet implemented")
         }

@@ -6,23 +6,12 @@ import java.awt.Component
 import java.awt.Dimension
 import java.awt.Graphics
 
-internal class UIControlWrapper(ho: HtmlObject?) : UIControl {
+ class UIControlWrapper(val htmlObject: HtmlObject,
+                        override var component: Component?) : UIControl {
 
-    private val htmlObject: HtmlObject?
-
-    init {
-        this.htmlObject = ho
-        val c: Component
-        if (ho == null) {
-            c = BrokenComponent()
-        } else {
-            c = ho.component!!
-        }
-        this.component = c
-    }
 
     override fun reset(availWidth: Int, availHeight: Int) {
-        this.htmlObject!!.reset(availWidth, availHeight)
+        this.htmlObject.reset(availWidth, availHeight)
     }
 
     override var preferredSize: Dimension?
@@ -70,8 +59,4 @@ internal class UIControlWrapper(ho: HtmlObject?) : UIControl {
     override fun paint(g: Graphics?) {
         this.component!!.paint(g)
     }
-
-    override var component: Component?
-        get() = TODO("Not yet implemented")
-        set(value) {}
 }

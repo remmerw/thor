@@ -30,8 +30,11 @@ import io.github.remmerw.thor.cobra.html.domimpl.UINode
 import io.github.remmerw.thor.cobra.html.style.RenderState
 import io.github.remmerw.thor.cobra.ua.UserAgentContext
 import java.awt.Color
+import java.awt.Dimension
 import java.awt.Font
 import java.awt.Graphics
+import java.awt.Point
+import java.awt.Rectangle
 import java.awt.event.MouseEvent
 
 /**
@@ -53,6 +56,8 @@ open class RUIControl(
         private set
     protected var isHeightConstrained: Boolean = false
         private set
+    override val paintedBackgroundColor: Color?
+        get() = TODO("Not yet implemented")
 
     init {
 
@@ -65,6 +70,13 @@ open class RUIControl(
         val c = this.widget.component
         c?.requestFocus()
     }
+
+    override val parentContainer: RenderableContainer?
+        get() = TODO("Not yet implemented")
+    override val clipBounds: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val clipBoundsWithoutInsets: Rectangle?
+        get() = TODO("Not yet implemented")
 
     override fun invalidateLayoutLocal() {
         // Invalidate widget (some redundancy)
@@ -122,6 +134,9 @@ open class RUIControl(
         }
     }
 
+    override val isContainedByNode: Boolean
+        get() = TODO("Not yet implemented")
+
     override fun onMousePressed(event: MouseEvent?, x: Int, y: Int): Boolean {
         val me = this.modelNode
         if (me != null) {
@@ -148,6 +163,19 @@ open class RUIControl(
             return true
         }
     }
+
+    override val marginTop: Int
+        get() = TODO("Not yet implemented")
+    override val marginLeft: Int
+        get() = TODO("Not yet implemented")
+    override val marginBottom: Int
+        get() = TODO("Not yet implemented")
+    override val marginRight: Int
+        get() = TODO("Not yet implemented")
+    override val collapsibleMarginTop: Int
+        get() = TODO("Not yet implemented")
+    override val collapsibleMarginBottom: Int
+        get() = TODO("Not yet implemented")
 
     /*
      * (non-Javadoc)
@@ -229,6 +257,31 @@ open class RUIControl(
         // No text here
         return inSelection
     }
+
+    override val bounds: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val visualBounds: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val size: Dimension?
+        get() = TODO("Not yet implemented")
+    override val origin: Point?
+        get() = TODO("Not yet implemented")
+    override var parent: RCollection?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override var originalParent: RCollection?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override val originalOrCurrentParent: RCollection?
+        get() = TODO("Not yet implemented")
+    override val visualX: Int
+        get() = TODO("Not yet implemented")
+    override val visualY: Int
+        get() = TODO("Not yet implemented")
+    override val visualHeight: Int
+        get() = TODO("Not yet implemented")
+    override val visualWidth: Int
+        get() = TODO("Not yet implemented")
 
     override fun getLowestRenderableSpot(x: Int, y: Int): RenderableSpot {
         // Nothing draggable - return self
@@ -398,6 +451,9 @@ open class RUIControl(
         super.setInnerHeight(newHeight)
         this.isHeightConstrained = true
     }
+
+    override val isDelegated: Boolean
+        get() = TODO("Not yet implemented")
 
     private class LayoutKey(availWidth: Int, availHeight: Int, whitespace: Int, font: Font?) {
         val availWidth: Int

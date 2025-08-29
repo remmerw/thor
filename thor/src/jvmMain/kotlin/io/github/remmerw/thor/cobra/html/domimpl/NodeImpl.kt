@@ -77,7 +77,7 @@ import kotlin.run
 import kotlin.synchronized
 
 // TODO: Implement org.w3c.dom.events.EventTarget ?
- abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
+abstract class NodeImpl : AbstractScriptableDelegate(), Node, ModelNode {
     // Called in GUI thread always.
     // Called in GUI thread always.
 

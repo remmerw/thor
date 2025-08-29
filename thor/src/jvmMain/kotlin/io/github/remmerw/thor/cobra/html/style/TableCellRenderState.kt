@@ -175,7 +175,7 @@ class TableCellRenderState(prevRenderState: RenderState?, element: HTMLElementIm
 
     private val tableElement: HTMLTableElement?
         get() {
-            var ancestor = this.element!!.getParentNode()
+            var ancestor = this.element!!.parentNode
             while ((ancestor != null) && ancestor !is HTMLTableElement) {
                 ancestor = ancestor.parentNode
             }
@@ -240,7 +240,7 @@ class TableCellRenderState(prevRenderState: RenderState?, element: HTMLElementIm
             return ws
         }
         val props = this.cssProperties
-        val whiteSpaceText = if (props == null) null else props.getWhiteSpace()
+        val whiteSpaceText = if (props == null) null else props.whiteSpace
         var wsValue: Int
         if (whiteSpaceText == null) {
             val element = this.element
@@ -268,7 +268,7 @@ class TableCellRenderState(prevRenderState: RenderState?, element: HTMLElementIm
             // In table cells, if the width is defined as an absolute value,
             // nowrap has no effect (IE and FireFox behavior).
             val element = this.element
-            var width = if (props == null) null else props.getWidth()
+            var width = if (props == null) null else props.width
             if (width == null) {
                 width = element?.getAttribute("width")
                 if ((width != null) && (width.length > 0) && !width.endsWith("%")) {

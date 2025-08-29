@@ -46,7 +46,6 @@ import java.io.Reader
 import java.io.StringReader
 import java.net.MalformedURLException
 import java.net.URL
-import java.security.PrivilegedAction
 import java.util.StringTokenizer
 import java.util.logging.Level
 import java.util.logging.Logger
