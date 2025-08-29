@@ -60,17 +60,17 @@ abstract class EventDispatch2 {
             if ((listeners == null) || (listeners.size == 0)) {
                 return false
             }
-            larray = this.listeners.toArray<EventListener?>(EMPTY_ARRAY)
+            larray = this.listeners!!.toTypedArray()
         }
         val length = larray!!.size
         for (i in 0..<length) {
             // Call holding no locks
-            this.dispatchEvent(larray[i], event)
+            this.dispatchEvent(larray[i]!!, event)
         }
         return true
     }
 
-    protected abstract fun dispatchEvent(listener: EventListener?, event: EventObject?)
+    protected abstract fun dispatchEvent(listener: EventListener, event: EventObject?)
 
     companion object {
         private val EMPTY_ARRAY = arrayOfNulls<EventListener>(0)

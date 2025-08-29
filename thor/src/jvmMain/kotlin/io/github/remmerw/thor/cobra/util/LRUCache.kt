@@ -142,7 +142,7 @@ class LRUCache(var approxMaxSize: Int) : Serializable {
                 this.cacheMap.values.iterator()
             while (i.hasNext()) {
                 val ov = i.next()
-                val value = ov.value
+                val value = ov!!.value
                 val vc: Class<out Any?>? =
                     if (value == null) null else value.javaClass
                 list.add(EntryInfo(vc, ov.approximateSize))
@@ -159,10 +159,10 @@ class LRUCache(var approxMaxSize: Int) : Serializable {
     }
 
     private inner class OrderedValue(
-        private val key: Any?,
-        private var value: Any?,
-        private var approximateSize: Int
-    ) : Comparable<OrderedValue?>, Serializable {
+        val key: Any?,
+        var value: Any?,
+        var approximateSize: Int
+    ) : Comparable<OrderedValue>, Serializable {
         private var timestamp: Long = 0
 
         init {
@@ -193,9 +193,6 @@ class LRUCache(var approxMaxSize: Int) : Serializable {
             return hc1 - hc2
         }
 
-        companion object {
-            private const val serialVersionUID = 340227625744215821L
-        }
     }
 
     private inner class RemovalDispatch : EventDispatch2() {
