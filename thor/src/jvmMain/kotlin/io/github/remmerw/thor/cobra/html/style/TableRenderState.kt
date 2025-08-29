@@ -27,10 +27,10 @@ import java.net.MalformedURLException
 
 class TableRenderState(prevRenderState: RenderState?, element: HTMLElementImpl) :
     StyleSheetRenderState(prevRenderState, element) {
-    private var backgroundInfo: BackgroundInfo? =
+    override var backgroundInfo: BackgroundInfo? =
         INVALID_BACKGROUND_INFO
 
-    override fun getDefaultDisplay(): Int {
+    fun getDefaultDisplay(): Int {
         return RenderState.Companion.DISPLAY_TABLE
     }
 
@@ -51,7 +51,7 @@ class TableRenderState(prevRenderState: RenderState?, element: HTMLElementImpl) 
         if ((binfo == null) || (binfo.backgroundColor == null)) {
             val bgColor = element.bgColor
             if ((bgColor != null) && "" != bgColor) {
-                val bgc = ColorFactory.getInstance().getColor(bgColor)
+                val bgc = ColorFactory.instance!!.getColor(bgColor)
                 if (binfo == null) {
                     binfo = BackgroundInfo()
                 }
@@ -65,7 +65,7 @@ class TableRenderState(prevRenderState: RenderState?, element: HTMLElementImpl) 
                     binfo = BackgroundInfo()
                 }
                 try {
-                    binfo.backgroundImage = this.document.getFullURL(background)
+                    binfo.backgroundImage = this.document!!.getFullURL(background)
                 } catch (mfe: MalformedURLException) {
                     throw IllegalArgumentException(mfe)
                 }

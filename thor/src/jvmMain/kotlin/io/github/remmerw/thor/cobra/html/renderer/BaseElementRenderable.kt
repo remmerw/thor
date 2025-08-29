@@ -56,7 +56,7 @@ import javax.swing.SwingUtilities
 import kotlin.concurrent.Volatile
 
 abstract class BaseElementRenderable(
-    container: RenderableContainer,
+    container: RenderableContainer?,
     modelNode: ModelNode?,
     protected val userAgentContext: UserAgentContext?
 ) : BaseRCollection(container, modelNode), RElement, RenderableContainer, ImageObserver {

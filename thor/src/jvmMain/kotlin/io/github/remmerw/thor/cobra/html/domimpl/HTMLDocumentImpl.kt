@@ -61,7 +61,6 @@ import io.github.remmerw.thor.cobra.ua.UserAgentContext
 import io.github.remmerw.thor.cobra.ua.UserAgentContext.RequestKind
 import io.github.remmerw.thor.cobra.util.SecurityUtil
 import io.github.remmerw.thor.cobra.util.Urls
-import io.github.remmerw.thor.cobra.util.WeakValueHashMap
 import io.github.remmerw.thor.cobra.util.io.EmptyReader
 import io.github.remmerw.thor.cobra.validation.DomainValidation.isValidCookieDomain
 import org.mozilla.javascript.Function
@@ -128,7 +127,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
 
     @JvmField
     val window: Window
-    private val elementsById: MutableMap<String?, Element?> = WeakValueHashMap<String?, Element?>()
+    private val elementsById: MutableMap<String, Element?> = mutableMapOf()
     private val elementsByName: MutableMap<String?, Element?> = HashMap<String?, Element?>(0)
     private val documentNotificationListeners = ArrayList<DocumentNotificationListener>(1)
     private val imageInfos: MutableMap<String?, ImageInfo?> = HashMap<String?, ImageInfo?>(4)

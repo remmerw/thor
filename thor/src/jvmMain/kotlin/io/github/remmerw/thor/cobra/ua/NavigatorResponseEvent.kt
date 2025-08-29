@@ -23,12 +23,13 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 package io.github.remmerw.thor.cobra.ua
 
 import io.github.remmerw.thor.cobra.clientlet.ClientletResponse
+import java.net.URL
 
 /**
  * An event containing response information.
  */
 open class NavigatorResponseEvent(
-    source: Any?, eventType: NavigatorEventType?, clientletFrame: NavigatorFrame?,
+    source: Any, eventType: NavigatorEventType?, clientletFrame: NavigatorFrame?,
     response: ClientletResponse?,
     requestType: RequestType?
 ) : NavigatorEvent(source, eventType, clientletFrame) {
@@ -47,7 +48,7 @@ open class NavigatorResponseEvent(
         get() = if (this.response == null) null else this.response.lastRequestMethod
 
     override fun toString(): String {
-        return "NavigatorWindowEvent[type=" + this.getEventType() + ",url=" + this.url + "]"
+        return "NavigatorWindowEvent[type=" + this.eventType + ",url=" + this.url + "]"
     }
 
     companion object {

@@ -148,10 +148,10 @@ interface BoundableRenderable : Renderable {
     fun paintTranslated(g: Graphics)
 
     fun extractSelectionText(
-        buffer: StringBuffer?,
+        buffer: StringBuffer,
         inSelection: Boolean,
-        startPoint: RenderableSpot?,
-        endPoint: RenderableSpot?
+        startPoint: RenderableSpot,
+        endPoint: RenderableSpot
     ): Boolean
 
     fun repaint(x: Int, y: Int, width: Int, height: Int)

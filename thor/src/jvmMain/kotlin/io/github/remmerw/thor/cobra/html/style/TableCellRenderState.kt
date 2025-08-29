@@ -12,9 +12,9 @@ import java.util.Locale
 
 class TableCellRenderState(prevRenderState: RenderState?, element: HTMLElementImpl) :
     StyleSheetRenderState(prevRenderState, element) {
-    private var alignXPercent = -1
-    private var alignYPercent = -1
-    private var backgroundInfo: BackgroundInfo? =
+    override var alignXPercent = -1
+    override var alignYPercent = -1
+    override var backgroundInfo: BackgroundInfo? =
         INVALID_BACKGROUND_INFO
 
     override fun invalidate() {
@@ -30,7 +30,7 @@ class TableCellRenderState(prevRenderState: RenderState?, element: HTMLElementIm
         if (axp != -1) {
             return axp
         }
-        val props: CSS2Properties? = this.getCssProperties()
+        val props: CSS2Properties? = this.cssProperties
         if (props != null) {
             val textAlign = props.textAlign
             if ((textAlign != null) && (textAlign.length != 0)) {
@@ -38,7 +38,7 @@ class TableCellRenderState(prevRenderState: RenderState?, element: HTMLElementIm
             }
         }
         // Parent already knows about "align" attribute, but override because of TH.
-        var align = this.element.getAttribute("align")
+        var align = this.element!!.getAttribute("align")
         val element: HTMLElement = this.element
         var rowElement: HTMLElement? = null
         val parent: Any? = element.parentNode
@@ -84,14 +84,14 @@ class TableCellRenderState(prevRenderState: RenderState?, element: HTMLElementIm
         if (ayp != -1) {
             return ayp
         }
-        val props: CSS2Properties? = this.getCssProperties()
+        val props: CSS2Properties? = this.cssProperties
         if (props != null) {
             val textAlign = props.verticalAlign
             if ((textAlign != null) && (textAlign.length != 0)) {
                 return super.getAlignYPercent()
             }
         }
-        var valign = this.element.getAttribute("valign")
+        var valign = this.element!!.getAttribute("valign")
         val element: HTMLElement = this.element
         var rowElement: HTMLElement? = null
         val parent: Any? = element.parentNode
@@ -149,7 +149,7 @@ class TableCellRenderState(prevRenderState: RenderState?, element: HTMLElementIm
                 }
             }
             if ((bgColor != null) && "" != bgColor) {
-                val bgc = ColorFactory.getInstance().getColor(bgColor)
+                val bgc = ColorFactory.instance!!.getColor(bgColor)
                 if (binfo == null) {
                     binfo = BackgroundInfo()
                 }
@@ -163,7 +163,7 @@ class TableCellRenderState(prevRenderState: RenderState?, element: HTMLElementIm
                     binfo = BackgroundInfo()
                 }
                 try {
-                    binfo.backgroundImage = this.document.getFullURL(background)
+                    binfo.backgroundImage = this.document?.getFullURL(background)
                 } catch (mfe: MalformedURLException) {
                     throw IllegalArgumentException(mfe)
                 }
@@ -175,7 +175,7 @@ class TableCellRenderState(prevRenderState: RenderState?, element: HTMLElementIm
 
     private val tableElement: HTMLTableElement?
         get() {
-            var ancestor = this.element.getParentNode()
+            var ancestor = this.element!!.getParentNode()
             while ((ancestor != null) && ancestor !is HTMLTableElement) {
                 ancestor = ancestor.parentNode
             }
@@ -232,14 +232,14 @@ class TableCellRenderState(prevRenderState: RenderState?, element: HTMLElementIm
 
     override fun getWhiteSpace(): Int {
         // Overrides super.
-        if (RenderThreadState.Companion.getState().overrideNoWrap) {
+        if (RenderThreadState.Companion.state.overrideNoWrap) {
             return RenderState.Companion.WS_NOWRAP
         }
         val ws = this.iWhiteSpace
         if (ws != null) {
             return ws
         }
-        val props = this.getCssProperties()
+        val props = this.cssProperties
         val whiteSpaceText = if (props == null) null else props.getWhiteSpace()
         var wsValue: Int
         if (whiteSpaceText == null) {
@@ -249,7 +249,7 @@ class TableCellRenderState(prevRenderState: RenderState?, element: HTMLElementIm
             } else {
                 val prs = this.prevRenderState
                 if (prs != null) {
-                    wsValue = prs.getWhiteSpace()
+                    wsValue = prs.whiteSpace
                 } else {
                     wsValue = RenderState.Companion.WS_NORMAL
                 }
@@ -270,7 +270,7 @@ class TableCellRenderState(prevRenderState: RenderState?, element: HTMLElementIm
             val element = this.element
             var width = if (props == null) null else props.getWidth()
             if (width == null) {
-                width = element.getAttribute("width")
+                width = element?.getAttribute("width")
                 if ((width != null) && (width.length > 0) && !width.endsWith("%")) {
                     wsValue = RenderState.Companion.WS_NORMAL
                 }

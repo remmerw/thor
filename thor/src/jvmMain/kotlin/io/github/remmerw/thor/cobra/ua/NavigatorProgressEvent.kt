@@ -30,7 +30,7 @@ import java.net.URL
  * @see NavigatorWindowListener.progressUpdated
  */
 class NavigatorProgressEvent(
-    source: Any?, clientletFrame: NavigatorFrame?, progressType: ProgressType?,
+    source: Any, clientletFrame: NavigatorFrame?, progressType: ProgressType?,
     url: URL, method: String?,
     value: Int, max: Int
 ) : NavigatorEvent(source, NavigatorEventType.PROGRESS_UPDATED, clientletFrame) {
@@ -49,7 +49,7 @@ class NavigatorProgressEvent(
     }
 
     override fun toString(): String {
-        return "NavigatorProgressEvent[type=" + this.getEventType() + ", " + this.progressType + "]"
+        return "NavigatorProgressEvent[type=" + this.eventType + ", " + this.progressType + "]"
     }
 
     companion object {

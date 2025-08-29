@@ -24,6 +24,5 @@ import java.util.EventObject
 
 class RemovalEvent(source: Any, val valueRemoved: Any?) : EventObject(source) {
     companion object {
-        private val serialVersionUID = -5119617932860542348L
     }
 }

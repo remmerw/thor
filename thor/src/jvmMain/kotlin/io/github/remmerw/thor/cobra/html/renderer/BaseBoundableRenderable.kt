@@ -48,7 +48,8 @@ import javax.swing.SwingUtilities
       throw new IllegalStateException("parent=" + parent);
     }
   }*/(// protected final Rectangle bounds = new Rectangle();
-    protected val container: RenderableContainer, override val modelNode: ModelNode?
+    protected val container: RenderableContainer?,
+    override val modelNode: ModelNode?
 ) : BaseRenderable(), BoundableRenderable {
     override var width: Int = 0
     override var height: Int = 0
@@ -74,57 +75,57 @@ import javax.swing.SwingUtilities
         if (parent is BoundableRenderable) {
             return parent.getGUIPoint(clientX + this.x, clientY + this.y)
         } else if (parent == null) {
-            return this.container.getGUIPoint(clientX + this.x, clientY + this.y)
+            return this.container?.getGUIPoint(clientX + this.x, clientY + this.y)
         } else {
             throw IllegalStateException("parent=" + parent)
         }
     }
 
-    fun getHeight(): Int {
+    open fun getHeight(): Int {
         return height
     }
 
-    fun setHeight(height: Int) {
+    open fun setHeight(height: Int) {
         this.height = height
     }
 
-    fun getWidth(): Int {
+    open fun getWidth(): Int {
         return width
     }
 
-    fun setWidth(width: Int) {
+    open fun setWidth(width: Int) {
         this.width = width
     }
 
-    fun getVisualX(): Int {
+    open fun getVisualX(): Int {
         return getX()
     }
 
-    fun getVisualY(): Int {
+    open fun getVisualY(): Int {
         return getY()
     }
 
-    fun getVisualHeight(): Int {
+    open fun getVisualHeight(): Int {
         return getHeight()
     }
 
-    fun getVisualWidth(): Int {
+    open fun getVisualWidth(): Int {
         return getWidth()
     }
 
-    fun getX(): Int {
+    open fun getX(): Int {
         return x
     }
 
-    fun setX(x: Int) {
+    open fun setX(x: Int) {
         this.x = x
     }
 
-    fun getY(): Int {
+    open fun getY(): Int {
         return y
     }
 
-    fun setY(y: Int) {
+    open fun setY(y: Int) {
         this.y = y
     }
 
@@ -134,7 +135,7 @@ import javax.swing.SwingUtilities
         return (x >= mx) && (y >= my) && (x < (mx + this.getVisualWidth())) && (y < (my + this.getVisualHeight()))
     }
 
-    fun getBounds(): Rectangle {
+    open fun getBounds(): Rectangle {
         return Rectangle(this.x, this.y, this.width, this.height)
     }
 
@@ -142,11 +143,11 @@ import javax.swing.SwingUtilities
      * returns the visual bounds
      * They are distinct from layout bounds when {overflow:visible} or {position:relative} is set on the element
      */
-    fun getVisualBounds(): Rectangle {
+    open fun getVisualBounds(): Rectangle {
         return Rectangle(getVisualX(), getVisualY(), getVisualWidth(), getVisualHeight())
     }
 
-    fun getSize(): Dimension? {
+    open fun getSize(): Dimension? {
         return Dimension(this.width, this.height)
     }
 
@@ -214,7 +215,7 @@ import javax.swing.SwingUtilities
             parent.relayoutImpl(false, false)
         } else if (parent == null) {
             // Has to be top RBlock.
-            this.container.relayout()
+            this.container!!.relayout()
         } else {
             if (logger.isLoggable(Level.INFO)) {
                 logger.warning("relayout(): Don't know how to relayout " + this + ", parent being " + parent)
@@ -254,15 +255,15 @@ import javax.swing.SwingUtilities
     /**
      * This is the parent based on the original element hierarchy.
      */
-    fun getOriginalParent(): RCollection? {
+    open fun getOriginalParent(): RCollection? {
         return this.originalParent
     }
 
-    fun setOriginalParent(origParent: RCollection?) {
+    open fun setOriginalParent(origParent: RCollection?) {
         this.originalParent = origParent
     }
 
-    fun getOriginalOrCurrentParent(): RCollection? {
+    open fun getOriginalOrCurrentParent(): RCollection? {
         val origParent = this.originalParent
         if (origParent == null) {
             return this.parent
@@ -286,7 +287,7 @@ import javax.swing.SwingUtilities
             )
         } else if (parent == null) {
             // Has to be top RBlock.
-            this.container.repaint(x, y, width, height)
+            this.container?.repaint(x, y, width, height)
         } else {
             if (logger.isLoggable(Level.INFO)) {
                 logger.warning("repaint(): Don't know how to repaint " + this + ", parent being " + parent)
@@ -299,7 +300,7 @@ import javax.swing.SwingUtilities
     }
 
     open val blockBackgroundColor: Color?
-        get() = this.container.paintedBackgroundColor
+        get() = this.container!!.paintedBackgroundColor
 
     override fun paintTranslated(g: Graphics) {
         val x = this.x
@@ -333,7 +334,7 @@ import javax.swing.SwingUtilities
         }
     }
 
-    fun getOrigin(): Point? {
+    open fun getOrigin(): Point? {
         return Point(this.x, this.y)
     }
 
@@ -457,7 +458,9 @@ import javax.swing.SwingUtilities
     companion object {
         protected val logger: Logger =
             Logger.getLogger(BaseBoundableRenderable::class.java.name)
+        @JvmStatic
         protected val SELECTION_COLOR: Color? = Color.BLUE
+        @JvmStatic
         protected val SELECTION_XOR: Color? = Color.LIGHT_GRAY
     }
 }

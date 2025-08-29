@@ -24,8 +24,10 @@ package io.github.remmerw.thor.cobra.ua
 
 import io.github.remmerw.thor.cobra.clientlet.ClientletResponse
 import io.github.remmerw.thor.cobra.clientlet.ComponentContent
+import java.awt.Component
 import java.net.MalformedURLException
 import java.net.URL
+import java.util.Optional
 import java.util.Properties
 
 /**
@@ -333,9 +335,9 @@ interface NavigatorFrame {
      */
     val currentNavigationEntry: NavigationEntry?
 
-    val previousNavigationEntry: Optional<NavigationEntry?>?
+    val previousNavigationEntry: Optional<NavigationEntry>?
 
-    val nextNavigationEntry: Optional<NavigationEntry?>?
+    val nextNavigationEntry: Optional<NavigationEntry>?
 
     /**
      * Switches to a new navigation entry in the frame's history, according to the

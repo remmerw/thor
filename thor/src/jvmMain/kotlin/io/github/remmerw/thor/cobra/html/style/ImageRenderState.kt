@@ -31,7 +31,7 @@ class ImageRenderState(prevRenderState: RenderState?, element: HTMLElementImpl) 
         if (mi !== INVALID_INSETS) {
             return mi
         }
-        val props = this.getCssProperties()
+        val props = this.cssProperties
         if (props == null) {
             mi = null
         } else {
@@ -41,7 +41,7 @@ class ImageRenderState(prevRenderState: RenderState?, element: HTMLElementImpl) 
             var hspace = 0
             var vspace = 0
             var createNew = false
-            val hspaceText = this.element.getAttribute("hspace")
+            val hspaceText = this.element?.getAttribute("hspace")
             if ((hspaceText != null) && (hspaceText.length != 0)) {
                 createNew = true
                 try {
@@ -50,7 +50,7 @@ class ImageRenderState(prevRenderState: RenderState?, element: HTMLElementImpl) 
                     // TODO: Percentages?
                 }
             }
-            val vspaceText = this.element.getAttribute("vspace")
+            val vspaceText = this.element?.getAttribute("vspace")
             if ((vspaceText != null) && (vspaceText.length != 0)) {
                 createNew = true
                 try {

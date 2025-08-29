@@ -29,50 +29,50 @@ import java.util.Optional
 
 abstract class RenderStateDelegator(protected val delegate: RenderState) : RenderState {
     fun getAlignXPercent(): Int {
-        return delegate.getAlignXPercent()
+        return delegate.alignXPercent
     }
 
     fun getAlignYPercent(): Int {
-        return delegate.getAlignYPercent()
+        return delegate.alignYPercent
     }
 
     fun getBlankWidth(): Int {
-        return delegate.getBlankWidth()
+        return delegate.blankWidth
     }
 
     fun getColor(): Color? {
-        return delegate.getColor()
+        return delegate.color
     }
 
     fun getFont(): Font? {
-        return delegate.getFont()
+        return delegate.font
     }
 
     open fun getFontBase(): Int {
-        return delegate.getFontBase()
+        return delegate.fontBase
     }
 
     fun getFontMetrics(): FontMetrics? {
-        return delegate.getFontMetrics()
+        return delegate.fontMetrics
     }
 
     fun getOverlayColor(): Color? {
-        return delegate.getOverlayColor()
+        return delegate.overlayColor
     }
 
     fun getBackgroundColor(): Color? {
-        return delegate.getBackgroundColor()
+        return delegate.backgroundColor
     }
 
     fun getTextDecorationMask(): Int {
-        return delegate.getTextDecorationMask()
+        return delegate.textDecorationMask
     }
 
     fun getTextTransform(): Int {
-        return delegate.getTextTransform()
+        return delegate.textTransform
     }
 
-    override fun getWordInfo(word: String?): WordInfo? {
+    override fun getWordInfo(word: String): WordInfo {
         return delegate.getWordInfo(word)
     }
 
@@ -85,7 +85,7 @@ abstract class RenderStateDelegator(protected val delegate: RenderState) : Rende
     }
 
     fun setHighlight(highlight: Boolean) {
-        delegate.setHighlight(highlight)
+        delegate.isHighlight = (highlight)
     }
 
     override fun getCount(counter: String?, nesting: Int): Int {
@@ -101,7 +101,7 @@ abstract class RenderStateDelegator(protected val delegate: RenderState) : Rende
     }
 
     fun getBackgroundInfo(): BackgroundInfo? {
-        return this.delegate.getBackgroundInfo()
+        return this.delegate.backgroundInfo
     }
 
     fun getDisplay(): Int {
@@ -117,23 +117,23 @@ abstract class RenderStateDelegator(protected val delegate: RenderState) : Rende
     }
 
     fun getTextIndentText(): String? {
-        return this.delegate.getTextIndentText()
+        return this.delegate.textIndentText
     }
 
     fun getWhiteSpace(): Int {
-        return this.delegate.getWhiteSpace()
+        return this.delegate.whiteSpace
     }
 
     fun getMarginInsets(): HtmlInsets? {
-        return this.delegate.getMarginInsets()
+        return this.delegate.marginInsets
     }
 
     fun getPaddingInsets(): HtmlInsets? {
-        return this.delegate.getPaddingInsets()
+        return this.delegate.paddingInsets
     }
 
     fun getVisibility(): Int {
-        return this.delegate.getVisibility()
+        return this.delegate.visibility
     }
 
     fun getPosition(): Int {
@@ -153,38 +153,38 @@ abstract class RenderStateDelegator(protected val delegate: RenderState) : Rende
     }
 
     fun getOverflowY(): Int {
-        return this.delegate.getOverflowY()
+        return this.delegate.overflowY
     }
 
     fun getBorderInfo(): BorderInfo? {
-        return this.delegate.getBorderInfo()
+        return this.delegate.borderInfo
     }
 
-    fun getCursor(): Optional<Cursor?>? {
-        return this.delegate.getCursor()
+    fun getCursor(): Optional<Cursor>? {
+        return this.delegate.cursor
     }
 
     fun getLeft(): String? {
-        return this.delegate.getLeft()
+        return this.delegate.left
     }
 
     fun getTop(): String? {
-        return this.delegate.getTop()
+        return this.delegate.top
     }
 
     fun getBottom(): String? {
-        return this.delegate.getBottom()
+        return this.delegate.bottom
     }
 
     fun getRight(): String? {
-        return this.delegate.getRight()
+        return this.delegate.right
     }
 
     fun getFontXHeight(): Double {
-        return this.delegate.getFontXHeight()
+        return this.delegate.fontXHeight
     }
 
     fun getVerticalAlign(): VerticalAlign? {
-        return this.delegate.getVerticalAlign()
+        return this.delegate.verticalAlign
     }
 }

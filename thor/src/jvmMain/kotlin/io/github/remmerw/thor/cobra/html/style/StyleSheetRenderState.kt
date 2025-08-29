@@ -449,7 +449,7 @@ open class StyleSheetRenderState : RenderState {
         return wi
     }
 
-    fun getAlignXPercent(): Int {
+    open fun getAlignXPercent(): Int {
         var axp = this.alignXPercent
         if (axp != -1) {
             return axp
@@ -480,7 +480,7 @@ open class StyleSheetRenderState : RenderState {
         return axp
     }
 
-    fun getAlignYPercent(): Int {
+    open fun getAlignYPercent(): Int {
         // This is only settable in table cells.
         // TODO: Does it work with display: table-cell?
         return 0
@@ -642,7 +642,7 @@ open class StyleSheetRenderState : RenderState {
         }
     }
 
-    fun getWhiteSpace(): Int {
+    open fun getWhiteSpace(): Int {
         if (RenderThreadState.Companion.state.overrideNoWrap) {
             return RenderState.Companion.WS_NOWRAP
         }
@@ -669,7 +669,7 @@ open class StyleSheetRenderState : RenderState {
         return wsValue
     }
 
-    fun getMarginInsets(): HtmlInsets? {
+    open fun getMarginInsets(): HtmlInsets? {
         var mi = this.marginInsets
         if (mi !== INVALID_INSETS) {
             return mi
@@ -684,7 +684,7 @@ open class StyleSheetRenderState : RenderState {
         return mi
     }
 
-    fun getPaddingInsets(): HtmlInsets? {
+    open fun getPaddingInsets(): HtmlInsets? {
         var mi = this.paddingInsets
         if (mi !== INVALID_INSETS) {
             return mi
@@ -896,7 +896,7 @@ open class StyleSheetRenderState : RenderState {
         return "StyleSheetRenderState[font=" + this.getFont() + ",textDecoration=" + this.getTextDecorationMask() + "]"
     }
 
-    fun getOverflowX(): Int {
+    open fun getOverflowX(): Int {
         var overflow = this.overflowX
         if (overflow != -1) {
             return overflow
@@ -931,7 +931,7 @@ open class StyleSheetRenderState : RenderState {
         return overflow
     }
 
-    fun getOverflowY(): Int {
+    open fun getOverflowY(): Int {
         var overflow = this.overflowY
         if (overflow != -1) {
             return overflow
@@ -966,7 +966,7 @@ open class StyleSheetRenderState : RenderState {
         return overflow
     }
 
-    fun getBorderInfo(): BorderInfo? {
+    open fun getBorderInfo(): BorderInfo? {
         var binfo = this.borderInfo
         if (binfo !== INVALID_BORDER_INFO) {
             return binfo
@@ -1061,9 +1061,11 @@ open class StyleSheetRenderState : RenderState {
     }
 
     companion object {
+        @JvmStatic
         protected val INVALID_INSETS: HtmlInsets = HtmlInsets()
         @JvmStatic
         protected val INVALID_BACKGROUND_INFO: BackgroundInfo = BackgroundInfo()
+        @JvmStatic
         protected val INVALID_BORDER_INFO: BorderInfo = BorderInfo()
         protected val INVALID_COLOR: Color = Color(100, 0, 100)
         private val FONT_FACTORY: FontFactory = FontFactory.instance

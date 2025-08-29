@@ -30,7 +30,7 @@ import io.github.remmerw.thor.cobra.clientlet.ClientletResponse
  * @see NavigatorErrorListener.errorOcurred
  */
 class NavigatorExceptionEvent(
-    source: Any?, eventType: NavigatorEventType?, clientletFrame: NavigatorFrame?,
+    source: Any, eventType: NavigatorEventType?, clientletFrame: NavigatorFrame?,
     response: ClientletResponse?,
     exception: Throwable?, requestType: RequestType?
 ) : NavigatorResponseEvent(source, eventType, clientletFrame, response, requestType) {

@@ -30,7 +30,7 @@ import java.awt.Graphics
  * Represents a renderer (view) node.
  */
 interface Renderable {
-    fun paint(g: Graphics?)
+    fun paint(g: Graphics)
 
     val modelNode: ModelNode?
 

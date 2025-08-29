@@ -31,21 +31,18 @@ class NavigatorWindowEvent : NavigatorResponseEvent {
     val message: String?
 
     constructor(
-        source: Any?, eventType: NavigatorEventType?, clientletFrame: NavigatorFrame?,
+        source: Any, eventType: NavigatorEventType?, clientletFrame: NavigatorFrame?,
         response: ClientletResponse?, requestType: RequestType?
     ) : super(source, eventType, clientletFrame, response, requestType) {
         this.message = null
     }
 
     constructor(
-        source: Any?, eventType: NavigatorEventType?, clientletFrame: NavigatorFrame?,
+        source: Any, eventType: NavigatorEventType?, clientletFrame: NavigatorFrame?,
         message: String?,
         requestType: RequestType?
     ) : super(source, eventType, clientletFrame, null, requestType) {
         this.message = message
     }
 
-    companion object {
-        private val serialVersionUID = -7761109600834439651L
-    }
 }

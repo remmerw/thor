@@ -18,24 +18,24 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
         this.translatedChild = translatedChild
     }
 
-    override fun paint(g: Graphics?) {
+    override fun paint(g: Graphics) {
         translatedChild.paintTranslated(g)
     }
 
-    override fun isFixed(): Boolean {
-        return translatedChild.isFixed()
+    fun isFixed(): Boolean {
+        return translatedChild.isFixed
     }
 
     override fun getModelNode(): ModelNode? {
         return translatedChild.getModelNode()
     }
 
-    override fun getBounds(): Rectangle? {
-        return translatedChild.getBounds()
+    override fun getBounds(): Rectangle {
+        return translatedChild.bounds!!
     }
 
-    override fun getVisualBounds(): Rectangle? {
-        return translatedChild.getVisualBounds()
+    override fun getVisualBounds(): Rectangle {
+        return translatedChild.visualBounds!!
     }
 
     override fun contains(x: Int, y: Int): Boolean {
@@ -43,11 +43,11 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
     }
 
     override fun getSize(): Dimension? {
-        return translatedChild.getSize()
+        return translatedChild.size
     }
 
     override fun getOrigin(): Point? {
-        return translatedChild.getOrigin()
+        return translatedChild.origin
     }
 
     override fun getOriginRelativeTo(ancestor: RCollection?): Point {
@@ -67,15 +67,15 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
     }
 
     override fun getOriginalParent(): RCollection? {
-        return translatedChild.getOriginalParent()
+        return translatedChild.originalParent
     }
 
     override fun setOriginalParent(origParent: RCollection?) {
-        translatedChild.setOriginalParent(origParent)
+        translatedChild.originalParent = (origParent)
     }
 
     override fun getOriginalOrCurrentParent(): RCollection? {
-        return translatedChild.getOriginalOrCurrentParent()
+        return translatedChild.originalOrCurrentParent
     }
 
     override fun setBounds(x: Int, y: Int, with: Int, height: Int) {
@@ -87,51 +87,51 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
     }
 
     override fun getX(): Int {
-        return translatedChild.getX()
+        return translatedChild.x
     }
 
     override fun setX(x: Int) {
-        translatedChild.setX(x)
+        translatedChild.x = (x)
     }
 
     override fun getY(): Int {
-        return translatedChild.getY()
+        return translatedChild.y
     }
 
     override fun setY(y: Int) {
-        translatedChild.setY(y)
+        translatedChild.y = (y)
     }
 
     override fun getVisualX(): Int {
-        return translatedChild.getVisualX()
+        return translatedChild.visualX
     }
 
     override fun getVisualY(): Int {
-        return translatedChild.getVisualY()
+        return translatedChild.visualY
     }
 
     override fun getHeight(): Int {
-        return translatedChild.getHeight()
+        return translatedChild.height
     }
 
     override fun setHeight(height: Int) {
-        translatedChild.setHeight(height)
+        translatedChild.height = (height)
     }
 
     override fun getWidth(): Int {
-        return translatedChild.getWidth()
+        return translatedChild.width
     }
 
     override fun setWidth(width: Int) {
-        translatedChild.setWidth(width)
+        translatedChild.width = (width)
     }
 
     override fun getVisualHeight(): Int {
-        return translatedChild.getVisualHeight()
+        return translatedChild.visualHeight
     }
 
     override fun getVisualWidth(): Int {
-        return translatedChild.getVisualWidth()
+        return translatedChild.visualWidth
     }
 
     override fun getLowestRenderableSpot(x: Int, y: Int): RenderableSpot? {
@@ -184,24 +184,24 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
         translatedChild.onMouseOut(event, x, y, limit)
     }
 
-    override fun isContainedByNode(): Boolean {
-        return translatedChild.isContainedByNode()
+    fun isContainedByNode(): Boolean {
+        return translatedChild.isContainedByNode
     }
 
     override fun paintSelection(
-        g: Graphics?,
+        g: Graphics,
         inSelection: Boolean,
-        startPoint: RenderableSpot?,
-        endPoint: RenderableSpot?
+        startPoint: RenderableSpot,
+        endPoint: RenderableSpot
     ): Boolean {
         return translatedChild.paintSelection(g, inSelection, startPoint, endPoint)
     }
 
     override fun extractSelectionText(
-        buffer: StringBuffer?,
+        buffer: StringBuffer,
         inSelection: Boolean,
-        startPoint: RenderableSpot?,
-        endPoint: RenderableSpot?
+        startPoint: RenderableSpot,
+        endPoint: RenderableSpot
     ): Boolean {
         return translatedChild.extractSelectionText(buffer, inSelection, startPoint, endPoint)
     }
@@ -226,15 +226,15 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
             val rect = Rectangle(x, y, width, height)
             rect.translate(or.x, or.y)
         }
-        getParent().repaint(x + or.x, y + or.y, width, height)
+        getParent()?.repaint(x + or.x, y + or.y, width, height)
     }
 
     override fun relayout() {
         translatedChild.relayout()
     }
 
-    override fun getZIndex(): Int {
-        return translatedChild.getZIndex()
+    fun getZIndex(): Int {
+        return translatedChild.zIndex
     }
 
     override fun invalidateLayoutLocal() {
@@ -248,7 +248,7 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
     val child: Renderable
         get() = translatedChild
 
-    override fun getRenderables(topFirst: Boolean): MutableIterator<out Renderable> {
+    override fun getRenderables(topFirst: Boolean): MutableIterator<Renderable> {
         return CollectionUtilities.singletonIterator<BoundableRenderable>(translatedChild)
     }
 
@@ -284,20 +284,20 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
         return null
     }
 
-    override fun getClipBounds(): Rectangle? {
+    fun getClipBounds(): Rectangle? {
         if (translatedChild is RCollection) {
-            return translatedChild.getClipBounds()
+            return translatedChild.clipBounds
         }
 
         return null
     }
 
-    override fun getClipBoundsWithoutInsets(): Rectangle? {
+    fun getClipBoundsWithoutInsets(): Rectangle? {
         // TODO: Stub
         return getClipBounds()
     }
 
-    override fun isReadyToPaint(): Boolean {
-        return translatedChild.isReadyToPaint()
+    fun isReadyToPaint(): Boolean {
+        return translatedChild.isReadyToPaint
     }
 }

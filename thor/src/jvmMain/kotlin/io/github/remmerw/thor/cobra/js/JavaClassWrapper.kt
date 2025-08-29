@@ -114,9 +114,9 @@ class JavaClassWrapper(private val javaClass: Class<*>) {
             this.nameIndexer = indexer
         }
         if (getter) {
-            indexer.setGetter(method)
+            indexer.getter = (method)
         } else {
-            indexer.setSetter(method)
+            indexer.setter = (method)
         }
     }
 
@@ -129,9 +129,9 @@ class JavaClassWrapper(private val javaClass: Class<*>) {
             this.integerIndexer = indexer
         }
         if (getter) {
-            indexer.setGetter(method)
+            indexer.getter = (method)
         } else {
-            indexer.setSetter(method)
+            indexer.setter = (method)
         }
     }
 
@@ -165,10 +165,10 @@ class JavaClassWrapper(private val javaClass: Class<*>) {
             this.properties.put(propertyName, pinfo)
         }
         if (getter) {
-            pinfo.setGetter(method)
+            pinfo.getter = (method)
         }
         if (setter) {
-            pinfo.setSetter(method)
+            pinfo.setter = (method)
         }
     }
 
@@ -178,7 +178,7 @@ class JavaClassWrapper(private val javaClass: Class<*>) {
 
     fun hasInstance(instance: Scriptable?): Boolean {
         if (instance is JavaObjectWrapper) {
-            return javaClass.isInstance(instance.getJavaObject())
+            return javaClass.isInstance(instance.javaObject)
         }
         return javaClass.isInstance(instance)
     }

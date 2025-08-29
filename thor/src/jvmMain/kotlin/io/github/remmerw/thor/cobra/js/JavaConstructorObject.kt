@@ -62,7 +62,7 @@ class JavaConstructorObject : ScriptableObject, Function {
 
     override fun construct(cx: Context?, scope: Scriptable?, args: Array<Any?>?): Scriptable {
         try {
-            val javaObject = this.instantiator.newInstance(args)
+            val javaObject = this.instantiator.newInstance(args)!!
             val newObject: Scriptable = JavaObjectWrapper(this.classWrapper, javaObject)
             newObject.parentScope = scope
             return newObject

@@ -30,13 +30,13 @@ import java.util.LinkedList
  * @author J. H. S.
  */
 class EventDispatch {
-    private var listeners: MutableCollection<GenericEventListener?>? = null
+    private var listeners: MutableCollection<GenericEventListener>? = null
 
-    fun createListenerCollection(): MutableCollection<GenericEventListener?> {
-        return LinkedList<GenericEventListener?>()
+    fun createListenerCollection(): MutableCollection<GenericEventListener> {
+        return LinkedList<GenericEventListener>()
     }
 
-    fun addListener(listener: GenericEventListener?) {
+    fun addListener(listener: GenericEventListener) {
         synchronized(this) {
             if (this.listeners == null) {
                 this.listeners = this.createListenerCollection()
@@ -45,7 +45,7 @@ class EventDispatch {
         }
     }
 
-    fun removeListener(listener: GenericEventListener?) {
+    fun removeListener(listener: GenericEventListener) {
         synchronized(this) {
             if (this.listeners != null) {
                 this.listeners!!.remove(listener)
@@ -57,8 +57,7 @@ class EventDispatch {
         var larray: Array<GenericEventListener>? = null
         synchronized(this) {
             if (this.listeners != null) {
-                larray =
-                    this.listeners.toArray<GenericEventListener?>(GenericEventListener.Companion.EMPTY_ARRAY)
+                // TODO larray = this.listeners.toTypedArray()
             }
         }
         if (larray != null) {
