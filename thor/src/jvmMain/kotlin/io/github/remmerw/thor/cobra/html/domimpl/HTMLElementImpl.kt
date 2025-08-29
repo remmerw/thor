@@ -25,7 +25,7 @@ package io.github.remmerw.thor.cobra.html.domimpl
 import cz.vutbr.web.css.MatchCondition
 import cz.vutbr.web.css.NodeData
 import cz.vutbr.web.css.RuleSet
-import cz.vutbr.web.css.Selector.PseudoDeclaration
+import cz.vutbr.web.css.Selector
 import cz.vutbr.web.css.StyleSheet
 import cz.vutbr.web.css.TermList
 import cz.vutbr.web.csskit.MatchConditionOnElements
@@ -131,7 +131,7 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
         }
     }
 
-    private fun getNodeData(psuedoElement: PseudoDeclaration?): NodeData? {
+    private fun getNodeData(psuedoElement: Selector.PseudoElementType?): NodeData? {
         // The analyzer needs the tree lock, when traversing the DOM.
         // To break deadlocks, we take the tree lock before taking the element lock (priority based dead-lock break).
         synchronized(this.treeLock) {
@@ -177,14 +177,14 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
                 this.beforeNode = setupGeneratedNode(
                     doc,
                     nodeData,
-                    PseudoDeclaration.BEFORE,
+                    Selector.PseudoElementType.BEFORE,
                     cachedRules!!,
                     this
                 )
                 this.afterNode = setupGeneratedNode(
                     doc,
                     nodeData,
-                    PseudoDeclaration.AFTER,
+                    Selector.PseudoElementType.AFTER,
                     cachedRules!!,
                     this
                 )
@@ -342,9 +342,9 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
         // TODO: Synchronize with treeLock here instead of in invalidateDescendtsForHover?
         if (this.isMouseOver != mouseOver) {
             if (mouseOver) {
-                elementMatchCondition.addMatch(this, PseudoDeclaration.HOVER)
+                elementMatchCondition.addMatch(this, Selector.PseudoClassType.HOVER)
             } else {
-                elementMatchCondition.removeMatch(this, PseudoDeclaration.HOVER)
+                elementMatchCondition.removeMatch(this, Selector.PseudoClassType.HOVER)
             }
             // Change isMouseOver field before checking to invalidate.
             this.isMouseOver = mouseOver
@@ -389,7 +389,7 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
         synchronized(this.treeLock) {
             if (!mouseOver) {
                 val hoverCondition = elementMatchCondition.clone() as MatchConditionOnElements
-                hoverCondition.addMatch(this, PseudoDeclaration.HOVER)
+                hoverCondition.addMatch(this, Selector.PseudoClassType.HOVER)
                 invalidateDescendentsForHoverImpl(this, hoverCondition)
             } else {
                 invalidateDescendentsForHoverImpl(this, elementMatchCondition)
@@ -427,7 +427,7 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
             rules,
             this,
             elementMatchCondition,
-            PseudoDeclaration.HOVER
+            Selector.PseudoClassType.HOVER
         )
     }
 
@@ -447,7 +447,7 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
             ancestor,
             doc.matcher,
             hoverCondition,
-            PseudoDeclaration.HOVER
+            Selector.PseudoClassType.HOVER
         )
     }
 
@@ -937,7 +937,7 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
         private fun setupGeneratedNode(
             doc: HTMLDocumentImpl,
             nodeData: NodeData?,
-            decl: PseudoDeclaration?,
+            decl: Selector.PseudoElementType?,
             rules: Array<OrderedRule>,
             elem: HTMLElementImpl?
         ): GeneratedElement? {
@@ -968,7 +968,7 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
                 val r = or.rule
                 for (cs in r.selectors) {
                     for (s in cs) {
-                        if (s.hasPseudoDeclaration(PseudoDeclaration.HOVER)) {
+                        if (s.hasPseudoClass(Selector.PseudoClassType.HOVER)) {
                             return true
                         }
                     }
@@ -977,7 +977,7 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
             return false
         }
 
-        private fun getPseudoDeclaration(pseudoElement: String?): PseudoDeclaration? {
+        private fun getPseudoDeclaration(pseudoElement: String?): Selector.PseudoElementType? {
             if ((pseudoElement != null)) {
                 var choppedPseudoElement: String? = pseudoElement
                 if (pseudoElement.startsWith("::")) {
@@ -985,12 +985,10 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
                 } else if (pseudoElement.startsWith(":")) {
                     choppedPseudoElement = pseudoElement.substring(1)
                 }
-                val pseudoDeclarations = PseudoDeclaration.entries.toTypedArray()
+                val pseudoDeclarations = Selector.PseudoElementType.entries.toTypedArray()
                 for (pd in pseudoDeclarations) {
-                    if (pd.isPseudoElement) {
-                        if (pd.value() == choppedPseudoElement) {
-                            return pd
-                        }
+                    if (pd.name == choppedPseudoElement) {
+                        return pd
                     }
                 }
             }

@@ -28,12 +28,12 @@ import cz.vutbr.web.css.MediaSpec
 import cz.vutbr.web.css.StyleSheet
 import cz.vutbr.web.csskit.ElementMatcherSafeCS
 import cz.vutbr.web.csskit.ElementMatcherSafeStd
-import cz.vutbr.web.csskit.antlr.CSSParserFactory
+import cz.vutbr.web.csskit.antlr4.CSSParserFactory
 import cz.vutbr.web.domassign.Analyzer
 import cz.vutbr.web.domassign.AnalyzerUtil
-import io.github.remmerw.thor.cobra.css.domimpl.JStyleSheetWrapper
-import io.github.remmerw.thor.cobra.css.domimpl.JStyleSheetWrapper.Companion.getStyleSheets
-import io.github.remmerw.thor.cobra.css.domimpl.StyleSheetBridge
+import io.github.remmerw.thor.css.JStyleSheetWrapper
+import io.github.remmerw.thor.css.JStyleSheetWrapper.Companion.getStyleSheets
+import io.github.remmerw.thor.css.StyleSheetBridge
 import io.github.remmerw.thor.cobra.html.HtmlRendererContext
 import io.github.remmerw.thor.cobra.html.domimpl.NodeFilter.AnchorFilter
 import io.github.remmerw.thor.cobra.html.domimpl.NodeFilter.AppletFilter

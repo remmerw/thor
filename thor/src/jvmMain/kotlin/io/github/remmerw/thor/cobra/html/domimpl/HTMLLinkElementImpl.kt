@@ -20,7 +20,7 @@
  */
 package io.github.remmerw.thor.cobra.html.domimpl
 
-import io.github.remmerw.thor.cobra.css.domimpl.JStyleSheetWrapper
+import io.github.remmerw.thor.css.JStyleSheetWrapper
 import io.github.remmerw.thor.cobra.html.js.Window
 import io.github.remmerw.thor.cobra.html.style.CSSUtilities
 import io.github.remmerw.thor.cobra.util.Urls

@@ -50,19 +50,13 @@ kotlin {
 
                 implementation(libs.rhino)
                 implementation(libs.sac)
+                implementation(libs.jstyleparser)
             }
         }
 
         commonTest {
             dependencies {
                 implementation(libs.kotlin.test)
-            }
-        }
-
-        jvmMain {
-            dependencies {
-                implementation("com.squareup.okhttp:okhttp:2.2.0")
-                implementation("net.sf.cssbox:jstyleparser:1.23")
             }
         }
 
