@@ -59,7 +59,7 @@ class HTMLFormElementImpl : HTMLAbstractUIElement, HTMLFormElement {
                 }
             })
         } catch (sve: StopVisitorException) {
-            return sve.getTag()
+            return sve.tag
         }
         return null
     }
@@ -201,7 +201,7 @@ class HTMLFormElementImpl : HTMLAbstractUIElement, HTMLFormElement {
                 Collections.addAll<FormInput?>(formInputs, *extraFormInputs)
             }
             this.visit(object : NodeVisitor {
-                override fun visit(node: Node?) {
+                override fun visit(node: Node) {
                     if (node is HTMLElementImpl) {
                         val fis = node.formInputs
                         if (fis != null) {

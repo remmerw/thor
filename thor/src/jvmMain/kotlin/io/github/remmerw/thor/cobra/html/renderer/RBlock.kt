@@ -45,6 +45,7 @@ import javax.swing.JScrollBar
 import kotlin.math.max
 import kotlin.math.min
 
+
 /**
  * Represents a HTML block in a rendered document, typically a DIV. The root
  * renderer node is of this type as well.
@@ -98,7 +99,7 @@ open class RBlock(
         val bl = RBlockViewport(
             modelNode, this, this.getViewportListNesting(
                 listNesting
-            ), pcontext, rcontext,
+            ), pcontext!!, rcontext!!,
             frameContext,
             this
         )
@@ -294,7 +295,7 @@ open class RBlock(
 
     public override fun paintShifted(g: Graphics) {
         // TODO: Move this to common logic in BaseElementEenderable.pain();
-        val rs = this.modelNode.renderState
+        val rs = this.modelNode!!.renderState
         if ((rs != null) && (rs.visibility != RenderState.VISIBILITY_VISIBLE)) {
             // Just don't paint it.
             return
@@ -1571,8 +1572,8 @@ open class RBlock(
      *
      * @see org.xamjwg.html.renderer.RCollection#getRenderables()
      */
-    override fun getRenderables(topFirst: Boolean): MutableIterator<Renderable> {
-        return CollectionUtilities.singletonIterator<Renderable>(this.rBlockViewport)
+    override fun getRenderables(topFirst: Boolean): MutableIterator<Renderable?> {
+        return CollectionUtilities.singletonIterator<Renderable?>(this.rBlockViewport)
     }
 
     /*
@@ -2002,7 +2003,7 @@ open class RBlock(
                             } else {
                                 val filteredRnds = CollectionUtilities.filter(
                                     rnds,
-                                    { fr: Renderable -> !isSimpleLine(fr) } as CollectionUtilities.FilterFunction<Renderable>)
+                                    { fr: Renderable -> !isSimpleLine(fr) } as CollectionUtilities.FilterFunction<Renderable?>)
                                 while (filteredRnds.hasNext()) {
                                     val rnd = filteredRnds.next()
                                     dumpRndTree(

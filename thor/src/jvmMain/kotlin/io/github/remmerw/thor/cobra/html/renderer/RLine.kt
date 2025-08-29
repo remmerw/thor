@@ -40,7 +40,7 @@ internal class RLine(
     height: Int,
     initialAllowOverflow: Boolean
 ) : BaseRCollection(container, modelNode) {
-    val renderables = ArrayList<Renderable>(8)
+    override val renderables = ArrayList<Renderable>(8)
 
     /*
      * (non-Javadoc)
@@ -127,9 +127,9 @@ internal class RLine(
             val r = i.next()
             if (r is RElement) {
                 // RElements should be translated.
-                if (!r.isDelegated()) {
+                if (!r.isDelegated) {
                     val newG = g.create()
-                    newG.translate(r.getVisualX(), r.getVisualY())
+                    newG.translate(r.visualX, r.visualY)
                     try {
                         r.paint(newG)
                     } finally {
@@ -137,7 +137,7 @@ internal class RLine(
                     }
                 }
             } else if (r is BoundableRenderable) {
-                if (!r.isDelegated()) {
+                if (!r.isDelegated) {
                     r.paintTranslated(g)
                 }
             } else {
@@ -147,8 +147,8 @@ internal class RLine(
     }
 
     override fun extractSelectionText(
-        buffer: StringBuffer, inSelection: Boolean, startPoint: RenderableSpot?,
-        endPoint: RenderableSpot?
+        buffer: StringBuffer, inSelection: Boolean, startPoint: RenderableSpot,
+        endPoint: RenderableSpot
     ): Boolean {
         val result = super.extractSelectionText(buffer, inSelection, startPoint, endPoint)
         if (result) {
@@ -242,7 +242,7 @@ internal class RLine(
                         newWidth = renderable.getX()
                         newOffset = newWidth + renderable.getWidth()
                     } else {
-                        newOffset = renderable.getX() + renderable.getWidth()
+                        newOffset = renderable.x + renderable.width
                         newWidth = newOffset
                     }
                     break
@@ -335,7 +335,7 @@ internal class RLine(
         }
         // RLine only sets origins, not sizes.
         // relement.setBounds(x, yoffset, width, height);
-        relement.setY(yoffset)
+        relement.y = (yoffset)
     }
 
     /**
@@ -412,7 +412,7 @@ internal class RLine(
     fun checkFit(relement: RElement): Boolean {
         val origXOffset = this.xoffset
         val desiredMaxWidth = this.desiredMaxWidth
-        val pw = relement.getWidth()
+        val pw = relement.width
         val allowOverflow = this.allowOverflow
         val firstAllowOverflowWord = this.firstAllowOverflowWord
         if (allowOverflow && firstAllowOverflowWord) {
@@ -433,11 +433,11 @@ internal class RLine(
         // it's needed for height readjustment.
         val boundsh = this.height
         val origXOffset = this.xoffset
-        val pw = relement.getWidth()
-        val ph = relement.getHeight()
+        val pw = relement.width
+        val ph = relement.height
         val requiredHeight: Int
 
-        val valign = relement.getVAlign()
+        val valign = relement.vAlign
         if (valign != null) {
             when (valign) {
                 VerticalAlign.BASELINE -> requiredHeight = ph + (boundsh - this.baselineOffset)
@@ -455,8 +455,8 @@ internal class RLine(
             this.adjustHeight(requiredHeight, ph, valign)
         }
         this.renderables.add(relement)
-        relement.setParent(this)
-        relement.setX(origXOffset)
+        relement.parent = (this)
+        relement.x = (origXOffset)
         this.setElementY(relement, ph, valign)
         val newX = origXOffset + pw
         this.xoffset = newX
@@ -476,13 +476,13 @@ internal class RLine(
         this.height = newHeight
         val renderables = this.renderables
         // Find max baseline
-        val firstFm = this.modelNode.renderState!!.fontMetrics
-        var maxDescent = firstFm.getDescent()
+        val firstFm = this.modelNode!!.renderState!!.fontMetrics
+        var maxDescent = firstFm!!.getDescent()
         var maxAscentPlusLeading = firstFm.getAscent() + firstFm.getLeading()
         for (renderable in renderables) {
             val r: Any? = renderable
             if (r is RStyleChanger) {
-                val fm = r.getModelNode().renderState!!.fontMetrics
+                val fm = r.getModelNode().renderState!!.fontMetrics!!
                 val descent = fm.getDescent()
                 if (descent > maxDescent) {
                     maxDescent = descent
@@ -520,7 +520,7 @@ internal class RLine(
                 r.setY(baseline - r.ascentPlusLeading)
             } else if (r is RElement) {
                 // int w = relement.getWidth();
-                this.setElementY(r, r.getHeight(), r.getVAlign())
+                this.setElementY(r, r.height, r.vAlign)
             } else {
                 // RSpacing and RStyleChanger don't matter?
             }
@@ -532,7 +532,7 @@ internal class RLine(
         val rarray = this.renderables.toArray<Renderable?>(Renderable.Companion.EMPTY_ARRAY)
         val r = MarkupUtilities.findRenderable(rarray, x, y, false)
         if (r != null) {
-            val rbounds = r.getVisualBounds()
+            val rbounds = r.visualBounds!!
             return r.onMouseClick(event, x - rbounds.x, y - rbounds.y)
         } else {
             return true
@@ -555,7 +555,7 @@ internal class RLine(
         val rarray = this.renderables.toArray<Renderable?>(Renderable.Companion.EMPTY_ARRAY)
         val r = MarkupUtilities.findRenderable(rarray, x, y, false)
         if (r != null) {
-            val rbounds = r.getVisualBounds()
+            val rbounds = r.visualBounds!!
             return r.onDoubleClick(event, x - rbounds.x, y - rbounds.y)
         } else {
             return true
@@ -566,7 +566,7 @@ internal class RLine(
         val rarray = this.renderables.toArray<Renderable?>(Renderable.Companion.EMPTY_ARRAY)
         val br = MarkupUtilities.findRenderable(rarray, x, y, false)
         if (br != null) {
-            val rbounds = br.getVisualBounds()
+            val rbounds = br.visualBounds!!
             return br.getLowestRenderableSpot(x - rbounds.x, y - rbounds.y)
         } else {
             return RenderableSpot(this, x, y)
@@ -577,7 +577,7 @@ internal class RLine(
         val rarray = this.renderables.toArray<Renderable?>(Renderable.Companion.EMPTY_ARRAY)
         val r = MarkupUtilities.findRenderable(rarray, x, y, false)
         if (r != null) {
-            val rbounds = r.getVisualBounds()
+            val rbounds = r.visualBounds!!
             val oldArmedRenderable = this.mousePressTarget
             if ((oldArmedRenderable != null) && (r !== oldArmedRenderable)) {
                 oldArmedRenderable.onMouseDisarmed(event)
@@ -643,8 +643,8 @@ internal class RLine(
     // throw new OverflowException(overflown);
     // }
     // }
-    override fun getBlockBackgroundColor(): Color? {
-        return this.container.getPaintedBackgroundColor()
+    fun getBlockBackgroundColor(): Color? {
+        return this.container!!.paintedBackgroundColor
     }
 
     /*
@@ -664,14 +664,14 @@ internal class RLine(
     }*/
     }
 
-    override fun isContainedByNode(): Boolean {
+    fun isContainedByNode(): Boolean {
         return false
     }
 
     val isEmpty: Boolean
         get() = this.xoffset == 0
 
-    override fun getClipBounds(): Rectangle? {
+    fun getClipBounds(): Rectangle? {
         // throw new NotImplementedYetException("This method is not expected to be called for RLine");
         return null
     }

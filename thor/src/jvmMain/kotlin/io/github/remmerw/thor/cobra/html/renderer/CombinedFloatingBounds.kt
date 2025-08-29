@@ -42,8 +42,8 @@ internal class CombinedFloatingBounds(
         return max(this.floatBounds1.getLeftClearY(y), this.floatBounds2.getLeftClearY(y))
     }
 
-    override fun getMaxY(): Int {
-        return max(this.floatBounds1.getMaxY(), this.floatBounds2.getMaxY())
+    fun getMaxY(): Int {
+        return max(this.floatBounds1.maxY, this.floatBounds2.maxY)
     }
 
     override fun getRight(y: Int): Int {
