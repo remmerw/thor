@@ -36,6 +36,8 @@ import java.awt.Color
 import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.Insets
+import java.awt.Point
+import java.awt.Rectangle
 import java.awt.event.MouseEvent
 import kotlin.math.max
 
@@ -1823,6 +1825,35 @@ class TableMatrix(
             return null
         }
 
+        override val clipBounds: Rectangle?
+            get() = TODO("Not yet implemented")
+        override val clipBoundsWithoutInsets: Rectangle?
+            get() = TODO("Not yet implemented")
+        override val bounds: Rectangle?
+            get() = TODO("Not yet implemented")
+        override val visualBounds: Rectangle?
+            get() = TODO("Not yet implemented")
+        override val size: Dimension?
+            get() = TODO("Not yet implemented")
+        override val origin: Point?
+            get() = TODO("Not yet implemented")
+        override var parent: RCollection?
+            get() = TODO("Not yet implemented")
+            set(value) {}
+        override var originalParent: RCollection?
+            get() = TODO("Not yet implemented")
+            set(value) {}
+        override val originalOrCurrentParent: RCollection?
+            get() = TODO("Not yet implemented")
+        override val visualX: Int
+            get() = TODO("Not yet implemented")
+        override val visualY: Int
+            get() = TODO("Not yet implemented")
+        override val visualHeight: Int
+            get() = TODO("Not yet implemented")
+        override val visualWidth: Int
+            get() = TODO("Not yet implemented")
+
         override fun getLowestRenderableSpot(x: Int, y: Int): RenderableSpot? {
             return null
         }
@@ -1838,6 +1869,11 @@ class TableMatrix(
         override fun onDoubleClick(event: MouseEvent?, x: Int, y: Int): Boolean {
             return false
         }
+
+        override val isContainedByNode: Boolean
+            get() = TODO("Not yet implemented")
+        override val isDelegated: Boolean
+            get() = TODO("Not yet implemented")
 
         override fun repaint() {
             container?.repaint(x, y, width, height)
@@ -1856,6 +1892,10 @@ class TableMatrix(
             // TODO Auto-generated method stub
         }
 
+        override fun paintShifted(g: Graphics) {
+            TODO("Not yet implemented")
+        }
+
         override fun doLayout(availWidth: Int, availHeight: Int, sizeOnly: Boolean) {
             // TODO Auto-generated method stub
         }
@@ -1863,6 +1903,23 @@ class TableMatrix(
         override fun getBorderInsets(): Insets {
             return borderOverrider.get(super.getBorderInsets())
         }
+
+        override val marginTop: Int
+            get() = TODO("Not yet implemented")
+        override val marginLeft: Int
+            get() = TODO("Not yet implemented")
+        override val marginBottom: Int
+            get() = TODO("Not yet implemented")
+        override val marginRight: Int
+            get() = TODO("Not yet implemented")
+        override val collapsibleMarginTop: Int
+            get() = TODO("Not yet implemented")
+        override val collapsibleMarginBottom: Int
+            get() = TODO("Not yet implemented")
+        override val paintedBackgroundColor: Color?
+            get() = TODO("Not yet implemented")
+        override val parentContainer: RenderableContainer?
+            get() = TODO("Not yet implemented")
     }
 
     class ColSizeInfo {

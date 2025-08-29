@@ -24,7 +24,10 @@
 package io.github.remmerw.thor.cobra.html.renderer
 
 import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
+import java.awt.Dimension
 import java.awt.Graphics
+import java.awt.Point
+import java.awt.Rectangle
 import java.awt.event.MouseEvent
 
 /**
@@ -133,6 +136,33 @@ internal class RSpacing(me: ModelNode?, container: RenderableContainer?, width: 
         } else return inSelection
     }
 
+    override val isDelegated: Boolean
+        get() = TODO("Not yet implemented")
+    override val bounds: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val visualBounds: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val size: Dimension?
+        get() = TODO("Not yet implemented")
+    override val origin: Point?
+        get() = TODO("Not yet implemented")
+    override var parent: RCollection?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override var originalParent: RCollection?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override val originalOrCurrentParent: RCollection?
+        get() = TODO("Not yet implemented")
+    override val visualX: Int
+        get() = TODO("Not yet implemented")
+    override val visualY: Int
+        get() = TODO("Not yet implemented")
+    override val visualHeight: Int
+        get() = TODO("Not yet implemented")
+    override val visualWidth: Int
+        get() = TODO("Not yet implemented")
+
     /*
      * (non-Javadoc)
      *
@@ -154,4 +184,7 @@ internal class RSpacing(me: ModelNode?, container: RenderableContainer?, width: 
             return true
         }
     }
+
+    override val isContainedByNode: Boolean
+        get() = TODO("Not yet implemented")
 }

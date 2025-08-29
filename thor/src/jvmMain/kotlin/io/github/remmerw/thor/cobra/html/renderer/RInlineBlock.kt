@@ -27,7 +27,10 @@ import io.github.remmerw.thor.cobra.ua.UserAgentContext
 import io.github.remmerw.thor.cobra.util.CollectionUtilities
 import java.awt.Color
 import java.awt.Component
+import java.awt.Dimension
 import java.awt.Graphics
+import java.awt.Point
+import java.awt.Rectangle
 import java.awt.event.MouseEvent
 
 class RInlineBlock(
@@ -56,6 +59,35 @@ class RInlineBlock(
         return CollectionUtilities.singletonIterator<Renderable?>(this.child as Renderable)
     }
 
+    override val clipBounds: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val clipBoundsWithoutInsets: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val bounds: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val visualBounds: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val size: Dimension?
+        get() = TODO("Not yet implemented")
+    override val origin: Point?
+        get() = TODO("Not yet implemented")
+    override var parent: RCollection?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override var originalParent: RCollection?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override val originalOrCurrentParent: RCollection?
+        get() = TODO("Not yet implemented")
+    override val visualX: Int
+        get() = TODO("Not yet implemented")
+    override val visualY: Int
+        get() = TODO("Not yet implemented")
+    override val visualHeight: Int
+        get() = TODO("Not yet implemented")
+    override val visualWidth: Int
+        get() = TODO("Not yet implemented")
+
     override fun getLowestRenderableSpot(x: Int, y: Int): RenderableSpot? {
         return this.child.getLowestRenderableSpot(x, y)
     }
@@ -63,6 +95,11 @@ class RInlineBlock(
     override fun onDoubleClick(event: MouseEvent?, x: Int, y: Int): Boolean {
         return this.child.onDoubleClick(event, x, y)
     }
+
+    override val isContainedByNode: Boolean
+        get() = TODO("Not yet implemented")
+    override val isDelegated: Boolean
+        get() = TODO("Not yet implemented")
 
     override fun onMouseClick(event: MouseEvent?, x: Int, y: Int): Boolean {
         return this.child.onMouseClick(event, x, y)
@@ -106,6 +143,11 @@ class RInlineBlock(
         return super.addComponent(component)
     }
 
+    override val paintedBackgroundColor: Color?
+        get() = TODO("Not yet implemented")
+    override val parentContainer: RenderableContainer?
+        get() = TODO("Not yet implemented")
+
     override fun toString(): String {
         return "RInlineBlock [" + this.child + "]"
     }
@@ -131,4 +173,17 @@ class RInlineBlock(
     override fun isReadyToPaint(): Boolean {
         return child.isReadyToPaint()
     }
+
+    override val marginTop: Int
+        get() = TODO("Not yet implemented")
+    override val marginLeft: Int
+        get() = TODO("Not yet implemented")
+    override val marginBottom: Int
+        get() = TODO("Not yet implemented")
+    override val marginRight: Int
+        get() = TODO("Not yet implemented")
+    override val collapsibleMarginTop: Int
+        get() = TODO("Not yet implemented")
+    override val collapsibleMarginBottom: Int
+        get() = TODO("Not yet implemented")
 }

@@ -659,4 +659,7 @@ class LocalJStyleProperties(private val element: HTMLElementImpl) :
             ele.setAttribute("style", sb.toString())
         }
     }
+
+    override val nodeData: NodeData?
+        get() = TODO("Not yet implemented")
 }

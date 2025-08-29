@@ -70,6 +70,9 @@ internal class ShiftedFloatingBounds(
         return this.prevBounds.getRightClearY(y - this.shiftY) + this.shiftY
     }
 
+    override val maxY: Int
+        get() = TODO("Not yet implemented")
+
     fun getMaxY(): Int {
         return this.prevBounds.maxY + this.shiftY
     }

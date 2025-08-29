@@ -30,6 +30,11 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
         return translatedChild.getModelNode()
     }
 
+    override val bounds: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val visualBounds: Rectangle?
+        get() = TODO("Not yet implemented")
+
     override fun getBounds(): Rectangle {
         return translatedChild.bounds!!
     }
@@ -41,6 +46,11 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
     override fun contains(x: Int, y: Int): Boolean {
         return translatedChild.contains(x, y)
     }
+
+    override val size: Dimension?
+        get() = TODO("Not yet implemented")
+    override val origin: Point?
+        get() = TODO("Not yet implemented")
 
     override fun getSize(): Dimension? {
         return translatedChild.size
@@ -66,6 +76,15 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
         return translatedChild.getOriginRelativeToNoScroll(ancestor)
     }
 
+    override var parent: RCollection?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override var originalParent: RCollection?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override val originalOrCurrentParent: RCollection?
+        get() = TODO("Not yet implemented")
+
     override fun getOriginalParent(): RCollection? {
         return translatedChild.originalParent
     }
@@ -85,6 +104,15 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
     override fun setOrigin(x: Int, y: Int) {
         translatedChild.setOrigin(x, y)
     }
+
+    override val visualX: Int
+        get() = TODO("Not yet implemented")
+    override val visualY: Int
+        get() = TODO("Not yet implemented")
+    override val visualHeight: Int
+        get() = TODO("Not yet implemented")
+    override val visualWidth: Int
+        get() = TODO("Not yet implemented")
 
     override fun getX(): Int {
         return translatedChild.x
@@ -184,6 +212,9 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
         translatedChild.onMouseOut(event, x, y, limit)
     }
 
+    override val isContainedByNode: Boolean
+        get() = TODO("Not yet implemented")
+
     fun isContainedByNode(): Boolean {
         return translatedChild.isContainedByNode
     }
@@ -232,6 +263,9 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
     override fun relayout() {
         translatedChild.relayout()
     }
+
+    override val isDelegated: Boolean
+        get() = TODO("Not yet implemented")
 
     fun getZIndex(): Int {
         return translatedChild.zIndex
@@ -283,6 +317,11 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
 
         return null
     }
+
+    override val clipBounds: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val clipBoundsWithoutInsets: Rectangle?
+        get() = TODO("Not yet implemented")
 
     fun getClipBounds(): Rectangle? {
         if (translatedChild is RCollection) {

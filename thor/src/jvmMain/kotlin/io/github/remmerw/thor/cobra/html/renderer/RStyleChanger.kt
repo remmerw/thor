@@ -32,19 +32,13 @@ import java.awt.event.MouseEvent
 /**
  * @author J. H. S.
  */
-internal class RStyleChanger(modelNode: ModelNode) : BaseRenderable() {
+internal class RStyleChanger(override var modelNode: ModelNode?) : BaseRenderable() {
     // private final static Logger logger = Logger.getLogger(RStyleChanger.class);
-    private val modelNode: ModelNode
 
-    /**
-     *
-     */
-    init {
-        this.modelNode = modelNode
-    }
+
 
     fun getModelNode(): ModelNode {
-        return this.modelNode
+        return this.modelNode!!
     }
 
     /*
@@ -54,7 +48,7 @@ internal class RStyleChanger(modelNode: ModelNode) : BaseRenderable() {
      * net.sourceforge.xamj.domimpl.markup.Renderable#paint(java.awt.Graphics)
      */
     override fun paint(g: Graphics) {
-        val rs: RenderState = this.modelNode.renderState!!
+        val rs: RenderState = this.modelNode!!.renderState!!
         g.color = rs.color
         g.font = rs.font
     }

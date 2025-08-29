@@ -2538,8 +2538,7 @@ class RBlockViewport(
         var maxY = getHeight().toDouble()
         val renderables = renderables
         if (renderables != null) {
-            while (renderables.hasNext()) {
-                val r = renderables.next()
+            for (r in renderables) {
                 if (r is RenderableContainer) {
                     // double rcMaxY = rc.getVisualBounds().getMaxY();
                     // final Insets rcInsets = rc.getInsetsMarginBorder(false, false);

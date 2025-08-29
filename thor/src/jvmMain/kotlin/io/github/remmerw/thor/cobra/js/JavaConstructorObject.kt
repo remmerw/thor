@@ -62,7 +62,7 @@ class JavaConstructorObject : ScriptableObject, Function {
 
     override fun construct(cx: Context?, scope: Scriptable?, args: Array<Any?>?): Scriptable {
         try {
-            val javaObject = this.instantiator.newInstance(args)!!
+            val javaObject = this.instantiator.newInstance(args as Array<Any>)
             val newObject: Scriptable = JavaObjectWrapper(this.classWrapper, javaObject)
             newObject.parentScope = scope
             return newObject
@@ -90,12 +90,10 @@ class JavaConstructorObject : ScriptableObject, Function {
 
     class SimpleInstantiator(private val classWrapper: JavaClassWrapper) : JavaInstantiator {
         @Throws(InstantiationException::class, IllegalAccessException::class)
-        override fun newInstance(args: Array<Any?>?): Any? {
+        override fun newInstance(args: Array<Any>): Any {
             return this.classWrapper.newInstance()
         }
+
     }
 
-    companion object {
-        private const val serialVersionUID = 5536902327235533789L
-    }
 }

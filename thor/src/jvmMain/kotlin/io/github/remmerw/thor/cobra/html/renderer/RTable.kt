@@ -31,8 +31,11 @@ import io.github.remmerw.thor.cobra.html.style.RenderThreadState
 import io.github.remmerw.thor.cobra.ua.UserAgentContext
 import io.github.remmerw.thor.cobra.util.CollectionUtilities
 import java.awt.Color
+import java.awt.Dimension
 import java.awt.Font
 import java.awt.Graphics
+import java.awt.Point
+import java.awt.Rectangle
 import java.awt.event.MouseEvent
 import java.util.Collections
 import java.util.LinkedList
@@ -123,9 +126,9 @@ internal class RTable(
             // Only needs to be done if layout was forced. Otherwise, they should've been imported already.
             val pairs = this.delayedPairs
             if (pairs != null) {
-                val i: MutableIterator<DelayedPair> = pairs.iterator()
+                val i: MutableIterator<DelayedPair?> = pairs.iterator()
                 while (i.hasNext()) {
-                    val pair = i.next()
+                    val pair = i.next()!!
                     if (pair.containingBlock === this) {
                         this.importDelayedPair(pair)
                     }
@@ -157,6 +160,31 @@ internal class RTable(
         this.lastLayoutKey = null
         this.lastLayoutValue = null
     }
+
+    override val bounds: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val visualBounds: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val size: Dimension?
+        get() = TODO("Not yet implemented")
+    override val origin: Point?
+        get() = TODO("Not yet implemented")
+    override var parent: RCollection?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override var originalParent: RCollection?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override val originalOrCurrentParent: RCollection?
+        get() = TODO("Not yet implemented")
+    override val visualX: Int
+        get() = TODO("Not yet implemented")
+    override val visualY: Int
+        get() = TODO("Not yet implemented")
+    override val visualHeight: Int
+        get() = TODO("Not yet implemented")
+    override val visualWidth: Int
+        get() = TODO("Not yet implemented")
 
     /*
      * (non-Javadoc)
@@ -232,6 +260,11 @@ internal class RTable(
         }
         return this.tableMatrix.onDoubleClick(event, x, y)
     }
+
+    override val isContainedByNode: Boolean
+        get() = TODO("Not yet implemented")
+    override val isDelegated: Boolean
+        get() = TODO("Not yet implemented")
 
     /*
      * (non-Javadoc)
@@ -337,6 +370,11 @@ internal class RTable(
         }
     }
 
+    override val clipBounds: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val clipBoundsWithoutInsets: Rectangle?
+        get() = TODO("Not yet implemented")
+
     override fun repaint(modelNode: ModelNode?) {
         // NOP
     }
@@ -347,7 +385,7 @@ internal class RTable(
      * @see org.xamjwg.html.renderer.RenderableContainer#getBackground()
      */
     fun getPaintedBackgroundColor(): Color? {
-        return this.container.paintedBackgroundColor
+        return this.container!!.paintedBackgroundColor
     }
 
     private fun addPositionedRenderable(
@@ -398,6 +436,23 @@ internal class RTable(
     ) {
         this.doLayout(availWidth, availHeight, sizeOnly)
     }
+
+    override val marginTop: Int
+        get() = TODO("Not yet implemented")
+    override val marginLeft: Int
+        get() = TODO("Not yet implemented")
+    override val marginBottom: Int
+        get() = TODO("Not yet implemented")
+    override val marginRight: Int
+        get() = TODO("Not yet implemented")
+    override val collapsibleMarginTop: Int
+        get() = TODO("Not yet implemented")
+    override val collapsibleMarginBottom: Int
+        get() = TODO("Not yet implemented")
+    override val paintedBackgroundColor: Color?
+        get() = TODO("Not yet implemented")
+    override val parentContainer: RenderableContainer?
+        get() = TODO("Not yet implemented")
 
     private class LayoutKey(
         availWidth: Int,

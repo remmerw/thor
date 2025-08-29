@@ -105,7 +105,7 @@ internal class RListItem(
 
     override fun paintShifted(g: Graphics) {
         super.paintShifted(g)
-        val rs: RenderState = this.modelNode.renderState!!
+        val rs: RenderState = this.modelNode!!.renderState!!
         val marginInsets = this.marginInsets
         val layout = this.bodyLayout
         val listStyle = this.listStyle
