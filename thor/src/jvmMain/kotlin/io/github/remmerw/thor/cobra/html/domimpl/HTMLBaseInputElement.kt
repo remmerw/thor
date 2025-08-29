@@ -289,7 +289,7 @@ abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) 
                 this.imageResponse = null
             }
             if (src != null) {
-                document.loadImage(src, HTMLBaseInputElement.LocalImageListener(src))
+                //document.loadImage(src, HTMLBaseInputElement.LocalImageListener(src))
             }
         }
     }
@@ -319,7 +319,7 @@ abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) 
     fun removeImageListener(listener: ImageListener) {
         val l = this.imageListeners
         synchronized(l) {
-            l.remove(l)
+            l.remove(listener)
         }
     }
 
@@ -364,7 +364,7 @@ abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) 
         println("TODO: HTMLBaseInputElement.setCustomValidity() " + message)
     }
 
-    public inner class LocalImageListener(private val expectedImgSrc: String) : ImageListener {
+    inner class LocalImageListener(private val expectedImgSrc: String) : ImageListener {
         override fun imageLoaded(event: ImageEvent) {
             dispatchEvent(this.expectedImgSrc, event)
         }
