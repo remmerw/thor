@@ -54,6 +54,9 @@ internal class CombinedFloatingBounds(
         return max(this.floatBounds1.getRightClearY(y), this.floatBounds2.getRightClearY(y))
     }
 
+    override val maxY: Int
+        get() = TODO("Not yet implemented")
+
     override fun equals(obj: Any?): Boolean {
         // Important for layout caching.
         if (obj !is CombinedFloatingBounds) {

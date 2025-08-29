@@ -29,6 +29,8 @@ import io.github.remmerw.thor.cobra.html.domimpl.ImageEvent
 import io.github.remmerw.thor.cobra.html.domimpl.ImageListener
 import io.github.remmerw.thor.cobra.html.style.HtmlValues
 import io.github.remmerw.thor.cobra.ua.ImageResponse
+import java.awt.Color
+import java.awt.Component
 import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.Graphics2D
@@ -104,6 +106,15 @@ internal class ImgControl(modelNode: HTMLImageElementImpl) : BaseControl(modelNo
         this.declaredHeight = dh
         this.preferredSize = this.createPreferredSize(dw, dh)
     }
+
+    override var preferredSize: Dimension?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override val backgroundColor: Color?
+        get() = TODO("Not yet implemented")
+    override var component: Component?
+        get() = TODO("Not yet implemented")
+        set(value) {}
 
     override fun getVAlign(): VerticalAlign {
         val element = this.controlElement

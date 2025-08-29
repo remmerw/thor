@@ -24,6 +24,8 @@
 package io.github.remmerw.thor.cobra.html.renderer
 
 import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
+import java.awt.Color
+import java.awt.Component
 import java.awt.Dimension
 import java.awt.Graphics
 
@@ -42,6 +44,15 @@ internal class HrControl(modelNode: HTMLElementImpl?) : BaseControl(modelNode) {
     override fun reset(availWidth: Int, availHeight: Int) {
         this.availWidth = availWidth
     }
+
+    override var preferredSize: Dimension?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override val backgroundColor: Color?
+        get() = TODO("Not yet implemented")
+    override var component: Component?
+        get() = TODO("Not yet implemented")
+        set(value) {}
 
     override fun getPreferredSize(): Dimension {
         return Dimension(this.availWidth, 0)
