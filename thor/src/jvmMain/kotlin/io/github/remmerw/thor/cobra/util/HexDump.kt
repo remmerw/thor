@@ -77,7 +77,7 @@ object HexDump {
     fun toHexString(
         array: ByteArray,
         offset: Int = 0,
-        length: Int = array.length,
+        length: Int = array.size,
         upperCase: Boolean = true
     ): String {
         val digits = if (upperCase) HEX_DIGITS else HEX_LOWER_CASE_DIGITS
