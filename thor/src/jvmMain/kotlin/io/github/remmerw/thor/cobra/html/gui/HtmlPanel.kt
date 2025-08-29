@@ -599,7 +599,7 @@ class HtmlPanel : JComponent(), FrameContext, DefferedLayoutSupport {
             if (block == null) {
                 return null
             } else {
-                return block.getSelectionText()
+                return block.selectionText
             }
         }
 

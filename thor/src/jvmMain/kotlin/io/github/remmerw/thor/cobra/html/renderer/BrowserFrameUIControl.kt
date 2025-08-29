@@ -19,16 +19,15 @@ internal class BrowserFrameUIControl(
     private var availWidth = 0
     private var availHeight = 0
 
-    init {
-        this.component = browserFrame.component
-    }
+
+
 
     fun getBackgroundColor(): Color? {
-        return this.component?.getBackground()
+        return this.browserFrame.component?.getBackground()
     }
 
     fun getComponent(): Component {
-        return this.component!!
+        return this.browserFrame.component!!
     }
 
     override fun reset(availWidth: Int, availHeight: Int) {
@@ -114,6 +113,10 @@ internal class BrowserFrameUIControl(
         }
     }
 
+    override var preferredSize: Dimension?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+
     fun getPreferredSize(): Dimension {
         val width =
             HtmlValues.getOldSyntaxPixelSize(element.getAttribute("width"), this.availWidth, 100)
@@ -126,10 +129,17 @@ internal class BrowserFrameUIControl(
         this.component!!.invalidate()
     }
 
+    override val backgroundColor: Color?
+        get() = TODO("Not yet implemented")
+
     override fun paint(g: Graphics?) {
         // We actually have to paint it.
         this.component!!.paint(g)
     }
+
+    override var component: Component?
+        get() = TODO("Not yet implemented")
+        set(value) {}
 
     fun paintSelection(
         g: Graphics?,

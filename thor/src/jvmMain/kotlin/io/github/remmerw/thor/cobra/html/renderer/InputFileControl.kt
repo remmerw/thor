@@ -21,6 +21,8 @@
 package io.github.remmerw.thor.cobra.html.renderer
 
 import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement
+import java.awt.Color
+import java.awt.Component
 import java.awt.Dimension
 import java.awt.event.ActionEvent
 import java.io.File
@@ -43,8 +45,11 @@ import javax.swing.JTextField
                 this.textField.setText(file.absolutePath)
             }
         }
+     override var name: String?
+         get() = TODO("Not yet implemented")
+         set(value) {}
 
-    init {
+     init {
         this.layout = BoxLayout(this, BoxLayout.X_AXIS)
         val browseButton = this.browseButton
         browseButton.action = BrowseAction()
@@ -73,7 +78,16 @@ import javax.swing.JTextField
         this.fileValue = null
     }
 
-    private inner class BrowseAction : AbstractAction() {
+     override var preferredSize: Dimension?
+         get() = TODO("Not yet implemented")
+         set(value) {}
+     override val backgroundColor: Color?
+         get() = TODO("Not yet implemented")
+     override var component: Component?
+         get() = TODO("Not yet implemented")
+         set(value) {}
+
+     private inner class BrowseAction : AbstractAction() {
         override fun actionPerformed(e: ActionEvent?) {
             val chooser = JFileChooser()
             if (chooser.showOpenDialog(this@InputFileControl) == JFileChooser.APPROVE_OPTION) {

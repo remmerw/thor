@@ -267,4 +267,8 @@ class HTMLIFrameElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLIFr
     override fun createRenderState(prevRenderState: RenderState?): RenderState {
         return IFrameRenderState(prevRenderState, this)
     }
+
+    override var browserFrame: BrowserFrame?
+        get() = TODO("Not yet implemented")
+        set(value) {}
 }

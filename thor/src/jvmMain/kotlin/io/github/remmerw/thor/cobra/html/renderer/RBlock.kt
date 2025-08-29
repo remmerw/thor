@@ -34,6 +34,7 @@ import io.github.remmerw.thor.cobra.util.CollectionUtilities
 import org.w3c.dom.html.HTMLHtmlElement
 import java.awt.Adjustable
 import java.awt.Color
+import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.Insets
 import java.awt.Point
@@ -770,7 +771,7 @@ open class RBlock(
         defaultOverflowX: Int, defaultOverflowY: Int, sizeOnly: Boolean, useCache: Boolean
     ) {
         // Expected to be invoked in the GUI thread.
-        val renderState: RenderState = this.modelNode.renderState!!
+        val renderState: RenderState = this.modelNode!!.renderState!!
         /*
     final Font font = renderState == null ? null : renderState.getFont();
     final int whiteSpace = renderState == null ? RenderState.WS_NORMAL : renderState.getWhiteSpace();
@@ -1442,6 +1443,31 @@ open class RBlock(
         // }
     }
 
+    override val bounds: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val visualBounds: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val size: Dimension?
+        get() = TODO("Not yet implemented")
+    override val origin: Point?
+        get() = TODO("Not yet implemented")
+    override var parent: RCollection?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override var originalParent: RCollection?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override val originalOrCurrentParent: RCollection?
+        get() = TODO("Not yet implemented")
+    override val visualX: Int
+        get() = TODO("Not yet implemented")
+    override val visualY: Int
+        get() = TODO("Not yet implemented")
+    override val visualHeight: Int
+        get() = TODO("Not yet implemented")
+    override val visualWidth: Int
+        get() = TODO("Not yet implemented")
+
     /*
      * (non-Javadoc)
      *
@@ -1514,6 +1540,9 @@ open class RBlock(
         }
         return this.backgroundColor == null
     }
+
+    override val isContainedByNode: Boolean
+        get() = TODO("Not yet implemented")
 
     /*
      * (non-Javadoc)
@@ -1619,6 +1648,11 @@ open class RBlock(
             }
         }
     }
+
+    override val clipBounds: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val clipBoundsWithoutInsets: Rectangle?
+        get() = TODO("Not yet implemented")
 
     fun scrollHorizontalTo(newX: Int): Boolean {
         val bodyLayout = this.rBlockViewport
@@ -1857,6 +1891,9 @@ open class RBlock(
         height = newHeight + vInset
     }
 
+    override val isDelegated: Boolean
+        get() = TODO("Not yet implemented")
+
     fun setCollapseTop(set: Boolean) {
         collapseTopMargin = set
     }
@@ -1928,6 +1965,23 @@ open class RBlock(
         return if (hasVScrollBar) SCROLL_BAR_THICKNESS else 0
     }
 
+    override val marginTop: Int
+        get() = TODO("Not yet implemented")
+    override val marginLeft: Int
+        get() = TODO("Not yet implemented")
+    override val marginBottom: Int
+        get() = TODO("Not yet implemented")
+    override val marginRight: Int
+        get() = TODO("Not yet implemented")
+    override val collapsibleMarginTop: Int
+        get() = TODO("Not yet implemented")
+    override val collapsibleMarginBottom: Int
+        get() = TODO("Not yet implemented")
+    override val paintedBackgroundColor: Color?
+        get() = TODO("Not yet implemented")
+    override val parentContainer: RenderableContainer?
+        get() = TODO("Not yet implemented")
+
     private class LayoutValue(
         val width: Int,
         val height: Int,
@@ -1960,13 +2014,13 @@ open class RBlock(
 
         private fun isSimpleLine(r: Renderable?): Boolean {
             if (r is RLine) {
-                val rends = r.getRenderables()
-                while (rends.hasNext()) {
-                    val rend: Renderable? = rends.next()
+                val rends = r.renderables
+                rends.forEach { rend ->
                     if (!(rend is RWord || rend is RBlank || rend is RStyleChanger)) {
                         return false
                     }
                 }
+
                 return true
             }
             return false
@@ -1997,12 +2051,12 @@ open class RBlock(
                 } else {
                     if (r is RCollection) {
                         if ((!condense) || !r.isDelegated) {
-                            val rnds = r.getRenderables()
+                            val rnds = r.renderables
                             if (rnds == null) {
                                 println(indentStr + selfIndentStr + " [empty]")
                             } else {
                                 val filteredRnds = CollectionUtilities.filter(
-                                    rnds,
+                                    rnds.iterator(),
                                     { fr: Renderable -> !isSimpleLine(fr) } as CollectionUtilities.FilterFunction<Renderable?>)
                                 while (filteredRnds.hasNext()) {
                                     val rnd = filteredRnds.next()

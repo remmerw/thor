@@ -50,6 +50,14 @@ class HTMLLinkElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLLinkE
         }
     }
 
+    override fun getCharset(): String? {
+        TODO("Not yet implemented")
+    }
+
+    override fun setCharset(p0: String?) {
+        TODO("Not yet implemented")
+    }
+
     //TODO hide from JS
     fun setDisabledImpl(disabled: Boolean) {
         this.disabled = disabled

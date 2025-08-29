@@ -133,7 +133,7 @@ internal class RAnonTableCell
         return null
     }
 
-    override fun setCellBounds(
+     fun setCellBounds(
         colSizes: Array<ColSizeInfo>, rowSizes: Array<RowSizeInfo>, hasBorder: Int,
         cellSpacingX: Int,
         cellSpacingY: Int

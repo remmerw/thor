@@ -47,7 +47,4 @@ internal class HrControl(modelNode: HTMLElementImpl?) : BaseControl(modelNode) {
         return Dimension(this.availWidth, 0)
     }
 
-    companion object {
-        private const val serialVersionUID = 2138367420714598428L
-    }
 }

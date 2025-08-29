@@ -25,6 +25,9 @@ package io.github.remmerw.thor.cobra.html.renderer
 
 import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement
 import io.github.remmerw.thor.cobra.util.gui.WrapperLayout
+import java.awt.Color
+import java.awt.Component
+import java.awt.Dimension
 import javax.swing.JCheckBox
 
 internal class InputCheckboxControl(modelNode: HTMLBaseInputElement?) :
@@ -69,6 +72,9 @@ internal class InputCheckboxControl(modelNode: HTMLBaseInputElement?) :
         set(checked) {
             this.widget.setSelected(checked)
         }
+    override var name: String?
+        get() = TODO("Not yet implemented")
+        set(value) {}
 
     /*
     * (non-Javadoc)
@@ -86,6 +92,14 @@ internal class InputCheckboxControl(modelNode: HTMLBaseInputElement?) :
 
     override var value: String? = null
         get() = this.controlElement?.getAttribute("value")
+    override var preferredSize: Dimension?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override val backgroundColor: Color?
+        get() = TODO("Not yet implemented")
+    override var component: Component?
+        get() = TODO("Not yet implemented")
+        set(value) {}
 
     companion object {
         private val serialVersionUID = -7156618963339104117L

@@ -74,6 +74,14 @@ class HTMLScriptElementImpl : HTMLElementImpl, HTMLScriptElement {
         this.setAttribute("event", event)
     }
 
+    override fun getCharset(): String? {
+        TODO("Not yet implemented")
+    }
+
+    override fun setCharset(p0: String?) {
+        TODO("Not yet implemented")
+    }
+
     override fun getDefer(): Boolean {
         return this.defer
     }

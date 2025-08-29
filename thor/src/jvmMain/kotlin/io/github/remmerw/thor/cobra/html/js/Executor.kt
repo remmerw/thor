@@ -63,8 +63,7 @@ object Executor {
                 // we cannot set a new security controller.
                 ctx.setSecurityController(
                     SecurityControllerImpl(
-                        codeSource,
-                        ucontext.getSecurityPolicy()
+                        codeSource
                     )
                 )
             }

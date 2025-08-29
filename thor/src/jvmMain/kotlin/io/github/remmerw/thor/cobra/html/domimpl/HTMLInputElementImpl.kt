@@ -24,12 +24,20 @@
 package io.github.remmerw.thor.cobra.html.domimpl
 
 import io.github.remmerw.thor.cobra.html.FormInput
+import org.w3c.dom.html.HTMLFormElement
 import org.w3c.dom.html.HTMLInputElement
 import java.util.Locale
 import java.util.logging.Level
 
 class HTMLInputElementImpl(name: String) : HTMLBaseInputElement(name), HTMLInputElement {
     private var defaultChecked = false
+    override fun getDefaultValue(): String? {
+        TODO("Not yet implemented")
+    }
+
+    override fun setDefaultValue(p0: String?) {
+        TODO("Not yet implemented")
+    }
 
     override fun getDefaultChecked(): Boolean {
         return this.defaultChecked
@@ -37,6 +45,42 @@ class HTMLInputElementImpl(name: String) : HTMLBaseInputElement(name), HTMLInput
 
     override fun setDefaultChecked(defaultChecked: Boolean) {
         this.defaultChecked = defaultChecked
+    }
+
+    override fun getForm(): HTMLFormElement? {
+        TODO("Not yet implemented")
+    }
+
+    override fun getAccept(): String? {
+        TODO("Not yet implemented")
+    }
+
+    override fun setAccept(p0: String?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getAccessKey(): String? {
+        TODO("Not yet implemented")
+    }
+
+    override fun setAccessKey(p0: String?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getAlign(): String? {
+        TODO("Not yet implemented")
+    }
+
+    override fun setAlign(p0: String?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getAlt(): String? {
+        TODO("Not yet implemented")
+    }
+
+    override fun setAlt(p0: String?) {
+        TODO("Not yet implemented")
     }
 
     override fun getChecked(): Boolean {
@@ -55,6 +99,14 @@ class HTMLInputElementImpl(name: String) : HTMLBaseInputElement(name), HTMLInput
         }
     }
 
+    override fun getDisabled(): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun setDisabled(p0: Boolean) {
+        TODO("Not yet implemented")
+    }
+
     override fun getMaxLength(): Int {
         val ic = this.inputContext
         return if (ic == null) 0 else ic.maxLength
@@ -65,6 +117,22 @@ class HTMLInputElementImpl(name: String) : HTMLBaseInputElement(name), HTMLInput
         if (ic != null) {
             ic.maxLength = (maxLength)
         }
+    }
+
+    override fun getName(): String? {
+        TODO("Not yet implemented")
+    }
+
+    override fun setName(p0: String?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getReadOnly(): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun setReadOnly(p0: Boolean) {
+        TODO("Not yet implemented")
     }
 
     /* public int getSize() {
@@ -99,6 +167,14 @@ class HTMLInputElementImpl(name: String) : HTMLBaseInputElement(name), HTMLInput
         this.setAttribute("src", src)
     }
 
+    override fun getTabIndex(): Int {
+        TODO("Not yet implemented")
+    }
+
+    override fun setTabIndex(p0: Int) {
+        TODO("Not yet implemented")
+    }
+
     /**
      * Gets input type in lowercase.
      */
@@ -117,6 +193,14 @@ class HTMLInputElementImpl(name: String) : HTMLBaseInputElement(name), HTMLInput
 
     override fun setUseMap(useMap: String?) {
         this.setAttribute("usemap", useMap)
+    }
+
+    override fun getValue(): String? {
+        TODO("Not yet implemented")
+    }
+
+    override fun setValue(p0: String?) {
+        TODO("Not yet implemented")
     }
 
     override fun click() {

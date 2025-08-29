@@ -84,7 +84,7 @@ import kotlin.concurrent.Volatile
 class Window // TODO: Probably need to create a new Window instance
 // for every document. Sharing of Window state between
 // different documents is not correct.
-    (val htmlRendererContext: HtmlRendererContext, val userAgentContext: UserAgentContext) :
+    (val htmlRendererContext: HtmlRendererContext?, val userAgentContext: UserAgentContext) :
     AbstractScriptableDelegate(), AbstractView, EventTarget {
     private val windowContextFactory = MyContextFactory()
     val eventTargetManager: EventTargetManager = EventTargetManager(this)
@@ -256,7 +256,7 @@ class Window // TODO: Probably need to create a new Window instance
     private val currURL: URL?
         get() {
             try {
-                return URL(htmlRendererContext.currentURL)
+                return URL(htmlRendererContext?.currentURL)
             } catch (e: MalformedURLException) {
                 return null
             }
@@ -896,6 +896,7 @@ class Window // TODO: Probably need to create a new Window instance
         }
     }
 
+    /*
     var onload: Function?
         get() {
             val doc = this.documentNode
@@ -914,7 +915,7 @@ class Window // TODO: Probably need to create a new Window instance
               ((HTMLDocumentImpl) doc).setWindowOnloadHandler(onload);
             }*/
             onWindowLoadHandler = onload
-        }
+        }*/
 
     fun namedItem(name: String?): Node? {
         // Bug 1928758: Element IDs are named objects in context.
@@ -1195,9 +1196,9 @@ class Window // TODO: Probably need to create a new Window instance
         fun addUniqueJSTask(oldId: Int, task: JSTask): Int {
             // synchronized (this) {
             if (oldId != -1) {
-                if (jsQueue.contains(oldId)) {
-                    return oldId
-                }
+                //if (jsQueue.contains(oldId)) {
+                  //  return oldId
+                //}
                 /*
         for (ScheduledTask t : jsQueue) {
           if (t.id == oldId) {

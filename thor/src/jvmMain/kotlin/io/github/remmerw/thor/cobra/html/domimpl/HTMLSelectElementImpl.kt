@@ -5,6 +5,7 @@ import org.mozilla.javascript.Function
 import org.w3c.dom.DOMException
 import org.w3c.dom.html.HTMLCollection
 import org.w3c.dom.html.HTMLElement
+import org.w3c.dom.html.HTMLFormElement
 import org.w3c.dom.html.HTMLSelectElement
 
 open class HTMLSelectElementImpl(name: String) : HTMLBaseInputElement(name), HTMLSelectElement {
@@ -33,6 +34,10 @@ open class HTMLSelectElementImpl(name: String) : HTMLBaseInputElement(name), HTM
         return this.options!!.length
     }
 
+    override fun getForm(): HTMLFormElement? {
+        TODO("Not yet implemented")
+    }
+
     override fun getMultiple(): Boolean {
         val m = this.multipleState
         if (m != null) {
@@ -49,6 +54,14 @@ open class HTMLSelectElementImpl(name: String) : HTMLBaseInputElement(name), HTM
         }
     }
 
+    override fun getName(): String? {
+        TODO("Not yet implemented")
+    }
+
+    override fun setName(p0: String?) {
+        TODO("Not yet implemented")
+    }
+
     override fun getOptions(): HTMLCollection {
         synchronized(this) {
             if (this.options == null) {
@@ -56,6 +69,14 @@ open class HTMLSelectElementImpl(name: String) : HTMLBaseInputElement(name), HTM
             }
             return this.options!!
         }
+    }
+
+    override fun getDisabled(): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun setDisabled(p0: Boolean) {
+        TODO("Not yet implemented")
     }
 
     override fun getSelectedIndex(): Int {
@@ -80,6 +101,14 @@ open class HTMLSelectElementImpl(name: String) : HTMLBaseInputElement(name), HTM
         }
     }
 
+    override fun getValue(): String? {
+        TODO("Not yet implemented")
+    }
+
+    override fun setValue(p0: String?) {
+        TODO("Not yet implemented")
+    }
+
     override fun getSize(): Int {
         val ic = this.inputContext
         if (ic != null) {
@@ -94,6 +123,14 @@ open class HTMLSelectElementImpl(name: String) : HTMLBaseInputElement(name), HTM
         if (ic != null) {
             ic.visibleSize=(size)
         }
+    }
+
+    override fun getTabIndex(): Int {
+        TODO("Not yet implemented")
+    }
+
+    override fun setTabIndex(p0: Int) {
+        TODO("Not yet implemented")
     }
 
     override fun getType(): String {

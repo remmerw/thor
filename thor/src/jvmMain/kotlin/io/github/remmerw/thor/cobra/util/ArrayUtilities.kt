@@ -23,49 +23,10 @@
  */
 package io.github.remmerw.thor.cobra.util
 
-import java.lang.reflect.Array
-import java.util.function.Consumer
-
 /**
  * @author J. H. S.
  */
 object ArrayUtilities {
-    fun <T> copy(collection: MutableCollection<T>, clazz: Class<T?>?): Array<T?> {
-        val castedArray = Array.newInstance(clazz, collection.size) as kotlin.Array<T?>
-        return collection.toArray<T?>(castedArray)
-    }
-
-    fun <T> copySynched(
-        collection: MutableCollection<T>,
-        syncObj: Any,
-        clazz: Class<T?>?
-    ): kotlin.Array<T?> {
-        synchronized(syncObj) {
-            return copy<T?>(collection, clazz)
-        }
-    }
-
-    /**
-     * For each element of collection, the supplied function is called. The
-     * collection is copied in a synchronized block, to avoid concurrent
-     * modifications.
-     *
-     * @param syncObj The object to synchronize upon.
-     * @param func    The function to call on each element.
-     */
-
-    fun <T> forEachSynched(
-        collection: MutableCollection<T>, syncObj: Any,
-        consumer: Consumer<T?>
-    ) {
-        if (collection.size > 0) {
-            val clazz = collection.iterator().next()!!.javaClass as Class<T?>
-            val copy = copySynched<T>(collection, syncObj, clazz)
-            for (element in copy) {
-                consumer.accept(element)
-            }
-        }
-    }
 
     fun <T> iterator(array: kotlin.Array<T?>, offset: Int, length: Int): MutableIterator<T?> {
         return ArrayIterator<T?>(array, offset, length)

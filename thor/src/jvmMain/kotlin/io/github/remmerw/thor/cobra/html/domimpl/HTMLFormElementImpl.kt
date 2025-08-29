@@ -89,7 +89,7 @@ class HTMLFormElementImpl : HTMLAbstractUIElement, HTMLFormElement {
         if (elements == null) {
             elements = DescendentHTMLCollection(
                 this,
-                HTMLFormElementImpl.InputFilter(),
+                InputFilter(),
                 this.treeLock,
                 false
             )
@@ -174,7 +174,7 @@ class HTMLFormElementImpl : HTMLAbstractUIElement, HTMLFormElement {
             window.addJSTask(
                 JSSupplierTask<Boolean?>(
                     0,
-                    Supplier {
+                    {
                         Executor.executeFunction(
                             this,
                             onsubmit,
@@ -182,8 +182,8 @@ class HTMLFormElementImpl : HTMLAbstractUIElement, HTMLFormElement {
                             window.contextFactory
                         )
                     },
-                    Consumer { result: Boolean? ->
-                        if (result) {
+                    { result: Boolean? ->
+                        if (result == true) {
                             submitFormImpl(extraFormInputs)
                         }
                     })
@@ -237,7 +237,7 @@ class HTMLFormElementImpl : HTMLAbstractUIElement, HTMLFormElement {
         })
     }
 
-     inner class InputFilter : NodeFilter {
+     open inner class InputFilter : NodeFilter {
         /*
          * (non-Javadoc)
          *

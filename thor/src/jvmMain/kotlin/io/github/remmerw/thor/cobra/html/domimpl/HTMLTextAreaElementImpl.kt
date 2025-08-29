@@ -24,6 +24,7 @@
 package io.github.remmerw.thor.cobra.html.domimpl
 
 import io.github.remmerw.thor.cobra.html.FormInput
+import org.w3c.dom.html.HTMLFormElement
 import org.w3c.dom.html.HTMLTextAreaElement
 
 class HTMLTextAreaElementImpl : HTMLBaseInputElement, HTMLTextAreaElement {
@@ -37,6 +38,26 @@ class HTMLTextAreaElementImpl : HTMLBaseInputElement, HTMLTextAreaElement {
             return null
         }
         return arrayOf<FormInput>(FormInput(name, this.value))
+    }
+
+    override fun getDefaultValue(): String? {
+        TODO("Not yet implemented")
+    }
+
+    override fun setDefaultValue(p0: String?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getForm(): HTMLFormElement? {
+        TODO("Not yet implemented")
+    }
+
+    override fun getAccessKey(): String? {
+        TODO("Not yet implemented")
+    }
+
+    override fun setAccessKey(p0: String?) {
+        TODO("Not yet implemented")
     }
 
     /*
@@ -61,6 +82,30 @@ class HTMLTextAreaElementImpl : HTMLBaseInputElement, HTMLTextAreaElement {
         }
     }
 
+    override fun getDisabled(): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun setDisabled(p0: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getName(): String? {
+        TODO("Not yet implemented")
+    }
+
+    override fun setName(p0: String?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getReadOnly(): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun setReadOnly(p0: Boolean) {
+        TODO("Not yet implemented")
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -83,6 +128,14 @@ class HTMLTextAreaElementImpl : HTMLBaseInputElement, HTMLTextAreaElement {
         }
     }
 
+    override fun getTabIndex(): Int {
+        TODO("Not yet implemented")
+    }
+
+    override fun setTabIndex(p0: Int) {
+        TODO("Not yet implemented")
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -90,5 +143,13 @@ class HTMLTextAreaElementImpl : HTMLBaseInputElement, HTMLTextAreaElement {
      */
     override fun getType(): String {
         return "textarea"
+    }
+
+    override fun getValue(): String? {
+        TODO("Not yet implemented")
+    }
+
+    override fun setValue(p0: String?) {
+        TODO("Not yet implemented")
     }
 }

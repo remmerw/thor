@@ -28,6 +28,7 @@ import io.github.remmerw.thor.cobra.html.style.HtmlValues
 import io.github.remmerw.thor.cobra.ua.ImageResponse
 import io.github.remmerw.thor.cobra.util.gui.WrapperLayout
 import java.awt.Color
+import java.awt.Component
 import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.Image
@@ -40,7 +41,12 @@ import javax.swing.SwingUtilities
     // private JButton button;
     private var mouseBeingPressed = false
     override var preferredSize: Dimension? = null
-    private var declaredWidth = 0
+     override val backgroundColor: Color?
+         get() = TODO("Not yet implemented")
+     override var component: Component?
+         get() = TODO("Not yet implemented")
+         set(value) {}
+     private var declaredWidth = 0
     private var declaredHeight = 0
     private var imageResponse: ImageResponse? = null
 
@@ -217,7 +223,14 @@ import javax.swing.SwingUtilities
         // do nothing
     }
 
-    override fun resetInput() {
+     override var name: String?
+         get() = TODO("Not yet implemented")
+         set(value) {}
+     override var value: String?
+         get() = TODO("Not yet implemented")
+         set(value) {}
+
+     override fun resetInput() {
         // NOP
     }
 

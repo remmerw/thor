@@ -4,6 +4,9 @@ import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement
 import io.github.remmerw.thor.cobra.html.domimpl.HTMLSelectElementImpl
 import io.github.remmerw.thor.cobra.util.gui.WrapperLayout
 import org.w3c.dom.html.HTMLOptionElement
+import java.awt.Color
+import java.awt.Component
+import java.awt.Dimension
 import java.awt.event.ItemEvent
 import java.awt.event.ItemListener
 import java.util.LinkedList
@@ -250,6 +253,18 @@ internal class InputSelectControl(modelNode: HTMLBaseInputElement?) : BaseInputC
         // when first rendered.
         this.resetItemList()
     }
+
+    override var preferredSize: Dimension?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override val backgroundColor: Color?
+        get() = TODO("Not yet implemented")
+    override var component: Component?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+    override var name: String?
+        get() = TODO("Not yet implemented")
+        set(value) {}
 
     override var value: String? = null
         get() {

@@ -106,6 +106,7 @@ abstract class BaseElementRenderable(
     private var lastAvailWidthForDeclared = -1
     private var lastAvailHeightForDeclared = -1
 
+    var layoutUpTreeCanBeInvalidated = false
     /**
      * Invalidates this Renderable and all descendents. This is only used in
      * special cases, such as when a new style sheet is added.

@@ -862,6 +862,9 @@ class HtmlBlockPanel(
         this.rblock!!.updateWidgetBounds(0, 0)
     }
 
+    override val paintedBackgroundColor: Color?
+        get() = TODO("Not yet implemented")
+
     override fun getGUIPoint(clientX: Int, clientY: Int): Point {
         // This is the GUI!
         return Point(clientX, clientY)
@@ -967,6 +970,11 @@ class HtmlBlockPanel(
         throw UnsupportedOperationException("Delayed pairs are not being handled at this level.")
     }
 
+    override val delayedPairs: MutableCollection<DelayedPair?>?
+        get() = TODO("Not yet implemented")
+    override val parentContainer: RenderableContainer?
+        get() = TODO("Not yet implemented")
+
     fun getDelayedPairs(): MutableCollection<DelayedPair?>? {
         throw UnsupportedOperationException("Delayed pairs are not being handled at this level.")
     }
@@ -974,6 +982,15 @@ class HtmlBlockPanel(
     override fun clearDelayedPairs() {
         throw UnsupportedOperationException("Delayed pairs are not being handled at this level.")
     }
+
+    override val height: Int
+        get() = TODO("Not yet implemented")
+    override val width: Int
+        get() = TODO("Not yet implemented")
+    override val x: Int
+        get() = TODO("Not yet implemented")
+    override val y: Int
+        get() = TODO("Not yet implemented")
 
     private fun clearComponents() {
         val c: MutableSet<Component?>? = this.components
@@ -1069,6 +1086,13 @@ class HtmlBlockPanel(
     override fun getInsetsMarginBorder(hscroll: Boolean, vscroll: Boolean): Insets? {
         throw UnsupportedOperationException("Method added while fixing #32. Not implemented yet.")
     }
+
+    override val visualBounds: Rectangle?
+        get() = TODO("Not yet implemented")
+    override val visualWidth: Int
+        get() = TODO("Not yet implemented")
+    override val visualHeight: Int
+        get() = TODO("Not yet implemented")
 
     fun getVisualHeight(): Int {
         return rblock!!.getVisualHeight()
