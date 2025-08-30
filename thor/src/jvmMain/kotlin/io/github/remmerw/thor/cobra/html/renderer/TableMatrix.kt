@@ -1829,8 +1829,6 @@ class TableMatrix(
         }
 
 
-        override val visualBounds: Rectangle?
-            get() = TODO("Not yet implemented")
 
         override var parent: RCollection?
             get() = TODO("Not yet implemented")

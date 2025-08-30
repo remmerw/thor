@@ -96,7 +96,7 @@ interface RenderableContainer {
             return this.height - (insets!!.top + insets.bottom)
         }
 
-    val visualBounds: Rectangle?
+    fun visualBounds(): Rectangle?
 
     val visualWidth: Int
 

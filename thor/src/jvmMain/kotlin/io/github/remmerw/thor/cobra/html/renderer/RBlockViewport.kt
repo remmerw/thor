@@ -2523,7 +2523,7 @@ class RBlockViewport(
             for (r in renderables) {
                 if (r is RenderableContainer) {
 
-                    val rcMaxY = r.visualBounds!!.maxY //  + rcInsets.bottom;
+                    val rcMaxY = r.visualBounds()!!.maxY //  + rcInsets.bottom;
                     if (rcMaxY > maxY) {
                         maxY = rcMaxY
                     }

@@ -1102,8 +1102,11 @@ class HtmlBlockPanel(
         throw UnsupportedOperationException("Method added while fixing #32. Not implemented yet.")
     }
 
-    override val visualBounds: Rectangle?
-        get() = TODO("Not yet implemented")
+    override fun visualBounds(): Rectangle? {
+        TODO("Not yet implemented")
+    }
+
+
     override val visualWidth: Int
         get() = TODO("Not yet implemented")
     override val visualHeight: Int
