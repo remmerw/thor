@@ -89,4 +89,8 @@ class RTab(
             return !inSelection
         }
     }
+
+    override fun zIndex(): Int {
+        TODO("Not yet implemented")
+    }
 }

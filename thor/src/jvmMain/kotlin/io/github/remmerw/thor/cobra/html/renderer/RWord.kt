@@ -269,6 +269,10 @@ open class RWord(
         }
     }
 
+    override fun zIndex(): Int {
+        TODO("Not yet implemented")
+    }
+
     override val isDelegated: Boolean
         get() = TODO("Not yet implemented")
 

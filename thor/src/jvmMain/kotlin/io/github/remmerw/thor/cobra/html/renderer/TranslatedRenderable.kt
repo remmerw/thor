@@ -261,8 +261,8 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
     override val isDelegated: Boolean
         get() = TODO("Not yet implemented")
 
-    fun getZIndex(): Int {
-        return translatedChild.zIndex
+    override fun zIndex(): Int {
+        return translatedChild.zIndex()
     }
 
     override fun invalidateLayoutLocal() {

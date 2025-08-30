@@ -1497,7 +1497,7 @@ class RBlockViewport(
             while (--index >= 0) {
                 val pr = otherArray[index]
                 val br = pr.renderable
-                if (br.zIndex < 0) {
+                if (br.zIndex() < 0) {
                     break
                 }
                 if (br.contains(pointx, pointy)) {
@@ -1824,6 +1824,11 @@ class RBlockViewport(
 
     override val isContainedByNode: Boolean
         get() = TODO("Not yet implemented")
+
+    override fun zIndex(): Int {
+        TODO("Not yet implemented")
+    }
+
     override val isDelegated: Boolean
         get() = TODO("Not yet implemented")
 
@@ -3103,7 +3108,7 @@ class RBlockViewport(
             while (i1.hasNext()) {
                 val pr = i1.next()!!
                 val r = pr.renderable
-                if (r.zIndex >= 0) {
+                if (r.zIndex() >= 0) {
                     pending = pr
                     break
                 }
@@ -3140,7 +3145,7 @@ class RBlockViewport(
             while (i1.hasNext()) {
                 val pr = i1.next()!!
                 val r = pr.renderable
-                if (r.zIndex < 0) {
+                if (r.zIndex() < 0) {
                     pending = pr
                     break
                 }

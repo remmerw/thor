@@ -136,6 +136,10 @@ class RSpacing(me: ModelNode?, container: RenderableContainer?, width: Int, heig
         } else return inSelection
     }
 
+    override fun zIndex(): Int {
+        TODO("Not yet implemented")
+    }
+
     override val isDelegated: Boolean
         get() = TODO("Not yet implemented")
 

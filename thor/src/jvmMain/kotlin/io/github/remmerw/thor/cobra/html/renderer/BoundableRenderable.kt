@@ -162,7 +162,7 @@ interface BoundableRenderable : Renderable {
 
     fun getGUIPoint(clientX: Int, clientY: Int): Point?
 
-    val zIndex: Int
+    fun zIndex(): Int
 
     fun invalidateLayoutUpTree()
 

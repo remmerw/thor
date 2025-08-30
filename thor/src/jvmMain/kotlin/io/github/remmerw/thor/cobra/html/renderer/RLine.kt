@@ -167,7 +167,11 @@ import kotlin.math.max
         return result
     }
 
-    override val isDelegated: Boolean
+     override fun zIndex(): Int {
+         TODO("Not yet implemented")
+     }
+
+     override val isDelegated: Boolean
         get() = TODO("Not yet implemented")
 
     fun addStyleChanger(sc: RStyleChanger) {

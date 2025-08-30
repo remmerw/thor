@@ -665,7 +665,7 @@ abstract class BaseElementRenderable(
         }
     }
 
-    open fun getZIndex(): Int {
+    override fun zIndex(): Int {
         return this.zIndex
     }
 

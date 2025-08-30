@@ -160,8 +160,8 @@ class RInlineBlock(
         this.child.markLayoutValid()
     }
 
-    override fun getZIndex(): Int {
-        return this.child.getZIndex()
+    override fun zIndex(): Int {
+        return this.child.zIndex()
     }
 
     override fun isReadyToPaint(): Boolean {
