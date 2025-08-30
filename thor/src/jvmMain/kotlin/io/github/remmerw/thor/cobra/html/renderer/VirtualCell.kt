@@ -87,7 +87,7 @@ class VirtualCell(cell: RAbstractCell, isTopLeft: Boolean) {
                 length = if (widthText == null) null else HtmlLength(
                     HtmlValues.getPixelSize(
                         widthText,
-                        cell.getModelNode()?.renderState,
+                        cell.getModelNode()?.renderState(),
                         0
                     )
                 )
