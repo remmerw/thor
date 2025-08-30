@@ -862,8 +862,10 @@ class HtmlBlockPanel(
         this.rblock!!.updateWidgetBounds(0, 0)
     }
 
-    override val paintedBackgroundColor: Color?
-        get() = TODO("Not yet implemented")
+    override fun paintedBackgroundColor(): Color? {
+        TODO("Not yet implemented")
+    }
+
 
     override fun getGUIPoint(clientX: Int, clientY: Int): Point {
         // This is the GUI!

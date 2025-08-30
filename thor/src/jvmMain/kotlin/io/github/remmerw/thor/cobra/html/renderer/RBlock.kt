@@ -1586,7 +1586,7 @@ open class RBlock(
         return this.backgroundColor == null
     }
 
-    fun getPaintedBackgroundColor(): Color? {
+    override fun paintedBackgroundColor(): Color? {
         return this.backgroundColor
     }
 
@@ -1971,8 +1971,7 @@ open class RBlock(
         get() = TODO("Not yet implemented")
     override val collapsibleMarginBottom: Int
         get() = TODO("Not yet implemented")
-    override val paintedBackgroundColor: Color?
-        get() = TODO("Not yet implemented")
+
     override val parentContainer: RenderableContainer?
         get() = TODO("Not yet implemented")
     override val x: Int

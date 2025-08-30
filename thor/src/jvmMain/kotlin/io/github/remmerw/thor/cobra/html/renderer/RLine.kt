@@ -34,10 +34,7 @@ import java.awt.Rectangle
 import java.awt.event.MouseEvent
 import kotlin.math.max
 
-/**
- * @author J. H. S.
- */
-internal class RLine(
+ class RLine(
     modelNode: ModelNode?, container: RenderableContainer?, x: Int, y: Int, desiredMaxWidth: Int,
     height: Int,
     initialAllowOverflow: Boolean
@@ -673,8 +670,8 @@ internal class RLine(
     // throw new OverflowException(overflown);
     // }
     // }
-    fun getBlockBackgroundColor(): Color? {
-        return this.container!!.paintedBackgroundColor
+    override fun blockBackgroundColor(): Color? {
+        return this.container!!.paintedBackgroundColor()
     }
 
     /*

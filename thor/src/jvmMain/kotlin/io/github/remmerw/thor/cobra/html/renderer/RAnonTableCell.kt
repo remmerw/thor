@@ -220,8 +220,6 @@ internal class RAnonTableCell(
         get() = TODO("Not yet implemented")
     override val collapsibleMarginBottom: Int
         get() = TODO("Not yet implemented")
-    override val paintedBackgroundColor: Color?
-        get() = TODO("Not yet implemented")
     override val parentContainer: RenderableContainer?
         get() = TODO("Not yet implemented")
     override val x: Int

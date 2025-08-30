@@ -44,7 +44,7 @@ interface RenderableContainer {
 
     fun updateAllWidgetBounds()
 
-    val paintedBackgroundColor: Color?
+    fun paintedBackgroundColor(): Color?
 
     fun getGUIPoint(x: Int, y: Int): Point?
 

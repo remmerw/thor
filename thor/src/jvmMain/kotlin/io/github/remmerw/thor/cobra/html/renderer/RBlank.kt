@@ -32,7 +32,7 @@ import java.awt.Point
 import java.awt.Rectangle
 import java.awt.event.MouseEvent
 
-internal class RBlank(
+class RBlank(
     me: ModelNode?,
     private val fontMetrics: FontMetrics,
     container: RenderableContainer?, // TODO: Is there a need for RBlank's at all?

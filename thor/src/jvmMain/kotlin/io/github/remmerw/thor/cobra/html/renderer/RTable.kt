@@ -385,8 +385,8 @@ internal class RTable(
      *
      * @see org.xamjwg.html.renderer.RenderableContainer#getBackground()
      */
-    fun getPaintedBackgroundColor(): Color? {
-        return this.container!!.paintedBackgroundColor
+    override fun paintedBackgroundColor(): Color? {
+        return this.container!!.paintedBackgroundColor()
     }
 
     private fun addPositionedRenderable(
@@ -450,8 +450,7 @@ internal class RTable(
         get() = TODO("Not yet implemented")
     override val collapsibleMarginBottom: Int
         get() = TODO("Not yet implemented")
-    override val paintedBackgroundColor: Color?
-        get() = TODO("Not yet implemented")
+
     override val parentContainer: RenderableContainer?
         get() = TODO("Not yet implemented")
     override val x: Int

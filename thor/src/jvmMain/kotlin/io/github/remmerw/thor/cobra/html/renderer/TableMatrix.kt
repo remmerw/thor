@@ -1881,7 +1881,7 @@ class TableMatrix(
             // TODO Auto-generated method stub
         }
 
-        fun getPaintedBackgroundColor(): Color? {
+        override fun paintedBackgroundColor(): Color? {
             // TODO Auto-generated method stub
             return null
         }
@@ -1910,8 +1910,7 @@ class TableMatrix(
             get() = TODO("Not yet implemented")
         override val collapsibleMarginBottom: Int
             get() = TODO("Not yet implemented")
-        override val paintedBackgroundColor: Color?
-            get() = TODO("Not yet implemented")
+
         override val parentContainer: RenderableContainer?
             get() = TODO("Not yet implemented")
         override val x: Int

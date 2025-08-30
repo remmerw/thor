@@ -298,8 +298,9 @@ abstract class BaseBoundableRenderable /*
         this.repaint(0, 0, this.width, this.height)
     }
 
-    open val blockBackgroundColor: Color?
-        get() = this.container!!.paintedBackgroundColor
+    open fun blockBackgroundColor(): Color? {
+      return this.container!!.paintedBackgroundColor()
+    }
 
     override fun paintTranslated(g: Graphics) {
         val x = this.x

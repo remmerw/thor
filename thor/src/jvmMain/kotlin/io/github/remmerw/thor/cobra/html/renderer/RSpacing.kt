@@ -33,7 +33,7 @@ import java.awt.event.MouseEvent
 /**
  * This is used when there's padding or margins in inline elements.
  */
-internal class RSpacing(me: ModelNode?, container: RenderableContainer?, width: Int, height: Int) :
+class RSpacing(me: ModelNode?, container: RenderableContainer?, width: Int, height: Int) :
     BaseBoundableRenderable(container, me) {
     init {
         // Dimensions set when constructed.

@@ -32,7 +32,7 @@ import java.awt.event.MouseEvent
 /**
  * @author J. H. S.
  */
-internal class RStyleChanger(override var modelNode: ModelNode?) : BaseRenderable() {
+class RStyleChanger(override var modelNode: ModelNode?) : BaseRenderable() {
     // private final static Logger logger = Logger.getLogger(RStyleChanger.class);
 
 

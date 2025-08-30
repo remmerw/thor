@@ -59,8 +59,7 @@ open class RUIControl(
         private set
     protected var isHeightConstrained: Boolean = false
         private set
-    override val paintedBackgroundColor: Color?
-        get() = TODO("Not yet implemented")
+
 
     init {
 
@@ -434,8 +433,8 @@ open class RUIControl(
         return null
     }
 
-    fun getPaintedBackgroundColor(): Color? {
-        return this.container?.paintedBackgroundColor
+    override fun paintedBackgroundColor(): Color? {
+        return this.container?.paintedBackgroundColor()
     }
 
     val foregroundColor: Color?
