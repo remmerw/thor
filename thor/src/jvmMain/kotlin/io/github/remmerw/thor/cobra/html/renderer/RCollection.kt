@@ -44,9 +44,7 @@ interface RCollection : BoundableRenderable {
 
     fun updateWidgetBounds(guiX: Int, guiY: Int)
 
-    /**
-     * Invalidates layout in all descendents.
-     */
+
     fun invalidateLayoutDeep()
 
     fun focus()

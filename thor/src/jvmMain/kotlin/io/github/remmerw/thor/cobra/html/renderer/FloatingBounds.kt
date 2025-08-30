@@ -46,5 +46,5 @@ interface FloatingBounds {
 
     fun getRightClearY(y: Int): Int
 
-    val maxY: Int
+    fun maxY(): Int
 }

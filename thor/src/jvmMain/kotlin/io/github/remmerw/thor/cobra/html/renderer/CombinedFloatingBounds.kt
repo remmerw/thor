@@ -42,8 +42,8 @@ internal class CombinedFloatingBounds(
         return max(this.floatBounds1.getLeftClearY(y), this.floatBounds2.getLeftClearY(y))
     }
 
-    fun getMaxY(): Int {
-        return max(this.floatBounds1.maxY, this.floatBounds2.maxY)
+    override fun maxY(): Int {
+        return max(this.floatBounds1.maxY(), this.floatBounds2.maxY())
     }
 
     override fun getRight(y: Int): Int {
@@ -54,8 +54,7 @@ internal class CombinedFloatingBounds(
         return max(this.floatBounds1.getRightClearY(y), this.floatBounds2.getRightClearY(y))
     }
 
-    override val maxY: Int
-        get() = TODO("Not yet implemented")
+
 
     override fun equals(obj: Any?): Boolean {
         // Important for layout caching.

@@ -130,14 +130,13 @@ internal class FloatingViewportBounds
         return cleary
     }
 
-    override val maxY: Int
-        get() = TODO("Not yet implemented")
 
-    fun getMaxY(): Int {
+
+    override fun maxY(): Int {
         var maxY = this.y + this.height
         val prev = this.prevBounds
         if (prev != null) {
-            val prevMaxY = prev.maxY
+            val prevMaxY = prev.maxY()
             if (prevMaxY > maxY) {
                 maxY = prevMaxY
             }
