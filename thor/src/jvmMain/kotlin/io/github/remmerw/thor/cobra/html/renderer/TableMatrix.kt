@@ -1336,7 +1336,7 @@ class TableMatrix(
 
         for (cell in this.ALL_CELLS) {
             // Should clip table cells, just in case.
-            val newG = g.create(cell.x, cell.y, cell.width, cell.height)
+            val newG = g.create(cell.x(), cell.y(), cell.width, cell.height)
             try {
                 cell.paint(newG)
             } finally {
@@ -1875,7 +1875,7 @@ class TableMatrix(
             get() = TODO("Not yet implemented")
 
         override fun repaint() {
-            container?.repaint(x, y, width, height)
+            container?.repaint(x(), y(), width, height)
         }
 
         override fun repaint(modelNode: ModelNode?) {
@@ -1903,10 +1903,7 @@ class TableMatrix(
 
         override val parentContainer: RenderableContainer?
             get() = TODO("Not yet implemented")
-        override val x: Int
-            get() = TODO("Not yet implemented")
-        override val y: Int
-            get() = TODO("Not yet implemented")
+
 
         override fun vAlign(): CSSProperty.VerticalAlign? {
             TODO("Not yet implemented")

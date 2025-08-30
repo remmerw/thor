@@ -254,9 +254,6 @@ internal class InputSelectControl(modelNode: HTMLBaseInputElement?) : BaseInputC
         this.resetItemList()
     }
 
-    override var preferredSize: Dimension?
-        get() = TODO("Not yet implemented")
-        set(value) {}
 
     override var component: Component?
         get() = TODO("Not yet implemented")

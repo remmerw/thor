@@ -78,9 +78,7 @@ class InputFileControl(modelNode: HTMLBaseInputElement?) : BaseInputControl(mode
         this.fileValue = null
     }
 
-    override var preferredSize: Dimension?
-        get() = TODO("Not yet implemented")
-        set(value) {}
+
 
     override var component: Component?
         get() = TODO("Not yet implemented")

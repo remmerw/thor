@@ -74,9 +74,7 @@ internal class InputButtonControl(modelNode: HTMLBaseInputElement?) : BaseInputC
         button.text = text
     }
 
-    override var preferredSize: Dimension?
-        get() = TODO("Not yet implemented")
-        set(value) {}
+
 
     override var component: Component?
         get() = TODO("Not yet implemented")

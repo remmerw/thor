@@ -62,9 +62,11 @@ interface RenderableContainer {
 
     val width: Int
 
-    val x: Int
+    fun x(): Int
+    fun setX(x: Int)
 
-    val y: Int
+    fun y(): Int
+    fun setY(y: Int)
 
     fun getInsets(hscroll: Boolean, vscroll: Boolean): Insets?
 

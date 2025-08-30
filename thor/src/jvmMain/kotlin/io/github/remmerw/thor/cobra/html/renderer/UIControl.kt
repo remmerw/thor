@@ -39,7 +39,7 @@ interface UIControl {
      */
     fun reset(availWidth: Int, availHeight: Int)
 
-    var preferredSize: Dimension?
+    fun preferredSize(): Dimension?
 
     fun vAlign(): VerticalAlign?
 

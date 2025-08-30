@@ -1963,10 +1963,7 @@ open class RBlock(
 
     override val parentContainer: RenderableContainer?
         get() = TODO("Not yet implemented")
-    override val x: Int
-        get() = TODO("Not yet implemented")
-    override val y: Int
-        get() = TODO("Not yet implemented")
+
 
     override fun vAlign(): CSSProperty.VerticalAlign? {
         TODO("Not yet implemented")

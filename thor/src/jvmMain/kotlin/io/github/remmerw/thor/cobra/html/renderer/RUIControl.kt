@@ -75,10 +75,7 @@ open class RUIControl(
 
     override val parentContainer: RenderableContainer?
         get() = TODO("Not yet implemented")
-    override val x: Int
-        get() = TODO("Not yet implemented")
-    override val y: Int
-        get() = TODO("Not yet implemented")
+
     override val clipBounds: Rectangle?
         get() = TODO("Not yet implemented")
     override val clipBoundsWithoutInsets: Rectangle?
@@ -335,7 +332,7 @@ open class RUIControl(
             var finalHeight =
                 if (declaredHeight == -1) -1 else declaredHeight + insets.top + insets.bottom
             if ((finalWidth == -1) || (finalHeight == -1)) {
-                val size = widget.preferredSize
+                val size = widget.preferredSize()
                 if (finalWidth == -1) {
                     finalWidth = size!!.width + insets.left + insets.right
                 }

@@ -180,10 +180,7 @@ internal class RListItem(
         }
     }
 
-    override val x: Int
-        get() = TODO("Not yet implemented")
-    override val y: Int
-        get() = TODO("Not yet implemented")
+
 
     companion object {
         private const val BULLET_WIDTH = 5

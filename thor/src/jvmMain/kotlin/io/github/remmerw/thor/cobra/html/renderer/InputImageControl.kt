@@ -40,7 +40,7 @@ class InputImageControl(modelNode: HTMLBaseInputElement) : BaseInputControl(mode
     ImageListener {
     // private JButton button;
     private var mouseBeingPressed = false
-    override var preferredSize: Dimension? = null
+    var preferredSize: Dimension? = null
 
 
     override var component: Component?

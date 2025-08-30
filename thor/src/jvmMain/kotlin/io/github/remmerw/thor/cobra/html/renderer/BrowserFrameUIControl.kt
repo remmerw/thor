@@ -112,15 +112,13 @@ internal class BrowserFrameUIControl(
         }
     }
 
-    override var preferredSize: Dimension?
-        get() = TODO("Not yet implemented")
-        set(value) {}
+
 
     override fun vAlign(): CSSProperty.VerticalAlign? {
         TODO("Not yet implemented")
     }
 
-    fun getPreferredSize(): Dimension {
+    override fun preferredSize(): Dimension {
         val width =
             HtmlValues.getOldSyntaxPixelSize(element.getAttribute("width"), this.availWidth, 100)
         val height =

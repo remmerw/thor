@@ -111,9 +111,6 @@ internal class InputRadioControl(modelNode: HTMLBaseInputElement?) : BaseInputCo
 
     override var value: String? = null
         get() = this.controlElement?.getAttribute("value")
-    override var preferredSize: Dimension?
-        get() = TODO("Not yet implemented")
-        set(value) {}
 
     override var component: Component?
         get() = TODO("Not yet implemented")

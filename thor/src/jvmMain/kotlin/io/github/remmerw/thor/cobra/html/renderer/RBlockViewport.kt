@@ -2557,7 +2557,7 @@ class RBlockViewport(
                 if (r is RenderableContainer) {
                     val rcInsets = r.getInsetsMarginBorder(false, false)!!
                     val rcMaxX =
-                        (r.x + r.visualWidth + rcInsets.left + rcInsets.right).toDouble()
+                        (r.x() + r.visualWidth + rcInsets.left + rcInsets.right).toDouble()
                     if (rcMaxX > maxX) {
                         maxX = rcMaxX
                     }
@@ -2736,9 +2736,7 @@ class RBlockViewport(
                 canvasNode.paintComponent(g)
             }
 
-            override var preferredSize: Dimension?
-                get() = TODO("Not yet implemented")
-                set(value) {}
+
 
             override fun setBounds(x: Int, y: Int, width: Int, height: Int) {
                 super.setBounds(x, y, width, height)

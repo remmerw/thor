@@ -22,7 +22,5 @@ internal class BrokenComponent : Component() {
         g.drawLine(size.width - 1, 0, 0, size.height - 1)
     }
 
-    companion object {
-        private val serialVersionUID = -6506487314783190388L
-    }
+
 }

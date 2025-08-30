@@ -108,9 +108,7 @@ class ImgControl(modelNode: HTMLImageElementImpl) : BaseControl(modelNode), Imag
         this.preferredSize = this.createPreferredSize(dw, dh)
     }
 
-    override var preferredSize: Dimension?
-        get() = TODO("Not yet implemented")
-        set(value) {}
+
 
     override var component: Component?
         get() = TODO("Not yet implemented")

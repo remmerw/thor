@@ -17,9 +17,10 @@ class UIControlWrapper(
         this.htmlObject.reset(availWidth, availHeight)
     }
 
-    override var preferredSize: Dimension?
-        get() = TODO("Not yet implemented")
-        set(value) {}
+    override fun preferredSize(): Dimension? {
+        TODO("Not yet implemented")
+    }
+
 
     override fun vAlign(): CSSProperty.VerticalAlign? {
         TODO("Not yet implemented")

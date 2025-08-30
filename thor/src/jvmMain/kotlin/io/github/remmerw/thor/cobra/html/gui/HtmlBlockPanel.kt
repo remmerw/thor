@@ -989,10 +989,23 @@ class HtmlBlockPanel(
         get() = TODO("Not yet implemented")
     override val width: Int
         get() = TODO("Not yet implemented")
-    override val x: Int
-        get() = TODO("Not yet implemented")
-    override val y: Int
-        get() = TODO("Not yet implemented")
+
+    override fun x(): Int {
+        TODO("Not yet implemented")
+    }
+
+    override fun setX(x: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override fun y(): Int {
+        TODO("Not yet implemented")
+    }
+
+    override fun setY(y: Int) {
+        TODO("Not yet implemented")
+    }
+
 
     private fun clearComponents() {
         val c: MutableSet<Component?>? = this.components

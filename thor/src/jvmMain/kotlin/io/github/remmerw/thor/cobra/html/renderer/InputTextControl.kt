@@ -47,9 +47,6 @@ internal open class InputTextControl(modelNode: HTMLBaseInputElement?) :
         return JTextField()
     }
 
-    override var preferredSize: Dimension?
-        get() = TODO("Not yet implemented")
-        set(value) {}
 
     override var component: Component?
         get() = TODO("Not yet implemented")
