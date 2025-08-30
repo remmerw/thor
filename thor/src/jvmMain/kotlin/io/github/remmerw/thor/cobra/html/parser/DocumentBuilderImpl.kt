@@ -99,7 +99,7 @@ class DocumentBuilderImpl : DocumentBuilder {
      * Parses an HTML document. Note that this method will read the entire input
      * source before returning a `Document` instance.
      *
-     * @param is The input source, which may be an instance of
+     * @param `is` The input source, which may be an instance of
      * [InputSourceImpl].
      * @see .createDocument
      */

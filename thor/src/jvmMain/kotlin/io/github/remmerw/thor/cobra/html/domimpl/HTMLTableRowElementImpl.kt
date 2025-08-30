@@ -30,10 +30,8 @@ import org.w3c.dom.html.HTMLElement
 import org.w3c.dom.html.HTMLTableCellElement
 import org.w3c.dom.html.HTMLTableRowElement
 
-class HTMLTableRowElementImpl : HTMLElementImpl, HTMLTableRowElement {
-    constructor(name: String) : super(name, true)
+class HTMLTableRowElementImpl(name: String) : HTMLElementImpl(name), HTMLTableRowElement {
 
-    constructor() : super("TR", true)
 
     override fun getRowIndex(): Int {
         val parent = this.nodeParent as NodeImpl?

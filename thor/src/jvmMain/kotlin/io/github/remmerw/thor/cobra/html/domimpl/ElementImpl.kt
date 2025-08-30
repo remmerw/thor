@@ -45,11 +45,7 @@ import java.util.Locale
 abstract class ElementImpl(private val name: String) : NodeImpl(), Element, EventTarget {
     protected var attributes: MutableMap<String, String>? = null
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.NodeImpl#getattributes()
-     */
+
     override fun getAttributes(): NamedNodeMap {
         synchronized(this) {
             var attrs: MutableMap<String, String>? = this.attributes

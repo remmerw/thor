@@ -25,10 +25,8 @@ package io.github.remmerw.thor.cobra.html.domimpl
 
 import org.w3c.dom.html.HTMLHtmlElement
 
-class HTMLHtmlElementImpl : HTMLElementImpl, HTMLHtmlElement {
-    constructor() : super("HTML", true)
+class HTMLHtmlElementImpl(name: String) : HTMLElementImpl(name), HTMLHtmlElement {
 
-    constructor(name: String) : super(name, true)
 
     override fun getVersion(): String? {
         return this.getAttribute("version")

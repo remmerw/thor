@@ -55,8 +55,7 @@ import kotlin.synchronized
 
 // TODO: Implement org.w3c.dom.events.EventTarget ?
 abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
-    // Called in GUI thread always.
-    // Called in GUI thread always.
+
     private var scriptable: Scriptable? = null
     private var renderState: RenderState? = null
     private val parentModelNode: ModelNode? = null

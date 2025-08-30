@@ -33,13 +33,10 @@ import org.w3c.dom.html.HTMLStyleElement
 import org.w3c.dom.stylesheets.LinkStyle
 import java.util.Locale
 
-class HTMLStyleElementImpl : HTMLElementImpl, HTMLStyleElement, LinkStyle {
+class HTMLStyleElementImpl(name: String) : HTMLElementImpl(name), HTMLStyleElement, LinkStyle {
     private var styleSheet: JStyleSheetWrapper? = null
     private var disabled = false
 
-    constructor() : super("STYLE", true)
-
-    constructor(name: String) : super(name, true)
 
     override fun getDisabled(): Boolean {
         return this.disabled

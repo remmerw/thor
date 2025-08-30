@@ -10,17 +10,14 @@ import io.github.remmerw.thor.cobra.html.style.ComputedJStyleProperties
 import io.github.remmerw.thor.cobra.html.style.JStyleProperties
 
 // TODO: Extend a common interface or a minimal class instead of HTMLElementImpl
-class GeneratedElement(parent: HTMLElementImpl, nodeData: NodeData?, content: TermList) :
+class GeneratedElement(parent: HTMLElementImpl, val nodeData: NodeData?, val content: TermList) :
     HTMLElementImpl("") {
-    private val nodeData: NodeData?
-    private val content: TermList
+
     private var currentStyle: JStyleProperties? = null
 
     init {
         setParentImpl(parent)
         setOwnerDocument(parent.ownerDocument)
-        this.nodeData = nodeData
-        this.content = content
     }
 
     override fun getCurrentStyle(): JStyleProperties {

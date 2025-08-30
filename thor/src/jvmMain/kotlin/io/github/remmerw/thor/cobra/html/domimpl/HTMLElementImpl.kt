@@ -56,7 +56,7 @@ import java.util.StringTokenizer
 import java.util.logging.Level
 import kotlin.concurrent.Volatile
 
-open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
+open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2PropertiesContext {
     @Volatile
     private var currentStyle: JStyleProperties? = null
     private var cachedNodeData: NodeData? = null
@@ -73,10 +73,7 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
     private var afterNode: GeneratedElement? = null
     private var isMouseOver = false
 
-    // TODO: noStyleSheet is not used. Consider removing.
-    constructor(name: String, noStyleSheet: Boolean) : super(name)
 
-    constructor(name: String) : super(name)
 
     protected fun forgetLocalStyle() {
         synchronized(this) {
@@ -254,10 +251,10 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
         TODO("Not yet implemented")
     }
 
-
     override fun setId(p0: String?) {
         TODO("Not yet implemented")
     }
+
 
     override fun getTitle(): String {
         TODO("Not yet implemented")

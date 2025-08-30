@@ -32,14 +32,12 @@ import org.w3c.dom.html.HTMLFrameElement
 import java.net.MalformedURLException
 import kotlin.concurrent.Volatile
 
-class HTMLFrameElementImpl : HTMLElementImpl, HTMLFrameElement, FrameNode {
+class HTMLFrameElementImpl(name: String) : HTMLElementImpl(name), HTMLFrameElement, FrameNode {
     @Volatile
     override var browserFrame: BrowserFrame? = null
     private var noResize = false
 
-    constructor(name: String, noStyleSheet: Boolean) : super(name, noStyleSheet)
 
-    constructor(name: String) : super(name)
 
     private fun loadURL() {
         val src = getAttribute("src")

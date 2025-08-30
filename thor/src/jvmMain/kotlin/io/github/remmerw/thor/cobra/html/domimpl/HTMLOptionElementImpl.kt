@@ -4,7 +4,7 @@ import org.w3c.dom.html.HTMLFormElement
 import org.w3c.dom.html.HTMLOptionElement
 import org.w3c.dom.html.HTMLSelectElement
 
-class HTMLOptionElementImpl(name: String) : HTMLElementImpl(name, true), HTMLOptionElement {
+class HTMLOptionElementImpl(name: String) : HTMLElementImpl(name), HTMLOptionElement {
     private var selected = false
 
     override fun getDefaultSelected(): Boolean {

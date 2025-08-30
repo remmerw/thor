@@ -26,7 +26,7 @@ import java.lang.Boolean
 import kotlin.Any
 import kotlin.String
 
-class HTMLTitleElementImpl(name: String) : HTMLElementImpl(name, true) {
+class HTMLTitleElementImpl(name: String) : HTMLElementImpl(name) {
     override fun setUserData(key: String, data: Any?, handler: UserDataHandler?): Any? {
         if (HtmlParser.MODIFYING_KEY == key && (data == Boolean.FALSE)) {
             val document = this.document

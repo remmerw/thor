@@ -37,13 +37,10 @@ import java.util.Arrays
 import java.util.logging.Level
 import kotlin.math.min
 
-class HTMLScriptElementImpl : HTMLElementImpl, HTMLScriptElement {
+class HTMLScriptElementImpl(name: String) : HTMLElementImpl(name), HTMLScriptElement {
     private var text: String? = null
     private var defer = false
 
-    constructor() : super("SCRIPT", true)
-
-    constructor(name: String) : super(name, true)
 
     override fun getText(): String? {
         val t = this.text
