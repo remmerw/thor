@@ -88,9 +88,9 @@ interface BoundableRenderable : Renderable {
 
     var width: Int
 
-    val visualHeight: Int
+    fun visualHeight(): Int
 
-    val visualWidth: Int
+    fun visualWidth(): Int
 
     // public Point getRenderablePoint(int guiX, int guiY);
     fun getLowestRenderableSpot(x: Int, y: Int): RenderableSpot?

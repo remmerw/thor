@@ -331,13 +331,13 @@ class HtmlBlockPanel(
                     // when the target node has blank content.
                     if (Nodes.isSameOrAncestorOf(node, r.modelNode as Node)) {
                         val xInRoot =
-                            if (prevBoundable == null) 0 else prevBoundable.visualX + prevBoundable.visualWidth
+                            if (prevBoundable == null) 0 else prevBoundable.visualX + prevBoundable.visualWidth()
                         val rootOrigin = root.getOriginRelativeTo(relativeTo)
                         subBounds = Rectangle(
                             rootOrigin.x + xInRoot,
                             rootOrigin.y,
                             0,
-                            root.visualHeight
+                            root.visualHeight()
                         )
                     }
                 }
@@ -1107,21 +1107,17 @@ class HtmlBlockPanel(
     }
 
 
-    override val visualWidth: Int
-        get() = TODO("Not yet implemented")
-    override val visualHeight: Int
-        get() = TODO("Not yet implemented")
 
-    fun getVisualHeight(): Int {
-        return rblock!!.getVisualHeight()
+    override fun visualHeight(): Int {
+        return rblock!!.visualHeight()
     }
 
-    fun getVisualWidth(): Int {
-        return rblock!!.getVisualWidth()
+    override fun visualWidth(): Int {
+        return rblock!!.visualWidth()
     }
 
     fun getVisualBounds(): Rectangle {
-        return Rectangle(x, y, getVisualWidth(), getVisualHeight())
+        return Rectangle(x, y, visualWidth(), visualHeight())
     }
 
     override fun translateDescendentPoint(descendent: BoundableRenderable, x: Int, y: Int): Point {

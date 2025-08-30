@@ -812,9 +812,9 @@ open class RBlock(
         if (viewPortY > insets.top) {
             bodyLayout.setY(insets.top)
             corrected = true
-        } else if (viewPortY < (blockHeight - insets.bottom - bodyLayout.getVisualHeight())) {
+        } else if (viewPortY < (blockHeight - insets.bottom - bodyLayout.visualHeight())) {
             bodyLayout.setY(
-                min(insets.top, blockHeight - insets.bottom - bodyLayout.getVisualHeight()))
+                min(insets.top, blockHeight - insets.bottom - bodyLayout.visualHeight()))
             corrected = true
         }
         return corrected
@@ -1103,9 +1103,9 @@ open class RBlock(
             prelimBlockHeight = bodyHeight + insetsTotalHeight
         }
 
-        if ((vauto || vscroll) && ((prelimBlockHeight - insetsTotalHeight) < bodyLayout.getVisualHeight())) {
+        if ((vauto || vscroll) && ((prelimBlockHeight - insetsTotalHeight) < bodyLayout.visualHeight())) {
             if (isHtmlElem) {
-                prelimBlockHeight = bodyLayout.getVisualHeight() + insetsTotalHeight
+                prelimBlockHeight = bodyLayout.visualHeight() + insetsTotalHeight
             } else {
                 vscroll = true
                 insets = this.getInsetsMarginBorder(hscroll, vscroll)
@@ -1243,19 +1243,19 @@ open class RBlock(
         return LayoutValue(resultingWidth, resultingHeight, hscroll, vscroll)
     }
 
-    override fun getVisualWidth(): Int {
+    override fun visualWidth(): Int {
         if (hasHScrollBar) {
-            return super.getVisualWidth()
+            return super.visualWidth()
         } else {
-            return max(super.getVisualWidth(), rBlockViewport.getVisualWidth())
+            return max(super.visualWidth(), rBlockViewport.visualWidth())
         }
     }
 
-    override fun getVisualHeight(): Int {
+    override fun visualHeight(): Int {
         if (hasVScrollBar) {
-            return super.getVisualHeight()
+            return super.visualHeight()
         } else {
-            return max(super.getVisualHeight(), rBlockViewport.getVisualHeight())
+            return max(super.visualHeight(), rBlockViewport.visualHeight())
         }
     }
 
@@ -1306,7 +1306,7 @@ open class RBlock(
                 val newValue = insets.top - bodyLayout.y()
                 val newExtent = this.height - insets.top - insets.bottom
                 val newMin = 0
-                val newMax = bodyLayout.getVisualHeight()
+                val newMax = bodyLayout.visualHeight()
                 vsb.setValues(newValue, newExtent, newMin, newMax)
                 vsb.setUnitIncrement(getVUnitIncrement(renderState))
                 vsb.setBlockIncrement(newExtent)
@@ -1316,7 +1316,7 @@ open class RBlock(
                 val newValue = insets.left - bodyLayout.x()
                 val newExtent = this.width - insets.left - insets.right
                 val newMin = 0
-                val newMax = bodyLayout.getVisualWidth()
+                val newMax = bodyLayout.visualWidth()
                 hsb.setValues(newValue, newExtent, newMin, newMax)
             }
         } finally {
@@ -1406,10 +1406,7 @@ open class RBlock(
         get() = TODO("Not yet implemented")
     override val visualY: Int
         get() = TODO("Not yet implemented")
-    override val visualHeight: Int
-        get() = TODO("Not yet implemented")
-    override val visualWidth: Int
-        get() = TODO("Not yet implemented")
+
 
     /*
      * (non-Javadoc)
@@ -1603,9 +1600,9 @@ open class RBlock(
             val prevX = bodyLayout.x()
             if (viewPortX > insets.left) {
                 bodyLayout.setX( insets.left)
-            } else if (viewPortX < (this.width - insets.right - bodyLayout.getVisualWidth())) {
+            } else if (viewPortX < (this.width - insets.right - bodyLayout.visualWidth())) {
                 bodyLayout.setX(
-                    min(insets.left, this.width - insets.right - bodyLayout.getVisualWidth()))
+                    min(insets.left, this.width - insets.right - bodyLayout.visualWidth()))
             } else {
                 bodyLayout.setX(viewPortX)
             }
@@ -1630,9 +1627,9 @@ open class RBlock(
             val prevY = bodyLayout.y()
             if (viewPortY > insets.top) {
                 bodyLayout.setY(insets.top)
-            } else if (viewPortY < (this.height - insets.bottom - bodyLayout.getVisualHeight())) {
+            } else if (viewPortY < (this.height - insets.bottom - bodyLayout.visualHeight())) {
                 bodyLayout.setY(
-                    min(insets.top, this.height - insets.bottom - bodyLayout.getVisualHeight()))
+                    min(insets.top, this.height - insets.bottom - bodyLayout.visualHeight()))
             } else {
                 bodyLayout.setY(viewPortY)
             }

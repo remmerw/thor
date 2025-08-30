@@ -104,11 +104,11 @@ abstract class BaseBoundableRenderable /*
         return y()
     }
 
-    open fun getVisualHeight(): Int {
+    override fun visualHeight(): Int {
         return getHeight()
     }
 
-    open fun getVisualWidth(): Int {
+    override fun visualWidth(): Int {
         return getWidth()
     }
 
@@ -131,7 +131,7 @@ abstract class BaseBoundableRenderable /*
     override fun contains(x: Int, y: Int): Boolean {
         val mx = this.getVisualX()
         val my = this.getVisualY()
-        return (x >= mx) && (y >= my) && (x < (mx + this.getVisualWidth())) && (y < (my + this.getVisualHeight()))
+        return (x >= mx) && (y >= my) && (x < (mx + this.visualWidth())) && (y < (my + this.visualHeight()))
     }
 
     override fun bounds(): Rectangle {
@@ -143,7 +143,7 @@ abstract class BaseBoundableRenderable /*
      * They are distinct from layout bounds when {overflow:visible} or {position:relative} is set on the element
      */
     override fun visualBounds(): Rectangle {
-        return Rectangle(getVisualX(), getVisualY(), getVisualWidth(), getVisualHeight())
+        return Rectangle(getVisualX(), getVisualY(), visualWidth(), visualHeight())
     }
 
     override fun size(): Dimension? {
@@ -281,8 +281,8 @@ abstract class BaseBoundableRenderable /*
             parent.repaint(
                 x + this.getVisualX(),
                 y + this.getVisualY(),
-                getVisualWidth(),
-                getVisualHeight()
+                visualWidth(),
+                visualHeight()
             )
         } else if (parent == null) {
             // Has to be top RBlock.

@@ -98,9 +98,9 @@ interface RenderableContainer {
 
     fun visualBounds(): Rectangle?
 
-    val visualWidth: Int
+    fun visualWidth(): Int
 
-    val visualHeight: Int
+    fun visualHeight(): Int
 
     fun translateDescendentPoint(descendent: BoundableRenderable, x: Int, y: Int): Point
 

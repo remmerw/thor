@@ -1791,10 +1791,7 @@ class RBlockViewport(
         get() = TODO("Not yet implemented")
     override val visualY: Int
         get() = TODO("Not yet implemented")
-    override val visualHeight: Int
-        get() = TODO("Not yet implemented")
-    override val visualWidth: Int
-        get() = TODO("Not yet implemented")
+
 
     override fun getLowestRenderableSpot(x: Int, y: Int): RenderableSpot? {
         val br = this.getRenderable(Point(x, y))
@@ -2513,7 +2510,7 @@ class RBlockViewport(
         }
     }
 
-    override fun getVisualHeight(): Int {
+    override fun visualHeight(): Int {
         if (cachedVisualHeight != null) {
             return cachedVisualHeight!!
         }
@@ -2546,7 +2543,7 @@ class RBlockViewport(
         return cachedVisualHeight!!
     }
 
-    override fun getVisualWidth(): Int {
+    override fun visualWidth(): Int {
         if (cachedVisualWidth != null) {
             return cachedVisualWidth!!
         }
@@ -2558,7 +2555,7 @@ class RBlockViewport(
                 if (r is RenderableContainer) {
                     val rcInsets = r.getInsetsMarginBorder(false, false)!!
                     val rcMaxX =
-                        (r.x() + r.visualWidth + rcInsets.left + rcInsets.right).toDouble()
+                        (r.x() + r.visualWidth() + rcInsets.left + rcInsets.right).toDouble()
                     if (rcMaxX > maxX) {
                         maxX = rcMaxX
                     }

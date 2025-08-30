@@ -74,10 +74,6 @@ class RInlineBlock(
         get() = TODO("Not yet implemented")
     override val visualY: Int
         get() = TODO("Not yet implemented")
-    override val visualHeight: Int
-        get() = TODO("Not yet implemented")
-    override val visualWidth: Int
-        get() = TODO("Not yet implemented")
 
     override fun getLowestRenderableSpot(x: Int, y: Int): RenderableSpot? {
         return this.child.getLowestRenderableSpot(x, y)

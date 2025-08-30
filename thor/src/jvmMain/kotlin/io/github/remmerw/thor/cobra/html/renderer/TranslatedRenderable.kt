@@ -103,10 +103,7 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
         get() = TODO("Not yet implemented")
     override val visualY: Int
         get() = TODO("Not yet implemented")
-    override val visualHeight: Int
-        get() = TODO("Not yet implemented")
-    override val visualWidth: Int
-        get() = TODO("Not yet implemented")
+
 
     override fun x(): Int {
         return translatedChild.x()
@@ -148,12 +145,12 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
         translatedChild.width = (width)
     }
 
-    override fun getVisualHeight(): Int {
-        return translatedChild.visualHeight
+    override fun visualHeight(): Int {
+        return translatedChild.visualHeight()
     }
 
-    override fun getVisualWidth(): Int {
-        return translatedChild.visualWidth
+    override fun visualWidth(): Int {
+        return translatedChild.visualWidth()
     }
 
     override fun getLowestRenderableSpot(x: Int, y: Int): RenderableSpot? {
