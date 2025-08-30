@@ -199,20 +199,21 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
               * this method.
               */
 
-            val nl = this.nodeList
-            synchronized(this.treeLock) {
-                return if (nl == null) null else nl.toArray<NodeImpl?>(
-                    EMPTY_ARRAY
-                )
-            }
+        val nl = this.nodeList
+        synchronized(this.treeLock) {
+            return if (nl == null) null else nl.toArray<NodeImpl?>(
+                EMPTY_ARRAY
+            )
+        }
 
     }
+
     fun getChildCount(): Int {
-            synchronized(this.treeLock) {
-                val nl = this.nodeList
-                return if (nl == null) 0 else nl.size
-            }
+        synchronized(this.treeLock) {
+            val nl = this.nodeList
+            return if (nl == null) 0 else nl.size
         }
+    }
 
     fun getChildren(): HTMLCollection {
         // TODO: This is needed to be implemented only by Element, Document and DocumentFragment as per https://developer.mozilla.org/en-US/docs/Web/API/ParentNode
@@ -222,6 +223,7 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
             this.treeLock
         )
     }
+
     /**
      * Creates an `ArrayList` of descendent nodes that the given filter
      * condition.
@@ -1357,17 +1359,17 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
     return false;
   }*/
     fun getInnerText(): String
-        /**
-         * Attempts to convert the subtree starting at this point to a close text
-         * representation. BR elements are converted to line breaks, and so forth.
-         */
-         {
-            val buffer = StringBuffer()
-            synchronized(this.treeLock) {
-                this.appendInnerTextImpl(buffer)
-            }
-            return buffer.toString()
+            /**
+             * Attempts to convert the subtree starting at this point to a close text
+             * representation. BR elements are converted to line breaks, and so forth.
+             */
+    {
+        val buffer = StringBuffer()
+        synchronized(this.treeLock) {
+            this.appendInnerTextImpl(buffer)
         }
+        return buffer.toString()
+    }
 
     protected open fun appendInnerTextImpl(buffer: StringBuffer) {
         val nl = this.nodeList

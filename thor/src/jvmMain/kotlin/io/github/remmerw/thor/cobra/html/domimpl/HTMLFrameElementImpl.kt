@@ -34,7 +34,7 @@ import kotlin.concurrent.Volatile
 
 class HTMLFrameElementImpl(name: String) : HTMLElementImpl(name), HTMLFrameElement, FrameNode {
     @Volatile
-    override var browserFrame: BrowserFrame? = null
+    var browserFrame: BrowserFrame? = null
     private var noResize = false
 
 
@@ -58,8 +58,12 @@ class HTMLFrameElementImpl(name: String) : HTMLElementImpl(name), HTMLFrameEleme
         }
     }
 
-    fun getBrowserFrame(): BrowserFrame {
+    override fun getBrowserFrame(): BrowserFrame {
         return this.browserFrame!!
+    }
+
+    override fun setBrowserFrame(frame: BrowserFrame?) {
+        this.browserFrame = frame
     }
 
     fun setBrowserFrame(frame: BrowserFrame) {
@@ -149,4 +153,5 @@ class HTMLFrameElementImpl(name: String) : HTMLElementImpl(name), HTMLFrameEleme
             }
             return Window.getWindow(frame.htmlRendererContext)
         }
+
 }

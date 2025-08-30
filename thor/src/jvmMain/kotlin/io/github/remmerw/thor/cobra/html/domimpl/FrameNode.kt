@@ -7,5 +7,7 @@ import io.github.remmerw.thor.cobra.html.BrowserFrame
  */
 interface FrameNode {
 
-    var browserFrame: BrowserFrame?
+    fun getBrowserFrame(): BrowserFrame?
+
+    fun setBrowserFrame(frame:BrowserFrame?)
 }

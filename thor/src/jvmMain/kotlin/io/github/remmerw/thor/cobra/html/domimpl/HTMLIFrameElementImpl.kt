@@ -16,7 +16,8 @@ import java.net.MalformedURLException
 
 class HTMLIFrameElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLIFrameElement,
     FrameNode {
-
+    @Volatile
+    var browserFrame: BrowserFrame? = null
     private var jobCreated = false
     private var onload: Function? = null
 
@@ -63,11 +64,12 @@ class HTMLIFrameElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLIFr
         }
     }
 
-    fun getBrowserFrame(): BrowserFrame? {
-        return this.browserFrame
+    override fun getBrowserFrame(): BrowserFrame? {
+        return browserFrame
     }
 
-    fun setBrowserFrame(frame: BrowserFrame?) {
+
+    override fun setBrowserFrame(frame: BrowserFrame?) {
         this.browserFrame = frame
         createJob()
     }
@@ -82,7 +84,7 @@ class HTMLIFrameElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLIFr
 
     override fun getContentDocument(): Document? {
         // TODO: Domain-based security
-        val frame = this.browserFrame
+        val frame = this.getBrowserFrame()
         if (frame == null) {
             // Not loaded yet
             return null
@@ -108,7 +110,7 @@ class HTMLIFrameElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLIFr
     }
 
     fun setContentDocument(d: Document?) {
-        val frame = this.browserFrame
+        val frame = this.getBrowserFrame()
         if (frame == null) {
             // TODO: This needs to be handled.
             return
@@ -118,7 +120,7 @@ class HTMLIFrameElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLIFr
 
     val contentWindow: Window?
         get() {
-            val frame = this.browserFrame
+            val frame = this.getBrowserFrame()
             if (frame == null) {
                 // Not loaded yet
                 return null
@@ -223,7 +225,7 @@ class HTMLIFrameElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLIFr
     }
 
     private fun loadURLIntoFrame(value: String?) {
-        val frame = this.browserFrame
+        val frame = this.getBrowserFrame()
         if (frame != null) {
             try {
                 val fullURL = if (value == null) null else this.getFullURL(value)
@@ -265,7 +267,4 @@ class HTMLIFrameElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLIFr
         return IFrameRenderState(prevRenderState, this)
     }
 
-    override var browserFrame: BrowserFrame?
-        get() = TODO("Not yet implemented")
-        set(value) {}
 }
