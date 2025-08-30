@@ -59,6 +59,22 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
     // Called in GUI thread always.
     // Called in GUI thread always.
     var scriptable: Scriptable? = null
+    var renderState: RenderState? = null
+    val parentModelNode: ModelNode? = null
+
+    val nodeName: String? = null
+
+    override fun nodeName(): String? {
+        return nodeName
+    }
+
+    override fun renderState(): RenderState? {
+        return renderState
+    }
+
+    override fun parentModelNode(): ModelNode?{
+        return parentModelNode
+    }
 
     override fun scriptable(): Scriptable? {
         return scriptable
@@ -1114,9 +1130,6 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
         return if (document == null) null else document.getUserData(name)
     }
 
-    override val nodeName: String?
-        get() = TODO("Not yet implemented")
-
     /*
      * (non-Javadoc)
      *
@@ -1151,15 +1164,8 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
         }
     }
 
-    override val parentModelNode: ModelNode?
-        get() = TODO("Not yet implemented")
-    override var renderState: RenderState?
-        get() = TODO("Not yet implemented")
-        set(value) {}
 
-    fun getParentModelNode(): ModelNode? {
-        return this.parentNode as ModelNode?
-    }
+
 
     override fun warn(message: String?, err: Throwable?) {
         logger.log(Level.WARNING, message, err)

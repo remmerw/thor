@@ -129,7 +129,7 @@ abstract class BaseElementRenderable(
     }
 
     public override fun invalidateLayoutLocal() {
-        val rs = this.modelNode?.renderState
+        val rs = this.modelNode?.renderState()
         if (rs != null) {
             rs.invalidate()
         }
@@ -176,7 +176,7 @@ abstract class BaseElementRenderable(
     private val isParentHeightDeclared: Boolean
         get() {
             val parentNode =
-                getModelNode()?.parentModelNode
+                getModelNode()?.parentModelNode()
             if (parentNode is HTMLElementImpl) {
                 val props: CSS2Properties = parentNode.getCurrentStyle()
                 val decHeight = props.height
@@ -188,7 +188,7 @@ abstract class BaseElementRenderable(
     private val isParentWidthDeclared: Boolean
         get() {
             val parentNode =
-                getModelNode()?.parentModelNode
+                getModelNode()?.parentModelNode()
             if (parentNode is HTMLElementImpl) {
                 val props: CSS2Properties = parentNode.getCurrentStyle()
                 val decWidth = props.width
@@ -698,7 +698,7 @@ abstract class BaseElementRenderable(
         var startX = 0
         var startY = 0
         val node = this.modelNode!!
-        val rs = node.renderState
+        val rs = node.renderState()
         val marginInsets = this.marginInsets
         if (marginInsets != null) {
             totalWidth -= (marginInsets.left + marginInsets.right)
@@ -1072,7 +1072,7 @@ abstract class BaseElementRenderable(
             }
         }
         if (this.isMarginBoundary) {
-            val rs = this.modelNode?.renderState
+            val rs = this.modelNode?.renderState()
             if (rs != null) {
                 val fm = rs.fontMetrics
                 val fontHeight = fm!!.height
@@ -1102,7 +1102,7 @@ abstract class BaseElementRenderable(
             }
         }
         if (this.isMarginBoundary) {
-            val rs = this.modelNode!!.renderState
+            val rs = this.modelNode!!.renderState()
             if (rs != null) {
                 val fm = rs.fontMetrics!!
                 val fontHeight = fm.height
@@ -1236,7 +1236,7 @@ abstract class BaseElementRenderable(
 
         // TODO Use parent height
         setupRelativePosition(
-            getModelNode()!!.renderState!!,
+            getModelNode()!!.renderState()!!,
             container.innerMostWidth,
             container.innerMostHeight
         )
@@ -1249,7 +1249,7 @@ abstract class BaseElementRenderable(
         }
 
         val node = this.modelNode!!
-        val rs = node.renderState
+        val rs = node.renderState()
         val binfo = if (rs == null) null else rs.backgroundInfo
         if (binfo != null && binfo.backgroundImage != null) {
             return this.backgroundImage != null || backgroundImageError

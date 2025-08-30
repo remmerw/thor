@@ -114,7 +114,7 @@ internal class RLine(
 
     override fun paint(g: Graphics) {
         // Paint according to render state of the start of line first.
-        val rs = this.modelNode!!.renderState
+        val rs = this.modelNode!!.renderState()
 
         if ((rs != null) && (rs.visibility != RenderState.VISIBILITY_VISIBLE)) {
             // Just don't paint it.
@@ -486,13 +486,13 @@ internal class RLine(
         this.height = newHeight
         val renderables = this.renderabl
         // Find max baseline
-        val firstFm = this.modelNode!!.renderState!!.fontMetrics
+        val firstFm = this.modelNode!!.renderState()!!.fontMetrics
         var maxDescent = firstFm!!.descent
         var maxAscentPlusLeading = firstFm.ascent + firstFm.leading
         for (renderable in renderables) {
             val r: Any? = renderable
             if (r is RStyleChanger) {
-                val fm = r.getModelNode().renderState!!.fontMetrics!!
+                val fm = r.getModelNode().renderState()!!.fontMetrics!!
                 val descent = fm.descent
                 if (descent > maxDescent) {
                     maxDescent = descent

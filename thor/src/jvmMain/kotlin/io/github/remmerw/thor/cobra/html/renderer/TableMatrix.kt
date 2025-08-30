@@ -1971,7 +1971,7 @@ class TableMatrix(
                 x,
                 y,
                 rowGroupElem,
-                rowGroupElem?.renderState,
+                rowGroupElem?.renderState(),
                 bi
             )
         }

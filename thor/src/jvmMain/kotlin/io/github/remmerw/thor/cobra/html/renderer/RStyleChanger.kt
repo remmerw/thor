@@ -40,14 +40,9 @@ internal class RStyleChanger(override var modelNode: ModelNode?) : BaseRenderabl
         return this.modelNode!!
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * net.sourceforge.xamj.domimpl.markup.Renderable#paint(java.awt.Graphics)
-     */
+
     override fun paint(g: Graphics) {
-        val rs: RenderState = this.modelNode!!.renderState!!
+        val rs: RenderState = this.modelNode!!.renderState()!!
         g.color = rs.color
         g.font = rs.font
     }

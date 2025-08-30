@@ -42,7 +42,7 @@ interface Renderable {
 
     val isReplacedElement: Boolean
         get() =// TODO: Match all other replaced elements such as audio, video, canvas, etc. Refer: http://stackoverflow.com/a/12468620
-            this.modelNode?.nodeName?.uppercase() == "IMG"
+            this.modelNode?.nodeName()?.uppercase() == "IMG"
 
     companion object {
         val EMPTY_ARRAY: Array<Renderable?> = arrayOfNulls<Renderable>(0)

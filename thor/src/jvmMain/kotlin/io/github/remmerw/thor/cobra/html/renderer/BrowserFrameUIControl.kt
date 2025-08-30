@@ -35,7 +35,7 @@ internal class BrowserFrameUIControl(
         if (ruiControl != null) {
             val node = ruiControl.getModelNode()
             val element = node as HTMLElement?
-            val renderState: RenderState = node?.renderState!!
+            val renderState: RenderState = node?.renderState()!!
             var insets: HtmlInsets? = null
             var marginwidth = element!!.getAttribute("marginwidth")
             var marginheight = element.getAttribute("marginheight")

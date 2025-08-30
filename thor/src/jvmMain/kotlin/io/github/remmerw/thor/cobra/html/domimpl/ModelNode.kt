@@ -42,9 +42,9 @@ interface ModelNode {
     fun isEqualOrDescendentOf(otherNode: ModelNode?): Boolean
 
 
-    val parentModelNode: ModelNode?
+    fun parentModelNode(): ModelNode?
 
-    var renderState: RenderState?
+    fun renderState(): RenderState?
 
     /**
      * Sets a document item. A radio button, for example, can use this to set
@@ -58,5 +58,5 @@ interface ModelNode {
     fun getDocumentItem(name: String?): Any?
 
 
-    val nodeName: String?
+    fun nodeName(): String?
 }

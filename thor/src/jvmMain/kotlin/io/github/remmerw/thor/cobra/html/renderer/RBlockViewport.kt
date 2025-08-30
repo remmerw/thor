@@ -456,7 +456,7 @@ class RBlockViewport(
         val initialAllowOverflow: Boolean
         if (prevLine == null) {
             // Note: Assumes that prevLine == null means it's the first line.
-            val rs = this.modelNode!!.renderState
+            val rs = this.modelNode!!.renderState()
             initialAllowOverflow = rs != null && rs.whiteSpace == RenderState.WS_NOWRAP
             // Text indentation only applies to the first line in the block.
             val textIndent = if (rs == null) 0 else rs.getTextIndent(this.availContentWidth)
@@ -614,7 +614,7 @@ class RBlockViewport(
 
     private fun positionRBlock(markupElement: HTMLElementImpl, renderable: RBlock) {
         run {
-            val rs: RenderState = renderable.modelNode!!.renderState!!
+            val rs: RenderState = renderable.modelNode!!.renderState()!!
             val clear = rs.clear
             if (clear != LineBreak.Companion.NONE) {
                 addLineBreak(renderable.modelNode!!, clear)
@@ -846,7 +846,7 @@ class RBlockViewport(
             line = this.currentLine
         }
         if (line!!.getHeight() == 0) {
-            val rs: RenderState = startNode.renderState!!
+            val rs: RenderState = startNode.renderState()!!
             val fontHeight = rs.fontMetrics!!.height
             line.setHeight(fontHeight)
         }
@@ -1190,7 +1190,7 @@ class RBlockViewport(
             val leftOffset = this.fetchLeftOffset(newLineY)
             val newX = leftOffset
             val newMaxWidth = this.desiredWidth - this.fetchRightOffset(newLineY) - leftOffset
-            val lineNode = block.getModelNode()!!.parentModelNode
+            val lineNode = block.getModelNode()!!.parentModelNode()
             val newLine = RLine(
                 lineNode,
                 this.container,
@@ -1257,7 +1257,7 @@ class RBlockViewport(
         } else {
             initialAllowOverflow = false
         }
-        val lineNode = block.getModelNode()!!.parentModelNode
+        val lineNode = block.getModelNode()!!.parentModelNode()
         val newLineY = block.getY() + block.getHeight()
         this.checkY(newLineY)
         val leftOffset = this.fetchLeftOffset(newLineY)
@@ -3116,7 +3116,7 @@ class RBlockViewport(
             insetChecker: Function<HtmlInsets?, Boolean?>
         ): Boolean {
             val mn = block.getModelNode()!!
-            val rs: RenderState = mn.renderState!!
+            val rs: RenderState = mn.renderState()!!
             val isDisplayBlock = rs.display == RenderState.DISPLAY_BLOCK
             val isPosStaticOrRelative =
                 rs.position == RenderState.POSITION_STATIC || rs.position == RenderState.POSITION_RELATIVE
@@ -3140,7 +3140,7 @@ class RBlockViewport(
             insetChecker: Function<HtmlInsets?, Boolean?>
         ): Boolean {
             val mn = block.getModelNode()!!
-            val rs: RenderState = mn.renderState!!
+            val rs: RenderState = mn.renderState()!!
             return isCollapsibleBlock(block, insetChecker) && isOverflowVisibleOrNone(rs)
         }
 

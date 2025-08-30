@@ -141,7 +141,7 @@ internal class HtmlController {
         }
         // } else {
         // System.out.println("Bumping click to parent");
-        val parent = node.parentModelNode
+        val parent = node.parentModelNode()
         if (parent == null) {
             return true
         }
@@ -167,7 +167,7 @@ internal class HtmlController {
                 }
             }
         }
-        val parent = node.parentModelNode
+        val parent = node.parentModelNode()
         if (parent == null) {
             return true
         }
@@ -195,7 +195,7 @@ internal class HtmlController {
                 }
             }
         }
-        val parent = node.parentModelNode
+        val parent = node.parentModelNode()
         if (parent == null) {
             return true
         }
@@ -224,7 +224,7 @@ internal class HtmlController {
                         rcontext.onMouseOver(node, event)
                     }
                 }
-                node = node.parentModelNode
+                node = node.parentModelNode()
             }
         }
 
@@ -250,7 +250,7 @@ internal class HtmlController {
                         rcontext.onMouseOut(node, event)
                     }
                 }
-                node = node.parentModelNode
+                node = node.parentModelNode()
             }
         }
 
@@ -279,7 +279,7 @@ internal class HtmlController {
                 }
             }
         }
-        val parent = node.parentModelNode
+        val parent = node.parentModelNode()
         if (parent == null) {
             return true
         }
@@ -294,7 +294,7 @@ internal class HtmlController {
             node.getCurrentStyle().overlayColor = (null)
             return false
         }
-        val parent = node.parentModelNode
+        val parent = node.parentModelNode()
         if (parent == null) {
             return true
         }
@@ -320,7 +320,7 @@ internal class HtmlController {
         if (!pass) {
             return false
         }
-        val parent = node.parentModelNode
+        val parent = node.parentModelNode()
         if (parent == null) {
             return true
         }
@@ -346,7 +346,7 @@ internal class HtmlController {
         if (!pass) {
             return false
         }
-        val parent = node.parentModelNode
+        val parent = node.parentModelNode()
         if (parent == null) {
             return true
         }
@@ -475,7 +475,7 @@ internal class HtmlController {
                         }
                     }
                 }
-                node = node.parentModelNode
+                node = node.parentModelNode()
             }
         }
 
@@ -502,7 +502,7 @@ internal class HtmlController {
                         break
                     }
                 }
-                node = node.parentModelNode
+                node = node.parentModelNode()
             }
 
             if (nodeStart is NodeImpl) {

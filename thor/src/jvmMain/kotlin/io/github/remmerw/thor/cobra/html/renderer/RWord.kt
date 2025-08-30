@@ -69,7 +69,7 @@ open class RWord(
      * net.sourceforge.xamj.domimpl.markup.Renderable#paint(java.awt.Graphics)
      */
     override fun paint(g: Graphics) {
-        val rs: RenderState = this.modelNode!!.renderState!!
+        val rs: RenderState = this.modelNode!!.renderState()!!
 
         if (rs.visibility != RenderState.VISIBILITY_VISIBLE) {
             // Just don't paint it.
