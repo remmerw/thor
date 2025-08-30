@@ -38,7 +38,6 @@ class HTMLFrameElementImpl(name: String) : HTMLElementImpl(name), HTMLFrameEleme
     private var noResize = false
 
 
-
     private fun loadURL() {
         val src = getAttribute("src")
         if (src != null) {

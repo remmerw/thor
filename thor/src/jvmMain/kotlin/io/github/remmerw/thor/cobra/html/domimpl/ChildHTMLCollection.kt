@@ -35,6 +35,7 @@ class ChildHTMLCollection(private val rootNode: NodeImpl) : ScriptableDelegate, 
     override fun scriptable(): Scriptable? {
         return scriptable
     }
+
     override fun getLength(): Int {
         return this.rootNode.childCount
     }

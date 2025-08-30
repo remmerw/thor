@@ -26,7 +26,6 @@ package io.github.remmerw.thor.cobra.html.domimpl
 import org.w3c.dom.CharacterData
 import org.w3c.dom.DOMException
 import org.w3c.dom.Node
-import kotlin.concurrent.Volatile
 
 abstract class CharacterDataImpl(var text: String) : NodeImpl(), CharacterData {
 
@@ -119,6 +118,6 @@ abstract class CharacterDataImpl(var text: String) : NodeImpl(), CharacterData {
             someText = someText.substring(0, 29) + "..."
         }
         val length = if (someText == null) 0 else someText.length
-        return this.getNodeName() + "[length=" + length + ",text=" + someText + "]"
+        return this.nodeName + "[length=" + length + ",text=" + someText + "]"
     }
 }

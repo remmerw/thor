@@ -56,4 +56,8 @@ class DocumentFragmentImpl : ElementImpl("#document-fragment"), DocumentFragment
     override fun createSimilarNode(): Node {
         return DocumentFragmentImpl()
     }
+
+    override fun getId(): String? {
+        TODO("Not yet implemented")
+    }
 }

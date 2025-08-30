@@ -113,7 +113,7 @@ import kotlin.concurrent.Volatile
  * Implementation of the W3C `HTMLDocument` interface.
  */
 class HTMLDocumentImpl(
-    private val ucontext: UserAgentContext,
+    private val context: UserAgentContext,
     private val rcontext: HtmlRendererContext? = null,
     private var reader: WritableLineReader? = null,
     private var documentURI: String? = null,
@@ -220,7 +220,7 @@ class HTMLDocumentImpl(
             window = Window.getWindow(rcontext)!!
         } else {
             // Plain parsers may use Javascript too.
-            window = Window(null, ucontext)
+            window = Window(null, context)
         }
         // Window must be retained or it will be garbage collected.
         this.window = window
@@ -395,7 +395,7 @@ class HTMLDocumentImpl(
 
         // TODO: Security: Review rationale.
 
-        return SecurityUtil.doPrivileged<String?>(PrivilegedAction { ucontext.getCookie(documentURL) })
+        return SecurityUtil.doPrivileged<String?>(PrivilegedAction { context.getCookie(documentURL) })
     }
 
     @Throws(DOMException::class)
@@ -407,7 +407,7 @@ class HTMLDocumentImpl(
         // Note that this Document instance cannot be created
         // with an arbitrary URL.
         SecurityUtil.doPrivileged<Any?>(PrivilegedAction {
-            ucontext.setCookie(documentURL, cookie)
+            context.setCookie(documentURL, cookie)
             null
         })
     }
@@ -459,7 +459,7 @@ class HTMLDocumentImpl(
                 val systemId = this.documentURI
                 val publicId = systemId
                 val parser = HtmlParser(
-                    this.ucontext, this, errorHandler, publicId, systemId,
+                    this.context, this, errorHandler, publicId, systemId,
                     this.isXML, true
                 )
                 parser.parse(reader)
@@ -534,7 +534,7 @@ class HTMLDocumentImpl(
         val systemId = this.documentURI
         val publicId = systemId
         val parser = HtmlParser(
-            this.ucontext,
+            this.context,
             this,
             errorHandler,
             publicId,
@@ -811,7 +811,7 @@ class HTMLDocumentImpl(
     override fun getImplementation(): DOMImplementation {
         synchronized(this) {
             if (this.domImplementation == null) {
-                this.domImplementation = DOMImplementationImpl(this.ucontext)
+                this.domImplementation = DOMImplementationImpl(this.context)
             }
             return this.domImplementation!!
         }
@@ -870,7 +870,7 @@ class HTMLDocumentImpl(
     }
 
     fun getUserAgentContext(): UserAgentContext {
-        return this.ucontext
+        return this.context
     }
 
     @Throws(MalformedURLException::class)
@@ -1262,7 +1262,7 @@ class HTMLDocumentImpl(
 
     override fun createSimilarNode(): Node {
         return HTMLDocumentImpl(
-            this.ucontext,
+            this.context,
             this.rcontext,
             this.reader,
             this.documentURI,

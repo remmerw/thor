@@ -44,18 +44,6 @@ class InputSourceImpl : InputSource {
     /**
      * Constructs an `InputSourceImpl`.
      *
-     *
-     * It is valid to use this constructor, but it is generally recommended that
-     * callers use one of the constructors that take a reader or an input stream
-     * instead.
-     *
-     * @param uri The URI (or systemID) of the document.
-     */
-    constructor(uri: String?) : super(uri)
-
-    /**
-     * Constructs an `InputSourceImpl`.
-     *
      * @param byteStream The input stream where content can be read.
      */
     @Deprecated("Use constructor with <code>uri</code> parameter.")

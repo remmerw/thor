@@ -74,7 +74,6 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
     private var isMouseOver = false
 
 
-
     protected fun forgetLocalStyle() {
         synchronized(this) {
             //TODO to be reconsidered in issue #41
@@ -247,37 +246,40 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
         )
     }
 
+
     override fun getId(): String? {
-        TODO("Not yet implemented")
+        // TODO: Check if a cache is useful for this attribute. Original gngr code had a cache here.
+        val id = this.getAttribute("id")
+        return if (id == null) "" else id
     }
 
     override fun setId(p0: String?) {
-        TODO("Not yet implemented")
+        this.setAttribute("id", id)
     }
 
 
-    override fun getTitle(): String {
-        TODO("Not yet implemented")
+    override fun getTitle(): String? {
+        return this.getAttribute("title")
     }
 
     override fun setTitle(p0: String?) {
-        TODO("Not yet implemented")
+        this.setAttribute("title", title)
     }
 
     override fun getLang(): String? {
-        TODO("Not yet implemented")
+        return this.getAttribute("lang")
     }
 
     override fun setLang(p0: String?) {
-        TODO("Not yet implemented")
+        this.setAttribute("lang", lang)
     }
 
     override fun getDir(): String? {
-        TODO("Not yet implemented")
+        return this.getAttribute("dir")
     }
 
     override fun setDir(p0: String?) {
-        TODO("Not yet implemented")
+        this.setAttribute("dir", dir)
     }
 
     override fun getClassName(): String {

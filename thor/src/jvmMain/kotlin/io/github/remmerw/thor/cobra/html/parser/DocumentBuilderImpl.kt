@@ -46,8 +46,8 @@ import javax.xml.parsers.DocumentBuilder
  * @author J. H. S.
  */
 class DocumentBuilderImpl : DocumentBuilder {
-    private val bcontext: UserAgentContext
-    private val rcontext: HtmlRendererContext?
+    private val context: UserAgentContext
+    private val renderer: HtmlRendererContext?
     var resolver: EntityResolver? = null
         private set
     private var errorHandler: ErrorHandler? = null
@@ -62,8 +62,8 @@ class DocumentBuilderImpl : DocumentBuilder {
      * [org.cobraparser.html.test.SimpleUserAgentContext].
      */
     constructor(context: UserAgentContext) {
-        this.rcontext = null
-        this.bcontext = context
+        this.renderer = null
+        this.context = context
     }
 
     /**
@@ -78,8 +78,8 @@ class DocumentBuilderImpl : DocumentBuilder {
      * [org.cobraparser.html.test.SimpleHtmlRendererContext].
      */
     constructor(ucontext: UserAgentContext, rcontext: HtmlRendererContext?) {
-        this.rcontext = rcontext
-        this.bcontext = ucontext
+        this.renderer = rcontext
+        this.context = ucontext
     }
 
     /**
@@ -91,8 +91,8 @@ class DocumentBuilderImpl : DocumentBuilder {
      * [org.cobraparser.html.test.SimpleHtmlRendererContext].
      */
     constructor(rcontext: HtmlRendererContext) {
-        this.rcontext = rcontext
-        this.bcontext = rcontext.userAgentContext()
+        this.renderer = rcontext
+        this.context = rcontext.userAgentContext()
     }
 
     /**
@@ -104,8 +104,8 @@ class DocumentBuilderImpl : DocumentBuilder {
      * @see .createDocument
      */
     @Throws(SAXException::class, IOException::class)
-    override fun parse(`is`: InputSource): Document {
-        val document = this.createDocument(`is`, "") as HTMLDocumentImpl
+    override fun parse(inputSource: InputSource): Document {
+        val document = this.createDocument(inputSource, "") as HTMLDocumentImpl
         document.load()
         return document
     }
@@ -114,34 +114,35 @@ class DocumentBuilderImpl : DocumentBuilder {
      * Creates a document without parsing the input provided, so the document
      * object can be used for incremental rendering.
      *
-     * @param is The input source, which may be an instance of
+     * @param `is` The input source, which may be an instance of
      * [InputSourceImpl]. The input
      * source must provide either an input stream or a reader.
      * @see HTMLDocumentImpl.load
      */
     @Throws(SAXException::class, IOException::class)
-    fun createDocument(`is`: InputSource, contentType: String?): Document {
-        val encoding = `is`.encoding
+    fun createDocument(inputSource: InputSource, contentType: String?): Document {
+        val encoding = inputSource.encoding
         var charset = encoding
         if (charset == null) {
             charset = "US-ASCII"
         }
-        val uri = `is`.systemId
+        val uri = inputSource.systemId
         if (uri == null) {
             logger.warning("parse(): InputSource has no SystemId (URI); document item URLs will not be resolvable.")
         }
         val wis: WritableLineReader?
-        val reader = `is`.characterStream
+        val reader = inputSource.characterStream
         if (reader != null) {
             wis = WritableLineReader(reader)
         } else {
-            val `in` = `is`.byteStream
-            if (`in` != null) {
-                wis = WritableLineReader(InputStreamReader(`in`, charset))
+            val inputStream = inputSource.byteStream
+            if (inputStream != null) {
+                wis = WritableLineReader(InputStreamReader(inputStream, charset))
             } else require(uri == null) { "The input source didn't have a character stream, nor an inputstream!" }
             throw IllegalArgumentException("The InputSource must have either a reader, an input stream or a URI.")
         }
-        val document = HTMLDocumentImpl(this.bcontext, this.rcontext, wis, uri!!, contentType)
+        val document = HTMLDocumentImpl(this.context, this.renderer, 
+            wis, uri!!, contentType)
         return document
     }
 
@@ -158,13 +159,13 @@ class DocumentBuilderImpl : DocumentBuilder {
     }
 
     override fun newDocument(): Document {
-        return HTMLDocumentImpl(this.bcontext)
+        return HTMLDocumentImpl(this.context)
     }
 
     override fun getDOMImplementation(): DOMImplementation {
         synchronized(this) {
             if (this.domImplementation == null) {
-                this.domImplementation = DOMImplementationImpl(this.bcontext)
+                this.domImplementation = DOMImplementationImpl(this.context)
             }
             return this.domImplementation!!
         }

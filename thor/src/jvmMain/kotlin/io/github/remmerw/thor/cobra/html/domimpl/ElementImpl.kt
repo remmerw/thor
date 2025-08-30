@@ -85,35 +85,6 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), Element, Even
         }
     }
 
-    var id: String?
-        // private String title;
-        get() {
-            // TODO: Check if a cache is useful for this attribute. Original gngr code had a cache here.
-            val id = this.getAttribute("id")
-            return if (id == null) "" else id
-        }
-        set(id) {
-            this.setAttribute("id", id)
-        }
-
-    var title: String?
-        get() = this.getAttribute("title")
-        set(title) {
-            this.setAttribute("title", title)
-        }
-
-    var lang: String?
-        get() = this.getAttribute("lang")
-        set(lang) {
-            this.setAttribute("lang", lang)
-        }
-
-    var dir: String?
-        get() = this.getAttribute("dir")
-        set(dir) {
-            this.setAttribute("dir", dir)
-        }
-
     override fun getAttribute(name: String): String? {
         val normalName: String = normalizeAttributeName(name)
         synchronized(this) {
@@ -477,13 +448,14 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), Element, Even
         return oldValue
     }
 
+    abstract fun getId(): String?
     fun updateIdMap(isAttached: Boolean) {
         if (hasAttribute("id")) {
-            val id = this.id!!
+            val id = getId()!!
             if (isAttached) {
                 (document as HTMLDocumentImpl).setElementById(id, this)
             } else {
-                (document as HTMLDocumentImpl).removeElementById(this.id)
+                (document as HTMLDocumentImpl).removeElementById(getId())
             }
         }
     }

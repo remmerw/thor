@@ -69,13 +69,14 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
         return renderState
     }
 
-    override fun parentModelNode(): ModelNode?{
+    override fun parentModelNode(): ModelNode? {
         return parentModelNode
     }
 
     override fun scriptable(): Scriptable? {
         return scriptable
     }
+
     var uINode: UINode? = null
     protected var nodeList: ArrayList<Node>? = null
 
@@ -253,7 +254,7 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
                     if (nestIntoMatchingNodes) {
                         n.extractDescendantsArrayImpl(filter, al, nestIntoMatchingNodes)
                     }
-                } else if (n.getNodeType() == Node.ELEMENT_NODE) {
+                } else if (n.nodeType == Node.ELEMENT_NODE) {
                     n.extractDescendantsArrayImpl(filter, al, nestIntoMatchingNodes)
                 }
             }
@@ -779,7 +780,7 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
         }
     }
 
-   // abstract override fun getLocalName(): String?
+    // abstract override fun getLocalName(): String?
 
     override fun hasAttributes(): kotlin.Boolean {
         return false
@@ -829,7 +830,7 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
         return sb.toString()
     }
 
-  
+
     override fun setTextContent(textContent: String) {
         synchronized(this.treeLock) {
             this.removeChildrenImpl(TextFilter())
@@ -1003,8 +1004,8 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
     }
 
     override fun isEqualNode(arg: Node?): kotlin.Boolean {
-        return (arg is NodeImpl) && (this.getNodeType() == arg.getNodeType()) && this.getNodeName() == arg.getNodeName()
-                && this.getNodeValue() == arg.getNodeValue() && this.getLocalName() == arg.getLocalName()
+        return (arg is NodeImpl) && (this.nodeType == arg.nodeType) && this.nodeName == arg.nodeName
+                && this.nodeValue == arg.nodeValue && this.localName == arg.localName
                 && this.nodeList == arg.nodeList && this.equalAttributes(arg)
     }
 
@@ -1046,7 +1047,7 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
 
     // ----- ModelNode implementation
     override fun toString(): String {
-        return this.getNodeName()
+        return this.nodeName!!
     }
 
     open val userAgentContext: UserAgentContext?
@@ -1140,8 +1141,6 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
             return false
         }
     }
-
-
 
 
     override fun warn(message: String?, err: Throwable?) {
@@ -1492,7 +1491,7 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
     @JvmOverloads
     fun addEventListener(type: String?, listener: Function?, useCapture: kotlin.Boolean = false) {
         // TODO
-        println("node by name: " + getNodeName() + " adding Event listener of type: " + type)
+        println("node by name: " + nodeName + " adding Event listener of type: " + type)
         // System.out.println("  txt content: " + getInnerText());
         (ownerDocument as HTMLDocumentImpl).eventTargetManager?.addEventListener(
             this,

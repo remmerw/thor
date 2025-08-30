@@ -89,13 +89,13 @@ class Render(var url: String) {
         // Cobra does not return until page is loaded.
         try {
             val connection = urlObj.openConnection()
-            val `in` = connection.getInputStream()
+            val inputStream = connection.getInputStream()
 
             val context: UserAgentContext = SimpleUserAgentContext()
             val dbi = DocumentBuilderImpl(context)
             val document = dbi.parse(
                 InputSourceImpl(
-                    `in`, url,
+                    inputStream, url,
                     "ISO-8859-1"
                 )
             )
