@@ -1831,8 +1831,7 @@ class TableMatrix(
             get() = TODO("Not yet implemented")
         override val clipBoundsWithoutInsets: Rectangle?
             get() = TODO("Not yet implemented")
-        override val bounds: Rectangle?
-            get() = TODO("Not yet implemented")
+
         override val visualBounds: Rectangle?
             get() = TODO("Not yet implemented")
         override val size: Dimension?

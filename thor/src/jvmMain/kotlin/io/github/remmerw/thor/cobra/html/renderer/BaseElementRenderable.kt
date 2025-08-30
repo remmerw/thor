@@ -374,8 +374,7 @@ abstract class BaseElementRenderable(
         this.updateWidgetBounds(guiPoint.x, guiPoint.y)
     }
 
-    override val boundsRelativeToBlock: Rectangle?
-        get() {
+    override fun boundsRelativeToBlock(): Rectangle? {
             var parent: RCollection? = this
             var x = 0
             var y = 0

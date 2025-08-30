@@ -200,7 +200,7 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
                             inSelection = true
                         }
                     } else if (inSelection && (checkPoint1 != null) && checkEndSelection(
-                            robj.bounds!!,
+                            robj.bounds()!!,
                             checkPoint1
                         )
                     ) {

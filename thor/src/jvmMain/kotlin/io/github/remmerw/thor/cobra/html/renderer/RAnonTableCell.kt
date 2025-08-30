@@ -183,8 +183,7 @@ internal class RAnonTableCell
         return cellNode.getRenderState()
     }
 
-    override val bounds: Rectangle?
-        get() = TODO("Not yet implemented")
+
     override val visualBounds: Rectangle?
         get() = TODO("Not yet implemented")
     override val size: Dimension?

@@ -34,7 +34,7 @@ import java.awt.event.MouseEvent
 interface BoundableRenderable : Renderable {
     fun getModelNode(): ModelNode?
 
-    val bounds: Rectangle?
+    fun bounds(): Rectangle?
 
     val visualBounds: Rectangle?
 

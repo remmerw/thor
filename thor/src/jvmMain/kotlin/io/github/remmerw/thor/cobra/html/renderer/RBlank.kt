@@ -194,8 +194,7 @@ internal class RBlank(
 
     override val isDelegated: Boolean
         get() = TODO("Not yet implemented")
-    override val bounds: Rectangle?
-        get() = TODO("Not yet implemented")
+
     override val visualBounds: Rectangle?
         get() = TODO("Not yet implemented")
     override val size: Dimension?

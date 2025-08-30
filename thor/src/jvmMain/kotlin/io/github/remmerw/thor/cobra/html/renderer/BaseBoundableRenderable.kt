@@ -134,7 +134,7 @@ abstract class BaseBoundableRenderable /*
         return (x >= mx) && (y >= my) && (x < (mx + this.getVisualWidth())) && (y < (my + this.getVisualHeight()))
     }
 
-    open fun getBounds(): Rectangle {
+    override fun bounds(): Rectangle {
         return Rectangle(this.x, this.y, this.width, this.height)
     }
 

@@ -37,9 +37,9 @@ interface UINode {
      */
     fun repaint(modelNode: ModelNode?)
 
-    val bounds: Rectangle?
+    fun bounds(): Rectangle?
 
-    val boundsRelativeToBlock: Rectangle?
+    fun boundsRelativeToBlock(): Rectangle?
 
     fun focus()
 

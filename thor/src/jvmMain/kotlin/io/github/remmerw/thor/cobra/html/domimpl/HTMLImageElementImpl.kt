@@ -99,7 +99,7 @@ class HTMLImageElementImpl : HTMLAbstractUIElement, HTMLImageElement {
 
     override fun getHeight(): String {
         val r = this.uINode
-        val height = if (r == null) 0 else r.bounds!!.height
+        val height = if (r == null) 0 else r.bounds()!!.height
         return height.toString()
     }
 
@@ -177,7 +177,7 @@ class HTMLImageElementImpl : HTMLAbstractUIElement, HTMLImageElement {
 
     override fun getWidth(): String {
         val r = this.uINode
-        val width = if (r == null) 0 else r.bounds!!.width
+        val width = if (r == null) 0 else r.bounds()!!.width
         return width.toString()
     }
 

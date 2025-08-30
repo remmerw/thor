@@ -30,13 +30,12 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
         return translatedChild.getModelNode()
     }
 
-    override val bounds: Rectangle?
-        get() = TODO("Not yet implemented")
+
     override val visualBounds: Rectangle?
         get() = TODO("Not yet implemented")
 
-    override fun getBounds(): Rectangle {
-        return translatedChild.bounds!!
+    override fun bounds(): Rectangle {
+        return translatedChild.bounds()!!
     }
 
     override fun getVisualBounds(): Rectangle {

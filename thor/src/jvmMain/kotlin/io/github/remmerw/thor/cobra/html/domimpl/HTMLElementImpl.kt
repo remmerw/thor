@@ -776,25 +776,25 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
             // TODO: Sometimes this can be called while parsing, and
             // browsers generally give the right answer.
             val uiNode = this.uINode
-            return if (uiNode == null) 0 else uiNode.boundsRelativeToBlock!!.y
+            return if (uiNode == null) 0 else uiNode.boundsRelativeToBlock()!!.y
         }
 
     val offsetLeft: Int
         get() {
             val uiNode = this.uINode
-            return if (uiNode == null) 0 else uiNode.boundsRelativeToBlock!!.x
+            return if (uiNode == null) 0 else uiNode.boundsRelativeToBlock()!!.x
         }
 
     val offsetWidth: Int
         get() {
             val uiNode = this.uINode
-            return if (uiNode == null) 0 else uiNode.boundsRelativeToBlock!!.width
+            return if (uiNode == null) 0 else uiNode.boundsRelativeToBlock()!!.width
         }
 
     val offsetHeight: Int
         get() {
             val uiNode = this.uINode
-            return if (uiNode == null) 0 else uiNode.boundsRelativeToBlock!!.height
+            return if (uiNode == null) 0 else uiNode.boundsRelativeToBlock()!!.height
         }
 
      override fun documentBaseURI(): String? {

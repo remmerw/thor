@@ -235,7 +235,7 @@ class RBlockViewport(
         // lines shouldn't, except in cases where
         // there was a BR.
         val lastLine = this.currentLine!!
-        val lastBounds = lastLine.getBounds()
+        val lastBounds = lastLine.bounds()
         if ((lastBounds.height > 0) || (lastBounds.y > maxYWholeBlock)) {
             val lastTopX = lastBounds.x + lastBounds.width
             if (lastTopX > this.maxX) {
@@ -1819,8 +1819,7 @@ class RBlockViewport(
             }
             return 0
         }
-    override val bounds: Rectangle?
-        get() = TODO("Not yet implemented")
+
     override val visualBounds: Rectangle?
         get() = TODO("Not yet implemented")
     override val size: Dimension?
