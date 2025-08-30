@@ -146,7 +146,7 @@ abstract class BaseBoundableRenderable /*
         return Rectangle(getVisualX(), getVisualY(), getVisualWidth(), getVisualHeight())
     }
 
-    open fun getSize(): Dimension? {
+    override fun size(): Dimension? {
         return Dimension(this.width, this.height)
     }
 
@@ -333,7 +333,7 @@ abstract class BaseBoundableRenderable /*
         }
     }
 
-    open fun getOrigin(): Point? {
+    override fun origin(): Point? {
         return Point(this.x, this.y)
     }
 

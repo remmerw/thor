@@ -1474,7 +1474,7 @@ class RBlockViewport(
             val i: MutableIterator<PositionedRenderable?> = others.iterator()
             while (i.hasNext()) {
                 val pr = i.next()!!
-                // if (pr.isFixed() || clipBounds.intersects(pr.renderable.getVisualBounds())) {
+
                 if (pr.isFixed() || clipBounds.intersects(pr.visualBounds)) {
                     matches.add(pr)
                 }
@@ -1707,32 +1707,7 @@ class RBlockViewport(
         // }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.xamjwg.html.renderer.BoundableRenderable#onMouseClick(java.awt.event
-     * .MouseEvent, int, int)
-     */
-    /*
-  public boolean onMouseClick(final MouseEvent event, final int x, final int y) {
-    final Iterator<? extends Renderable> i = this.getRenderables(new Point(x, y));
-    if (i != null) {
-      while (i.hasNext()) {
-        final BoundableRenderable br = (BoundableRenderable) i.next();
-        if (br != null) {
-          // final Rectangle bounds = br.getVisualBounds();
-          // if (!br.onMouseClick(event, x - bounds.x, y - bounds.y)) {
-          final Point or = br.getOriginRelativeTo(this);
-          if (!br.onMouseClick(event, x - or.x, y - or.y)) {
-            return false;
-          }
-        }
-      }
-    }
-    return true;
-  }*/
-    // ----------------------------------------------------------------
+
     private fun addPositionedRenderable(
         renderable: BoundableRenderable,
         verticalAlignable: Boolean,
@@ -1821,10 +1796,6 @@ class RBlockViewport(
         }
 
 
-    override val size: Dimension?
-        get() = TODO("Not yet implemented")
-    override val origin: Point?
-        get() = TODO("Not yet implemented")
 
     override var originalParent: RCollection?
         get() = TODO("Not yet implemented")
@@ -1855,8 +1826,7 @@ class RBlockViewport(
             while (i.hasNext()) {
                 val br = i.next() as BoundableRenderable?
                 if (br != null) {
-                    // final Rectangle bounds = br.getVisualBounds();
-                    // if (!br.onDoubleClick(event, x - bounds.x, y - bounds.y)) {
+
                     val or = br.getOriginRelativeTo(this)
                     if (!br.onMouseClick(event, x - or.x, y - or.y)) {
                         return false
@@ -1872,14 +1842,7 @@ class RBlockViewport(
     override val isDelegated: Boolean
         get() = TODO("Not yet implemented")
 
-    // ----------------------------------------------------------------
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.xamjwg.html.renderer.BoundableRenderable#onMouseDisarmed(java.awt.event
-     * .MouseEvent)
-     */
+  
     override fun onMouseDisarmed(event: MouseEvent?): Boolean {
         val br = this.armedRenderable
         if (br != null) {
@@ -1893,21 +1856,13 @@ class RBlockViewport(
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.xamjwg.html.renderer.BoundableRenderable#onMouseReleased(java.awt.event
-     * .MouseEvent, int, int)
-     */
     override fun onMouseReleased(event: MouseEvent?, x: Int, y: Int): Boolean {
         val i = this.getRenderables(Point(x, y))
         if (i != null) {
             while (i.hasNext()) {
                 val br = i.next() as BoundableRenderable?
                 if (br != null) {
-                    // final Rectangle bounds = br.getVisualBounds();
-                    // if (!br.onMouseReleased(event, x - bounds.x, y - bounds.y)) {
+
                     val or = br.getOriginRelativeTo(this)
                     if (!br.onMouseReleased(event, x - or.x, y - or.y)) {
                         val oldArmedRenderable = this.armedRenderable

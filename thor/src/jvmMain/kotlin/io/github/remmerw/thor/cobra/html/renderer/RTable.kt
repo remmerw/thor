@@ -68,7 +68,7 @@ internal class RTable(
         }
 
         this.prePaint(g)
-        val size = this.getSize()
+        val size = this.size()
         // TODO: No scrollbars
         val tm = this.tableMatrix
         tm.paint(g, size)
@@ -163,10 +163,7 @@ internal class RTable(
 
     override val visualBounds: Rectangle?
         get() = TODO("Not yet implemented")
-    override val size: Dimension?
-        get() = TODO("Not yet implemented")
-    override val origin: Point?
-        get() = TODO("Not yet implemented")
+
     override var parent: RCollection?
         get() = TODO("Not yet implemented")
         set(value) {}

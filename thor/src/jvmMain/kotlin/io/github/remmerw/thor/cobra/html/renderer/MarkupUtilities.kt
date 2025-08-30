@@ -92,63 +92,6 @@ internal object MarkupUtilities {
         return found
     }
 
-    /*
-  private static BoundableRenderable findRenderable(final Renderable[] renderables, final int x, final int y, final int firstIndex,
-      final int length, final boolean vertical) {
-    if (length == 0) {
-      return null;
-    }
-    if (length == 1) {
-      final Renderable r = renderables[firstIndex];
-      if (!(r instanceof BoundableRenderable)) {
-        return null;
-      }
-      final BoundableRenderable br = (BoundableRenderable) r;
-      // return br.contains(x, y) ? br : null;
-      if (br.contains(x, y)) {
-        return br;
-      } else {
-        for (int i = firstIndex; i>= 0; i--) {
-          if (renderables[i] instanceof BoundableRenderable) {
-            final BoundableRenderable br2 = (BoundableRenderable) renderables[i];
-            if (br2.contains(x, y)) {
-              return br2;
-            }
-          }
-        }
-        return null;
-      }
-    } else {
-      final int middleIndex = firstIndex + (length / 2);
-      final Renderable r = renderables[middleIndex];
-      Rectangle rbounds;
-      if (r instanceof BoundableRenderable) {
-        rbounds = ((BoundableRenderable) r).getVisualBounds();
-      } else {
-        final BoundableRenderable rleft = findRenderable(renderables, x, y, firstIndex, middleIndex + 1 - firstIndex, vertical);
-        if (rleft != null) {
-          return rleft;
-        }
-        return findRenderable(renderables, x, y, middleIndex + 1, length - ((middleIndex - firstIndex) + 1), vertical);
-      }
-      if (rbounds.contains(x, y)) {
-        return (BoundableRenderable) r;
-      }
-      if (vertical) {
-        if (y < rbounds.y) {
-          return findRenderable(renderables, x, y, firstIndex, middleIndex - firstIndex, vertical);
-        } else {
-          return findRenderable(renderables, x, y, middleIndex + 1, length - ((middleIndex - firstIndex) + 1), vertical);
-        }
-      } else {
-        if (x < rbounds.x) {
-          return findRenderable(renderables, x, y, firstIndex, middleIndex - firstIndex, vertical);
-        } else {
-          return findRenderable(renderables, x, y, middleIndex + 1, length - ((middleIndex - firstIndex) + 1), vertical);
-        }
-      }
-    }
-  }*/
     fun findRenderables(
         renderables: Array<Renderable?>,
         clipArea: Rectangle,

@@ -44,17 +44,14 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
         return translatedChild.contains(x, y)
     }
 
-    override val size: Dimension?
-        get() = TODO("Not yet implemented")
-    override val origin: Point?
-        get() = TODO("Not yet implemented")
 
-    override fun getSize(): Dimension? {
-        return translatedChild.size
+
+    override fun size(): Dimension? {
+        return translatedChild.size()
     }
 
-    override fun getOrigin(): Point? {
-        return translatedChild.origin
+    override fun origin(): Point? {
+        return translatedChild.origin()
     }
 
     override fun getOriginRelativeTo(ancestor: RCollection?): Point {

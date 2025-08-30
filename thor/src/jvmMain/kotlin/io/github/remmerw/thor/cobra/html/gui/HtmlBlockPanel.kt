@@ -292,7 +292,7 @@ class HtmlBlockPanel(
         if (node === currentNode) {
             val br = uiNode as BoundableRenderable
             val guiPoint = br.getOriginRelativeTo(relativeTo)
-            val size = br.size
+            val size = br.size()
             return Rectangle(guiPoint, size)
         } else {
             return this.scanNodeBounds(uiNode as RCollection, node, relativeTo)
@@ -323,7 +323,7 @@ class HtmlBlockPanel(
                     prevBoundable = r
                     if (Nodes.isSameOrAncestorOf(node, r.modelNode as Node)) {
                         val origin = r.getOriginRelativeTo(relativeTo)
-                        val size = r.size
+                        val size = r.size()
                         subBounds = Rectangle(origin, size)
                     }
                 } else {

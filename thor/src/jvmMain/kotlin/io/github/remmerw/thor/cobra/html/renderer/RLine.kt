@@ -575,11 +575,6 @@ internal class RLine(
     override val isContainedByNode: Boolean
         get() = TODO("Not yet implemented")
 
-
-    override val size: Dimension?
-        get() = TODO("Not yet implemented")
-    override val origin: Point?
-        get() = TODO("Not yet implemented")
     override var parent: RCollection?
         get() = TODO("Not yet implemented")
         set(value) {}

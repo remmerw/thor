@@ -40,9 +40,9 @@ interface BoundableRenderable : Renderable {
 
     fun contains(x: Int, y: Int): Boolean
 
-    val size: Dimension?
+    fun size(): Dimension?
 
-    val origin: Point?
+    fun origin(): Point?
 
     fun getOriginRelativeTo(ancestor: RCollection?): Point
 
@@ -159,8 +159,6 @@ interface BoundableRenderable : Renderable {
     fun relayout()
 
     fun getGUIPoint(clientX: Int, clientY: Int): Point?
-
-    var ordinal: Int
 
     val zIndex: Int
 
