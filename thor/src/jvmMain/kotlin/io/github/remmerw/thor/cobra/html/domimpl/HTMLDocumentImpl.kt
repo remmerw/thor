@@ -191,7 +191,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
     private var classifiedRules: Analyzer.Holder? = null
 
     constructor(rcontext: HtmlRendererContext) : this(
-        rcontext.userAgentContext,
+        rcontext.userAgentContext(),
         rcontext,
         null,
         documentURI = null,
@@ -1144,7 +1144,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
      */
     fun loadImage(relativeUri: String, imageListener: ImageListener) {
         val rcontext = this.getHtmlRendererContext()
-        if ((rcontext == null) || !rcontext.isImageLoadingEnabled) {
+        if ((rcontext == null) || !rcontext.isImageLoadingEnabled()) {
             // Ignore image loading when there's no renderer context.
             // Consider Cobra users who are only using the parser.
             imageListener.imageLoaded(BLANK_IMAGE_EVENT)
@@ -1166,7 +1166,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
                         info.addListener(imageListener)
                     }
                 } else {
-                    val uac = rcontext.userAgentContext
+                    val uac = rcontext.userAgentContext()
                     val httpRequest = uac.createHttpRequest()
                     val newInfo = ImageInfo()
                     map.put(urlText, newInfo)

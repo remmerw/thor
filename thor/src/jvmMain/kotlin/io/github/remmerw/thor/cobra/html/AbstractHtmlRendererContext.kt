@@ -63,7 +63,7 @@ abstract class AbstractHtmlRendererContext : HtmlRendererContext {
     fun setDefaultStatus(value: String?) {
     }
 
-    fun getFrames(): HTMLCollection? {
+    override fun frames(): HTMLCollection? {
         return null
     }
 
@@ -110,14 +110,14 @@ abstract class AbstractHtmlRendererContext : HtmlRendererContext {
     /**
      * Returns false unless overridden.
      */
-    fun isClosed(): Boolean {
+    override fun isClosed(): Boolean {
         return false
     }
 
     /**
      * Returns true unless overridden.
      */
-    fun isImageLoadingEnabled(): Boolean {
+    override fun isImageLoadingEnabled(): Boolean {
         return true
     }
 
@@ -141,6 +141,7 @@ abstract class AbstractHtmlRendererContext : HtmlRendererContext {
     override fun onMouseOver(element: HTMLElement?, event: MouseEvent?) {
     }
 
+    @Deprecated("Use {@link #open(URL, String, String, boolean)} instead.")
     override fun open(
         absoluteUrl: String?,
         windowName: String?,

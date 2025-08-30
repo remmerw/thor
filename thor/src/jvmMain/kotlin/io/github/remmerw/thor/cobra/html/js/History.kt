@@ -32,25 +32,25 @@ class History internal constructor(private val window: Window) : ScriptableDeleg
     val current: String?
         get() {
             val ctx = this.window.htmlRendererContext
-            return if (ctx != null) ctx.currentURL else null
+            return if (ctx != null) ctx.currentURL() else null
         }
 
     val next: String?
         get() {
             val ctx = this.window.htmlRendererContext
-            return if (ctx != null) ctx.nextURL!!.orElse(null) else null
+            return if (ctx != null) ctx.nextURL()?.orElse(null) else null
         }
 
     val previous: String?
         get() {
             val ctx = this.window.htmlRendererContext
-            return if (ctx != null) ctx.previousURL?.orElse(null) else null
+            return if (ctx != null) ctx.previousURL()?.orElse(null) else null
         }
 
     val length: Int
         get() {
             val ctx = this.window.htmlRendererContext
-            return if (ctx != null) ctx.historyLength else 0
+            return if (ctx != null) ctx.historyLength() else 0
         }
 
     fun back() {

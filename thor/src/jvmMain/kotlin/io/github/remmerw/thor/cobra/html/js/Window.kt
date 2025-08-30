@@ -258,7 +258,7 @@ class Window // TODO: Probably need to create a new Window instance
     private val currURL: URL?
         get() {
             try {
-                return URL(htmlRendererContext?.currentURL)
+                return URL(htmlRendererContext?.currentURL())
             } catch (e: MalformedURLException) {
                 return null
             }
@@ -776,7 +776,7 @@ class Window // TODO: Probably need to create a new Window instance
         get() {
             val rc = this.htmlRendererContext
             if (rc != null) {
-                return rc.isClosed
+                return rc.isClosed()
             } else {
                 return false
             }
@@ -786,7 +786,7 @@ class Window // TODO: Probably need to create a new Window instance
         get() {
             val rc = this.htmlRendererContext
             if (rc != null) {
-                return rc.defaultStatus
+                return rc.defaultStatus()
             } else {
                 return null
             }
@@ -805,7 +805,7 @@ class Window // TODO: Probably need to create a new Window instance
         get() {
             val rc = this.htmlRendererContext
             if (rc != null) {
-                return rc.name
+                return rc.name()
             } else {
                 return null
             }
@@ -819,7 +819,7 @@ class Window // TODO: Probably need to create a new Window instance
         get() {
             val rc = this.htmlRendererContext
             if (rc != null) {
-                val rcontextParent = rc.parent
+                val rcontextParent = rc.parent()
                 if (rcontextParent == null) {
                     return this
                 } else {
@@ -836,7 +836,7 @@ class Window // TODO: Probably need to create a new Window instance
         get() {
             val rc = this.htmlRendererContext
             if (rc != null) {
-                return getWindow(rc.opener)
+                return getWindow(rc.opener())
             } else {
                 return null
             }
@@ -845,9 +845,9 @@ class Window // TODO: Probably need to create a new Window instance
             val rc = this.htmlRendererContext
             if (rc != null) {
                 if (opener == null) {
-                    rc.opener = null
+                   // todo  rc.opener = null
                 } else {
-                    rc.opener = opener.htmlRendererContext
+                   // todo  rc.opener = opener.htmlRendererContext
                 }
             }
         }
@@ -859,7 +859,7 @@ class Window // TODO: Probably need to create a new Window instance
         get() {
             val rc = this.htmlRendererContext
             if (rc != null) {
-                return rc.status
+                return rc.status()
             } else {
                 return null
             }
@@ -867,7 +867,7 @@ class Window // TODO: Probably need to create a new Window instance
         set(message) {
             val rc = this.htmlRendererContext
             if (rc != null) {
-                rc.status = message
+               // todo rc.status = message
             }
         }
 
@@ -875,7 +875,7 @@ class Window // TODO: Probably need to create a new Window instance
         get() {
             val rc = this.htmlRendererContext
             if (rc != null) {
-                return getWindow(rc.top)
+                return getWindow(rc.top())
             } else {
                 return null
             }
@@ -1485,7 +1485,7 @@ class Window // TODO: Probably need to create a new Window instance
                         return window
                     }
                 }
-                val window = Window(rcontext, rcontext.userAgentContext)
+                val window = Window(rcontext, rcontext.userAgentContext())
                 CONTEXT_WINDOWS.put(rcontext, WeakReference<Window?>(window))
                 return window
             }

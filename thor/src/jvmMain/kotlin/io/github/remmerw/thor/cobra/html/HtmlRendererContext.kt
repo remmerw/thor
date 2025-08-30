@@ -72,7 +72,7 @@ interface HtmlRendererContext {
     /**
      * Gets a collection of frames from the document currently in the context.
      */
-    val frames: HTMLCollection?
+    fun frames(): HTMLCollection?
 
     /**
      * Submits a HTML form. Note that when the the method is "GET", parameters are
@@ -102,7 +102,7 @@ interface HtmlRendererContext {
      * Gets the user agent context.
      */
 
-    val userAgentContext: UserAgentContext
+    fun userAgentContext(): UserAgentContext
 
     /**
      * Gets a `HtmlObject` instance that implements a OBJECT tag from
@@ -178,7 +178,7 @@ interface HtmlRendererContext {
      * This method should return true if and only if image loading needs to be
      * enabled.
      */
-    val isImageLoadingEnabled: Boolean
+    fun isImageLoadingEnabled(): Boolean
 
     // ------ Methods useful for Window implementation:
     /**
@@ -296,29 +296,22 @@ interface HtmlRendererContext {
     /**
      * Gets a value indicating if the window is closed.
      */
-    val isClosed: Boolean
+    fun isClosed(): Boolean
 
-    var defaultStatus: String?
+    fun defaultStatus(): String?
 
     /**
      * Gets the window name.
      */
-    val name: String?
+    fun name(): String?
 
     /**
      * Gets the parent of the frame/window in the current context.
      */
-    val parent: HtmlRendererContext?
+    fun parent(): HtmlRendererContext?
 
-    /**
-     * Gets the opener of the frame/window in the current context.
-     */
-    /**
-     * Sets the context that opened the current frame/window.
-     *
-     * @param opener A [HtmlRendererContext].
-     */
-    var opener: HtmlRendererContext?
+
+    fun opener(): HtmlRendererContext?
 
     /**
      * Gets the window status text.
@@ -328,12 +321,12 @@ interface HtmlRendererContext {
      *
      * @param message A string.
      */
-    var status: String?
+    fun status(): String?
 
     /**
      * Gets the top-most browser frame/window.
      */
-    val top: HtmlRendererContext?
+    fun top(): HtmlRendererContext?
 
     /**
      * It should return true if the link provided has been visited.
@@ -348,22 +341,22 @@ interface HtmlRendererContext {
     /**
      * Gets the number of pages in the history list.
      */
-    val historyLength: Int
+    fun historyLength(): Int
 
     /**
      * Gets the current URL in history.
      */
-    val currentURL: String?
+    fun currentURL(): String?
 
     /**
      * Gets the next URL in the history.
      */
-    val nextURL: Optional<String?>?
+    fun nextURL(): Optional<String>?
 
     /**
      * Gets the previous URL in the history.
      */
-    val previousURL: Optional<String?>?
+    fun previousURL(): Optional<String>?
 
     /**
      * Goes forward one page.

@@ -92,7 +92,7 @@ class DocumentBuilderImpl : DocumentBuilder {
      */
     constructor(rcontext: HtmlRendererContext) {
         this.rcontext = rcontext
-        this.bcontext = rcontext.userAgentContext
+        this.bcontext = rcontext.userAgentContext()
     }
 
     /**

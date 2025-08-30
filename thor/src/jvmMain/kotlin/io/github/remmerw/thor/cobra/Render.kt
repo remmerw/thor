@@ -41,12 +41,7 @@ import java.util.logging.Logger
  * @author Benjy Cline
  * @version 1/2008
  */
-class Render
-/**
- * Create a Render object with a target URL.
- */(// The page to be processed.
-    var url: String
-) {
+class Render(var url: String) {
     // These variables can be used in subclasses and are created from
     // url.  baseURL can be used to construct the absolute URL of the
     // relative URL's in the page.  hostBase is just the http://host.com/

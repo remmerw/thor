@@ -407,7 +407,7 @@ class HtmlPanel : JComponent(), FrameContext, DefferedLayoutSupport {
                 if (newIfs) {
                     this.setUpFrameSet(fsrn)
                 } else {
-                    this.setUpAsBlock(rcontext.userAgentContext, rcontext)
+                    this.setUpAsBlock(rcontext.userAgentContext(), rcontext)
                 }
             }
             val nr = this.nodeRenderer
@@ -439,7 +439,7 @@ class HtmlPanel : JComponent(), FrameContext, DefferedLayoutSupport {
      */
     fun setHtml(htmlSource: String, uri: String?, rcontext: HtmlRendererContext) {
         try {
-            val builder = DocumentBuilderImpl(rcontext.userAgentContext, rcontext)
+            val builder = DocumentBuilderImpl(rcontext.userAgentContext(), rcontext)
             StringReader(htmlSource).use { reader ->
                 val `is` = InputSourceImpl(reader, uri)
                 val document = builder.parse(`is`)
