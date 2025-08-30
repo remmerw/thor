@@ -77,7 +77,7 @@ abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) 
 
     val form: HTMLFormElement?
         get() {
-            var parent = this.parentNode
+            var parent = this.nodeParent
             while ((parent != null) && parent !is HTMLFormElement) {
                 parent = parent.parentNode
             }

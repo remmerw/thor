@@ -319,7 +319,7 @@ class TableMatrix(
         rowElem: HTMLElementImpl?,
         node: NodeImpl
     ) {
-        val acn = AnonymousNodeImpl(node.parentNode)
+        val acn = AnonymousNodeImpl(node.getParentNode())
         acn.appendChildSilently(node)
         val ac = RAnonTableCell(
             acn,

@@ -28,25 +28,18 @@ import org.w3c.dom.DOMException
 import org.w3c.dom.Node
 import kotlin.concurrent.Volatile
 
-abstract class CharacterDataImpl : NodeImpl, CharacterData {
-    @Volatile
-    protected var text: String? = null
+abstract class CharacterDataImpl(var text: String) : NodeImpl(), CharacterData {
 
-    constructor() : super()
-
-    constructor(text: String) {
-        this.text = text
-    }
 
     val className: String
         get() = "HTMLCharacterData"
 
-    @Throws(DOMException::class)
+
     override fun getTextContent(): String {
-        return this.text!!
+        return this.text
     }
 
-    @Throws(DOMException::class)
+
     override fun setTextContent(textContent: String) {
         this.text = textContent
         if (!this.notificationsSuspended) {
@@ -54,11 +47,6 @@ abstract class CharacterDataImpl : NodeImpl, CharacterData {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.NodeImpl#cloneNode(boolean)
-     */
     override fun cloneNode(deep: Boolean): Node {
         val newNode = super.cloneNode(deep) as CharacterDataImpl
         newNode.setData(this.data)
@@ -85,7 +73,7 @@ abstract class CharacterDataImpl : NodeImpl, CharacterData {
 
     @Throws(DOMException::class)
     override fun getData(): String {
-        return this.text!!
+        return this.text
     }
 
     @Throws(DOMException::class)
@@ -97,7 +85,7 @@ abstract class CharacterDataImpl : NodeImpl, CharacterData {
     }
 
     override fun getLength(): Int {
-        return this.text!!.length
+        return this.text.length
     }
 
     @Throws(DOMException::class)
@@ -122,7 +110,7 @@ abstract class CharacterDataImpl : NodeImpl, CharacterData {
 
     @Throws(DOMException::class)
     override fun substringData(offset: Int, count: Int): String {
-        return this.text!!.substring(offset, offset + count)
+        return this.text.substring(offset, offset + count)
     }
 
     override fun toString(): String {

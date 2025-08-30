@@ -112,7 +112,7 @@ import kotlin.concurrent.Volatile
 /**
  * Implementation of the W3C `HTMLDocument` interface.
  */
-class HTMLDocumentImpl @JvmOverloads constructor(
+class HTMLDocumentImpl(
     private val ucontext: UserAgentContext,
     private val rcontext: HtmlRendererContext? = null,
     private var reader: WritableLineReader? = null,
@@ -257,11 +257,7 @@ class HTMLDocumentImpl @JvmOverloads constructor(
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.NodeImpl#getbaseURI()
-     */
+
     override fun getBaseURI(): String? {
         val buri = this.baseURI
         return if (buri == null) this.documentURI else buri
@@ -296,13 +292,14 @@ class HTMLDocumentImpl @JvmOverloads constructor(
     }
 
     @Throws(DOMException::class)
-    override fun setTextContent(textContent: String?) {
+    override fun setTextContent(textContent: String) {
         // NOP, per spec
     }
 
     override fun getTitle(): String? {
-        return this.title
+        return title
     }
+
 
     override fun setTitle(title: String?) {
         this.title = title
@@ -652,14 +649,14 @@ class HTMLDocumentImpl @JvmOverloads constructor(
     /**
      * Gets all elements that match the given tag name.
      *
-     * @param tagname The element tag name or an asterisk character (*) to match all
+     * @param classNames The element tag name or an asterisk character (*) to match all
      * elements.
      */
-    override fun getElementsByTagName(tagname: String): NodeList {
-        if ("*" == tagname) {
+    override fun getElementsByTagName(classNames: String): NodeList {
+        if ("*" == classNames) {
             return this.getNodeList(NodeFilter.ElementFilter())
         } else {
-            return this.getNodeList(TagNameFilter(tagname))
+            return this.getNodeList(TagNameFilter(classNames))
         }
     }
 

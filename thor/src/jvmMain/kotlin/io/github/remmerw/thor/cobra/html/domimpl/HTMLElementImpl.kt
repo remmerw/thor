@@ -168,7 +168,7 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
                     elementMatchCondition,
                     cachedRules
                 )
-                val parent = this.parentNode
+                val parent = this.nodeParent
                 if ((parent != null) && (parent is HTMLElementImpl)) {
                     nodeData.inheritFrom(parent.getNodeData(psuedoElement))
                     nodeData.concretize()
@@ -254,11 +254,12 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
         TODO("Not yet implemented")
     }
 
+
     override fun setId(p0: String?) {
         TODO("Not yet implemented")
     }
 
-    override fun getTitle(): String? {
+    override fun getTitle(): String {
         TODO("Not yet implemented")
     }
 
@@ -546,7 +547,7 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
      * @param classTL   A class name in lowercase.
      */
     fun getAncestorWithClass(elementTL: String, classTL: String?): HTMLElementImpl? {
-        val nodeObj: Any? = this.parentNode
+        val nodeObj: Any? = this.nodeParent
         if (nodeObj is HTMLElementImpl) {
             val pelementTL = nodeObj.tagName.lowercase(Locale.getDefault())
             if (("*" == elementTL || elementTL == pelementTL) && nodeObj.classMatch(classTL)) {
@@ -559,7 +560,7 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
     }
 
     fun getParentWithClass(elementTL: String, classTL: String?): HTMLElementImpl? {
-        val nodeObj: Any? = this.parentNode
+        val nodeObj: Any? = this.nodeParent
         if (nodeObj is HTMLElementImpl) {
             val pelementTL = nodeObj.tagName.lowercase(Locale.getDefault())
             if (("*" == elementTL || elementTL == pelementTL) && nodeObj.classMatch(classTL)) {
@@ -571,7 +572,7 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
 
     val preceedingSiblingElement: HTMLElementImpl?
         get() {
-            val parentNode = this.parentNode
+            val parentNode = this.nodeParent
             if (parentNode == null) {
                 return null
             }
@@ -605,7 +606,7 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
     }
 
     fun getAncestorWithId(elementTL: String, idTL: String): HTMLElementImpl? {
-        val nodeObj: Any? = this.parentNode
+        val nodeObj: Any? = this.nodeParent
         if (nodeObj is HTMLElementImpl) {
             val pelementTL = nodeObj.tagName.lowercase(Locale.getDefault())
             val pid = nodeObj.id
@@ -620,7 +621,7 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
     }
 
     fun getParentWithId(elementTL: String, idTL: String): HTMLElementImpl? {
-        val nodeObj: Any? = this.parentNode
+        val nodeObj: Any? = this.nodeParent
         if (nodeObj is HTMLElementImpl) {
             val pelementTL = nodeObj.tagName.lowercase(Locale.getDefault())
             val pid = nodeObj.id
@@ -646,7 +647,7 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
     }
 
     fun getAncestor(elementTL: String): HTMLElementImpl? {
-        val nodeObj: Any? = this.parentNode
+        val nodeObj: Any? = this.nodeParent
         if (nodeObj is HTMLElementImpl) {
             if ("*" == elementTL) {
                 return nodeObj
@@ -662,7 +663,7 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
     }
 
     fun getParent(elementTL: String): HTMLElementImpl? {
-        val nodeObj: Any? = this.parentNode
+        val nodeObj: Any? = this.nodeParent
         if (nodeObj is HTMLElementImpl) {
             if ("*" == elementTL) {
                 return nodeObj
@@ -690,7 +691,7 @@ open class HTMLElementImpl : ElementImpl, HTMLElement, CSS2PropertiesContext {
     }
 
     protected fun getAncestorForJavaClass(javaClass: Class<HTMLFormElement>): Any? {
-        val nodeObj: Any? = this.parentNode
+        val nodeObj: Any? = this.nodeParent
         if ((nodeObj == null) || javaClass.isInstance(nodeObj)) {
             return nodeObj
         } else if (nodeObj is HTMLElementImpl) {

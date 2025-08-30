@@ -137,7 +137,7 @@ class TableCellRenderState(prevRenderState: RenderState?, element: HTMLElementIm
         binfo = super.getBackgroundInfo()
         val element = this.element as HTMLTableCellElementImpl
         var rowElement: HTMLTableRowElementImpl? = null
-        val parentNode: Any? = element.parentNode
+        val parentNode: Any? = element.getParentNode()
         if (parentNode is HTMLTableRowElementImpl) {
             rowElement = parentNode
         }
@@ -175,7 +175,7 @@ class TableCellRenderState(prevRenderState: RenderState?, element: HTMLElementIm
 
     private val tableElement: HTMLTableElement?
         get() {
-            var ancestor = this.element!!.parentNode
+            var ancestor = this.element!!.getParentNode()
             while ((ancestor != null) && ancestor !is HTMLTableElement) {
                 ancestor = ancestor.parentNode
             }

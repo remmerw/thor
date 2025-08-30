@@ -52,6 +52,6 @@ class AnonymousNodeImpl(parentNode: Node?) : NodeImpl() {
     }
 
     override fun toString(): String {
-        return "Anonymous child of " + parentNode
+        return "Anonymous child of " + nodeParent
     }
 }

@@ -36,7 +36,7 @@ class HTMLTableRowElementImpl : HTMLElementImpl, HTMLTableRowElement {
     constructor() : super("TR", true)
 
     override fun getRowIndex(): Int {
-        val parent = this.parentNode as NodeImpl?
+        val parent = this.nodeParent as NodeImpl?
         if (parent == null) {
             return -1
         }

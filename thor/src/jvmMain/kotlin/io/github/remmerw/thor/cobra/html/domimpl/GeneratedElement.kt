@@ -49,7 +49,7 @@ class GeneratedElement(parent: HTMLElementImpl, nodeData: NodeData?, content: Te
                     val params = c.value
                     if (params.size > 0) {
                         val `val` =
-                            (parentNode as ElementImpl).getAttribute(params.get(0).toString())
+                            (nodeParent as ElementImpl).getAttribute(params.get(0).toString())
                         if (`val` != null) {
                             val txt = ownerDocument!!.createTextNode(`val`)
                             nodeList.add(txt as NodeImpl?)

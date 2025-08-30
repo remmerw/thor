@@ -240,7 +240,7 @@ class EventTargetManager(private val window: Window) {
                 if ((node is Element) || (node is Document)) { //  TODO || node instanceof Window) {
                     nodes.add(node)
                 }
-                node = node.parentNode as NodeImpl?
+                node = node.getParentNode() as NodeImpl?
             }
 
             // TODO

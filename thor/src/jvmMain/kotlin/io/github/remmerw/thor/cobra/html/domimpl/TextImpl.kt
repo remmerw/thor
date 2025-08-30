@@ -29,10 +29,7 @@ import org.w3c.dom.Node
 import org.w3c.dom.Node.TEXT_NODE
 import org.w3c.dom.Text
 
-open class TextImpl @JvmOverloads constructor(text: String = "") : CharacterDataImpl(), Text {
-    init {
-        this.text = text
-    }
+open class TextImpl(text: String = "") : CharacterDataImpl(text), Text {
 
     /*
      * (non-Javadoc)
@@ -51,7 +48,7 @@ open class TextImpl @JvmOverloads constructor(text: String = "") : CharacterData
      */
     @Throws(DOMException::class)
     override fun replaceWholeText(content: String?): Text? {
-        val parent = this.parentNode as NodeImpl
+        val parent = this.nodeParent as NodeImpl
         if (parent == null) {
             throw DOMException(DOMException.HIERARCHY_REQUEST_ERR, "Text node has no parent")
         }
@@ -65,7 +62,7 @@ open class TextImpl @JvmOverloads constructor(text: String = "") : CharacterData
      */
     @Throws(DOMException::class)
     override fun splitText(offset: Int): Text? {
-        val parent = this.parentNode as NodeImpl
+        val parent = this.nodeParent as NodeImpl
         if (parent == null) {
             throw DOMException(DOMException.HIERARCHY_REQUEST_ERR, "Text node has no parent")
         }
@@ -81,13 +78,9 @@ open class TextImpl @JvmOverloads constructor(text: String = "") : CharacterData
         return parent.insertAfter(newNode, this) as Text?
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.w3c.dom.html2.Text#getwholeText()
-     */
+
     override fun getWholeText(): String? {
-        val parent = this.parentNode as NodeImpl
+        val parent = this.nodeParent as NodeImpl
         if (parent == null) {
             throw DOMException(DOMException.HIERARCHY_REQUEST_ERR, "Text node has no parent")
         }
@@ -103,11 +96,7 @@ open class TextImpl @JvmOverloads constructor(text: String = "") : CharacterData
         return null
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.NodeImpl#getnodeName()
-     */
+
     override fun getNodeName(): String {
         return "#text"
     }
@@ -131,21 +120,10 @@ open class TextImpl @JvmOverloads constructor(text: String = "") : CharacterData
         return this.text!!
     }
 
-    override fun setNodeValue(nodeValue: String?) {
-        TODO("Not yet implemented")
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.NodeImpl#setnodeValue(java.lang.String)
-     */
-    @Throws(DOMException::class)
     override fun setNodeValue(nodeValue: String) {
         this.text = nodeValue
     }
 
-    @Throws(DOMException::class)
     override fun setTextContent(textContent: String) {
         this.text = textContent
     }

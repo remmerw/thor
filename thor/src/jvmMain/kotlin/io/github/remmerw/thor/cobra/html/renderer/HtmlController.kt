@@ -461,7 +461,7 @@ internal class HtmlController {
                             rcontext.setCursor(cursorOpt)
                             break
                         } else {
-                            if (node.parentModelNode === limit) {
+                            if (node.parentModelNode() === limit) {
                                 if ((renderable is RWord) || (renderable is RBlank)) {
                                     rcontext.setCursor(
                                         Optional.of<Cursor>(

@@ -150,8 +150,8 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), Element, Even
         throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Namespaces not supported")
     }
 
-    override fun getElementsByTagName(name: String?): NodeList {
-        val matchesAll = "*" == name
+    override fun getElementsByTagName(classNames: String): NodeList {
+        val matchesAll = "*" == classNames
         val descendents: MutableList<Node> = LinkedList<Node>()
         synchronized(this.treeLock) {
             val nl = this.nodeList
@@ -160,10 +160,10 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), Element, Even
                 while (i.hasNext()) {
                     val child = i.next()
                     if (child is Element) {
-                        if (matchesAll || isTagName(child, name)) {
+                        if (matchesAll || isTagName(child, classNames)) {
                             descendents.add(child)
                         }
-                        val sublist = child.getElementsByTagName(name)
+                        val sublist = child.getElementsByTagName(classNames)
                         val length = sublist.length
                         for (idx in 0..<length) {
                             descendents.add(sublist.item(idx))

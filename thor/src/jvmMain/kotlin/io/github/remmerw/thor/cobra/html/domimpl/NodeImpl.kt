@@ -44,7 +44,6 @@ import kotlin.IndexOutOfBoundsException
 import kotlin.Int
 import kotlin.Short
 import kotlin.String
-import kotlin.TODO
 import kotlin.Throwable
 import kotlin.Throws
 import kotlin.also
@@ -58,11 +57,10 @@ import kotlin.synchronized
 abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
     // Called in GUI thread always.
     // Called in GUI thread always.
-    var scriptable: Scriptable? = null
-    var renderState: RenderState? = null
-    val parentModelNode: ModelNode? = null
-
-    val nodeName: String? = null
+    private var scriptable: Scriptable? = null
+    private var renderState: RenderState? = null
+    private val parentModelNode: ModelNode? = null
+    private val nodeName: String? = null
 
     override fun nodeName(): String? {
         return nodeName
@@ -96,7 +94,7 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
     protected var notificationsSuspended: kotlin.Boolean = false
 
     @Volatile
-    protected var parentNode: Node? = null
+    protected var nodeParent: Node? = null
     private var userData: MutableMap<String?, Any?>? = null
 
     // TODO: Inform handlers on cloning, etc.
@@ -126,7 +124,7 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
         if (uiNode != null) {
             return uiNode
         }
-        val parentNode = this.parentNode as NodeImpl?
+        val parentNode = this.nodeParent as NodeImpl?
         return parentNode?.findUINode()
     }
 
@@ -229,25 +227,19 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
      * Creates an `ArrayList` of descendent nodes that the given filter
      * condition.
      */
-    fun getDescendents(
+    fun getDescendants(
         filter: NodeFilter,
         nestIntoMatchingNodes: kotlin.Boolean
     ): java.util.ArrayList<NodeImpl?> {
         val al = java.util.ArrayList<NodeImpl?>()
         synchronized(this.treeLock) {
-            this.extractDescendentsArrayImpl(filter, al, nestIntoMatchingNodes)
+            this.extractDescendantsArrayImpl(filter, al, nestIntoMatchingNodes)
         }
         return al
     }
 
-    /**
-     * Extracts all descendents that match the filter, except those descendents of
-     * nodes that match the filter.
-     *
-     * @param filter
-     * @param al
-     */
-    private fun extractDescendentsArrayImpl(
+
+    private fun extractDescendantsArrayImpl(
         filter: NodeFilter,
         al: java.util.ArrayList<NodeImpl?>,
         nestIntoMatchingNodes: kotlin.Boolean
@@ -260,10 +252,10 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
                 if (filter.accept(n)) {
                     al.add(n)
                     if (nestIntoMatchingNodes) {
-                        n.extractDescendentsArrayImpl(filter, al, nestIntoMatchingNodes)
+                        n.extractDescendantsArrayImpl(filter, al, nestIntoMatchingNodes)
                     }
                 } else if (n.getNodeType() == Node.ELEMENT_NODE) {
-                    n.extractDescendentsArrayImpl(filter, al, nestIntoMatchingNodes)
+                    n.extractDescendantsArrayImpl(filter, al, nestIntoMatchingNodes)
                 }
             }
         }
@@ -336,7 +328,7 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
     private val nodeIndex: Int
         get() {
             val parent =
-                this.parentNode as NodeImpl?
+                this.nodeParent as NodeImpl?
             return if (parent == null) -1 else parent.getChildIndex(this)
         }
 
@@ -407,11 +399,11 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
 
     @Throws(DOMException::class)
     override fun compareDocumentPosition(other: Node?): Short {
-        val parent = this.parentNode
+        val parent = this.nodeParent
         if (other !is NodeImpl) {
             throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Unknwon node implementation")
         }
-        if ((parent != null) && (parent === other.parentNode)) {
+        if ((parent != null) && (parent === other.nodeParent)) {
             val thisIndex = this.nodeIndex
             val otherIndex =
                 other.nodeIndex
@@ -702,19 +694,19 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
     }
 
     override fun getPreviousSibling(): Node? {
-        val parent = this.parentNode as NodeImpl?
+        val parent = this.nodeParent as NodeImpl?
         return if (parent == null) null else parent.getPreviousTo(this)
     }
 
     override fun getNextSibling(): Node? {
-        val parent = this.parentNode as NodeImpl?
+        val parent = this.nodeParent as NodeImpl?
         return if (parent == null) null else parent.getNextTo(this)
     }
 
     val previousElementSibling: Element?
         get() {
             val parent =
-                this.parentNode as NodeImpl?
+                this.nodeParent as NodeImpl?
             if (parent != null) {
                 var previous: Node? = this
                 do {
@@ -732,7 +724,7 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
     val nextElementSibling: Element?
         get() {
             val parent =
-                this.parentNode as NodeImpl?
+                this.nodeParent as NodeImpl?
             if (parent != null) {
                 var next: Node? = this
                 do {
@@ -788,7 +780,7 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
         }
     }
 
-    abstract override fun getLocalName(): String?
+   // abstract override fun getLocalName(): String?
 
     override fun hasAttributes(): kotlin.Boolean {
         return false
@@ -797,14 +789,6 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
     override fun getNamespaceURI(): String? {
         return null
     }
-
-    abstract override fun getNodeName(): String
-
-    @Throws(DOMException::class)
-    abstract override fun getNodeValue(): String?
-
-    @Throws(DOMException::class)
-    abstract override fun setNodeValue(nodeValue: String?)
 
     override fun getPrefix(): String? {
         return this.prefix
@@ -815,7 +799,7 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
         this.prefix = prefix
     }
 
-    abstract override fun getNodeType(): Short
+    //abstract override fun getNodeType(): Short
 
     /**
      * Gets the text content of this node and its descendents.
@@ -846,8 +830,8 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
         return sb.toString()
     }
 
-    @Throws(DOMException::class)
-    override fun setTextContent(textContent: String?) {
+  
+    override fun setTextContent(textContent: String) {
         synchronized(this.treeLock) {
             this.removeChildrenImpl(TextFilter())
             if ((textContent != null) && "" != textContent) {
@@ -1000,7 +984,7 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
 
     override fun getParentNode(): Node? {
         // Should it be synchronized? Could have side-effects.
-        return this.parentNode
+        return this.nodeParent
     }
 
     override fun isSameNode(other: Node?): kotlin.Boolean {
@@ -1088,7 +1072,7 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
 
     fun setParentImpl(parent: Node?) {
         // Call holding treeLock.
-        this.parentNode = parent
+        this.nodeParent = parent
     }
 
     /*
@@ -1118,13 +1102,7 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
             }
         }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.xamjwg.html.renderer.RenderableContext#getDocumentItem(java.lang.String
-     * )
-     */
+
     override fun getDocumentItem(name: String?): Any? {
         val document = this.document
         return if (document == null) null else document.getUserData(name)
@@ -1156,7 +1134,7 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
         if (otherContext === this) {
             return true
         }
-        val parent: Any? = this.parentNode
+        val parent: Any? = this.nodeParent
         if (parent is HTMLElementImpl) {
             return parent.isEqualOrDescendentOf(otherContext)
         } else {
@@ -1259,7 +1237,7 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
             if (rs != null) {
                 return rs
             }
-            val parent: Any? = this.parentNode
+            val parent: Any? = this.nodeParent
             if ((parent != null) || (this is Document)) {
                 val prs: RenderState? = getParentRenderState(parent)
                 rs = this.createRenderState(prs)

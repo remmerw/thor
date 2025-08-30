@@ -28,7 +28,7 @@ class HTMLOptionElementImpl(name: String) : HTMLElementImpl(name, true), HTMLOpt
     }
 
     override fun getIndex(): Int {
-        val parent: Any? = this.parentNode
+        val parent: Any? = this.nodeParent
         if (parent is HTMLSelectElement) {
             val options = parent.options as HTMLOptionsCollectionImpl
             return options.indexOf(this)
@@ -53,7 +53,7 @@ class HTMLOptionElementImpl(name: String) : HTMLElementImpl(name, true), HTMLOpt
         val changed = selected != this.selected
         this.selected = selected
         // Changing the option state changes the selected index.
-        val parent: Any? = this.parentNode
+        val parent: Any? = this.nodeParent
         if (parent is HTMLSelectElementImpl) {
             if (changed || (parent.getSelectedIndex() == -1)) {
                 if (selected) {
@@ -72,7 +72,7 @@ class HTMLOptionElementImpl(name: String) : HTMLElementImpl(name, true), HTMLOpt
         return this.getRawInnerText(false)
     }
 
-    fun setText(value: String?) {
+    fun setText(value: String) {
         this.setTextContent(value)
     }
 
