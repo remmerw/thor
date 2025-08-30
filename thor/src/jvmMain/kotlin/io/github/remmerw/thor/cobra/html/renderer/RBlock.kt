@@ -202,7 +202,7 @@ open class RBlock(
         return blockNesting
     }
 
-    override fun getClipBounds(): Rectangle? {
+    override fun clipBounds(): Rectangle? {
         val insets = this.getInsetsMarginBorder(this.hasHScrollBar, this.hasVScrollBar)
         // final Insets insets = this.getInsetsPadding(this.hasHScrollBar, this.hasVScrollBar);
         // final Insets insets = this.getInsets(this.hasHScrollBar, this.hasVScrollBar);
@@ -1644,8 +1644,7 @@ open class RBlock(
         }
     }
 
-    override val clipBounds: Rectangle?
-        get() = TODO("Not yet implemented")
+
     override val clipBoundsWithoutInsets: Rectangle?
         get() = TODO("Not yet implemented")
 

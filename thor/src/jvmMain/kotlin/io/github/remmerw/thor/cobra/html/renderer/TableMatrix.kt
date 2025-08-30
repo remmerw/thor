@@ -1828,8 +1828,7 @@ class TableMatrix(
             return null
         }
 
-        override val clipBounds: Rectangle?
-            get() = TODO("Not yet implemented")
+
         override val clipBoundsWithoutInsets: Rectangle?
             get() = TODO("Not yet implemented")
 

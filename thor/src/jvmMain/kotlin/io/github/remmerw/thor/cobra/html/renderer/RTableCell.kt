@@ -232,8 +232,7 @@ internal open class RTableCell(
         get() = TODO("Not yet implemented")
     override val isDelegated: Boolean
         get() = TODO("Not yet implemented")
-    override val clipBounds: Rectangle?
-        get() = TODO("Not yet implemented")
+
     override val clipBoundsWithoutInsets: Rectangle?
         get() = TODO("Not yet implemented")
 

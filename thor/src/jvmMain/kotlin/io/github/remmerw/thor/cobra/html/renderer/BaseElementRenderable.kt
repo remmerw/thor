@@ -1164,7 +1164,7 @@ abstract class BaseElementRenderable(
     */
     }
 
-    open fun getClipBounds(): Rectangle? {
+    override fun clipBounds(): Rectangle? {
         // TODO: Check when this is called and see whether to use margin-border insets just as in rblock's override
         val insets = this.getInsetsPadding(false, false)
         val hInset = insets.left + insets.right

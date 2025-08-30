@@ -40,8 +40,7 @@ import kotlin.math.max
     initialAllowOverflow: Boolean
 ) : BaseRCollection(container, modelNode) {
     val renderabl = ArrayList<Renderable>(8)
-    override val clipBounds: Rectangle?
-        get() = TODO("Not yet implemented")
+
     override val clipBoundsWithoutInsets: Rectangle?
         get() = TODO("Not yet implemented")
 
@@ -698,7 +697,7 @@ import kotlin.math.max
     val isEmpty: Boolean
         get() = this.xoffset == 0
 
-    fun getClipBounds(): Rectangle? {
+     override fun clipBounds(): Rectangle? {
         // throw new NotImplementedYetException("This method is not expected to be called for RLine");
         return null
     }

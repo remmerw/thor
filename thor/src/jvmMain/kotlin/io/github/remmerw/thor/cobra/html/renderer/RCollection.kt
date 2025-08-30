@@ -53,7 +53,7 @@ interface RCollection : BoundableRenderable {
 
     fun getRenderable(x: Int, y: Int): BoundableRenderable?
 
-    val clipBounds: Rectangle?
+    fun clipBounds(): Rectangle?
 
     val clipBoundsWithoutInsets: Rectangle?
 }

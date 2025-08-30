@@ -107,8 +107,7 @@ class RImgControl(
         return "RImgControl : " + modelNode
     }
 
-    override val clipBounds: Rectangle?
-        get() = TODO("Not yet implemented")
+
     override val clipBoundsWithoutInsets: Rectangle?
         get() = TODO("Not yet implemented")
 

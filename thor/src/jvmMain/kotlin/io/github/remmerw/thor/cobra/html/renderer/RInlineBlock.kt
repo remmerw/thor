@@ -60,8 +60,7 @@ class RInlineBlock(
         return CollectionUtilities.singletonIterator<Renderable?>(this.child as Renderable)
     }
 
-    override val clipBounds: Rectangle?
-        get() = TODO("Not yet implemented")
+
     override val clipBoundsWithoutInsets: Rectangle?
         get() = TODO("Not yet implemented")
 

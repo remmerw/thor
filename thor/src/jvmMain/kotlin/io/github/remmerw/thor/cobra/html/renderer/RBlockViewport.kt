@@ -1439,8 +1439,7 @@ class RBlockViewport(
         }
     }
 
-    override val clipBounds: Rectangle?
-        get() = TODO("Not yet implemented")
+
     override val clipBoundsWithoutInsets: Rectangle?
         get() = TODO("Not yet implemented")
 
@@ -2581,8 +2580,8 @@ class RBlockViewport(
         return cachedVisualWidth!!
     }
 
-    fun getClipBounds(): Rectangle? {
-        return (container as RBlock).clipBounds
+    override fun clipBounds(): Rectangle? {
+        return (container as RBlock).clipBounds()
         // return new Rectangle(0, 0, width, height);
     }
 

@@ -76,8 +76,7 @@ open class RUIControl(
     override val parentContainer: RenderableContainer?
         get() = TODO("Not yet implemented")
 
-    override val clipBounds: Rectangle?
-        get() = TODO("Not yet implemented")
+
     override val clipBoundsWithoutInsets: Rectangle?
         get() = TODO("Not yet implemented")
 
