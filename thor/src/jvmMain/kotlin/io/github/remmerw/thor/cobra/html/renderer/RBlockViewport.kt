@@ -1440,8 +1440,6 @@ class RBlockViewport(
     }
 
 
-    override val clipBoundsWithoutInsets: Rectangle?
-        get() = TODO("Not yet implemented")
 
     private fun getRenderables(clipBounds: Rectangle): MutableIterator<Renderable?>? {
         val sr = this.seqRenderables
@@ -1910,7 +1908,7 @@ class RBlockViewport(
                             }
                             // TODO: Handle other renderable types such as RTable
                             if (htmlRenderable is RBlock) {
-                                val htmlBounds = htmlRenderable.getClipBoundsWithoutInsets()
+                                val htmlBounds = htmlRenderable.clipBoundsWithoutInsets()
                                 if (htmlBounds != null) {
                                     val clippedG =
                                         selectedG.create(0, 0, htmlBounds.width, htmlBounds.height)

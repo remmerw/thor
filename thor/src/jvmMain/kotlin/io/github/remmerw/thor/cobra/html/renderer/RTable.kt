@@ -373,8 +373,6 @@ internal class RTable(
     }
 
 
-    override val clipBoundsWithoutInsets: Rectangle?
-        get() = TODO("Not yet implemented")
 
     override fun repaint(modelNode: ModelNode?) {
         // NOP

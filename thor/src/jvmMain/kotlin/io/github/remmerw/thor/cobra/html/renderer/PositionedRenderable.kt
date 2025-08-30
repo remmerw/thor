@@ -106,14 +106,14 @@ class PositionedRenderable(
         get() {
             val origParent = this.renderable.originalParent
             var current = origParent
-            var currentBounds = current!!.clipBoundsWithoutInsets
+            var currentBounds = current!!.clipBoundsWithoutInsets()
             val parent = this.renderable.parent
             while (current !== parent) {
                 current = current!!.parent!!
                 if (current.getModelNode() is HTMLHtmlElement) {
                     break
                 }
-                val newBounds = current.clipBoundsWithoutInsets
+                val newBounds = current.clipBoundsWithoutInsets()
                 if (newBounds != null) {
                     val or = origParent.getOriginRelativeToNoScroll(current)
                     newBounds.translate(-or!!.x, -or!!.y)

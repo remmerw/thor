@@ -41,8 +41,6 @@ import kotlin.math.max
 ) : BaseRCollection(container, modelNode) {
     val renderabl = ArrayList<Renderable>(8)
 
-    override val clipBoundsWithoutInsets: Rectangle?
-        get() = TODO("Not yet implemented")
 
     /*
      * (non-Javadoc)

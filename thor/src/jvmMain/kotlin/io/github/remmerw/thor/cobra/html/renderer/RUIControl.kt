@@ -77,8 +77,6 @@ open class RUIControl(
         get() = TODO("Not yet implemented")
 
 
-    override val clipBoundsWithoutInsets: Rectangle?
-        get() = TODO("Not yet implemented")
 
     override fun invalidateLayoutLocal() {
         // Invalidate widget (some redundancy)

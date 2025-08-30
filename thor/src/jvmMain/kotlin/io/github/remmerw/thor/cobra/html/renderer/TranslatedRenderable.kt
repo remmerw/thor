@@ -312,10 +312,6 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
         return null
     }
 
-
-    override val clipBoundsWithoutInsets: Rectangle?
-        get() = TODO("Not yet implemented")
-
     override fun clipBounds(): Rectangle? {
         if (translatedChild is RCollection) {
             return translatedChild.clipBounds()
@@ -324,7 +320,7 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
         return null
     }
 
-    fun getClipBoundsWithoutInsets(): Rectangle? {
+    override fun clipBoundsWithoutInsets(): Rectangle? {
         // TODO: Stub
         return clipBounds()
     }

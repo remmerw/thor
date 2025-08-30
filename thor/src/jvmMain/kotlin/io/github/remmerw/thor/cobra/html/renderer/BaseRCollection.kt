@@ -364,7 +364,7 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
         }
     }
 
-    open fun getClipBoundsWithoutInsets(): Rectangle? {
+    override fun clipBoundsWithoutInsets(): Rectangle? {
         // TODO
         return clipBounds()
     }

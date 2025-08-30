@@ -1179,7 +1179,7 @@ abstract class BaseElementRenderable(
         }
     }
 
-    override fun getClipBoundsWithoutInsets(): Rectangle? {
+    override fun clipBoundsWithoutInsets(): Rectangle? {
         // TODO: Stub
         return null
     }

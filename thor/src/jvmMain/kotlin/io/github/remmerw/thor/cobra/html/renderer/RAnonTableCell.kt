@@ -206,8 +206,6 @@ internal class RAnonTableCell(
     override val isDelegated: Boolean
         get() = TODO("Not yet implemented")
 
-    override val clipBoundsWithoutInsets: Rectangle?
-        get() = TODO("Not yet implemented")
 
     override val parentContainer: RenderableContainer?
         get() = TODO("Not yet implemented")

@@ -61,8 +61,6 @@ class RInlineBlock(
     }
 
 
-    override val clipBoundsWithoutInsets: Rectangle?
-        get() = TODO("Not yet implemented")
 
     override val visualBounds: Rectangle?
         get() = TODO("Not yet implemented")

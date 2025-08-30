@@ -55,5 +55,5 @@ interface RCollection : BoundableRenderable {
 
     fun clipBounds(): Rectangle?
 
-    val clipBoundsWithoutInsets: Rectangle?
+    fun clipBoundsWithoutInsets(): Rectangle?
 }

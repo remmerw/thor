@@ -226,57 +226,7 @@ open class RBlock(
         }
     }
 
-    /*
-  private void setupRelativePosition(final RenderState rs, final int availWidth) {
-    if (rs.getPosition() == RenderState.POSITION_RELATIVE) {
-      final String leftText = rs.getLeft();
-      final String topText = rs.getTop();
-
-      int left = 0;
-
-      if (leftText != null) {
-        left = HtmlValues.getPixelSize(leftText, rs, 0, availWidth);
-      } else {
-        final String rightText = rs.getRight();
-        if (rightText != null) {
-          final int right = HtmlValues.getPixelSize(rightText, rs, 0, availWidth);
-          left = -right;
-          // If right==0 and renderable.width is larger than the parent's width,
-          // the expected behavior is for newLeft to be negative.
-        }
-      }
-
-      int top = 0;
-
-      if (topText != null) {
-        top = HtmlValues.getPixelSize(topText, rs, top, this.height);
-      } else {
-        final String bottomText = rs.getBottom();
-        if (bottomText != null) {
-          final int bottom = HtmlValues.getPixelSize(bottomText, rs, 0, this.height);
-          top = -bottom;
-        }
-      }
-
-      this.relativeOffsetX = left;
-      this.relativeOffsetY = top;
-    } else {
-      this.relativeOffsetX = 0;
-      this.relativeOffsetY = 0;
-    }
-  }*/
-    /*
-  @Override
-  public int getVisualX() {
-    return super.getX() + relativeOffsetX;
-  }
-
-  @Override
-  public int getVisualY() {
-    return super.getY() + relativeOffsetY;
-  }
-  */
-    override fun getClipBoundsWithoutInsets(): Rectangle? {
+    override fun clipBoundsWithoutInsets(): Rectangle? {
         val hInset =
             if (this.hasVScrollBar) SCROLL_BAR_THICKNESS else 0
         val vInset =
@@ -1645,8 +1595,6 @@ open class RBlock(
     }
 
 
-    override val clipBoundsWithoutInsets: Rectangle?
-        get() = TODO("Not yet implemented")
 
     fun scrollHorizontalTo(newX: Int): Boolean {
         val bodyLayout = this.rBlockViewport
