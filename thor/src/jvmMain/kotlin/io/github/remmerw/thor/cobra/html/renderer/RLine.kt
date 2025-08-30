@@ -542,7 +542,7 @@ internal class RLine(
         val rarray = this.renderabl.toArray<Renderable?>(Renderable.Companion.EMPTY_ARRAY)
         val r = MarkupUtilities.findRenderable(rarray, x, y, false)
         if (r != null) {
-            val rbounds = r.visualBounds!!
+            val rbounds = r.visualBounds()!!
             return r.onMouseClick(event, x - rbounds.x, y - rbounds.y)
         } else {
             return true
@@ -565,7 +565,7 @@ internal class RLine(
         val rarray = this.renderabl.toArray<Renderable?>(Renderable.Companion.EMPTY_ARRAY)
         val r = MarkupUtilities.findRenderable(rarray, x, y, false)
         if (r != null) {
-            val rbounds = r.visualBounds!!
+            val rbounds = r.visualBounds()!!
             return r.onDoubleClick(event, x - rbounds.x, y - rbounds.y)
         } else {
             return true
@@ -575,8 +575,7 @@ internal class RLine(
     override val isContainedByNode: Boolean
         get() = TODO("Not yet implemented")
 
-    override val visualBounds: Rectangle?
-        get() = TODO("Not yet implemented")
+
     override val size: Dimension?
         get() = TODO("Not yet implemented")
     override val origin: Point?
@@ -602,7 +601,7 @@ internal class RLine(
         val rarray = this.renderabl.toArray<Renderable?>(Renderable.Companion.EMPTY_ARRAY)
         val br = MarkupUtilities.findRenderable(rarray, x, y, false)
         if (br != null) {
-            val rbounds = br.visualBounds!!
+            val rbounds = br.visualBounds()!!
             return br.getLowestRenderableSpot(x - rbounds.x, y - rbounds.y)
         } else {
             return RenderableSpot(this, x, y)
@@ -613,7 +612,7 @@ internal class RLine(
         val rarray = this.renderabl.toArray<Renderable?>(Renderable.Companion.EMPTY_ARRAY)
         val r = MarkupUtilities.findRenderable(rarray, x, y, false)
         if (r != null) {
-            val rbounds = r.visualBounds!!
+            val rbounds = r.visualBounds()!!
             val oldArmedRenderable = this.mousePressTarget
             if ((oldArmedRenderable != null) && (r !== oldArmedRenderable)) {
                 oldArmedRenderable.onMouseDisarmed(event)

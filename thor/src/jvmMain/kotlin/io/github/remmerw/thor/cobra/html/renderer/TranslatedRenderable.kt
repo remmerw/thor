@@ -31,15 +31,13 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
     }
 
 
-    override val visualBounds: Rectangle?
-        get() = TODO("Not yet implemented")
 
     override fun bounds(): Rectangle {
         return translatedChild.bounds()!!
     }
 
-    override fun getVisualBounds(): Rectangle {
-        return translatedChild.visualBounds!!
+    override fun visualBounds(): Rectangle {
+        return translatedChild.visualBounds()!!
     }
 
     override fun contains(x: Int, y: Int): Boolean {

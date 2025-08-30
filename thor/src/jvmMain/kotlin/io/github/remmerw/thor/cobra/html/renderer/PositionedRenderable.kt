@@ -141,7 +141,7 @@ class PositionedRenderable(
 
     val visualBounds: Rectangle
         get() {
-            val bounds = renderable.visualBounds!!
+            val bounds = renderable.visualBounds()!!
             val offset = this.offset
             bounds.translate(offset.x, offset.y)
             return bounds

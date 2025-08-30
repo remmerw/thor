@@ -250,7 +250,7 @@ internal object MarkupUtilities {
         for (i in index..<length) {
             val ri = renderables[i]
             if (ri is BoundableRenderable) {
-                if (intersects(clipArea, ri.visualBounds!!, vertical)) {
+                if (intersects(clipArea, ri.visualBounds()!!, vertical)) {
                     return i
                 }
             }
@@ -265,7 +265,7 @@ internal object MarkupUtilities {
         for (i in index + length - 1 downTo index) {
             val ri = renderables[i]
             if (ri is BoundableRenderable) {
-                if (intersects(clipArea, ri.visualBounds!!, vertical)) {
+                if (intersects(clipArea, ri.visualBounds()!!, vertical)) {
                     return i
                 }
             }

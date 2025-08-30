@@ -1417,7 +1417,7 @@ class TableMatrix(
      */
     fun getLowestRenderableSpot(x: Int, y: Int): RenderableSpot? {
         for (cell in this.ALL_CELLS) {
-            val bounds = cell.getVisualBounds()
+            val bounds = cell.visualBounds()
             if (bounds.contains(x, y)) {
                 val rp = cell.getLowestRenderableSpot(x - bounds.x, y - bounds.y)
                 if (rp != null) {
@@ -1476,7 +1476,7 @@ class TableMatrix(
      */
     fun onMouseClick(event: MouseEvent?, x: Int, y: Int): Boolean {
         for (cell in this.ALL_CELLS) {
-            val bounds = cell.getVisualBounds()
+            val bounds = cell.visualBounds()
             if (bounds.contains(x, y)) {
                 if (!cell.onMouseClick(event, x - bounds.x, y - bounds.y)) {
                     return false
@@ -1489,7 +1489,7 @@ class TableMatrix(
 
     fun onDoubleClick(event: MouseEvent?, x: Int, y: Int): Boolean {
         for (cell in this.ALL_CELLS) {
-            val bounds = cell.getVisualBounds()
+            val bounds = cell.visualBounds()
             if (bounds.contains(x, y)) {
                 if (!cell.onDoubleClick(event, x - bounds.x, y - bounds.y)) {
                     return false
@@ -1529,7 +1529,7 @@ class TableMatrix(
         val numCells = allCells.size
         for (i in 0..<numCells) {
             val cell = allCells.get(i)
-            val bounds = cell.getVisualBounds()
+            val bounds = cell.visualBounds()
             if (bounds.contains(x, y)) {
                 if (!cell.onMousePressed(event, x - bounds.x, y - bounds.y)) {
                     this.armedRenderable = cell
@@ -1554,7 +1554,7 @@ class TableMatrix(
         var found = false
         for (i in 0..<numCells) {
             val cell = allCells.get(i)
-            val bounds = cell.getVisualBounds()
+            val bounds = cell.visualBounds()
             if (bounds.contains(x, y)) {
                 found = true
                 val oldArmedRenderable = this.armedRenderable

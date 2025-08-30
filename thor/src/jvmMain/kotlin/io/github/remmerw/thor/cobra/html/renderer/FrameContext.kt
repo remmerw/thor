@@ -27,7 +27,7 @@ import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
  * typically a browser frame of some sort.
  */
 interface FrameContext {
-    fun resetSelection(rpoint: RenderableSpot?)
+    fun resetSelection(point: RenderableSpot?)
 
     fun expandSelection(rpoint: RenderableSpot?)
 

@@ -142,7 +142,7 @@ abstract class BaseBoundableRenderable /*
      * returns the visual bounds
      * They are distinct from layout bounds when {overflow:visible} or {position:relative} is set on the element
      */
-    open fun getVisualBounds(): Rectangle {
+    override fun visualBounds(): Rectangle {
         return Rectangle(getVisualX(), getVisualY(), getVisualWidth(), getVisualHeight())
     }
 

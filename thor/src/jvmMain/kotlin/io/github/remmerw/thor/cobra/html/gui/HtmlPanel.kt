@@ -577,11 +577,11 @@ class HtmlPanel : JComponent(), FrameContext, DefferedLayoutSupport {
      *
      * Note: This method should be invoked in the GUI thread.
      */
-    override fun resetSelection(rpoint: RenderableSpot?) {
+    override fun resetSelection(point: RenderableSpot?) {
         val block = this.htmlBlockPanel
         if (block != null) {
-            block.setSelectionStart(rpoint)
-            block.setSelectionEnd(rpoint)
+            block.setSelectionStart(point)
+            block.setSelectionEnd(point)
             block.repaint()
         }
         this.selectionDispatch.fireEvent(SelectionChangeEvent(this, false))

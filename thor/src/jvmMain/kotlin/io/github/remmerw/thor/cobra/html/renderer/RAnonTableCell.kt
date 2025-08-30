@@ -34,10 +34,7 @@ import java.awt.Dimension
 import java.awt.Point
 import java.awt.Rectangle
 
-internal class RAnonTableCell
-/**
- * @param cellNode
- */(
+internal class RAnonTableCell(
     private val cellNode: NodeImpl, pcontext: UserAgentContext?, rcontext: HtmlRendererContext?,
     frameContext: FrameContext?,
     tableAsContainer: RenderableContainer?

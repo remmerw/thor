@@ -1820,8 +1820,7 @@ class RBlockViewport(
             return 0
         }
 
-    override val visualBounds: Rectangle?
-        get() = TODO("Not yet implemented")
+
     override val size: Dimension?
         get() = TODO("Not yet implemented")
     override val origin: Point?
@@ -2579,21 +2578,18 @@ class RBlockViewport(
         if (renderables != null) {
             for (r in renderables) {
                 if (r is RenderableContainer) {
-                    // double rcMaxY = rc.getVisualBounds().getMaxY();
-                    // final Insets rcInsets = rc.getInsetsMarginBorder(false, false);
-                    // double rcMaxY = rc.getY() + rc.getVisualHeight() + rcInsets.top + rcInsets.bottom;
-                    // double rcMaxY = rc.getVisualBounds().getMaxY() + rcInsets.top + rcInsets.bottom;
+
                     val rcMaxY = r.visualBounds!!.maxY //  + rcInsets.bottom;
                     if (rcMaxY > maxY) {
                         maxY = rcMaxY
                     }
                 } else if (r is BoundableRenderable) {
-                    val brMaxY = r.visualBounds!!.maxY
+                    val brMaxY = r.visualBounds()!!.maxY
                     if (brMaxY > maxY) {
                         maxY = brMaxY
                     }
                 } else if (r is PositionedRenderable) {
-                    val rcMaxY = r.renderable.visualBounds!!.maxY
+                    val rcMaxY = r.renderable.visualBounds()!!.maxY
                     if (rcMaxY > maxY) {
                         maxY = rcMaxY
                     }
@@ -2623,12 +2619,12 @@ class RBlockViewport(
                         maxX = rcMaxX
                     }
                 } else if (r is BoundableRenderable) {
-                    val brMaxX = r.visualBounds!!.maxX
+                    val brMaxX = r.visualBounds()!!.maxX
                     if (brMaxX > maxX) {
                         maxX = brMaxX
                     }
                 } else if (r is PositionedRenderable) {
-                    val rcMaxX = r.renderable.visualBounds!!.maxX
+                    val rcMaxX = r.renderable.visualBounds()!!.maxX
                     if (rcMaxX > maxX) {
                         maxX = rcMaxX
                     }

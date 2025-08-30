@@ -36,7 +36,7 @@ interface BoundableRenderable : Renderable {
 
     fun bounds(): Rectangle?
 
-    val visualBounds: Rectangle?
+    fun visualBounds(): Rectangle?
 
     fun contains(x: Int, y: Int): Boolean
 

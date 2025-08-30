@@ -226,7 +226,7 @@ internal class RTable(
             while (i.hasNext()) {
                 val pr = i.next()
                 val r = pr.renderable
-                val bounds = r.visualBounds!!
+                val bounds = r.visualBounds()!!
                 if (bounds.contains(x, y)) {
                     val childX = x - r.visualX
                     val childY = y - r.visualY
@@ -246,7 +246,7 @@ internal class RTable(
             while (i.hasNext()) {
                 val pr = i.next()
                 val r = pr.renderable
-                val bounds = r.visualBounds!!
+                val bounds = r.visualBounds()!!
                 if (bounds.contains(x, y)) {
                     val childX = x - r.visualX
                     val childY = y - r.visualY
@@ -289,7 +289,7 @@ internal class RTable(
             while (i.hasNext()) {
                 val pr = i.next()
                 val r = pr.renderable
-                val bounds = r.visualBounds!!
+                val bounds = r.visualBounds()!!
                 if (bounds.contains(x, y)) {
                     val childX = x - r.visualX
                     val childY = y - r.visualY
@@ -316,7 +316,7 @@ internal class RTable(
             while (i.hasNext()) {
                 val pr = i.next()
                 val r = pr.renderable
-                val bounds = r.visualBounds!!
+                val bounds = r.visualBounds()!!
                 if (bounds.contains(x, y)) {
                     val childX = x - r.visualX
                     val childY = y - r.visualY

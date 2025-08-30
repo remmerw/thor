@@ -96,7 +96,7 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
             while (i.hasNext()) {
                 val robj: Any? = i.next()
                 if (robj is BoundableRenderable) {
-                    val bounds = robj.visualBounds!!
+                    val bounds = robj.visualBounds()!!
                     if (!inSelection) {
                         if ((checkPoint1 != null) && checkStartSelection(bounds, checkPoint1)) {
                             if (checkPoint2 != null) {
@@ -181,7 +181,7 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
                 val robj = if (rn is PositionedRenderable) rn.renderable else rn
                 if (robj is BoundableRenderable) {
                     if (!inSelection) {
-                        val bounds = robj.visualBounds!!
+                        val bounds = robj.visualBounds()!!
                         if ((checkPoint1 != null) && checkStartSelection(bounds, checkPoint1)) {
                             if (checkPoint2 != null) {
                                 checkPoint1 = checkPoint2

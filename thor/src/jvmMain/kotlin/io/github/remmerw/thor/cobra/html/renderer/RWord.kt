@@ -317,8 +317,6 @@ open class RWord(
         }
     }
 
-    override val visualBounds: Rectangle?
-        get() = TODO("Not yet implemented")
     override val size: Dimension?
         get() = TODO("Not yet implemented")
     override val origin: Point?
