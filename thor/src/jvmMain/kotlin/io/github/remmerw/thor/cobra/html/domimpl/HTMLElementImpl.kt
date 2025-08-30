@@ -473,8 +473,6 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
         super.informInvalid()
     }
 
-    override val documentBaseURI: String?
-        get() = TODO("Not yet implemented")
 
     fun informLocalInvalid() {
         // TODO: forgetStyle can call informInvalid() since informInvalid() seems to always follow forgetStyle()
@@ -505,7 +503,7 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
   }*/
     private fun informInvalidRecursive() {
         super.informInvalid()
-        val nodeList = this.childrenArray
+        val nodeList = this.getChildrenArray()
         if (nodeList != null) {
             for (n in nodeList) {
                 if (n is HTMLElementImpl) {
@@ -799,7 +797,7 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
             return if (uiNode == null) 0 else uiNode.boundsRelativeToBlock!!.height
         }
 
-    fun getDocumentBaseURI(): String? {
+     override fun documentBaseURI(): String? {
         val doc = this.document as HTMLDocumentImpl?
         if (doc != null) {
             return doc.getBaseURI()

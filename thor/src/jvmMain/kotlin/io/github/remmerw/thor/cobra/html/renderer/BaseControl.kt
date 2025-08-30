@@ -31,10 +31,7 @@ import java.awt.Dimension
 import java.util.logging.Logger
 import javax.swing.JComponent
 
-abstract class BaseControl
-/**
- * @param context
- */(protected val controlElement: HTMLElementImpl?) : JComponent(), UIControl {
+abstract class BaseControl(protected val controlElement: HTMLElementImpl?) : JComponent(), UIControl {
     protected var ruicontrol: RUIControl? = null
 
     fun getComponent(): Component {

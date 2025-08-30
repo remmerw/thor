@@ -230,7 +230,7 @@ class FrameSetPanel : JComponent(), NodeRenderer {
         }
 
         private fun getSubFrames(parent: HTMLElementImpl): Array<HTMLElementImpl> {
-            val children = parent.childrenArray
+            val children = parent.getChildrenArray()
             val subFrames = ArrayList<HTMLElementImpl>()
             for (child in children!!) {
                 if (child is HTMLElementImpl) {

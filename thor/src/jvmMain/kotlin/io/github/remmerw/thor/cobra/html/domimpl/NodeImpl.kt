@@ -191,38 +191,37 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
         return NodeListImpl(collection)
     }
 
-    open val childrenArray: Array<NodeImpl?>?
+    open fun getChildrenArray(): Array<NodeImpl?>? {
         /*
               * TODO: If this is not a w3c DOM method, we can return an Iterator instead of
               * creating a new array But, it changes the semantics slightly (when
               * modifications are needed during iteration). For those cases, we can retain
               * this method.
               */
-        get() {
+
             val nl = this.nodeList
             synchronized(this.treeLock) {
                 return if (nl == null) null else nl.toArray<NodeImpl?>(
                     EMPTY_ARRAY
                 )
             }
-        }
 
-    val childCount: Int
-        get() {
+    }
+    fun getChildCount(): Int {
             synchronized(this.treeLock) {
                 val nl = this.nodeList
                 return if (nl == null) 0 else nl.size
             }
         }
 
-    val children: HTMLCollection
+    fun getChildren(): HTMLCollection {
         // TODO: This is needed to be implemented only by Element, Document and DocumentFragment as per https://developer.mozilla.org/en-US/docs/Web/API/ParentNode
-        get() = DescendentHTMLCollection(
+        return DescendentHTMLCollection(
             this,
             NodeFilter.ElementFilter(),
             this.treeLock
         )
-
+    }
     /**
      * Creates an `ArrayList` of descendent nodes that the given filter
      * condition.
@@ -1130,13 +1129,13 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
      * org.xamjwg.html.renderer.RenderableContext#isEqualOrDescendentOf(org.xamjwg
      * .html.renderer.RenderableContext)
      */
-    override fun isEqualOrDescendentOf(otherContext: ModelNode?): kotlin.Boolean {
+    override fun isEqualOrDescendantOf(otherContext: ModelNode?): kotlin.Boolean {
         if (otherContext === this) {
             return true
         }
         val parent: Any? = this.nodeParent
         if (parent is HTMLElementImpl) {
-            return parent.isEqualOrDescendentOf(otherContext)
+            return parent.isEqualOrDescendantOf(otherContext)
         } else {
             return false
         }
@@ -1357,12 +1356,12 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
     dispatchEventToHandlers(evt, onEventHandlers.get(evt.getType()));
     return false;
   }*/
-    val innerText: String
+    fun getInnerText(): String
         /**
          * Attempts to convert the subtree starting at this point to a close text
          * representation. BR elements are converted to line breaks, and so forth.
          */
-        get() {
+         {
             val buffer = StringBuffer()
             synchronized(this.treeLock) {
                 this.appendInnerTextImpl(buffer)
@@ -1571,8 +1570,7 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
         val numSelectors = selectors.size
         if (numSelectors > 0) {
             val firstSelector = selectors.get(0)
-            val childrenArray =
-                this.childrenArray
+            val childrenArray = this.getChildrenArray()
             if (childrenArray != null) {
                 for (n in childrenArray) {
                     if (n is ElementImpl) {

@@ -202,7 +202,7 @@ class TableMatrix(
     private fun populateRows(): ArrayList<HTMLElementImpl?> {
         val te = this.tableElement
         val rowElements = ArrayList<HTMLElementImpl?>()
-        val tChildren = te.childrenArray
+        val tChildren = te.getChildrenArray()
         val rowRelation = TableRelation(this.ROWS, this.ROW_GROUPS)
 
         if (tChildren != null) {
@@ -267,7 +267,7 @@ class TableMatrix(
         rowGroupElem: HTMLElementImpl?,
         rowRelation: TableRelation
     ) {
-        val rChildren = rowE.childrenArray
+        val rChildren = rowE.getChildrenArray()
         if (rChildren != null) {
             for (cn in rChildren) {
                 if (cn is HTMLElementImpl) {
@@ -285,7 +285,7 @@ class TableMatrix(
     }
 
     private fun processRowGroup(rowGroupElem: HTMLElementImpl, rowRelation: TableRelation) {
-        val rChildren = rowGroupElem.childrenArray
+        val rChildren = rowGroupElem.getChildrenArray()
         if (rChildren != null) {
             for (cn in rChildren) {
                 if (cn is HTMLElementImpl) {

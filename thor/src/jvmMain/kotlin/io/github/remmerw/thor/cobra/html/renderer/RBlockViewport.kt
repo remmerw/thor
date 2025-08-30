@@ -563,7 +563,7 @@ class RBlockViewport(
                     // ignore
                 } else if (nodeType == Node.DOCUMENT_FRAGMENT_NODE) {
                     val fragment = child as DocumentFragmentImpl
-                    for (fragChild in fragment.childrenArray!!) {
+                    for (fragChild in fragment.getChildrenArray()!!) {
                         layoutChildren(fragChild!!)
                     }
                 } else {
@@ -579,7 +579,7 @@ class RBlockViewport(
     }
 
     private fun getAllNodeChildren(node: NodeImpl): Array<NodeImpl?>? {
-        val childrenArray = node.childrenArray
+        val childrenArray = node.getChildrenArray()
         var beforeNode: NodeImpl? = null
         var afterNode: NodeImpl? = null
         if (node is HTMLElementImpl) {

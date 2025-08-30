@@ -11,5 +11,5 @@ interface CSS2PropertiesContext {
 
     fun informInvalid()
 
-    val documentBaseURI: String?
+    fun documentBaseURI(): String?
 }

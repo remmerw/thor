@@ -39,7 +39,7 @@ interface ModelNode {
 
     fun warn(message: String?, err: Throwable?)
 
-    fun isEqualOrDescendentOf(otherNode: ModelNode?): Boolean
+    fun isEqualOrDescendantOf(otherNode: ModelNode?): Boolean
 
 
     fun parentModelNode(): ModelNode?

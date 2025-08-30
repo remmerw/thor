@@ -485,7 +485,7 @@ class HtmlPanel : JComponent(), FrameContext, DefferedLayoutSupport {
     }
 
     private fun getFrameSet(node: NodeImpl): NodeImpl? {
-        val children = node.childrenArray
+        val children = node.getChildrenArray()
         if (children == null) {
             return null
         }
@@ -529,7 +529,7 @@ class HtmlPanel : JComponent(), FrameContext, DefferedLayoutSupport {
         ) {
             return false
         }
-        val children = element.childrenArray
+        val children = element.getChildrenArray()
         if (children != null) {
             val length = children.size
             for (i in 0..<length) {
