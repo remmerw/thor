@@ -224,10 +224,10 @@ class RBlockViewport(
         val lastSeqBlock = this.lastSeqBlock
         if (lastSeqBlock != null) {
             val effBlockHeight = this.getEffectiveBlockHeight(lastSeqBlock)
-            if ((lastSeqBlock.y + effBlockHeight) > maxY) {
-                maxY = lastSeqBlock.y + effBlockHeight
+            if ((lastSeqBlock.y() + effBlockHeight) > maxY) {
+                maxY = lastSeqBlock.y() + effBlockHeight
                 this.maxY = maxY
-                maxYWholeBlock = lastSeqBlock.y + lastSeqBlock.height
+                maxYWholeBlock = lastSeqBlock.y() + lastSeqBlock.height
             }
         }
 
@@ -256,12 +256,12 @@ class RBlockViewport(
             while (i.hasNext()) {
                 val pr = i.next()!!
                 val br = pr.renderable
-                if ((br.x + br.width) > this.maxX) {
-                    this.maxX = br.x + br.width
+                if ((br.x() + br.width) > this.maxX) {
+                    this.maxX = br.x() + br.width
                 }
                 if (isFloatLimit || !pr.isFloat) {
-                    if ((br.y + br.height) > maxY) {
-                        maxY = br.y + br.height
+                    if ((br.y() + br.height) > maxY) {
+                        maxY = br.y() + br.height
                         this.maxY = maxY
                     }
                 }
@@ -319,11 +319,11 @@ class RBlockViewport(
                 for (i in 0..<numRenderables) {
                     val r: Any = renderables.get(i)
                     if (r is BoundableRenderable) {
-                        val y = r.y
+                        val y = r.y()
                         val newY: Int
                         if (yoffset > 0) {
                             newY = y + yoffset
-                            r.y = (newY)
+                            r.setY(newY)
                             if ((newY + r.height) > this.maxY) {
                                 this.maxY = newY + r.height
                             }
@@ -338,23 +338,11 @@ class RBlockViewport(
                         val actualAvailWidth = canvasWidth - leftOffset - rightOffset
                         val difference = actualAvailWidth - r.width
                         if (difference > 0) {
-                            // The difference check means that only
-                            // blocks with a declared width would get adjusted?
-                            /*
-              if (floatBounds != null && isVisibleBlock) {
-                RBlock block = (RBlock) seqRenderable;
-                // Block needs to layed out again. Contents need
-                // to shift because of float.
-                final int expectedWidth = availContentWidth;
-                final int blockShiftRight = insets.right;
-                final int newX = leftOffset;
-                FloatingBoundsSource floatBoundsSource = new ParentFloatingBoundsSource(blockShiftRight, expectedWidth, newX, newY, floatBounds);
-                block.layout(actualAvailWidth, this.availContentHeight, true, false, floatBoundsSource, true);
-              }*/
+
                             val shift = (difference * alignXPercent) / 100
                             if (!isVisibleBlock) {
                                 val newX = leftOffset + shift
-                                r.x = (newX)
+                                r.setX(newX)
                             }
                         }
                     }
@@ -387,8 +375,8 @@ class RBlockViewport(
                     while (renderables.hasNext()) {
                         val r: Any? = renderables.next()
                         if (r is BoundableRenderable) {
-                            val newY = r.y + shift
-                            r.y = (newY)
+                            val newY = r.y() + shift
+                            r.setY (newY)
                             if ((newY + r.height) > this.maxY) {
                                 this.maxY = newY + r.height
                             }
@@ -405,8 +393,8 @@ class RBlockViewport(
                         val pr = i2.next()!!
                         if (pr.verticalAlignable) {
                             val br = pr.renderable
-                            val newY = br.y + shift
-                            br.y = (newY)
+                            val newY = br.y() + shift
+                            br.setY (newY)
                             if ((newY + br.height) > this.maxY) {
                                 this.maxY = newY + br.height
                             }
@@ -471,8 +459,8 @@ class RBlockViewport(
                 this.currentCollapsibleMargin = 0
             }
             initialAllowOverflow = prevLine.isAllowOverflow()
-            if ((prevLine.x + prevLine.width) > this.maxX) {
-                this.maxX = prevLine.x + prevLine.width
+            if ((prevLine.x() + prevLine.width) > this.maxX) {
+                this.maxX = prevLine.x() + prevLine.width
             }
         }
         rline =
@@ -626,7 +614,7 @@ class RBlockViewport(
             // Inform line done before layout so floats are considered.
             this.lineDone(line)
             val paddingInsets = this.paddingInsets!!
-            val newLineY = if (line == null) paddingInsets.top else line.y + line.height
+            val newLineY = if (line == null) paddingInsets.top else line.y() + line.height
             // int leftOffset = this.fetchLeftOffset(newLineY);
             // int rightOffset = this.fetchRightOffset(newLineY);
             // Float offsets are ignored with block.
@@ -743,7 +731,7 @@ class RBlockViewport(
             // Inform line done before layout so floats are considered.
             this.lineDone(line)
             if (obeysFloats) {
-                val newLineY = if (line == null) this.paddingInsets!!.top else line.y + line.height
+                val newLineY = if (line == null) this.paddingInsets!!.top else line.y() + line.height
                 val leftOffset = this.fetchLeftOffset(newLineY)
                 val rightOffset = this.fetchRightOffset(newLineY)
                 availContentWidth = this.desiredWidth - leftOffset - rightOffset
@@ -854,9 +842,9 @@ class RBlockViewport(
         val newLineY: Int
         val fb = this.floatBounds
         if ((breakType == LineBreak.Companion.NONE) || (fb == null)) {
-            newLineY = line.y + line.height
+            newLineY = line.y() + line.height
         } else {
-            val prevY = line.y + line.height
+            val prevY = line.y() + line.height
             when (breakType) {
                 LineBreak.Companion.LEFT -> newLineY = fb.getLeftClearY(prevY)
                 LineBreak.Companion.RIGHT -> newLineY = fb.getRightClearY(prevY)
@@ -965,8 +953,8 @@ class RBlockViewport(
                 widthText,
                 heightText,
                 rs,
-                currentLine!!.getX(),
-                currentLine!!.getY() + currentLine!!.getHeight(),
+                currentLine!!.x(),
+                currentLine!!.y() + currentLine!!.getHeight(),
                 absolute
             )
             // Does not affect bounds of this viewport yet.
@@ -1012,7 +1000,7 @@ class RBlockViewport(
     private fun addRenderableToLine(renderable: Renderable) {
         // this.skipLineBreakBefore = false;
         val line = this.currentLine!!
-        val liney = line.y
+        val liney = line.y()
         val emptyLine = line.isEmpty
         val floatBounds = this.floatBounds
         val cleary: Int
@@ -1027,7 +1015,7 @@ class RBlockViewport(
             if ((floatBounds != null) && (cleary > liney)) {
                 val rightOffset = this.fetchRightOffset(liney)
                 val topLineX = this.desiredWidth - rightOffset
-                if ((line.getX() + line.getWidth()) > topLineX) {
+                if ((line.x() + line.getWidth()) > topLineX) {
                     // Shift line down to clear area
                     line.setY(cleary)
                 }
@@ -1050,7 +1038,7 @@ class RBlockViewport(
     private fun addWordToLine(renderable: RWord) {
         // this.skipLineBreakBefore = false;
         val line = this.currentLine!!
-        val liney = line.y
+        val liney = line.y()
         val emptyLine = line.isEmpty
         val floatBounds = this.floatBounds
         val cleary: Int
@@ -1065,7 +1053,7 @@ class RBlockViewport(
             if (!line.isAllowOverflow() && (floatBounds != null) && (cleary > liney)) {
                 val rightOffset = this.fetchRightOffset(liney)
                 val topLineX = this.desiredWidth - rightOffset
-                if ((line.getX() + line.getWidth()) > topLineX) {
+                if ((line.x() + line.getWidth()) > topLineX) {
                     // Shift line down to clear area
                     line.setY(cleary)
                 }
@@ -1136,15 +1124,15 @@ class RBlockViewport(
             if (informLineDone) {
                 this.lineDone(prevLine)
             }
-            if ((prevLine.x + prevLine.width) > this.maxX) {
-                this.maxX = prevLine.x + prevLine.width
+            if ((prevLine.x() + prevLine.width) > this.maxX) {
+                this.maxX = prevLine.x() + prevLine.width
             }
             // Check height only with floats.
         } else {
             initialAllowOverflow = false
         }
         val prevLineHeight = if (prevLine == null) 0 else prevLine.height
-        var newLineY = if (prevLine == null) insets.top else prevLine.y + prevLineHeight
+        var newLineY = if (prevLine == null) insets.top else prevLine.y() + prevLineHeight
         var blockX: Int
         var blockY = if (prevLineHeight == 0) this.getNewBlockY(block, newLineY) else newLineY
         val blockWidth = block.width
@@ -1250,15 +1238,15 @@ class RBlockViewport(
             if (informLineDone) {
                 this.lineDone(prevLine)
             }
-            if ((prevLine.x + prevLine.width) > this.maxX) {
-                this.maxX = prevLine.x + prevLine.width
+            if ((prevLine.x() + prevLine.width) > this.maxX) {
+                this.maxX = prevLine.x() + prevLine.width
             }
             // Check height only with floats.
         } else {
             initialAllowOverflow = false
         }
         val lineNode = block.getModelNode()!!.parentModelNode()
-        val newLineY = block.getY() + block.getHeight()
+        val newLineY = block.y() + block.getHeight()
         this.checkY(newLineY)
         val leftOffset = this.fetchLeftOffset(newLineY)
         val newX = leftOffset
@@ -1371,7 +1359,7 @@ class RBlockViewport(
                         line.delete(0, line.length)
                         val prevLine = this.currentLine!!
                         prevLine.lineBreak = (LineBreak(LineBreak.Companion.NONE))
-                        this.addLine(textNode, prevLine, prevLine.y + prevLine.height)
+                        this.addLine(textNode, prevLine, prevLine.y() + prevLine.height)
                     }
 
                     else -> {
@@ -1814,7 +1802,7 @@ class RBlockViewport(
     override fun getLowestRenderableSpot(x: Int, y: Int): RenderableSpot? {
         val br = this.getRenderable(Point(x, y))
         if (br != null) {
-            return br.getLowestRenderableSpot(x - br.x, y - br.y)
+            return br.getLowestRenderableSpot(x - br.x(), y - br.y())
         } else {
             return RenderableSpot(this, x, y)
         }
@@ -1888,14 +1876,14 @@ class RBlockViewport(
     }
 
     fun paint(gIn: Graphics, gInUnClipped: Graphics) {
-        val translationRequired = (x or y) != 0
+        val translationRequired = (x() or y()) != 0
         val g = if (translationRequired) gIn.create() else gIn
         if (translationRequired) {
-            g.translate(x, y)
+            g.translate(x(), y())
         }
         val gUnClipped = if (translationRequired) gInUnClipped.create() else gInUnClipped
         if (translationRequired) {
-            gUnClipped.translate(x, y)
+            gUnClipped.translate(x(), y())
         }
         try {
             val clipBounds = gUnClipped.clipBounds
@@ -1988,7 +1976,7 @@ class RBlockViewport(
             val y = this.paddingInsets!!.top
             this.placeFloat(floatInfo.renderable!!, y, floatInfo.isLeftFloat)
         } else if (line.getWidth() == 0) {
-            val y = line.getY()
+            val y = line.y()
             this.placeFloat(floatInfo.renderable!!, y, floatInfo.isLeftFloat)
             val leftOffset = this.fetchLeftOffset(y)
             val rightOffset = this.fetchRightOffset(y)
@@ -2016,7 +2004,7 @@ class RBlockViewport(
                 val pf = i.next()!!
                 if (!yComputed) {
                     yAfterLine =
-                        if (line == null) this.paddingInsets!!.top else (if (line.checkFit(pf.renderable!!)) line.y else line.y + line.height)
+                        if (line == null) this.paddingInsets!!.top else (if (line.checkFit(pf.renderable!!)) line.y() else line.y() + line.height)
                     yComputed = true
                 }
                 this.placeFloat(pf.renderable!!, yAfterLine, pf.isLeftFloat)
@@ -2197,12 +2185,12 @@ class RBlockViewport(
         }
 
     private fun importFloatingInfo(floatingInfo: FloatingInfo, block: BoundableRenderable) {
-        val shiftX = floatingInfo.shiftX + block.x
-        val shiftY = floatingInfo.shiftY + block.y
+        val shiftX = floatingInfo.shiftX + block.x()
+        val shiftY = floatingInfo.shiftY + block.y()
         val floats = floatingInfo.floats
         val length = floats!!.size
         for (i in 0..<length) {
-            val ef = floats?.get(i)
+            val ef = floats.get(i)
             this.importFloat(ef!!, shiftX, shiftY)
         }
     }

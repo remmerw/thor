@@ -150,8 +150,8 @@ class DelayedPair(
             }
         }
 
-        child.x = ((if (x == null) tp!!.x else x))
-        child.y = ((if (y == null) tp!!.y else y))
+        child.setX ((if (x == null) tp!!.x else x))
+        child.setY ((if (y == null) tp!!.y else y))
 
         return child
     }

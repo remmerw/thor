@@ -53,8 +53,8 @@ abstract class BaseBoundableRenderable /*
 ) : BaseRenderable(), BoundableRenderable {
     override var width: Int = 0
     override var height: Int = 0
-    override var x: Int = 0
-    override var y: Int = 0
+    private var x: Int = 0
+    private var y: Int = 0
 
     /**
      * Starts as true because ancestors could be invalidated.
@@ -97,11 +97,11 @@ abstract class BaseBoundableRenderable /*
     }
 
     open fun getVisualX(): Int {
-        return getX()
+        return x()
     }
 
     open fun getVisualY(): Int {
-        return getY()
+        return y()
     }
 
     open fun getVisualHeight(): Int {
@@ -112,19 +112,19 @@ abstract class BaseBoundableRenderable /*
         return getWidth()
     }
 
-    open fun getX(): Int {
+    override fun x(): Int {
         return x
     }
 
-    open fun setX(x: Int) {
+    override fun setX(x: Int) {
         this.x = x
     }
 
-    open fun getY(): Int {
+    override fun y(): Int {
         return y
     }
 
-    open fun setY(y: Int) {
+    override fun setY(y: Int) {
         this.y = y
     }
 

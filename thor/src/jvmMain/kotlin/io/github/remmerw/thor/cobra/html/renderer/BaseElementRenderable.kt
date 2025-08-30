@@ -379,8 +379,8 @@ abstract class BaseElementRenderable(
             var x = 0
             var y = 0
             while (parent != null) {
-                x += parent.x
-                y += parent.y
+                x += parent.x()
+                y += parent.y()
                 parent = parent.parent
                 if (parent is RElement) {
                     break

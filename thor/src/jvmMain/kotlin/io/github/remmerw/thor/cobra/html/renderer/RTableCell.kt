@@ -251,6 +251,10 @@ internal open class RTableCell(
         get() = TODO("Not yet implemented")
     override val parentContainer: RenderableContainer?
         get() = TODO("Not yet implemented")
+    override val x: Int
+        get() = TODO("Not yet implemented")
+    override val y: Int
+        get() = TODO("Not yet implemented")
 
     companion object {
         private fun getColSpan(elem: HTMLElementImpl): Int {

@@ -108,20 +108,20 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
     override val visualWidth: Int
         get() = TODO("Not yet implemented")
 
-    override fun getX(): Int {
-        return translatedChild.x
+    override fun x(): Int {
+        return translatedChild.x()
     }
 
     override fun setX(x: Int) {
-        translatedChild.x = (x)
+        translatedChild.setX(x)
     }
 
-    override fun getY(): Int {
-        return translatedChild.y
+    override fun y(): Int {
+        return translatedChild.y()
     }
 
     override fun setY(y: Int) {
-        translatedChild.y = (y)
+        translatedChild.setY(y)
     }
 
     override fun getVisualX(): Int {

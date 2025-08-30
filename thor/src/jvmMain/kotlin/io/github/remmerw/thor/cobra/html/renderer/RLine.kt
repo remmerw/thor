@@ -74,8 +74,8 @@ internal class RLine(
     init {
         // Note that in the case of RLine, modelNode is the context node
         // at the beginning of the line, not a node that encloses the whole line.
-        this.x = x
-        this.y = y
+        this.setX(x)
+        this.setY(y)
         this.height = height
         this.desiredMaxWidth = desiredMaxWidth
         // Layout here can always be "invalidated"
@@ -102,7 +102,7 @@ internal class RLine(
      * This method should only be invoked when the line has no items yet.
      */
     fun changeLimits(x: Int, desiredMaxWidth: Int) {
-        this.x = x
+        this.setX(x)
         this.desiredMaxWidth = desiredMaxWidth
     }
 
@@ -238,7 +238,7 @@ internal class RLine(
                     if (overflow == null) {
                         overflow = ArrayList<Renderable?>()
                     }
-                    if ((renderable !== rword) && (renderable is RWord) && (renderable.getX() == 0)) {
+                    if ((renderable !== rword) && (renderable is RWord) && (renderable.x() == 0)) {
                         // Can't overflow words starting at offset zero.
                         // Note that all or none should be overflown.
                         cancel = true
@@ -249,10 +249,10 @@ internal class RLine(
                     renderables.removeAt(i)
                 } else {
                     if (renderable is RBlank) {
-                        newWidth = renderable.getX()
+                        newWidth = renderable.x()
                         newOffset = newWidth + renderable.getWidth()
                     } else {
-                        newOffset = renderable.x + renderable.width
+                        newOffset = renderable.x() + renderable.width
                         newWidth = newOffset
                     }
                     break
@@ -345,7 +345,7 @@ internal class RLine(
         }
         // RLine only sets origins, not sizes.
         // relement.setBounds(x, yoffset, width, height);
-        relement.y = (yoffset)
+        relement.setY (yoffset)
     }
 
     /**
@@ -466,7 +466,7 @@ internal class RLine(
         }
         this.renderabl.add(relement)
         relement.parent = (this)
-        relement.x = (origXOffset)
+        relement.setX(origXOffset)
         this.setElementY(relement, ph, valign)
         val newX = origXOffset + pw
         this.xoffset = newX

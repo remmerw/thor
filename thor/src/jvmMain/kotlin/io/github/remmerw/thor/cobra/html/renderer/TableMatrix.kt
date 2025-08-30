@@ -1360,8 +1360,8 @@ class TableMatrix(
 
             g.color = Color.GRAY
             for (cell in this.ALL_CELLS) {
-                val cx = cell.getX() - 1
-                val cy = cell.getY() - 1
+                val cx = cell.x() - 1
+                val cy = cell.y() - 1
                 val cwidth = cell.getWidth() + 1
                 val cheight = cell.getHeight() + 1
                 g.drawRect(cx, cy, cwidth, cheight)
@@ -1823,7 +1823,7 @@ class TableMatrix(
             this.borderOverrider.copyFrom(borderOverrider)
         }
 
-        override fun getRenderables(topFirst: Boolean): MutableIterator<out Renderable>? {
+        override fun getRenderables(topFirst: Boolean): MutableIterator<Renderable>? {
             return null
         }
 
@@ -1913,6 +1913,10 @@ class TableMatrix(
         override val paintedBackgroundColor: Color?
             get() = TODO("Not yet implemented")
         override val parentContainer: RenderableContainer?
+            get() = TODO("Not yet implemented")
+        override val x: Int
+            get() = TODO("Not yet implemented")
+        override val y: Int
             get() = TODO("Not yet implemented")
     }
 

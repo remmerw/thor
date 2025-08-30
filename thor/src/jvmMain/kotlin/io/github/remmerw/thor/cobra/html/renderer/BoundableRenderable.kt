@@ -74,9 +74,11 @@ interface BoundableRenderable : Renderable {
 
     fun setOrigin(x: Int, y: Int)
 
-    var x: Int
+    fun x(): Int
+    fun setX(x: Int)
 
-    var y: Int
+    fun y(): Int
+    fun setY(y: Int)
 
     val visualX: Int
 
