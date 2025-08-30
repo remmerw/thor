@@ -225,7 +225,7 @@ open class RUIControl(
     }
 
     fun getBlockBackgroundColor(): Color? {
-        return this.widget.backgroundColor
+        return this.widget.backgroundColor()
     }
 
     /*

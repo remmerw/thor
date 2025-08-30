@@ -48,7 +48,7 @@ interface UIControl {
 
     fun invalidate()
 
-    val backgroundColor: Color?
+    fun backgroundColor(): Color?
 
     // public boolean paintSelection(Graphics g, boolean inSelection,
     // RenderableSpot startPoint, RenderableSpot endPoint);

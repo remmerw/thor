@@ -61,12 +61,8 @@ abstract class BaseControl(protected val controlElement: HTMLElementImpl?) : JCo
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.renderer.UIControl#getBackgroundColor()
-     */
-    fun getBackgroundColor(): Color? {
+
+    override fun backgroundColor(): Color? {
         return this.getBackground()
     }
 

@@ -41,8 +41,8 @@ class InputImageControl(modelNode: HTMLBaseInputElement) : BaseInputControl(mode
     // private JButton button;
     private var mouseBeingPressed = false
     override var preferredSize: Dimension? = null
-    override val backgroundColor: Color?
-        get() = TODO("Not yet implemented")
+
+
     override var component: Component?
         get() = TODO("Not yet implemented")
         set(value) {}

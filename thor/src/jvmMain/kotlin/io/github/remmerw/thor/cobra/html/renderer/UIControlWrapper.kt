@@ -24,7 +24,7 @@ class UIControlWrapper(
         return this.component!!
     }
 
-    fun getBackgroundColor(): Color? {
+    override fun backgroundColor(): Color? {
         return this.component!!.getBackground()
     }
 
@@ -37,8 +37,7 @@ class UIControlWrapper(
         this.component!!.invalidate()
     }
 
-    override val backgroundColor: Color?
-        get() = TODO("Not yet implemented")
+
 
     fun paintSelection(
         g: Graphics?,

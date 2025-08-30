@@ -20,7 +20,7 @@ internal class BrowserFrameUIControl(
     private var availHeight = 0
 
 
-    fun getBackgroundColor(): Color? {
+    override fun backgroundColor(): Color? {
         return this.browserFrame.component?.getBackground()
     }
 
@@ -127,8 +127,7 @@ internal class BrowserFrameUIControl(
         this.component!!.invalidate()
     }
 
-    override val backgroundColor: Color?
-        get() = TODO("Not yet implemented")
+
 
     override fun paint(g: Graphics?) {
         // We actually have to paint it.

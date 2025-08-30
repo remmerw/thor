@@ -50,8 +50,7 @@ internal open class InputTextControl(modelNode: HTMLBaseInputElement?) :
     override var preferredSize: Dimension?
         get() = TODO("Not yet implemented")
         set(value) {}
-    override val backgroundColor: Color?
-        get() = TODO("Not yet implemented")
+
     override var component: Component?
         get() = TODO("Not yet implemented")
         set(value) {}
