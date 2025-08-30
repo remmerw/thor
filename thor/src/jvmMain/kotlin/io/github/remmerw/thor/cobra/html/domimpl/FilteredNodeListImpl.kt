@@ -24,19 +24,23 @@
 package io.github.remmerw.thor.cobra.html.domimpl
 
 import io.github.remmerw.thor.cobra.js.ScriptableDelegate
+import org.mozilla.javascript.Scriptable
 import org.w3c.dom.Node
 import org.w3c.dom.NodeList
 
 // TODO: Use lambdas?
-internal class FilteredNodeListImpl
-/**
- * @param filter
- * @param sourceNodeList
- */(
+internal class FilteredNodeListImpl(
     private val filter: NodeFilter,
     private val sourceNodeList: MutableCollection<Node?>,
     private val lock: Any
-) : ScriptableDelegate(), NodeList {
+) : ScriptableDelegate, NodeList {
+
+    var scriptable: Scriptable? = null
+
+    override fun scriptable(): Scriptable? {
+        return scriptable
+    }
+
     override fun item(index: Int): Node? {
         synchronized(this.lock) {
             var count = 0

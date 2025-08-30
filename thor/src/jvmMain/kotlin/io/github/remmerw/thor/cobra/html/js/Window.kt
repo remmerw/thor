@@ -84,10 +84,14 @@ class Window // TODO: Probably need to create a new Window instance
 // for every document. Sharing of Window state between
 // different documents is not correct.
     (val htmlRendererContext: HtmlRendererContext?, val userAgentContext: UserAgentContext) :
-    ScriptableDelegate(), AbstractView, EventTarget {
+    ScriptableDelegate, AbstractView, EventTarget {
     private val windowContextFactory = MyContextFactory()
     val eventTargetManager: EventTargetManager = EventTargetManager(this)
+    var scriptable: Scriptable? = null
 
+    override fun scriptable(): Scriptable? {
+        return scriptable
+    }
     // TODO: Move job scheduling logic into Window class
     private val jobsOver = AtomicBoolean(false)
     var navigator: Navigator? = null

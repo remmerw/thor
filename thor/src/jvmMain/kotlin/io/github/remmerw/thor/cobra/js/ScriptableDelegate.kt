@@ -31,6 +31,7 @@ import org.mozilla.javascript.Scriptable
  * the Java object proxy is not garbage collected as long as the Java object is
  * not garbage collected.
  */
-abstract class ScriptableDelegate {
-    var scriptable: Scriptable? = null
+interface ScriptableDelegate {
+
+    fun scriptable(): Scriptable?
 }

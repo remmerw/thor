@@ -24,6 +24,7 @@
 package io.github.remmerw.thor.cobra.html.domimpl
 
 import io.github.remmerw.thor.cobra.js.ScriptableDelegate
+import org.mozilla.javascript.Scriptable
 import org.w3c.dom.Attr
 import org.w3c.dom.DOMException
 import org.w3c.dom.Element
@@ -31,10 +32,16 @@ import org.w3c.dom.NamedNodeMap
 import org.w3c.dom.Node
 
 class NamedNodeMapImpl(owner: Element?, attribs: MutableMap<String, String>) :
-    ScriptableDelegate(), NamedNodeMap {
+    ScriptableDelegate, NamedNodeMap {
     // Note: class must be public for reflection to work.
     private val attributes: MutableMap<String, Node> = HashMap()
     private val attributeList = ArrayList<Node>()
+
+    var scriptable: Scriptable? = null
+
+    override fun scriptable(): Scriptable? {
+        return scriptable
+    }
 
     init {
         attribs.forEach { (name: String, value: String?) ->

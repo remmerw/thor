@@ -27,6 +27,7 @@ import io.github.remmerw.thor.cobra.js.JavaScript
 import io.github.remmerw.thor.cobra.js.ScriptableDelegate
 import io.github.remmerw.thor.cobra.util.Nodes
 import io.github.remmerw.thor.cobra.util.Objects
+import org.mozilla.javascript.Scriptable
 import org.w3c.dom.Node
 import org.w3c.dom.html.HTMLCollection
 import java.lang.ref.WeakReference
@@ -36,7 +37,12 @@ open class DescendentHTMLCollection @JvmOverloads constructor(
     private val nodeFilter: NodeFilter?,
     private val treeLock: Any,
     private val nestIntoMatchingNodes: Boolean = true
-) : ScriptableDelegate(), HTMLCollection {
+) : ScriptableDelegate, HTMLCollection {
+    var scriptable: Scriptable? = null
+
+    override fun scriptable(): Scriptable? {
+        return scriptable
+    }
     private var itemsByName: MutableMap<String?, ElementImpl?>? = null
     private var itemsByIndex: MutableList<NodeImpl?>? = null
 

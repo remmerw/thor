@@ -28,7 +28,12 @@ class XMLHttpRequest(
     private val codeSource: URL,
     private val scope: Scriptable?, // TODO: This is a quick hack
     private val window: Window
-) : ScriptableDelegate() {
+) : ScriptableDelegate {
+    var scriptable: Scriptable? = null
+
+    override fun scriptable(): Scriptable? {
+        return scriptable
+    }
     private val request: NetworkRequest = pcontext.createHttpRequest()!!
     var onreadystatechange: Function? = null
         get() {

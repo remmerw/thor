@@ -65,7 +65,7 @@ class JavaScript {
             // the JavaScript object. Reciprocal linking cannot
             // be done with weak hash maps and without leaking.
             synchronized(this) {
-                var javascriptObject = raw.scriptable
+                var javascriptObject = raw.scriptable()
                 if (javascriptObject == null) {
                     val jow = JavaObjectWrapper(
                         JavaClassWrapperFactory.Companion.instance!!.getClassWrapper(raw.javaClass),
@@ -73,7 +73,7 @@ class JavaScript {
                     )
                     javascriptObject = jow
                     jow.setParentScope(scope)
-                    raw.scriptable = (jow)
+                    // TODO  raw.scriptable = (jow)
                 } else {
                     javascriptObject.parentScope = scope
                 }

@@ -15,6 +15,7 @@ import io.github.remmerw.thor.cobra.ua.UserAgentContext
 import io.github.remmerw.thor.cobra.util.Strings
 import io.github.remmerw.thor.cobra.util.Urls
 import org.mozilla.javascript.Function
+import org.mozilla.javascript.Scriptable
 import org.w3c.dom.Attr
 import org.w3c.dom.Comment
 import org.w3c.dom.DOMException
@@ -54,10 +55,14 @@ import kotlin.run
 import kotlin.synchronized
 
 // TODO: Implement org.w3c.dom.events.EventTarget ?
-abstract class NodeImpl : ScriptableDelegate(), Node, ModelNode {
+abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
     // Called in GUI thread always.
     // Called in GUI thread always.
+    var scriptable: Scriptable? = null
 
+    override fun scriptable(): Scriptable? {
+        return scriptable
+    }
     var uINode: UINode? = null
     protected var nodeList: ArrayList<Node>? = null
 

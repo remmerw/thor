@@ -21,8 +21,14 @@
 package io.github.remmerw.thor.cobra.html.js
 
 import io.github.remmerw.thor.cobra.js.ScriptableDelegate
+import org.mozilla.javascript.Scriptable
 
-class History internal constructor(private val window: Window) : ScriptableDelegate() {
+class History internal constructor(private val window: Window) : ScriptableDelegate {
+    var scriptable: Scriptable? = null
+
+    override fun scriptable(): Scriptable? {
+        return scriptable
+    }
     val current: String?
         get() {
             val ctx = this.window.htmlRendererContext

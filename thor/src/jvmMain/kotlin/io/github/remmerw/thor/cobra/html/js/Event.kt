@@ -21,6 +21,7 @@
 package io.github.remmerw.thor.cobra.html.js
 
 import io.github.remmerw.thor.cobra.js.ScriptableDelegate
+import org.mozilla.javascript.Scriptable
 import org.w3c.dom.Node
 import org.w3c.dom.events.Event
 import org.w3c.dom.events.EventTarget
@@ -30,6 +31,11 @@ import java.awt.event.KeyEvent
 import java.awt.event.MouseEvent
 
 class Event : ScriptableDelegate, Event {
+    var scriptable: Scriptable? = null
+
+    override fun scriptable(): Scriptable? {
+        return scriptable
+    }
     private val inputEvent: InputEvent?
     var isCancelBubble: Boolean = false
         set(cancelBubble) {

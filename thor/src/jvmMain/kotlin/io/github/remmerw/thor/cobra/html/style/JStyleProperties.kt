@@ -24,6 +24,7 @@ import cz.vutbr.web.css.NodeData
 import cz.vutbr.web.csskit.TermURIImpl
 import io.github.remmerw.thor.cobra.js.ScriptableDelegate
 import io.github.remmerw.thor.cobra.util.Urls
+import org.mozilla.javascript.Scriptable
 import org.w3c.dom.css.CSS2Properties
 import java.net.MalformedURLException
 import java.net.URL
@@ -32,7 +33,12 @@ abstract class JStyleProperties(
     private val context: CSS2PropertiesContext, // TODO: this flag can be removed when the layout can handle empty strings
     // currently there is only a check for null and not for empty string
     protected val nullIfAbsent: Boolean
-) : ScriptableDelegate(), CSS2Properties {
+) : ScriptableDelegate, CSS2Properties {
+    var scriptable: Scriptable? = null
+
+    override fun scriptable(): Scriptable? {
+        return scriptable
+    }
     var overlayColor: String? = null
         set(value) {
             field = value

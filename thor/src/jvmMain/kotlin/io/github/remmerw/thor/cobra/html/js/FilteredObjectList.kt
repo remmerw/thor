@@ -24,13 +24,19 @@
 package io.github.remmerw.thor.cobra.html.js
 
 import io.github.remmerw.thor.cobra.js.ScriptableDelegate
+import org.mozilla.javascript.Scriptable
 
 // TODO: Remove if not used
 class FilteredObjectList(
     private val filter: ObjectFilter,
     private val sourceNodeList: MutableCollection<Any?>,
     private val lock: Any
-) : ScriptableDelegate() {
+) : ScriptableDelegate {
+    var scriptable: Scriptable? = null
+
+    override fun scriptable(): Scriptable? {
+        return scriptable
+    }
     fun item(index: Int): Any? {
         synchronized(this.lock) {
             var count = 0
