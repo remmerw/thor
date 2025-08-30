@@ -1867,8 +1867,6 @@ class TableMatrix(
 
         override val isContainedByNode: Boolean
             get() = TODO("Not yet implemented")
-        override val isDelegated: Boolean
-            get() = TODO("Not yet implemented")
 
         override fun repaint() {
             container?.repaint(x(), y(), width, height)

@@ -1833,8 +1833,6 @@ open class RBlock(
         height = newHeight + vInset
     }
 
-    override val isDelegated: Boolean
-        get() = TODO("Not yet implemented")
 
     fun setCollapseTop(set: Boolean) {
         collapseTopMargin = set
@@ -1984,7 +1982,7 @@ open class RBlock(
                     }
                 } else {
                     if (r is RCollection) {
-                        if ((!condense) || !r.isDelegated) {
+                        if ((!condense) || !r.isDelegated()) {
                             val rnds = r.renderables
                             if (rnds == null) {
                                 println(indentStr + selfIndentStr + " [empty]")
@@ -2017,7 +2015,7 @@ open class RBlock(
                 return "Trans-Rend"
             } else {
                 val delgStr =
-                    if (r is RCollection) (if (r.isDelegated) "<deleg> " else "") else ""
+                    if (r is RCollection) (if (r.isDelegated()) "<deleg> " else "") else ""
                 return delgStr + r.toString()
             }
         }

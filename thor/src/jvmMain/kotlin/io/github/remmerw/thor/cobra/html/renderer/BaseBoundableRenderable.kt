@@ -442,7 +442,7 @@ abstract class BaseBoundableRenderable /*
         this.delegator = pDelegator
     }
 
-    fun isDelegated(): Boolean {
+    override fun isDelegated(): Boolean {
         return delegator != null
     }
 

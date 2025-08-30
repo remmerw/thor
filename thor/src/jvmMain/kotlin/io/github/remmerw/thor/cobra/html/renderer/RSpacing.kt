@@ -140,8 +140,6 @@ class RSpacing(me: ModelNode?, container: RenderableContainer?, width: Int, heig
         TODO("Not yet implemented")
     }
 
-    override val isDelegated: Boolean
-        get() = TODO("Not yet implemented")
 
 
     override var parent: RCollection?

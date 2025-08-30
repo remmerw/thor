@@ -331,7 +331,7 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
           if (br instanceof RBlockViewport) {
             return br;
           }*/
-                    if ((!r.isDelegated) && r.contains(x, y)) {
+                    if ((!r.isDelegated()) && r.contains(x, y)) {
                         return r
                     }
                 } else if (r is PositionedRenderable) {

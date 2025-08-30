@@ -259,8 +259,7 @@ internal class RTable(
 
     override val isContainedByNode: Boolean
         get() = TODO("Not yet implemented")
-    override val isDelegated: Boolean
-        get() = TODO("Not yet implemented")
+
 
     /*
      * (non-Javadoc)

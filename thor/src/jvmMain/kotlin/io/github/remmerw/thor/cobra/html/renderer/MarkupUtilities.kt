@@ -62,7 +62,7 @@ internal object MarkupUtilities {
         for (i in firstIndex + length - 1 downTo firstIndex) {
             val br2 = renderables[i]
             if (br2 is BoundableRenderable) {
-                if ((!br2.isDelegated) && br2.contains(x, y)) {
+                if ((!br2.isDelegated()) && br2.contains(x, y)) {
                     return br2
                 }
             }
@@ -81,9 +81,9 @@ internal object MarkupUtilities {
         for (i in renderables.indices) {
             val br = renderables[i]
             if (br is BoundableRenderable) {
-                if ((!br.isDelegated) && br.contains(x, y)) {
+                if ((!br.isDelegated()) && br.contains(x, y)) {
                     if (found == null) {
-                        found = ArrayList<BoundableRenderable?>()
+                        found = ArrayList()
                     }
                     found.add(br)
                 }

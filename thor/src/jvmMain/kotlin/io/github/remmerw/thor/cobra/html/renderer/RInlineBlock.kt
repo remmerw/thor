@@ -92,8 +92,7 @@ class RInlineBlock(
 
     override val isContainedByNode: Boolean
         get() = TODO("Not yet implemented")
-    override val isDelegated: Boolean
-        get() = TODO("Not yet implemented")
+
 
     override fun onMouseClick(event: MouseEvent?, x: Int, y: Int): Boolean {
         return this.child.onMouseClick(event, x, y)

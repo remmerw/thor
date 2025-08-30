@@ -203,8 +203,6 @@ internal class RAnonTableCell(
         get() = TODO("Not yet implemented")
     override val isContainedByNode: Boolean
         get() = TODO("Not yet implemented")
-    override val isDelegated: Boolean
-        get() = TODO("Not yet implemented")
 
 
     override val parentContainer: RenderableContainer?

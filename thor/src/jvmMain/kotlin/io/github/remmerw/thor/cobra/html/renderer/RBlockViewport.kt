@@ -1829,8 +1829,7 @@ class RBlockViewport(
         TODO("Not yet implemented")
     }
 
-    override val isDelegated: Boolean
-        get() = TODO("Not yet implemented")
+
 
   
     override fun onMouseDisarmed(event: MouseEvent?): Boolean {
@@ -1897,7 +1896,7 @@ class RBlockViewport(
                     // not to be clipped unless overflow=hidden.
                     if (robj is BoundableRenderable) {
                         // if (!((renderable instanceof RBlock) && renderable.getModelNode().getRenderState().getPosition() == RenderState.POSITION_RELATIVE)) {
-                        if (!robj.isDelegated) {
+                        if (!robj.isDelegated()) {
                             robj.paintTranslated(g)
                         }
                     } else {

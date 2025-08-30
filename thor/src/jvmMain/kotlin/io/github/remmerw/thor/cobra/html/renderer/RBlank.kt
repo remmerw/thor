@@ -196,8 +196,6 @@ class RBlank(
         TODO("Not yet implemented")
     }
 
-    override val isDelegated: Boolean
-        get() = TODO("Not yet implemented")
 
 
     override var parent: RCollection?

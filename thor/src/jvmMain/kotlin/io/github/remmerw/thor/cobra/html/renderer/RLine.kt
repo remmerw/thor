@@ -128,7 +128,7 @@ import kotlin.math.max
             val r = i.next()
             if (r is RElement) {
                 // RElements should be translated.
-                if (!r.isDelegated) {
+                if (!r.isDelegated()) {
                     val newG = g.create()
                     newG.translate(r.visualX, r.visualY)
                     try {
@@ -138,7 +138,7 @@ import kotlin.math.max
                     }
                 }
             } else if (r is BoundableRenderable) {
-                if (!r.isDelegated) {
+                if (!r.isDelegated()) {
                     r.paintTranslated(g)
                 }
             } else {
@@ -171,8 +171,6 @@ import kotlin.math.max
          TODO("Not yet implemented")
      }
 
-     override val isDelegated: Boolean
-        get() = TODO("Not yet implemented")
 
     fun addStyleChanger(sc: RStyleChanger) {
         this.renderabl.add(sc)

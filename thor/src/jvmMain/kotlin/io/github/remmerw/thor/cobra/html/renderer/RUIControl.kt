@@ -435,9 +435,6 @@ open class RUIControl(
         this.isHeightConstrained = true
     }
 
-    override val isDelegated: Boolean
-        get() = TODO("Not yet implemented")
-
     private class LayoutKey(availWidth: Int, availHeight: Int, whitespace: Int, font: Font?) {
         val availWidth: Int
         val availHeight: Int

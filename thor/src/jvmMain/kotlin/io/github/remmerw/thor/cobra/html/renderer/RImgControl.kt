@@ -96,8 +96,6 @@ class RImgControl(
         updateWidthHeight()
     }
 
-    override val isDelegated: Boolean
-        get() = TODO("Not yet implemented")
 
     override fun isReadyToPaint(): Boolean {
         return super.isReadyToPaint() && widget.isReadyToPaint
