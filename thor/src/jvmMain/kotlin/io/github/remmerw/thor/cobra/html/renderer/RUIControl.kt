@@ -94,8 +94,8 @@ open class RUIControl(
         this.lastLayoutValue = null
     }
 
-    fun getVAlign(): VerticalAlign? {
-        return this.widget.vAlign
+    override fun vAlign(): VerticalAlign? {
+        return this.widget.vAlign()
     }
 
     fun hasBackground(): Boolean {
@@ -170,10 +170,6 @@ open class RUIControl(
         }
     }
 
-    override val collapsibleMarginTop: Int
-        get() = TODO("Not yet implemented")
-    override val collapsibleMarginBottom: Int
-        get() = TODO("Not yet implemented")
 
     /*
      * (non-Javadoc)

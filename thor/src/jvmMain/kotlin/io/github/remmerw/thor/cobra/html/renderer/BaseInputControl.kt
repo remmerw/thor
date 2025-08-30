@@ -50,7 +50,7 @@ abstract class BaseInputControl(modelNode: HTMLBaseInputElement?) : BaseControl(
         }
     }
 
-    override fun getVAlign(): VerticalAlign? {
+    override fun vAlign(): VerticalAlign? {
         return VerticalAlign.BOTTOM
     }
 

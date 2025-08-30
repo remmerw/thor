@@ -42,7 +42,7 @@ abstract class BaseControl(protected val controlElement: HTMLElementImpl?) : JCo
         this.ruicontrol = ruicontrol
     }
 
-    open fun getVAlign(): VerticalAlign? {
+    override fun vAlign(): VerticalAlign? {
         return VerticalAlign.BASELINE
     }
 

@@ -1,5 +1,6 @@
 package io.github.remmerw.thor.cobra.html.renderer
 
+import cz.vutbr.web.css.CSSProperty
 import io.github.remmerw.thor.cobra.html.HtmlObject
 import java.awt.Color
 import java.awt.Component
@@ -19,6 +20,10 @@ class UIControlWrapper(
     override var preferredSize: Dimension?
         get() = TODO("Not yet implemented")
         set(value) {}
+
+    override fun vAlign(): CSSProperty.VerticalAlign? {
+        TODO("Not yet implemented")
+    }
 
     fun getComponent(): Component {
         return this.component!!

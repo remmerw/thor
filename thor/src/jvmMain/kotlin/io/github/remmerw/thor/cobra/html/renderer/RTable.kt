@@ -23,6 +23,7 @@
  */
 package io.github.remmerw.thor.cobra.html.renderer
 
+import cz.vutbr.web.css.CSSProperty
 import io.github.remmerw.thor.cobra.html.HtmlRendererContext
 import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
 import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
@@ -439,10 +440,6 @@ internal class RTable(
     }
 
 
-    override val collapsibleMarginTop: Int
-        get() = TODO("Not yet implemented")
-    override val collapsibleMarginBottom: Int
-        get() = TODO("Not yet implemented")
 
     override val parentContainer: RenderableContainer?
         get() = TODO("Not yet implemented")
@@ -450,6 +447,10 @@ internal class RTable(
         get() = TODO("Not yet implemented")
     override val y: Int
         get() = TODO("Not yet implemented")
+
+    override fun vAlign(): CSSProperty.VerticalAlign? {
+        TODO("Not yet implemented")
+    }
 
     private class LayoutKey(
         availWidth: Int,

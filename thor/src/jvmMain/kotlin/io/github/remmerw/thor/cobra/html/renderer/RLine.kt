@@ -444,7 +444,7 @@ import kotlin.math.max
         val ph = relement.height
         val requiredHeight: Int
 
-        val valign = relement.vAlign
+        val valign = relement.vAlign()
         if (valign != null) {
             when (valign) {
                 VerticalAlign.BASELINE -> requiredHeight = ph + (boundsh - this.baselineOffset)
@@ -527,7 +527,7 @@ import kotlin.math.max
                 r.setY(baseline - r.ascentPlusLeading)
             } else if (r is RElement) {
                 // int w = relement.getWidth();
-                this.setElementY(r, r.height, r.vAlign)
+                this.setElementY(r, r.height, r.vAlign())
             } else {
                 // RSpacing and RStyleChanger don't matter?
             }

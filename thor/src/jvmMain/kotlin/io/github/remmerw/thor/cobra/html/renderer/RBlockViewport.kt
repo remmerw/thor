@@ -151,7 +151,7 @@ class RBlockViewport(
         if (parent !is RBlock) {
             return 0
         }
-        return parent.getCollapsibleMarginTop()
+        return parent.collapsibleMarginTop()
     }
 
     // final RBlockViewport getParentViewport(ExportedRenderable er) {
@@ -1102,7 +1102,7 @@ class RBlockViewport(
             return block.height
         }
         val blockMarginBottom = block.marginBottom()
-        val parentMarginBottom = parent.collapsibleMarginBottom
+        val parentMarginBottom = parent.collapsibleMarginBottom()
         return block.height - min(blockMarginBottom, parentMarginBottom)
     }
 

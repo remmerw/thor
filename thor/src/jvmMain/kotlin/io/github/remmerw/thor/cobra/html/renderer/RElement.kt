@@ -28,22 +28,10 @@ import io.github.remmerw.thor.cobra.html.domimpl.UINode
  * etc.
  */
 interface RElement : RCollection, UINode {
-    /**
-     * Lays out the subtree below the RElement. The RElement is expected to set
-     * its own dimensions, but not its origin.
-     *
-     * @param availWidth  The available width from the parent's canvas.
-     * @param availHeight The available height from the parent's canvas.
-     * @param sizeOnly    Whether the layout is for sizing determination only.
-     */
+
     fun layout(availWidth: Int, availHeight: Int, sizeOnly: Boolean)
 
-    val vAlign: VerticalAlign?
-        /**
-         * Vertical alignment for elements rendered in a line. Returns one of the
-         * constants defined in this class.
-         */
-        get() = VerticalAlign.BASELINE
+    fun vAlign(): VerticalAlign?
 
     fun marginTop(): Int
 
@@ -53,20 +41,13 @@ interface RElement : RCollection, UINode {
 
     fun marginRight(): Int
 
-    val collapsibleMarginTop: Int
+    fun collapsibleMarginTop(): Int
 
-    val collapsibleMarginBottom: Int
+    fun collapsibleMarginBottom(): Int
 
     fun invalidateRenderStyle()
 
     fun setupRelativePosition(container: RenderableContainer)
 
-    companion object {
-        const val VALIGN_TOP: Int = 0
-        const val VALIGN_MIDDLE: Int = 1
-        const val VALIGN_BOTTOM: Int = 2
-        const val VALIGN_ABSMIDDLE: Int = 3
-        const val VALIGN_ABSBOTTOM: Int = 4
-        const val VALIGN_BASELINE: Int = 5
-    }
+
 }

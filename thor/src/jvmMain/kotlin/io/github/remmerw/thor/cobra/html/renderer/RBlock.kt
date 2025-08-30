@@ -23,6 +23,7 @@
  */
 package io.github.remmerw.thor.cobra.html.renderer
 
+import cz.vutbr.web.css.CSSProperty
 import io.github.remmerw.thor.cobra.html.HtmlRendererContext
 import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
 import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
@@ -1960,17 +1961,16 @@ open class RBlock(
     }
 
 
-    override val collapsibleMarginTop: Int
-        get() = TODO("Not yet implemented")
-    override val collapsibleMarginBottom: Int
-        get() = TODO("Not yet implemented")
-
     override val parentContainer: RenderableContainer?
         get() = TODO("Not yet implemented")
     override val x: Int
         get() = TODO("Not yet implemented")
     override val y: Int
         get() = TODO("Not yet implemented")
+
+    override fun vAlign(): CSSProperty.VerticalAlign? {
+        TODO("Not yet implemented")
+    }
 
     private class LayoutValue(
         val width: Int,

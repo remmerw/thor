@@ -20,6 +20,7 @@ GNU LESSER GENERAL PUBLIC LICENSE
  */
 package io.github.remmerw.thor.cobra.html.renderer
 
+import cz.vutbr.web.css.CSSProperty
 import io.github.remmerw.thor.cobra.html.HtmlRendererContext
 import io.github.remmerw.thor.cobra.html.domimpl.AnonymousNodeImpl
 import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
@@ -1899,10 +1900,6 @@ class TableMatrix(
         }
 
 
-        override val collapsibleMarginTop: Int
-            get() = TODO("Not yet implemented")
-        override val collapsibleMarginBottom: Int
-            get() = TODO("Not yet implemented")
 
         override val parentContainer: RenderableContainer?
             get() = TODO("Not yet implemented")
@@ -1910,6 +1907,10 @@ class TableMatrix(
             get() = TODO("Not yet implemented")
         override val y: Int
             get() = TODO("Not yet implemented")
+
+        override fun vAlign(): CSSProperty.VerticalAlign? {
+            TODO("Not yet implemented")
+        }
     }
 
     class ColSizeInfo {

@@ -1057,7 +1057,7 @@ abstract class BaseElementRenderable(
         return true
     }
 
-    fun getCollapsibleMarginBottom(): Int {
+    override fun collapsibleMarginBottom(): Int {
         var cm: Int
         val paddingInsets = this.paddingInsets
         if ((paddingInsets != null) && (paddingInsets.bottom > 0)) {
@@ -1087,7 +1087,7 @@ abstract class BaseElementRenderable(
         get() = ((this.overflowY != RenderState.OVERFLOW_VISIBLE) && (this.overflowX != RenderState.OVERFLOW_NONE))
                 || (this.modelNode is HTMLDocumentImpl)
 
-    fun getCollapsibleMarginTop(): Int {
+    override fun collapsibleMarginTop(): Int {
         var cm: Int
         val paddingInsets = this.paddingInsets
         if ((paddingInsets != null) && (paddingInsets.top > 0)) {

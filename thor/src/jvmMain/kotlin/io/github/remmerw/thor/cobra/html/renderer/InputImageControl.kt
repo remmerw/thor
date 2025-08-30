@@ -86,7 +86,7 @@ class InputImageControl(modelNode: HTMLBaseInputElement) : BaseInputControl(mode
         this.preferredSize = this.createPreferredSize(dw, dh)
     }
 
-    override fun getVAlign(): VerticalAlign? {
+    override fun vAlign(): VerticalAlign? {
         val element = this.controlElement
         return element?.getRenderState()?.verticalAlign
     }

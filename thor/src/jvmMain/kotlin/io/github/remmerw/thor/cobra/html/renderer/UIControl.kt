@@ -41,8 +41,7 @@ interface UIControl {
 
     var preferredSize: Dimension?
 
-    val vAlign: VerticalAlign?
-        get() = VerticalAlign.BASELINE
+    fun vAlign(): VerticalAlign?
 
     fun setBounds(x: Int, y: Int, width: Int, height: Int)
 

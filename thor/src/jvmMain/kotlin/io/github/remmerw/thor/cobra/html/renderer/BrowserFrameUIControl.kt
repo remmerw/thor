@@ -1,5 +1,6 @@
 package io.github.remmerw.thor.cobra.html.renderer
 
+import cz.vutbr.web.css.CSSProperty
 import io.github.remmerw.thor.cobra.html.BrowserFrame
 import io.github.remmerw.thor.cobra.html.style.HtmlInsets
 import io.github.remmerw.thor.cobra.html.style.HtmlValues
@@ -114,6 +115,10 @@ internal class BrowserFrameUIControl(
     override var preferredSize: Dimension?
         get() = TODO("Not yet implemented")
         set(value) {}
+
+    override fun vAlign(): CSSProperty.VerticalAlign? {
+        TODO("Not yet implemented")
+    }
 
     fun getPreferredSize(): Dimension {
         val width =

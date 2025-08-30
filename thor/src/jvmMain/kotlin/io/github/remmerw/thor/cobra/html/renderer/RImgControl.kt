@@ -112,10 +112,6 @@ class RImgControl(
     override val clipBoundsWithoutInsets: Rectangle?
         get() = TODO("Not yet implemented")
 
-    override val collapsibleMarginTop: Int
-        get() = TODO("Not yet implemented")
-    override val collapsibleMarginBottom: Int
-        get() = TODO("Not yet implemented")
     override val parentContainer: RenderableContainer?
         get() = TODO("Not yet implemented")
     override val x: Int

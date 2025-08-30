@@ -23,6 +23,7 @@
  */
 package io.github.remmerw.thor.cobra.html.renderer
 
+import cz.vutbr.web.css.CSSProperty
 import io.github.remmerw.thor.cobra.html.HtmlRendererContext
 import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
 import io.github.remmerw.thor.cobra.html.renderer.TableMatrix.ColSizeInfo
@@ -209,14 +210,14 @@ internal class RAnonTableCell(
     override val clipBoundsWithoutInsets: Rectangle?
         get() = TODO("Not yet implemented")
 
-    override val collapsibleMarginTop: Int
-        get() = TODO("Not yet implemented")
-    override val collapsibleMarginBottom: Int
-        get() = TODO("Not yet implemented")
     override val parentContainer: RenderableContainer?
         get() = TODO("Not yet implemented")
     override val x: Int
         get() = TODO("Not yet implemented")
     override val y: Int
         get() = TODO("Not yet implemented")
+
+    override fun vAlign(): CSSProperty.VerticalAlign? {
+        TODO("Not yet implemented")
+    }
 }
