@@ -1898,14 +1898,7 @@ class TableMatrix(
             return borderOverrider.get(super.getBorderInsets())
         }
 
-        override val marginTop: Int
-            get() = TODO("Not yet implemented")
-        override val marginLeft: Int
-            get() = TODO("Not yet implemented")
-        override val marginBottom: Int
-            get() = TODO("Not yet implemented")
-        override val marginRight: Int
-            get() = TODO("Not yet implemented")
+
         override val collapsibleMarginTop: Int
             get() = TODO("Not yet implemented")
         override val collapsibleMarginBottom: Int

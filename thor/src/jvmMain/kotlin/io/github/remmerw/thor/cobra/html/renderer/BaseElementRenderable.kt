@@ -1067,7 +1067,7 @@ abstract class BaseElementRenderable(
             if ((borderInsets != null) && (borderInsets.bottom > 0)) {
                 cm = 0
             } else {
-                cm = this.getMarginBottom()
+                cm = this.marginBottom()
             }
         }
         if (this.isMarginBoundary) {
@@ -1097,7 +1097,7 @@ abstract class BaseElementRenderable(
             if ((borderInsets != null) && (borderInsets.top > 0)) {
                 cm = 0
             } else {
-                cm = this.getMarginTop()
+                cm = this.marginTop()
             }
         }
         if (this.isMarginBoundary) {
@@ -1113,22 +1113,22 @@ abstract class BaseElementRenderable(
         return cm
     }
 
-    fun getMarginBottom(): Int {
+    override fun marginBottom(): Int {
         val marginInsets = this.marginInsets
         return if (marginInsets == null) 0 else marginInsets.bottom
     }
 
-    fun getMarginLeft(): Int {
+    override fun marginLeft(): Int {
         val marginInsets = this.marginInsets
         return if (marginInsets == null) 0 else marginInsets.left
     }
 
-    fun getMarginRight(): Int {
+    override fun marginRight(): Int {
         val marginInsets = this.marginInsets
         return if (marginInsets == null) 0 else marginInsets.right
     }
 
-    fun getMarginTop(): Int {
+    override fun marginTop(): Int {
         val marginInsets = this.marginInsets
         return if (marginInsets == null) 0 else marginInsets.top
     }

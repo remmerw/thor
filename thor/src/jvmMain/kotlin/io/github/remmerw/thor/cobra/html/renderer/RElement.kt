@@ -45,13 +45,13 @@ interface RElement : RCollection, UINode {
          */
         get() = VerticalAlign.BASELINE
 
-    val marginTop: Int
+    fun marginTop(): Int
 
-    val marginLeft: Int
+    fun marginLeft(): Int
 
-    val marginBottom: Int
+    fun marginBottom(): Int
 
-    val marginRight: Int
+    fun marginRight(): Int
 
     val collapsibleMarginTop: Int
 

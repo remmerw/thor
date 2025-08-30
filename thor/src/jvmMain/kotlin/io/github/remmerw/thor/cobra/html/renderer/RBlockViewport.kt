@@ -1080,7 +1080,7 @@ class RBlockViewport(
             return expectedY
         }
         val ccm = this.currentCollapsibleMargin
-        val topMargin = newBlock.marginTop
+        val topMargin = newBlock.marginTop()
         return expectedY - min(topMargin, ccm)
     }
 
@@ -1101,7 +1101,7 @@ class RBlockViewport(
         if (parent !is RElement) {
             return block.height
         }
-        val blockMarginBottom = block.marginBottom
+        val blockMarginBottom = block.marginBottom()
         val parentMarginBottom = parent.collapsibleMarginBottom
         return block.height - min(blockMarginBottom, parentMarginBottom)
     }
@@ -1171,7 +1171,7 @@ class RBlockViewport(
             this.maxX = blockX + blockWidth
         }
         this.lastSeqBlock = block
-        this.currentCollapsibleMargin = if (block is RElement) block.marginBottom else 0
+        this.currentCollapsibleMargin = if (block is RElement) block.marginBottom() else 0
         if (addLine) {
             newLineY = blockY + block.height
             this.checkY(newLineY)
