@@ -31,7 +31,7 @@ class ImageRenderState(prevRenderState: RenderState?, element: HTMLElementImpl) 
         if (mi !== INVALID_INSETS) {
             return mi
         }
-        val props = this.cssProperties
+        val props = this.cssProperties()
         if (props == null) {
             mi = null
         } else {

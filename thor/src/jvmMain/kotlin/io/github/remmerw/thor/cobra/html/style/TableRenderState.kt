@@ -27,10 +27,9 @@ import java.net.MalformedURLException
 
 class TableRenderState(prevRenderState: RenderState?, element: HTMLElementImpl) :
     StyleSheetRenderState(prevRenderState, element) {
-        var backgroundInfo: BackgroundInfo? =
-        INVALID_BACKGROUND_INFO
+        private var backgroundInfo: BackgroundInfo? = INVALID_BACKGROUND_INFO
 
-    fun getDefaultDisplay(): Int {
+    override fun getDefaultDisplay(): Int {
         return RenderState.Companion.DISPLAY_TABLE
     }
 
@@ -73,64 +72,5 @@ class TableRenderState(prevRenderState: RenderState?, element: HTMLElementImpl) 
         }
         this.backgroundInfo = binfo
         return binfo
-    } /* This is being handled by attribute to style mechanism, but keeping the method here for future reference, in case that mechanism is not complete
-  public BorderInfo getBorderInfo() {
-    BorderInfo binfo = this.borderInfo;
-    if (binfo != INVALID_BORDER_INFO) {
-      return binfo;
     }
-    binfo = super.getBorderInfo();
-    if (binfo == null
-        || (binfo.topStyle == HtmlValues.BORDER_STYLE_NONE && binfo.bottomStyle == HtmlValues.BORDER_STYLE_NONE
-            && binfo.leftStyle == HtmlValues.BORDER_STYLE_NONE && binfo.rightStyle == HtmlValues.BORDER_STYLE_NONE)) {
-      if (binfo == null) {
-        binfo = new BorderInfo();
-      }
-      final HTMLElementImpl element = this.element;
-      if (element != null) {
-        String border = element.getAttribute("border");
-        if (border != null) {
-          border = border.trim();
-          int value;
-          int valueType;
-          if (border.endsWith("%")) {
-            valueType = HtmlInsets.TYPE_PERCENT;
-            try {
-              value = Integer.parseInt(border.substring(0, border.length() - 1));
-            } catch (final NumberFormatException nfe) {
-              value = 0;
-            }
-          } else {
-            valueType = HtmlInsets.TYPE_PIXELS;
-            try {
-              value = Integer.parseInt(border);
-            } catch (final NumberFormatException nfe) {
-              value = 0;
-            }
-          }
-          final HtmlInsets borderInsets = new HtmlInsets();
-          borderInsets.top = borderInsets.left = borderInsets.right = borderInsets.bottom = value;
-          borderInsets.topType = borderInsets.leftType = borderInsets.rightType = borderInsets.bottomType = valueType;
-          binfo.insets = borderInsets;
-          if (binfo.topColor == null) {
-            binfo.topColor = Color.LIGHT_GRAY;
-          }
-          if (binfo.leftColor == null) {
-            binfo.leftColor = Color.LIGHT_GRAY;
-          }
-          if (binfo.rightColor == null) {
-            binfo.rightColor = Color.GRAY;
-          }
-          if (binfo.bottomColor == null) {
-            binfo.bottomColor = Color.GRAY;
-          }
-          if (value != 0) {
-            binfo.topStyle = binfo.leftStyle = binfo.rightStyle = binfo.bottomStyle = HtmlValues.BORDER_STYLE_SOLID;
-          }
-        }
-      }
-    }
-    this.borderInfo = binfo;
-    return binfo;
-  }*/
 }

@@ -95,15 +95,16 @@ open class StyleSheetRenderState : RenderState {
         this.document = document
     }
 
-    protected open val defaultDisplay: Int
-        get() = RenderState.Companion.DISPLAY_INLINE
+    open fun getDefaultDisplay(): Int {
+        return RenderState.Companion.DISPLAY_INLINE
+    }
 
     override fun getDisplay(): Int {
         val d = this.iDisplay
         if (d != null) {
             return d
         }
-        val props: CSS2Properties? = this.cssProperties
+        val props: CSS2Properties? = this.cssProperties()
         val displayText = if (props == null) null else props.display
         val displayInt: Int
         if (displayText != null) {
@@ -139,10 +140,11 @@ open class StyleSheetRenderState : RenderState {
             } else if ("table-caption" == displayTextTL) {
                 displayInt = RenderState.Companion.DISPLAY_TABLE_CAPTION
             } else {
-                displayInt = this.defaultDisplay
+                displayInt = this.getDefaultDisplay()
+
             }
         } else {
-            displayInt = this.defaultDisplay
+            displayInt =  this.getDefaultDisplay()
         }
         this.iDisplay = (displayInt)
         return displayInt
@@ -156,8 +158,7 @@ open class StyleSheetRenderState : RenderState {
         // Dummy implementation
     }
 
-    protected val cssProperties: JStyleProperties?
-        get() {
+    fun cssProperties(): JStyleProperties? {
             val element = this.element
             return if (element == null) null else element.getCurrentStyle()
         }
@@ -193,7 +194,7 @@ open class StyleSheetRenderState : RenderState {
         if (f != null) {
             return f
         }
-        val style = this.cssProperties
+        val style = this.cssProperties()
         val prs = this.prevRenderState
         if (style == null) {
             if (prs != null) {
@@ -284,7 +285,7 @@ open class StyleSheetRenderState : RenderState {
         if (c != null) {
             return c
         }
-        val props = this.cssProperties
+        val props = this.cssProperties()
         var colorValue = if (props == null) null else props.color
         if ((colorValue == null) || "" == colorValue) {
             colorValue = "black"
@@ -328,7 +329,7 @@ open class StyleSheetRenderState : RenderState {
         if (c !== INVALID_COLOR) {
             return c
         }
-        val props = this.cssProperties
+        val props = this.cssProperties()
         var colorValue = if (props == null) null else props.overlayColor
         if ((colorValue == null) || (colorValue.length == 0)) {
             colorValue = null
@@ -343,7 +344,7 @@ open class StyleSheetRenderState : RenderState {
         if (td != -1) {
             return td
         }
-        val props = this.cssProperties
+        val props = this.cssProperties()
         val tdText = if (props == null) null else props.textDecoration
         td = 0
         if (tdText != null) {
@@ -372,7 +373,7 @@ open class StyleSheetRenderState : RenderState {
         if (tt != -1) {
             return tt
         }
-        val props = this.cssProperties
+        val props = this.cssProperties()
         val tdText = if (props == null) null else props.textTransform
         tt = 0
         if (tdText != null) {
@@ -456,7 +457,7 @@ open class StyleSheetRenderState : RenderState {
         if (axp != -1) {
             return axp
         }
-        val props: CSS2Properties? = this.cssProperties
+        val props: CSS2Properties? = this.cssProperties()
         var textAlign = if (props == null) null else props.textAlign
         if ((textAlign == null) || (textAlign.length == 0)) {
             // Fall back to align attribute.
@@ -559,7 +560,7 @@ open class StyleSheetRenderState : RenderState {
 
         var binfo: BackgroundInfo? = null
 
-        val props = this.cssProperties
+        val props = this.cssProperties()
         if (props != null) {
             val backgroundColorText = props.backgroundColor
             if (backgroundColorText != null) {
@@ -627,7 +628,7 @@ open class StyleSheetRenderState : RenderState {
         if (tiText != null) {
             return tiText
         }
-        val props = this.cssProperties
+        val props = this.cssProperties()
         tiText = if (props == null) null else props.textIndent
         if (tiText == null) {
             tiText = ""
@@ -654,7 +655,7 @@ open class StyleSheetRenderState : RenderState {
         if (ws != null) {
             return ws
         }
-        val props = this.cssProperties
+        val props = this.cssProperties()
         val whiteSpaceText = if (props == null) null else props.whiteSpace
         val wsValue: Int
         if (whiteSpaceText == null) {
@@ -678,7 +679,7 @@ open class StyleSheetRenderState : RenderState {
         if (mi !== INVALID_INSETS) {
             return mi
         }
-        val props = this.cssProperties
+        val props = this.cssProperties()
         if (props == null) {
             mi = null
         } else {
@@ -693,7 +694,7 @@ open class StyleSheetRenderState : RenderState {
         if (mi !== INVALID_INSETS) {
             return mi
         }
-        val props = this.cssProperties
+        val props = this.cssProperties()
         if (props == null) {
             mi = null
         } else {
@@ -790,7 +791,7 @@ open class StyleSheetRenderState : RenderState {
         if (v != null) {
             return v
         }
-        val props = this.cssProperties
+        val props = this.cssProperties()
         val visibility: Int
         if (props == null) {
             visibility = RenderState.Companion.VISIBILITY_VISIBLE
@@ -820,7 +821,7 @@ open class StyleSheetRenderState : RenderState {
         if (p != null) {
             return p
         }
-        val props = this.cssProperties
+        val props = this.cssProperties()
         val position: Int
         if (props == null) {
             position = RenderState.Companion.POSITION_STATIC
@@ -852,7 +853,7 @@ open class StyleSheetRenderState : RenderState {
         if (p != null) {
             return p
         }
-        val props = this.cssProperties
+        val props = this.cssProperties()
         val floatValue: Int
         if (props == null) {
             floatValue = RenderState.Companion.FLOAT_NONE
@@ -877,11 +878,11 @@ open class StyleSheetRenderState : RenderState {
 
     override fun getClear(): Int {
         if (cachedClear == null) {
-            val props = this.cssProperties
+            val props = this.cssProperties()
             if (props == null) {
                 cachedClear = (LineBreak.NONE)
             } else {
-                val clearStr = this.cssProperties!!.clear
+                val clearStr = this.cssProperties()!!.clear
                 if ("both" == clearStr) {
                     cachedClear = (LineBreak.ALL)
                 } else if ("left" == clearStr) {
@@ -905,7 +906,7 @@ open class StyleSheetRenderState : RenderState {
         if (overflow != -1) {
             return overflow
         }
-        val props = this.cssProperties
+        val props = this.cssProperties()
         if (props == null) {
             overflow = RenderState.Companion.OVERFLOW_NONE
         } else {
@@ -940,7 +941,7 @@ open class StyleSheetRenderState : RenderState {
         if (overflow != -1) {
             return overflow
         }
-        val props = this.cssProperties
+        val props = this.cssProperties()
         if (props == null) {
             overflow = RenderState.Companion.OVERFLOW_NONE
         } else {
@@ -975,7 +976,7 @@ open class StyleSheetRenderState : RenderState {
         if (binfo !== INVALID_BORDER_INFO) {
             return binfo
         }
-        val props = this.cssProperties
+        val props = this.cssProperties()
         if (props != null) {
             binfo = HtmlValues.getBorderInfo(props, this)
         } else {
@@ -987,7 +988,7 @@ open class StyleSheetRenderState : RenderState {
 
     override fun getCursor(): Optional<Cursor> {
         val prevCursorOpt: Optional<Cursor> = Optional.empty<Cursor>()
-        val props = this.cssProperties
+        val props = this.cssProperties()
         if (props == null) {
             return prevCursorOpt
         } else {
@@ -1018,22 +1019,22 @@ open class StyleSheetRenderState : RenderState {
     }
 
     override fun getLeft(): String? {
-        val props = this.cssProperties
+        val props = this.cssProperties()
         return if (props == null) null else props.left
     }
 
     override fun getTop(): String? {
-        val props = this.cssProperties
+        val props = this.cssProperties()
         return if (props == null) null else props.top
     }
 
     override fun getRight(): String? {
-        val props = this.cssProperties
+        val props = this.cssProperties()
         return if (props == null) null else props.right
     }
 
     override fun getBottom(): String? {
-        val props = this.cssProperties
+        val props = this.cssProperties()
         return if (props == null) null else props.bottom
     }
 
@@ -1045,13 +1046,6 @@ open class StyleSheetRenderState : RenderState {
             // This kludge is for https://github.com/UprootLabs/gngr/issues/195
             return 0.8 * font.size2D
         } else {
-            /*
-      if (font instanceof OpenType) {
-        final OpenType openType = (OpenType) font;
-        final ByteBuffer bbOs2 = ByteBuffer.wrap(openType.getFontTable(OpenType.TAG_OS2));
-        final short version = bbOs2.getShort();
-        System.out.println("Version:" + version);
-      }*/
             val glyphVector = font.createGlyphVector(fm.fontRenderContext, "xuwz")
             return glyphVector.visualBounds.height
         }
@@ -1059,7 +1053,7 @@ open class StyleSheetRenderState : RenderState {
 
     // TODO: This should return a more abstract type that can represent values like length and percentage
     override fun getVerticalAlign(): VerticalAlign? {
-        val props = this.cssProperties
+        val props = this.cssProperties()
         val valignProperty = props!!.nodeData?.getProperty<VerticalAlign?>("vertical-align")
         return valignProperty
     }

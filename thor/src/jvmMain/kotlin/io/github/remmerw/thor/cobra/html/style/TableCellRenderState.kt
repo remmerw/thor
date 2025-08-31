@@ -30,7 +30,7 @@ class TableCellRenderState(prevRenderState: RenderState?, element: HTMLElementIm
         if (axp != -1) {
             return axp
         }
-        val props: CSS2Properties? = this.cssProperties
+        val props: CSS2Properties? = this.cssProperties()
         if (props != null) {
             val textAlign = props.textAlign
             if ((textAlign != null) && (textAlign.length != 0)) {
@@ -84,7 +84,7 @@ class TableCellRenderState(prevRenderState: RenderState?, element: HTMLElementIm
         if (ayp != -1) {
             return ayp
         }
-        val props: CSS2Properties? = this.cssProperties
+        val props: CSS2Properties? = this.cssProperties()
         if (props != null) {
             val textAlign = props.verticalAlign
             if ((textAlign != null) && (textAlign.length != 0)) {
@@ -239,7 +239,7 @@ class TableCellRenderState(prevRenderState: RenderState?, element: HTMLElementIm
         if (ws != null) {
             return ws
         }
-        val props = this.cssProperties
+        val props = this.cssProperties()
         val whiteSpaceText = if (props == null) null else props.whiteSpace
         var wsValue: Int
         if (whiteSpaceText == null) {
