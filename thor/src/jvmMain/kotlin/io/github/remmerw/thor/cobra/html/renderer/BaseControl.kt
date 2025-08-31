@@ -38,8 +38,8 @@ abstract class BaseControl(protected val controlElement: HTMLElementImpl?) : JCo
         return this
     }
 
-    override fun setRUIControl(ruicontrol: RUIControl?) {
-        this.ruicontrol = ruicontrol
+    override fun setRUIControl(ruiControl: RUIControl?) {
+        this.ruicontrol = ruiControl
     }
 
     override fun vAlign(): VerticalAlign? {

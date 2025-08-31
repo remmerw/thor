@@ -59,7 +59,7 @@ class UIControlWrapper(
         this.component!!.setBounds(x, y, width, height)
     }
 
-    override fun setRUIControl(ruicontrol: RUIControl?) {
+    override fun setRUIControl(ruiControl: RUIControl?) {
         // Not doing anything with this.
     }
 

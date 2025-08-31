@@ -1236,8 +1236,8 @@ abstract class BaseElementRenderable(
         // TODO Use parent height
         setupRelativePosition(
             getModelNode()!!.renderState()!!,
-            container.innerMostWidth,
-            container.innerMostHeight
+            container.innerMostWidth(),
+            container.innerMostHeight()
         )
     }
 

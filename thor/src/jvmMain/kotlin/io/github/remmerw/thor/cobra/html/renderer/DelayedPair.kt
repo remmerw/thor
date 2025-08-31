@@ -51,27 +51,27 @@ class DelayedPair(
     }
 
     private fun getLeft(): Int? {
-        return helperGetPixelSize(left, rs, 0, containingBlock.innerWidth)
+        return helperGetPixelSize(left, rs, 0, containingBlock.innerWidth())
     }
 
     private fun getWidth(): Int? {
-        return helperGetPixelSize(width, rs, 0, containingBlock.innerWidth)
+        return helperGetPixelSize(width, rs, 0, containingBlock.innerWidth())
     }
 
     private fun getHeight(): Int? {
-        return helperGetPixelSize(height, rs, 0, containingBlock.innerHeight)
+        return helperGetPixelSize(height, rs, 0, containingBlock.innerHeight())
     }
 
     private fun getRight(): Int? {
-        return helperGetPixelSize(right, rs, 0, containingBlock.innerWidth)
+        return helperGetPixelSize(right, rs, 0, containingBlock.innerWidth())
     }
 
     private fun getTop(): Int? {
-        return helperGetPixelSize(top, rs, 0, containingBlock.innerHeight)
+        return helperGetPixelSize(top, rs, 0, containingBlock.innerHeight())
     }
 
     private fun getBottom(): Int? {
-        return helperGetPixelSize(bottom, rs, 0, containingBlock.innerHeight)
+        return helperGetPixelSize(bottom, rs, 0, containingBlock.innerHeight())
     }
 
     fun positionPairChild(): BoundableRenderable {
@@ -116,13 +116,13 @@ class DelayedPair(
         if (right != null) {
             if (x != null) {
                 // width = parent.getInnerWidth() - (x + right);
-                child.setInnerWidth(parent.innerWidth - (x + right) - childVerticalScrollBarHeight)
+                child.setInnerWidth(parent.innerWidth() - (x + right) - childVerticalScrollBarHeight)
             } else {
                 if (width != null) {
                     child.setInnerWidth(width - childVerticalScrollBarHeight)
                 }
                 val childWidth = child.width
-                x = parent.innerWidth - (childWidth + right - childVerticalScrollBarHeight)
+                x = parent.innerWidth() - (childWidth + right - childVerticalScrollBarHeight)
             }
         } else {
             if (width != null) {
@@ -134,7 +134,7 @@ class DelayedPair(
         if (bottom != null) {
             if (y != null) {
                 // height = parent.getInnerHeight() - (y + bottom);
-                child.setInnerHeight(parent.innerHeight - (y + bottom) - childHorizontalScrollBarHeight)
+                child.setInnerHeight(parent.innerHeight() - (y + bottom) - childHorizontalScrollBarHeight)
             } else {
                 if (height != null) {
                     child.setInnerHeight(height - childHorizontalScrollBarHeight)
@@ -142,7 +142,7 @@ class DelayedPair(
                 // final int childHeight = height == null? child.getHeight() : height;
                 val childHeight = child.height
                 y =
-                    parent.innerHeight - (childHeight + bottom - childHorizontalScrollBarHeight)
+                    parent.innerHeight() - (childHeight + bottom - childHorizontalScrollBarHeight)
             }
         } else {
             if (height != null) {

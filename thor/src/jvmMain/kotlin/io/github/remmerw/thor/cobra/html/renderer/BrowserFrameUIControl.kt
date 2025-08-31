@@ -153,7 +153,7 @@ internal class BrowserFrameUIControl(
         this.component()!!.setBounds(x, y, width, height)
     }
 
-    override fun setRUIControl(ruicontrol: RUIControl?) {
-        this.ruiControl = ruicontrol
+    override fun setRUIControl(ruiControl: RUIControl?) {
+        this.ruiControl = ruiControl
     }
 }
