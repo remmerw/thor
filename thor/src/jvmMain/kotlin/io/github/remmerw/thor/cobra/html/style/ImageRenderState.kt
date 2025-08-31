@@ -27,7 +27,7 @@ class ImageRenderState(prevRenderState: RenderState?, element: HTMLElementImpl) 
     StyleSheetRenderState(prevRenderState, element) {
     // TODO: if this logic can be moved to attr2Styles, then this render state could be chopped off.
     override fun getMarginInsets(): HtmlInsets? {
-        var mi = this.marginInsets
+        var mi = this.getMarginInsets()
         if (mi !== INVALID_INSETS) {
             return mi
         }
@@ -71,12 +71,12 @@ class ImageRenderState(prevRenderState: RenderState?, element: HTMLElementImpl) 
                 mi.rightType = HtmlInsets.Companion.TYPE_PIXELS
             }
         }
-        this.marginInsets = mi
+        this.marginInsets(mi)
         return mi
     }
 
     override fun getBorderInfo(): BorderInfo? {
-        var binfo = this.borderInfo
+        var binfo = this.getBorderInfo()
         if (binfo !== INVALID_BORDER_INFO) {
             return binfo
         }
@@ -141,7 +141,7 @@ class ImageRenderState(prevRenderState: RenderState?, element: HTMLElementImpl) 
                 }
             }
         }
-        this.borderInfo = binfo
+        this.borderInfo(binfo)
         return binfo
     }
 }

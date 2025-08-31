@@ -22,7 +22,7 @@ class TableCellRenderState(prevRenderState: RenderState?, element: HTMLElementIm
         this.alignXPerc = -1
         this.alignYPerc = -1
         this.backgroundInfo = INVALID_BACKGROUND_INFO
-        this.paddingInsets = INVALID_INSETS
+        this.paddingInsets(INVALID_INSETS)
     }
 
     override fun getAlignXPercent(): Int {
@@ -183,7 +183,7 @@ class TableCellRenderState(prevRenderState: RenderState?, element: HTMLElementIm
         }
 
     override fun getPaddingInsets(): HtmlInsets? {
-        var insets = this.paddingInsets
+        var insets = this.getPaddingInsets()
         if (insets !== INVALID_INSETS) {
             return insets
         }
@@ -226,7 +226,7 @@ class TableCellRenderState(prevRenderState: RenderState?, element: HTMLElementIm
                 insets.topType = insets.leftType
             }
         }
-        this.paddingInsets = insets
+        this.paddingInsets(insets)
         return insets
     }
 

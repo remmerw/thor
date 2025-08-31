@@ -28,7 +28,7 @@ class IFrameRenderState(prevRenderState: RenderState?, element: HTMLElementImpl)
     StyleSheetRenderState(prevRenderState, element) {
     // TODO: if this logic can be moved to attr2Styles, then this render state could be chopped off.
     override fun getOverflowX(): Int {
-        var overflow = this.overflowX
+        var overflow = this.getOverflowX()
         if (overflow != -1) {
             return overflow
         }
@@ -49,12 +49,12 @@ class IFrameRenderState(prevRenderState: RenderState?, element: HTMLElementImpl)
                 }
             }
         }
-        this.overflowX = overflow
+        this.overflowX(overflow)
         return overflow
     }
 
     override fun getOverflowY(): Int {
-        var overflow = this.overflowY
+        var overflow = this.getOverflowY()
         if (overflow != -1) {
             return overflow
         }
@@ -75,12 +75,12 @@ class IFrameRenderState(prevRenderState: RenderState?, element: HTMLElementImpl)
                 }
             }
         }
-        this.overflowY = overflow
+        this.overflowY (overflow)
         return overflow
     }
 
     override fun getBorderInfo(): BorderInfo? {
-        var binfo = this.borderInfo
+        var binfo = this.getBorderInfo()
         if (binfo !== INVALID_BORDER_INFO) {
             return binfo
         }
@@ -138,7 +138,7 @@ class IFrameRenderState(prevRenderState: RenderState?, element: HTMLElementImpl)
                 }
             }
         }
-        this.borderInfo = binfo
+        this.borderInfo(binfo)
         return binfo
     }
 }

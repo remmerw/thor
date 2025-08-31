@@ -49,12 +49,29 @@ open class StyleSheetRenderState : RenderState {
     protected val prevRenderState: RenderState?
     protected var iBackgroundInfo: BackgroundInfo? = INVALID_BACKGROUND_INFO
     protected var iWhiteSpace: Int? = null
-    var marginInsets: HtmlInsets? = INVALID_INSETS
-    var paddingInsets: HtmlInsets? = INVALID_INSETS
-    var overflowX: Int = -1
-    var overflowY: Int = -1
-    var borderInfo: BorderInfo? = INVALID_BORDER_INFO
 
+
+    private var marginInsets: HtmlInsets? = INVALID_INSETS
+    fun marginInsets(value: HtmlInsets?){
+        this.marginInsets = value
+    }
+    private var paddingInsets: HtmlInsets? = INVALID_INSETS
+    fun paddingInsets(value: HtmlInsets?){
+        this.paddingInsets = value
+    }
+    private var overflowX: Int = -1
+
+    fun overflowX(value: Int){
+        this.overflowX = value
+    }
+    private var overflowY: Int = -1
+    fun overflowY(value: Int){
+        this.overflowY = value
+    }
+    private var borderInfo: BorderInfo? = INVALID_BORDER_INFO
+    fun borderInfo(borderInfo: BorderInfo?){
+        this.borderInfo = borderInfo
+    }
 
     var iWordInfoMap: MutableMap<String?, WordInfo?>? = null
     private var iFont: Font? = null

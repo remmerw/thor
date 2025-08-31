@@ -54,10 +54,11 @@ class HtmlPanel : JComponent(), FrameContext, DefferedLayoutSupport {
     private val notifications = ArrayList<DocumentNotification?>(1)
 
     @Volatile
-    protected var htmlBlockPanel: HtmlBlockPanel? = null
+    private var htmlBlockPanel: HtmlBlockPanel? = null
+
 
     @Volatile
-    protected var frameSetPanel: FrameSetPanel? = null
+    private var frameSetPanel: FrameSetPanel? = null
 
     @Volatile
     private var isFrameSet = false
