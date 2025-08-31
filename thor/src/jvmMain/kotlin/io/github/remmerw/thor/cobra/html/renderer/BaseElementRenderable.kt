@@ -119,7 +119,7 @@ abstract class BaseElementRenderable(
             if (i != null) {
                 while (i.hasNext()) {
                     val rn = i.next()
-                    val r = if (rn is PositionedRenderable) rn.renderable else rn
+                    val r = if (rn is PositionedRenderable) rn.renderable() else rn
                     if (r is RCollection) {
                         r.invalidateLayoutDeep()
                     }

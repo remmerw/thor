@@ -29,12 +29,28 @@ import java.awt.Point
 import java.awt.Rectangle
 
 class PositionedRenderable(
-    val renderable: BoundableRenderable, val verticalAlignable: Boolean, val ordinal: Int,
-    val isFloat: Boolean, val isFixed: Boolean, private val isDelegated: Boolean
+    private val renderable: BoundableRenderable,
+    private val verticalAlignable: Boolean,
+    private val ordinal: Int,
+    private val isFloat: Boolean,
+    private val isFixed: Boolean,
+    private val isDelegated: Boolean
 ) : Renderable {
 
-    val originalParent: RCollection?
-        get() = this.renderable.originalParent()
+    fun ordinal() : Int{
+        return ordinal
+    }
+
+    fun renderable(): BoundableRenderable {
+        return renderable
+    }
+    fun isFloat() : Boolean{
+        return isFloat
+    }
+
+    fun verticalAlignable() : Boolean{
+        return verticalAlignable
+    }
 
     override fun paint(gIn: Graphics) {
         if (isDelegated) {
@@ -60,10 +76,6 @@ class PositionedRenderable(
                 g2.translate(some.x, some.y)
             }
 
-            /*
-      if (isFloat) {
-        g2.translate(or.x, or.y);
-      }*/
 
             // g2.setColor(Color.GREEN);
             // g2.fillRect(0, 0, renderable.getWidth(), 100);

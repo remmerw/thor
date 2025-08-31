@@ -258,11 +258,11 @@ class RBlockViewport(
             val i: MutableIterator<PositionedRenderable?> = posRenderables.iterator()
             while (i.hasNext()) {
                 val pr = i.next()!!
-                val br = pr.renderable
+                val br = pr.renderable()
                 if ((br.x() + br.width()) > this.maxX) {
                     this.maxX = br.x() + br.width()
                 }
-                if (isFloatLimit || !pr.isFloat) {
+                if (isFloatLimit || !pr.isFloat()) {
                     if ((br.y() + br.height()) > maxY) {
                         maxY = br.y() + br.height()
                         this.maxY = maxY
@@ -394,8 +394,8 @@ class RBlockViewport(
                     val i2: MutableIterator<PositionedRenderable?> = others.iterator()
                     while (i2.hasNext()) {
                         val pr = i2.next()!!
-                        if (pr.verticalAlignable) {
-                            val br = pr.renderable
+                        if (pr.verticalAlignable()) {
+                            val br = pr.renderable()
                             val newY = br.y() + shift
                             br.setY (newY)
                             if ((newY + br.height()) > this.maxY) {
@@ -1499,7 +1499,7 @@ class RBlockViewport(
             index = size
             while (--index >= 0) {
                 val pr = otherArray[index]
-                val br = pr.renderable
+                val br = pr.renderable()
                 if (br.zIndex() < 0) {
                     break
                 }
@@ -1544,7 +1544,7 @@ class RBlockViewport(
             // Must go in reverse order
             while (index >= 0) {
                 val pr = otherArray[index]
-                val br = pr.renderable
+                val br = pr.renderable()
                 if (br.contains(pointx, pointy)) {
                     if (result == null) {
                         result = LinkedList<BoundableRenderable?>()
@@ -1897,7 +1897,7 @@ class RBlockViewport(
                         if (modelNode() is HTMLDocument) {
                             var htmlRenderable = RenderUtils.findHtmlRenderable(this)
                             if (htmlRenderable is PositionedRenderable) {
-                                htmlRenderable = htmlRenderable.renderable
+                                htmlRenderable = htmlRenderable.renderable()
                             }
                             // TODO: Handle other renderable types such as RTable
                             if (htmlRenderable is RBlock) {
@@ -2522,7 +2522,7 @@ class RBlockViewport(
                         maxY = brMaxY
                     }
                 } else if (r is PositionedRenderable) {
-                    val rcMaxY = r.renderable.visualBounds()!!.maxY
+                    val rcMaxY = r.renderable().visualBounds()!!.maxY
                     if (rcMaxY > maxY) {
                         maxY = rcMaxY
                     }
@@ -2557,7 +2557,7 @@ class RBlockViewport(
                         maxX = brMaxX
                     }
                 } else if (r is PositionedRenderable) {
-                    val rcMaxX = r.renderable.visualBounds()!!.maxX
+                    val rcMaxX = r.renderable().visualBounds()!!.maxX
                     if (rcMaxX > maxX) {
                         maxX = rcMaxX
                     }
@@ -3089,7 +3089,7 @@ class RBlockViewport(
             var pending: Renderable? = null
             while (i1.hasNext()) {
                 val pr = i1.next()!!
-                val r = pr.renderable
+                val r = pr.renderable()
                 if (r.zIndex() >= 0) {
                     pending = pr
                     break
@@ -3126,7 +3126,7 @@ class RBlockViewport(
             var pending: Renderable? = null
             while (i1.hasNext()) {
                 val pr = i1.next()!!
-                val r = pr.renderable
+                val r = pr.renderable()
                 if (r.zIndex() < 0) {
                     pending = pr
                     break

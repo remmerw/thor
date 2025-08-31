@@ -32,7 +32,7 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
         if (i != null) {
             while (i.hasNext()) {
                 val rn = i.next()
-                val r = if (rn is PositionedRenderable) rn.renderable else rn
+                val r = if (rn is PositionedRenderable) rn.renderable() else rn
                 if (r is RCollection) {
                     // RUIControl is a RCollection too.
                     val or = r.getOriginRelativeTo(this)
@@ -178,7 +178,7 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
         if (i != null) {
             while (i.hasNext()) {
                 val rn = i.next()
-                val robj = if (rn is PositionedRenderable) rn.renderable else rn
+                val robj = if (rn is PositionedRenderable) rn.renderable() else rn
                 if (robj is BoundableRenderable) {
                     if (!inSelection) {
                         val bounds = robj.visualBounds()!!
@@ -235,7 +235,7 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
         if (renderables != null) {
             while (renderables.hasNext()) {
                 val rn = renderables.next()
-                val r = if (rn is PositionedRenderable) rn.renderable else rn
+                val r = if (rn is PositionedRenderable) rn.renderable() else rn
                 if (r is RCollection) {
                     r.invalidateLayoutDeep()
                 }
@@ -336,7 +336,7 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
                     }
                 } else if (r is PositionedRenderable) {
                     if (r.contains(x, y)) {
-                        return r.renderable
+                        return r.renderable()
                     }
                 }
             }

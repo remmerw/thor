@@ -1974,7 +1974,7 @@ open class RBlock(
                             }
                         }
                     } else if (r is PositionedRenderable) {
-                        dumpRndTree(nextIndentStr, true, r.renderable, false)
+                        dumpRndTree(nextIndentStr, true, r.renderable(), false)
                     }
                 }
             }
@@ -1982,7 +1982,7 @@ open class RBlock(
 
         private fun makeSelfStr(r: Renderable): String {
             if (r is PositionedRenderable) {
-                return "Pos-Rend: " + (if (r.isFloat) " <float> " else "") + (if (r.isFixed()) " <fixed> " else "")
+                return "Pos-Rend: " + (if (r.isFloat()) " <float> " else "") + (if (r.isFixed()) " <fixed> " else "")
             } else if (r is TranslatedRenderable) {
                 return "Trans-Rend"
             } else {

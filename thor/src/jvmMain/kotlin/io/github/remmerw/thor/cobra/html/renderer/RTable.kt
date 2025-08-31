@@ -177,7 +177,7 @@ internal class RTable(
             val i = prs.iterator()
             while (i.hasNext()) {
                 val pr = i.next()
-                val r = pr.renderable
+                val r = pr.renderable()
                 val childX = x - r.visualX()
                 val childY = y - r.visualY()
                 val rs = r.getLowestRenderableSpot(childX, childY)
@@ -206,7 +206,7 @@ internal class RTable(
             val i = prs.iterator()
             while (i.hasNext()) {
                 val pr = i.next()
-                val r = pr.renderable
+                val r = pr.renderable()
                 val bounds = r.visualBounds()!!
                 if (bounds.contains(x, y)) {
                     val childX = x - r.visualX()
@@ -226,7 +226,7 @@ internal class RTable(
             val i = prs.iterator()
             while (i.hasNext()) {
                 val pr = i.next()
-                val r = pr.renderable
+                val r = pr.renderable()
                 val bounds = r.visualBounds()!!
                 if (bounds.contains(x, y)) {
                     val childX = x - r.visualX()
@@ -258,7 +258,7 @@ internal class RTable(
             val i = prs.iterator()
             while (i.hasNext()) {
                 val pr = i.next()
-                val r = pr.renderable
+                val r = pr.renderable()
                 val bounds = r.visualBounds()!!
                 if (bounds.contains(x, y)) {
                     val childX = x - r.visualX()
@@ -285,7 +285,7 @@ internal class RTable(
             val i = prs.iterator()
             while (i.hasNext()) {
                 val pr = i.next()
-                val r = pr.renderable
+                val r = pr.renderable()
                 val bounds = r.visualBounds()!!
                 if (bounds.contains(x, y)) {
                     val childX = x - r.visualX()
@@ -311,7 +311,7 @@ internal class RTable(
             val i = prs.iterator()
             while (i.hasNext()) {
                 val pr = i.next()
-                val r = pr.renderable
+                val r = pr.renderable()
                 c.add(r)
             }
             val i2 = this.tableMatrix.cells

@@ -105,7 +105,7 @@ class HtmlBlockPanel(
     protected var startSelection: RenderableSpot? = null
     protected var endSelection: RenderableSpot? = null
     protected var rblock: RBlock? = null
-    protected var preferredWidth: Int = -1
+    private var preferredWidth: Int = -1
     private var defaultOverflowX: Int = RenderState.OVERFLOW_AUTO
     private var defaultOverflowY: Int = RenderState.OVERFLOW_SCROLL
 
@@ -314,7 +314,7 @@ class HtmlBlockPanel(
             while (i.hasNext()) {
                 val rn = i.next()
                 val r: Renderable =
-                    (if (rn is PositionedRenderable) ((rn as PositionedRenderable).renderable) else rn)!!
+                    (if (rn is PositionedRenderable) ((rn as PositionedRenderable).renderable()) else rn)!!
                 var subBounds: Rectangle? = null
                 if (r is RCollection) {
                     prevBoundable = r
