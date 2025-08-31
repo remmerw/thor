@@ -447,11 +447,11 @@ abstract class BaseElementRenderable(
         }
         val rs = rootElement.getRenderState()
 
-        var binfo = rs.backgroundInfo
+        var binfo = rs.getBackgroundInfo()
         if (isRootBlock && (binfo == null || (binfo.backgroundColor == null && binfo.backgroundImage == null))) {
             val bodyNode = rootElement.getElementsByTagName("body").item(0)
             if (bodyNode != null && bodyNode is HTMLElementImpl) {
-                binfo = bodyNode.getRenderState().backgroundInfo
+                binfo = bodyNode.getRenderState().getBackgroundInfo()
             }
         }
 
@@ -467,7 +467,7 @@ abstract class BaseElementRenderable(
         }
         if (!isRootBlock) {
             val props = rootElement.getCurrentStyle()
-            val borderInfo = rs.borderInfo
+            val borderInfo = rs.getBorderInfo()
             if (borderInfo != null) {
                 this.borderTopColor = borderInfo.topColor
                 this.borderLeftColor = borderInfo.leftColor
@@ -483,8 +483,8 @@ abstract class BaseElementRenderable(
                 this.borderInfo = borderInfo
                 val binsets =
                     if (borderInfo == null) null else borderOverrider.get(borderInfo.insets)
-                val minsets = rs.marginInsets
-                val pinsets = rs.paddingInsets
+                val minsets = rs.getMarginInsets()
+                val pinsets = rs.getPaddingInsets()
                 // TODO: These zero values are not modified anywhere; can be inlined
                 val dmleft = 0
                 val dmright = 0
@@ -556,8 +556,8 @@ abstract class BaseElementRenderable(
                     // TODO: when zIndex is not specified or auto, that information should be retained, for GH-193
                     this.zIndex = 0
                 }
-                this.overflowX = rs.overflowX
-                this.overflowY = rs.overflowY
+                this.overflowX = rs.getOverflowX()
+                this.overflowY = rs.getOverflowY()
             }
         }
 
@@ -583,7 +583,7 @@ abstract class BaseElementRenderable(
         }
         val rs = rootElement.getRenderState()
         val changes = Dimension()
-        val minsets = rs.marginInsets
+        val minsets = rs.getMarginInsets()
         if (minsets != null) {
             if (availWidth > 1) {
                 // TODO: Consider the case when only one is auto
@@ -734,7 +734,7 @@ abstract class BaseElementRenderable(
                     clientG.color = bkg
                     clientG.fillRect(0, 0, totalWidth, totalHeight)
                 }
-                val binfo = if (rs == null) null else rs.backgroundInfo
+                val binfo = if (rs == null) null else rs.getBackgroundInfo()
                 val image = this.backgroundImage
                 if (image != null) {
                     bkgBounds = clientG.clipBounds
@@ -1073,7 +1073,7 @@ abstract class BaseElementRenderable(
         if (this.isMarginBoundary) {
             val rs = this.modelNode()?.renderState()
             if (rs != null) {
-                val fm = rs.fontMetrics
+                val fm = rs.getFontMetrics()
                 val fontHeight = fm!!.height
                 if (fontHeight > cm) {
                     cm = fontHeight
@@ -1103,7 +1103,7 @@ abstract class BaseElementRenderable(
         if (this.isMarginBoundary) {
             val rs = this.modelNode()!!.renderState()
             if (rs != null) {
-                val fm = rs.fontMetrics!!
+                val fm = rs.getFontMetrics()!!
                 val fontHeight = fm.height
                 if (fontHeight > cm) {
                     cm = fontHeight
@@ -1186,15 +1186,15 @@ abstract class BaseElementRenderable(
 
     private fun setupRelativePosition(rs: RenderState, containerWidth: Int, containerHeight: Int) {
         if (rs.getPosition() == RenderState.POSITION_RELATIVE) {
-            val leftText = rs.left
-            val topText = rs.top
+            val leftText = rs.getLeft()
+            val topText = rs.getTop()
 
             var left = 0
 
             if (leftText != null && ("auto" != leftText)) {
                 left = HtmlValues.getPixelSize(leftText, rs, 0, containerWidth)
             } else {
-                val rightText = rs.right
+                val rightText = rs.getRight()
                 if (rightText != null) {
                     val right = HtmlValues.getPixelSize(rightText, rs, 0, containerWidth)
                     left = -right
@@ -1208,7 +1208,7 @@ abstract class BaseElementRenderable(
             if (topText != null && ("auto" != topText)) {
                 top = HtmlValues.getPixelSize(topText, rs, top, containerHeight)
             } else {
-                val bottomText = rs.bottom
+                val bottomText = rs.getBottom()
                 if (bottomText != null) {
                     val bottom = HtmlValues.getPixelSize(bottomText, rs, 0, containerHeight)
                     top = -bottom
@@ -1249,7 +1249,7 @@ abstract class BaseElementRenderable(
 
         val node = this.modelNode()!!
         val rs = node.renderState()
-        val binfo = if (rs == null) null else rs.backgroundInfo
+        val binfo = if (rs == null) null else rs.getBackgroundInfo()
         if (binfo != null && binfo.backgroundImage != null) {
             return this.backgroundImage != null || backgroundImageError
         } else {

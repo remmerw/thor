@@ -15,8 +15,8 @@ class RStyleChanger(private var modelNode: ModelNode?) : BaseRenderable() {
 
     override fun paint(g: Graphics) {
         val rs: RenderState = this.modelNode!!.renderState()!!
-        g.color = rs.color
-        g.font = rs.font
+        g.color = rs.getColor()
+        g.font = rs.getFont()
     }
 
     fun invalidateLayoutUpTree() {

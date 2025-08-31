@@ -27,7 +27,7 @@ import java.net.MalformedURLException
 
 class TableRenderState(prevRenderState: RenderState?, element: HTMLElementImpl) :
     StyleSheetRenderState(prevRenderState, element) {
-    override var backgroundInfo: BackgroundInfo? =
+        var backgroundInfo: BackgroundInfo? =
         INVALID_BACKGROUND_INFO
 
     fun getDefaultDisplay(): Int {

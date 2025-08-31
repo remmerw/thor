@@ -20,6 +20,7 @@ abstract class JStyleProperties(
     override fun scriptable(): Scriptable? {
         return scriptable
     }
+
     var overlayColor: String? = null
         set(value) {
             field = value

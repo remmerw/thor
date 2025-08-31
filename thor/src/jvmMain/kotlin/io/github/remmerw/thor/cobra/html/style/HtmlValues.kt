@@ -302,9 +302,9 @@ object HtmlValues {
         var tentative: Int
         try {
             if (oldHtmlSpec.startsWith("+")) {
-                tentative = renderState.fontBase + oldHtmlSpec.substring(1).toInt()
+                tentative = renderState.getFontBase() + oldHtmlSpec.substring(1).toInt()
             } else if (oldHtmlSpec.startsWith("-")) {
-                tentative = renderState.fontBase + oldHtmlSpec.toInt()
+                tentative = renderState.getFontBase() + oldHtmlSpec.toInt()
             } else {
                 tentative = oldHtmlSpec.toInt()
             }
@@ -360,7 +360,7 @@ object HtmlValues {
             if (parentRenderState == null) {
                 return DEFAULT_FONT_SIZE
             }
-            val font = parentRenderState.font
+            val font = parentRenderState.getFont()
             val pxText = specTL.substring(0, specTL.length - 2)
             val value: Double
             try {
@@ -387,7 +387,7 @@ object HtmlValues {
             try {
                 val valued = value.toDouble()
                 val parentFontSize =
-                    if (parentRenderState == null) 14.0 else parentRenderState.font!!.getSize()
+                    if (parentRenderState == null) 14.0 else parentRenderState.getFont()!!.getSize()
                         .toDouble()
                 return ((parentFontSize * valued) / 100.0).toFloat()
             } catch (nfe: NumberFormatException) {
@@ -409,12 +409,12 @@ object HtmlValues {
             return 40.0f
         } else if ("larger" == specTL) {
             val parentFontSize =
-                if (parentRenderState == null) DEFAULT_FONT_SIZE_INT else parentRenderState.font!!
+                if (parentRenderState == null) DEFAULT_FONT_SIZE_INT else parentRenderState.getFont()!!
                     .getSize()
             return parentFontSize * 1.2f
         } else if ("smaller" == specTL) {
             val parentFontSize =
-                if (parentRenderState == null) DEFAULT_FONT_SIZE_INT else parentRenderState.font!!
+                if (parentRenderState == null) DEFAULT_FONT_SIZE_INT else parentRenderState.getFont()!!
                     .getSize()
             return parentFontSize / 1.2f
         } else {
@@ -454,7 +454,7 @@ object HtmlValues {
                 return errorValue
             }
         } else if (lcSpec.endsWith("em") && (renderState != null)) {
-            val f = renderState.font
+            val f = renderState.getFont()
             val valText = lcSpec.substring(0, lcSpec.length - 2)
             try {
                 val `val` = valText.toDouble()
@@ -526,7 +526,7 @@ object HtmlValues {
                 return errorValue
             }
         } else if (lcSpec.endsWith("ex") && (renderState != null)) {
-            val xHeight = renderState.fontXHeight
+            val xHeight = renderState.getFontXHeight()
             val valText = lcSpec.substring(0, lcSpec.length - 2)
             try {
                 val `val` = valText.toDouble()
@@ -889,7 +889,7 @@ object HtmlValues {
         if (colorSpec != null && (colorSpec.trim { it <= ' ' }.length != 0)) {
             return cf.getColor(colorSpec)
         } else {
-            return renderState.color
+            return renderState.getColor()
         }
     }
 

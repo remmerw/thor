@@ -108,15 +108,15 @@ class RLine(
         // Paint according to render state of the start of line first.
         val rs = this.modelNode()!!.renderState()
 
-        if ((rs != null) && (rs.visibility != RenderState.VISIBILITY_VISIBLE)) {
+        if ((rs != null) && (rs.getVisibility() != RenderState.VISIBILITY_VISIBLE)) {
             // Just don't paint it.
             return
         }
 
         if (rs != null) {
-            val textColor = rs.color
+            val textColor = rs.getColor()
             g.color = textColor
-            val font = rs.font
+            val font = rs.getFont()
             g.font = font
         }
         // Note that partial paints of the line can only be done
@@ -481,13 +481,13 @@ class RLine(
         this.setHeight(newHeight)
         val renderables = this.renderabl
         // Find max baseline
-        val firstFm = this.modelNode()!!.renderState()!!.fontMetrics
+        val firstFm = this.modelNode()!!.renderState()!!.getFontMetrics()
         var maxDescent = firstFm!!.descent
         var maxAscentPlusLeading = firstFm.ascent + firstFm.leading
         for (renderable in renderables) {
             val r: Any? = renderable
             if (r is RStyleChanger) {
-                val fm = r.modelNode().renderState()!!.fontMetrics!!
+                val fm = r.modelNode().renderState()!!.getFontMetrics()!!
                 val descent = fm.descent
                 if (descent > maxDescent) {
                     maxDescent = descent

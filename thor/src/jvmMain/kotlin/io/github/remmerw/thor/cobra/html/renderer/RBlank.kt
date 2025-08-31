@@ -103,12 +103,12 @@ class RBlank(
     override fun paint(g: Graphics) {
         val rs: RenderState = this.modelNode()?.renderState()!!
 
-        if (rs.visibility != RenderState.VISIBILITY_VISIBLE) {
+        if (rs.getVisibility() != RenderState.VISIBILITY_VISIBLE) {
             // Just don't paint it.
             return
         }
 
-        val bkg = rs.textBackgroundColor
+        val bkg = rs.getTextBackgroundColor()
         if (bkg != null) {
             val oldColor = g.color
             try {
@@ -118,7 +118,7 @@ class RBlank(
                 g.color = oldColor
             }
         }
-        val td = rs.textDecorationMask
+        val td = rs.getTextDecorationMask()
         if (td != 0) {
             if ((td and RenderState.MASK_TEXTDECORATION_UNDERLINE) != 0) {
                 val lineOffset = this.ascentPlusLeading + 2
@@ -137,7 +137,7 @@ class RBlank(
                 // TODO
             }
         }
-        val over = rs.overlayColor
+        val over = rs.getOverlayColor()
         if (over != null) {
             val oldColor = g.color
             try {

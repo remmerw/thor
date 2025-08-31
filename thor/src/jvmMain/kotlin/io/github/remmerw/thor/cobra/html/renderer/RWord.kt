@@ -68,7 +68,7 @@ open class RWord(
     override fun paint(g: Graphics) {
         val rs: RenderState = this.modelNode()!!.renderState()!!
 
-        if (rs.visibility != RenderState.VISIBILITY_VISIBLE) {
+        if (rs.getVisibility() != RenderState.VISIBILITY_VISIBLE) {
             // Just don't paint it.
             return
         }
@@ -77,8 +77,8 @@ open class RWord(
         val width = this.width()
         val ascentPlusLeading = this.ascentPlusLeading
         val height = this.height()
-        val textDecoration = rs.textDecorationMask
-        val bkg = rs.textBackgroundColor
+        val textDecoration = rs.getTextDecorationMask()
+        val bkg = rs.getTextBackgroundColor()
         if (bkg != null) {
             val oldColor = g.color
             try {
@@ -109,7 +109,7 @@ open class RWord(
                 // TODO
             }
         }
-        val over = rs.overlayColor
+        val over = rs.getOverlayColor()
         if (over != null) {
             val oldColor = g.color
             try {

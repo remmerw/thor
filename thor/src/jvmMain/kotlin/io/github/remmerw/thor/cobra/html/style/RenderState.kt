@@ -8,45 +8,47 @@ import java.awt.FontMetrics
 import java.util.Optional
 
 interface RenderState {
+
+    fun setHighlight(highlight: Boolean)
     fun getPosition(): Int
 
-    val float: Int
+    fun getFloat(): Int
 
-    val clear: Int
+    fun getClear(): Int
 
-    val visibility: Int
+    fun getVisibility(): Int
 
-    val font: Font?
+    fun getFont(): Font?
 
-    val fontBase: Int
+    fun getFontBase(): Int
 
     fun getWordInfo(word: String): WordInfo
 
-    val color: Color?
+    fun getColor(): Color?
 
-    val backgroundColor: Color?
+    fun getBackgroundColor(): Color?
 
-    val textBackgroundColor: Color?
+    fun getTextBackgroundColor(): Color?
 
-    val backgroundInfo: BackgroundInfo?
+    fun getBackgroundInfo(): BackgroundInfo?
 
-    val overlayColor: Color?
+    fun getOverlayColor(): Color?
 
-    val textTransform: Int
+    fun getTextTransform(): Int
 
-    val textDecorationMask: Int
+    fun getTextDecorationMask(): Int
 
-    val fontMetrics: FontMetrics?
+    fun getFontMetrics(): FontMetrics?
 
-    val fontXHeight: Double
+    fun getFontXHeight(): Double
 
-    val blankWidth: Int
+    fun getBlankWidth(): Int
 
-    var isHighlight: Boolean
+    fun isHighlight(): Boolean
 
-    val alignXPercent: Int
+    fun getAlignXPercent(): Int
 
-    val alignYPercent: Int
+    fun getAlignYPercent(): Int
 
     fun getCount(counter: String?, nesting: Int): Int
 
@@ -58,31 +60,31 @@ interface RenderState {
 
     fun getTextIndent(availWidth: Int): Int
 
-    val textIndentText: String?
+    fun getTextIndentText(): String?
 
-    val whiteSpace: Int
+    fun getWhiteSpace(): Int
 
-    val marginInsets: HtmlInsets?
+    fun getMarginInsets(): HtmlInsets?
 
-    val paddingInsets: HtmlInsets?
+    fun getPaddingInsets(): HtmlInsets?
 
-    val overflowX: Int
+    fun getOverflowX(): Int
 
-    val overflowY: Int
+    fun getOverflowY(): Int
 
     fun invalidate()
 
-    val borderInfo: BorderInfo?
+    fun getBorderInfo(): BorderInfo?
 
-    val cursor: Optional<Cursor>?
+    fun getCursor(): Optional<Cursor>?
 
-    val left: String?
+    fun getLeft(): String?
 
-    val top: String?
+    fun getTop(): String?
 
-    val right: String?
+    fun getRight(): String?
 
-    val bottom: String?
+    fun getBottom(): String?
 
     // TODO: This should return a more abstract type that can represent values like length and percentage
     fun getVerticalAlign(): VerticalAlign?

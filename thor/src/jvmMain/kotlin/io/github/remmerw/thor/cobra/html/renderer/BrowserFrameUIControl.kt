@@ -98,8 +98,8 @@ internal class BrowserFrameUIControl(
             }
             val awtMarginInsets =
                 if (insets == null) null else insets.getSimpleAWTInsets(availWidth, availHeight)
-            val overflowX = renderState.overflowX
-            val overflowY = renderState.overflowY
+            val overflowX = renderState.getOverflowX()
+            val overflowY = renderState.getOverflowY()
             if (awtMarginInsets != null) {
                 this.browserFrame.setDefaultMarginInsets(awtMarginInsets)
             }

@@ -448,7 +448,7 @@ class RBlockViewport(
         if (prevLine == null) {
             // Note: Assumes that prevLine == null means it's the first line.
             val rs = this.modelNode()!!.renderState()
-            initialAllowOverflow = rs != null && rs.whiteSpace == RenderState.WS_NOWRAP
+            initialAllowOverflow = rs != null && rs.getWhiteSpace() == RenderState.WS_NOWRAP
             // Text indentation only applies to the first line in the block.
             val textIndent = if (rs == null) 0 else rs.getTextIndent(this.availContentWidth)
             if (textIndent != 0) {
@@ -484,12 +484,12 @@ class RBlockViewport(
         // The difference with layoutChildren is that this
         // method checks for padding and margin insets.
         val rs = node.getRenderState()
-        val mi = rs.marginInsets
+        val mi = rs.getMarginInsets()
         val marginInsets = if (mi == null) null else mi.getSimpleAWTInsets(
             this.availContentWidth,
             this.availContentHeight
         )
-        val pi = rs.paddingInsets
+        val pi = rs.getPaddingInsets()
         val paddingInsets = if (pi == null) null else pi.getSimpleAWTInsets(
             this.availContentWidth,
             this.availContentHeight
@@ -606,7 +606,7 @@ class RBlockViewport(
     private fun positionRBlock(markupElement: HTMLElementImpl, renderable: RBlock) {
         run {
             val rs: RenderState = renderable.modelNode()!!.renderState()!!
-            val clear = rs.clear
+            val clear = rs.getClear()
             if (clear != LineBreak.Companion.NONE) {
                 addLineBreak(renderable.modelNode()!!, clear)
             }
@@ -838,7 +838,7 @@ class RBlockViewport(
         }
         if (line!!.height() == 0) {
             val rs: RenderState = startNode.renderState()!!
-            val fontHeight = rs.fontMetrics!!.height
+            val fontHeight = rs.getFontMetrics()!!.height
             line.setHeight(fontHeight)
         }
         line.lineBreak = (LineBreak(breakType))
@@ -1265,14 +1265,14 @@ class RBlockViewport(
         val text = textNode.getNodeValue()
         val length = text!!.length
         val renderState = textNode.getRenderState()
-        val fm = renderState.fontMetrics!!
+        val fm = renderState.getFontMetrics()!!
         val descent = fm.descent
         val ascentPlusLeading = fm.ascent + fm.leading
         val wordHeight = fm.height
         val blankWidth = fm.charWidth(' ')
         val whiteSpace =
-            if (this.overrideNoWrap) RenderState.WS_NOWRAP else renderState.whiteSpace
-        val textTransform = renderState.textTransform
+            if (this.overrideNoWrap) RenderState.WS_NOWRAP else renderState.getWhiteSpace()
+        val textTransform = renderState.getTextTransform()
         if (whiteSpace != RenderState.WS_PRE) {
             val prevAllowOverflow = this.currentLine!!.isAllowOverflow()
             val allowOverflow = whiteSpace == RenderState.WS_NOWRAP
@@ -2156,7 +2156,7 @@ class RBlockViewport(
                 return java.lang.Boolean.TRUE
             }
             val rs = node.getRenderState()
-            val floatValue = rs.float
+            val floatValue = rs.getFloat()
             if (floatValue != RenderState.FLOAT_NONE) {
                 return java.lang.Boolean.TRUE
             }
@@ -2905,7 +2905,7 @@ class RBlockViewport(
                 if ((position == RenderState.POSITION_ABSOLUTE) || (position == RenderState.POSITION_FIXED)) {
                     display = RenderState.DISPLAY_BLOCK
                 } else {
-                    val boxFloat = rs.float
+                    val boxFloat = rs.getFloat()
                     if (boxFloat != RenderState.FLOAT_NONE) {
                         display = RenderState.DISPLAY_BLOCK
                     }
@@ -3039,8 +3039,8 @@ class RBlockViewport(
             val isDisplayBlock = rs.getDisplay() == RenderState.DISPLAY_BLOCK
             val isPosStaticOrRelative =
                 rs.getPosition() == RenderState.POSITION_STATIC || rs.getPosition() == RenderState.POSITION_RELATIVE
-            val borderInsets = rs.borderInfo!!.insets
-            val paddingInsets = rs.paddingInsets
+            val borderInsets = rs.getBorderInfo()!!.insets
+            val paddingInsets = rs.getPaddingInsets()
             val isZeroBorderAndPadding =
                 insetChecker.apply(borderInsets) == true && insetChecker.apply(paddingInsets) == true
             return (mn !is HTMLHtmlElement) && isDisplayBlock && isPosStaticOrRelative && isZeroBorderAndPadding
@@ -3064,8 +3064,8 @@ class RBlockViewport(
         }
 
         private fun isOverflowVisibleOrNone(rs: RenderState): Boolean {
-            val overflowX = rs.overflowX
-            val overflowY = rs.overflowY
+            val overflowX = rs.getOverflowX()
+            val overflowY = rs.getOverflowY()
             val xOverflowFine =
                 (overflowX == RenderState.OVERFLOW_VISIBLE) || (overflowX == RenderState.OVERFLOW_NONE)
             val yOverflowFine =

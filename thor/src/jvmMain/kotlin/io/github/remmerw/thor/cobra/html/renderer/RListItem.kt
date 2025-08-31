@@ -126,7 +126,7 @@ internal class RListItem(
             }
             // Paint bullets
             val prevColor = g.color
-            g.color = rs.color
+            g.color = rs.getColor()
             try {
                 val insets = this.getInsets(this.hasHScrollBar, this.hasVScrollBar)
                 val paddingInsets = this.paddingInsets

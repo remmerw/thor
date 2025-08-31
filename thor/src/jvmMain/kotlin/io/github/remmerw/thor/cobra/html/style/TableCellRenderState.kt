@@ -12,21 +12,21 @@ import java.util.Locale
 
 class TableCellRenderState(prevRenderState: RenderState?, element: HTMLElementImpl) :
     StyleSheetRenderState(prevRenderState, element) {
-    override var alignXPercent = -1
-    override var alignYPercent = -1
-    override var backgroundInfo: BackgroundInfo? =
-        INVALID_BACKGROUND_INFO
+        private var alignXPerc = -1
+    private var alignYPerc = -1
+
+    private var backgroundInfo: BackgroundInfo? = INVALID_BACKGROUND_INFO
 
     override fun invalidate() {
         super.invalidate()
-        this.alignXPercent = -1
-        this.alignYPercent = -1
+        this.alignXPerc = -1
+        this.alignYPerc = -1
         this.backgroundInfo = INVALID_BACKGROUND_INFO
         this.paddingInsets = INVALID_INSETS
     }
 
     override fun getAlignXPercent(): Int {
-        var axp = this.alignXPercent
+        var axp = this.alignXPerc
         if (axp != -1) {
             return axp
         }
@@ -75,12 +75,12 @@ class TableCellRenderState(prevRenderState: RenderState?, element: HTMLElementIm
             // TODO: justify, etc.
             axp = 0
         }
-        this.alignXPercent = axp
+        this.alignXPerc = axp
         return axp
     }
 
     override fun getAlignYPercent(): Int {
-        var ayp = this.alignYPercent
+        var ayp = this.alignYPerc
         if (ayp != -1) {
             return ayp
         }
@@ -124,7 +124,7 @@ class TableCellRenderState(prevRenderState: RenderState?, element: HTMLElementIm
             // TODO: baseline, etc.
             ayp = 50
         }
-        this.alignYPercent = ayp
+        this.alignYPerc = ayp
         return ayp
     }
 
@@ -137,7 +137,7 @@ class TableCellRenderState(prevRenderState: RenderState?, element: HTMLElementIm
         binfo = super.getBackgroundInfo()
         val element = this.element as HTMLTableCellElementImpl
         var rowElement: HTMLTableRowElementImpl? = null
-        val parentNode: Any? = element.getParentNode()
+        val parentNode: Any? = element.parentNode
         if (parentNode is HTMLTableRowElementImpl) {
             rowElement = parentNode
         }
@@ -175,7 +175,7 @@ class TableCellRenderState(prevRenderState: RenderState?, element: HTMLElementIm
 
     private val tableElement: HTMLTableElement?
         get() {
-            var ancestor = this.element!!.getParentNode()
+            var ancestor = this.element!!.parentNode
             while ((ancestor != null) && ancestor !is HTMLTableElement) {
                 ancestor = ancestor.parentNode
             }
@@ -249,7 +249,7 @@ class TableCellRenderState(prevRenderState: RenderState?, element: HTMLElementIm
             } else {
                 val prs = this.prevRenderState
                 if (prs != null) {
-                    wsValue = prs.whiteSpace
+                    wsValue = prs.getWhiteSpace()
                 } else {
                     wsValue = RenderState.Companion.WS_NORMAL
                 }

@@ -1664,7 +1664,7 @@ class TableMatrix(
             get() {
                 val borderInfo =
                     if (rowGroupElem == null) null else rowGroupElem.getRenderState()
-                        .borderInfo
+                        .getBorderInfo()
                 return if (borderInfo == null) null else borderOverrider.get(borderInfo.insets)
             }
     }
@@ -1707,7 +1707,7 @@ class TableMatrix(
             if (cell != null) {
                 val ac = cell.actualCell
                 val rs = ac.renderState
-                val binfo = rs.borderInfo
+                val binfo = rs.getBorderInfo()
                 if (binfo != null) {
                     val bi = binfo.insets
                     if (bi != null) {
@@ -2015,7 +2015,7 @@ class TableMatrix(
         }
 
         fun getCSSInsets(rs: RenderState): Insets? {
-            val borderInfo = rs.borderInfo
+            val borderInfo = rs.getBorderInfo()
             val elemBorderHtmlInsets = if (borderInfo == null) null else borderInfo.insets
             return if (elemBorderHtmlInsets == null) RBlockViewport.Companion.ZERO_INSETS else elemBorderHtmlInsets.getAWTInsets(
                 0,

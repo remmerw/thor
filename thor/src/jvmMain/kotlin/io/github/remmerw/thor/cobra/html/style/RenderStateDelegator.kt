@@ -27,118 +27,72 @@ import java.awt.Font
 import java.awt.FontMetrics
 import java.util.Optional
 
-abstract class RenderStateDelegator(protected val delegate: RenderState) : RenderState {
-    fun getAlignXPercent(): Int {
-        return delegate.alignXPercent
+ abstract class RenderStateDelegator(protected val delegate: RenderState) : RenderState {
+    override fun getAlignXPercent(): Int {
+        return delegate.getAlignXPercent()
     }
 
-    fun getAlignYPercent(): Int {
-        return delegate.alignYPercent
+    override fun getAlignYPercent(): Int {
+        return delegate.getAlignYPercent()
     }
 
-    fun getBlankWidth(): Int {
-        return delegate.blankWidth
+    override fun getBlankWidth(): Int {
+        return delegate.getBlankWidth()
     }
 
-    fun getColor(): Color? {
-        return delegate.color
+    override fun getColor(): Color? {
+        return delegate.getColor()
     }
 
-    fun getFont(): Font? {
-        return delegate.font
+    override fun getFont(): Font? {
+        return delegate.getFont()
     }
 
-    open fun getFontBase(): Int {
-        return delegate.fontBase
+    override fun getFontBase(): Int {
+        return delegate.getFontBase()
     }
 
-    fun getFontMetrics(): FontMetrics? {
-        return delegate.fontMetrics
+    override fun getFontMetrics(): FontMetrics? {
+        return delegate.getFontMetrics()
     }
 
-    fun getOverlayColor(): Color? {
-        return delegate.overlayColor
+    override fun getOverlayColor(): Color? {
+        return delegate.getOverlayColor()
     }
 
-    fun getBackgroundColor(): Color? {
-        return delegate.backgroundColor
+    override fun getBackgroundColor(): Color? {
+        return delegate.getBackgroundColor()
     }
 
-    fun getTextDecorationMask(): Int {
-        return delegate.textDecorationMask
+     override fun getTextBackgroundColor(): Color? {
+         TODO("Not yet implemented")
+     }
+
+     override fun getTextDecorationMask(): Int {
+        return delegate.getTextDecorationMask()
     }
 
-    fun getTextTransform(): Int {
-        return delegate.textTransform
+    override fun getTextTransform(): Int {
+        return delegate.getTextTransform()
     }
 
-    override val float: Int
-        get() = TODO("Not yet implemented")
-    override val clear: Int
-        get() = TODO("Not yet implemented")
-    override val visibility: Int
-        get() = TODO("Not yet implemented")
-    override val font: Font?
-        get() = TODO("Not yet implemented")
-    override val fontBase: Int
-        get() = TODO("Not yet implemented")
 
     override fun getWordInfo(word: String): WordInfo {
         return delegate.getWordInfo(word)
     }
 
-    override val color: Color?
-        get() = TODO("Not yet implemented")
-    override val backgroundColor: Color?
-        get() = TODO("Not yet implemented")
-    override val textBackgroundColor: Color?
-        get() = TODO("Not yet implemented")
-    override val backgroundInfo: BackgroundInfo?
-        get() = TODO("Not yet implemented")
-    override val overlayColor: Color?
-        get() = TODO("Not yet implemented")
-    override val textTransform: Int
-        get() = TODO("Not yet implemented")
-    override val textDecorationMask: Int
-        get() = TODO("Not yet implemented")
-    override val fontMetrics: FontMetrics?
-        get() = TODO("Not yet implemented")
-    override val fontXHeight: Double
-        get() = TODO("Not yet implemented")
-    override val blankWidth: Int
-        get() = TODO("Not yet implemented")
-    override var isHighlight: Boolean
-        get() = TODO("Not yet implemented")
-        set(value) {}
-    override val alignXPercent: Int
-        get() = TODO("Not yet implemented")
-    override val alignYPercent: Int
-        get() = TODO("Not yet implemented")
 
     override fun invalidate() {
         delegate.invalidate()
     }
 
-    override val borderInfo: BorderInfo?
-        get() = TODO("Not yet implemented")
-    override val cursor: Optional<Cursor>?
-        get() = TODO("Not yet implemented")
-    override val left: String?
-        get() = TODO("Not yet implemented")
-    override val top: String?
-        get() = TODO("Not yet implemented")
-    override val right: String?
-        get() = TODO("Not yet implemented")
-    override val bottom: String?
-        get() = TODO("Not yet implemented")
 
-
-    fun isHighlight(): Boolean {
-        return delegate.isHighlight
+    override fun isHighlight(): Boolean {
+        return delegate.isHighlight()
     }
 
-    fun setHighlight(highlight: Boolean) {
-        delegate.isHighlight = (highlight)
+    override fun setHighlight(highlight: Boolean) {
+        delegate.setHighlight (highlight)
     }
 
     override fun getCount(counter: String?, nesting: Int): Int {
@@ -154,101 +108,84 @@ abstract class RenderStateDelegator(protected val delegate: RenderState) : Rende
         return this.delegate.incrementCount(counter, nesting)
     }
 
-    fun getBackgroundInfo(): BackgroundInfo? {
-        return this.delegate.backgroundInfo
+     override fun getTextIndent(availWidth: Int): Int {
+         TODO("Not yet implemented")
+     }
+
+     override fun getBackgroundInfo(): BackgroundInfo? {
+        return this.delegate.getBackgroundInfo()
     }
 
     override fun getDisplay(): Int {
         return this.delegate.getDisplay()
     }
 
-    fun getTextBackgroundColor(): Color? {
-        return this.delegate.textBackgroundColor
+    override fun getTextIndentText(): String? {
+        return this.delegate.getTextIndentText()
     }
 
-    override fun getTextIndent(availWidth: Int): Int {
-        return this.delegate.getTextIndent(availWidth)
+    override fun getWhiteSpace(): Int {
+        return this.delegate.getWhiteSpace()
     }
 
-    override val textIndentText: String?
-        get() = TODO("Not yet implemented")
-    override val whiteSpace: Int
-        get() = TODO("Not yet implemented")
-    override val marginInsets: HtmlInsets?
-        get() = TODO("Not yet implemented")
-    override val paddingInsets: HtmlInsets?
-        get() = TODO("Not yet implemented")
-    override val overflowX: Int
-        get() = TODO("Not yet implemented")
-    override val overflowY: Int
-        get() = TODO("Not yet implemented")
-
-    fun getTextIndentText(): String? {
-        return this.delegate.textIndentText
+    override fun getMarginInsets(): HtmlInsets? {
+        return this.delegate.getMarginInsets()
     }
 
-    fun getWhiteSpace(): Int {
-        return this.delegate.whiteSpace
+    override fun getPaddingInsets(): HtmlInsets? {
+        return this.delegate.getPaddingInsets()
     }
 
-    fun getMarginInsets(): HtmlInsets? {
-        return this.delegate.marginInsets
-    }
-
-    fun getPaddingInsets(): HtmlInsets? {
-        return this.delegate.paddingInsets
-    }
-
-    fun getVisibility(): Int {
-        return this.delegate.visibility
+    override fun getVisibility(): Int {
+        return this.delegate.getVisibility()
     }
 
     override fun getPosition(): Int {
         return this.delegate.getPosition()
     }
 
-    fun getFloat(): Int {
-        return this.delegate.float
+    override fun getFloat(): Int {
+        return this.delegate.getFloat()
     }
 
-    fun getClear(): Int {
-        return this.delegate.clear
+    override fun getClear(): Int {
+        return this.delegate.getClear()
     }
 
-    fun getOverflowX(): Int {
-        return this.delegate.overflowX
+    override fun getOverflowX(): Int {
+        return this.delegate.getOverflowX()
     }
 
-    fun getOverflowY(): Int {
-        return this.delegate.overflowY
+    override fun getOverflowY(): Int {
+        return this.delegate.getOverflowY()
     }
 
-    fun getBorderInfo(): BorderInfo? {
-        return this.delegate.borderInfo
+    override fun getBorderInfo(): BorderInfo? {
+        return this.delegate.getBorderInfo()
     }
 
-    fun getCursor(): Optional<Cursor>? {
-        return this.delegate.cursor
+    override fun getCursor(): Optional<Cursor>? {
+        return this.delegate.getCursor()
     }
 
-    fun getLeft(): String? {
-        return this.delegate.left
+    override fun getLeft(): String? {
+        return this.delegate.getLeft()
     }
 
-    fun getTop(): String? {
-        return this.delegate.top
+    override fun getTop(): String? {
+        return this.delegate.getTop()
     }
 
-    fun getBottom(): String? {
-        return this.delegate.bottom
+    override fun getBottom(): String? {
+        return this.delegate.getBottom()
     }
 
-    fun getRight(): String? {
-        return this.delegate.right
+    override fun getRight(): String? {
+        return this.delegate.getRight()
     }
 
-    fun getFontXHeight(): Double {
-        return this.delegate.fontXHeight
+    override fun getFontXHeight(): Double {
+        return this.delegate.getFontXHeight()
     }
 
     override fun getVerticalAlign(): VerticalAlign? {

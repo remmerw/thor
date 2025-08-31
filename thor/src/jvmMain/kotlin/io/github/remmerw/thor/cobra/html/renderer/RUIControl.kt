@@ -95,7 +95,7 @@ open class RUIControl(
 
     override fun paintShifted(g: Graphics) {
         val rs = this.modelNode()!!.renderState()
-        if ((rs != null) && (rs.visibility != RenderState.VISIBILITY_VISIBLE)) {
+        if ((rs != null) && (rs.getVisibility() != RenderState.VISIBILITY_VISIBLE)) {
             // Just don't paint it.
             return
         }
@@ -250,8 +250,8 @@ open class RUIControl(
     override fun doLayout(availWidth: Int, availHeight: Int, sizeOnly: Boolean) {
         val cachedLayout = this.cachedLayout
         val rs = this.modelNode()!!.renderState()
-        val whitespace = if (rs == null) RenderState.WS_NORMAL else rs.whiteSpace
-        val font = if (rs == null) null else rs.font
+        val whitespace = if (rs == null) RenderState.WS_NORMAL else rs.getWhiteSpace()
+        val font = if (rs == null) null else rs.getFont()
         val layoutKey = LayoutKey(availWidth, availHeight, whitespace, font)
         var layoutValue: LayoutValue?
         if (sizeOnly) {
@@ -398,7 +398,7 @@ open class RUIControl(
     val foregroundColor: Color?
         get() {
             val rs = this.modelNode()!!.renderState()
-            return if (rs == null) null else rs.color
+            return if (rs == null) null else rs.getColor()
         }
 
     override fun setInnerWidth(newWidth: Int) {

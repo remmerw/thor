@@ -247,7 +247,7 @@ open class RBlock(
     public override fun paintShifted(g: Graphics) {
         // TODO: Move this to common logic in BaseElementEenderable.pain();
         val rs = this.modelNode()!!.renderState()
-        if ((rs != null) && (rs.visibility != RenderState.VISIBILITY_VISIBLE)) {
+        if ((rs != null) && (rs.getVisibility() != RenderState.VISIBILITY_VISIBLE)) {
             // Just don't paint it.
             return
         }
@@ -1130,7 +1130,7 @@ open class RBlock(
         }
         if (!sizeOnly) {
             // Align horizontally now. This may change canvas height.
-            val alignmentXPercent = rs.alignXPercent
+            val alignmentXPercent = rs.getAlignXPercent()
             if (alignmentXPercent > 0) {
                 // TODO: OPTIMIZATION: alignment should not be done in table cell
                 // sizing determination.
@@ -1154,7 +1154,7 @@ open class RBlock(
         }
         if (!sizeOnly) {
             // Align vertically now
-            val alignmentYPercent = rs.alignYPercent
+            val alignmentYPercent = rs.getAlignYPercent()
             if (alignmentYPercent > 0) {
                 // TODO: OPTIMIZATION: alignment should not be done in table cell
                 // sizing determination.
@@ -1910,7 +1910,7 @@ open class RBlock(
     companion object {
         private fun getVUnitIncrement(renderState: RenderState?): Int {
             if (renderState != null) {
-                return renderState.fontMetrics!!.height
+                return renderState.getFontMetrics()!!.height
             } else {
                 return BlockRenderState(null).getFontMetrics().height
             }

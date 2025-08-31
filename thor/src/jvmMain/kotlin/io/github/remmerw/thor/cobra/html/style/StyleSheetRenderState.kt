@@ -49,21 +49,12 @@ open class StyleSheetRenderState : RenderState {
     protected val prevRenderState: RenderState?
     protected var iBackgroundInfo: BackgroundInfo? = INVALID_BACKGROUND_INFO
     protected var iWhiteSpace: Int? = null
-    override var marginInsets: HtmlInsets? = INVALID_INSETS
-    override var paddingInsets: HtmlInsets? = INVALID_INSETS
-    override var overflowX: Int = -1
-    override var overflowY: Int = -1
-    override var borderInfo: BorderInfo? = INVALID_BORDER_INFO
-    override val cursor: Optional<Cursor>?
-        get() = TODO("Not yet implemented")
-    override val left: String?
-        get() = TODO("Not yet implemented")
-    override val top: String?
-        get() = TODO("Not yet implemented")
-    override val right: String?
-        get() = TODO("Not yet implemented")
-    override val bottom: String?
-        get() = TODO("Not yet implemented")
+    var marginInsets: HtmlInsets? = INVALID_INSETS
+    var paddingInsets: HtmlInsets? = INVALID_INSETS
+    var overflowX: Int = -1
+    var overflowY: Int = -1
+    var borderInfo: BorderInfo? = INVALID_BORDER_INFO
+
 
     var iWordInfoMap: MutableMap<String?, WordInfo?>? = null
     private var iFont: Font? = null
@@ -82,8 +73,8 @@ open class StyleSheetRenderState : RenderState {
     private var iBlankWidth = -1
     private var iHighlight = false
     private var iDisplay: Int? = null
-    override var alignXPercent = -1
-    override val alignYPercent: Int
+    var alignXPercent = -1
+    val alignYPercent: Int
         get() = TODO("Not yet implemented")
     private var counters: MutableMap<String?, ArrayList<Int?>>? = null
     private var iTextIndentText: String? = null
@@ -157,7 +148,7 @@ open class StyleSheetRenderState : RenderState {
         return displayInt
     }
 
-    fun getFontBase(): Int {
+    override fun getFontBase(): Int {
         return 3
     }
 
@@ -197,7 +188,7 @@ open class StyleSheetRenderState : RenderState {
         // Should NOT invalidate parent render state.
     }
 
-    fun getFont(): Font? {
+    override fun getFont(): Font? {
         var f = this.iFont
         if (f != null) {
             return f
@@ -206,7 +197,7 @@ open class StyleSheetRenderState : RenderState {
         val prs = this.prevRenderState
         if (style == null) {
             if (prs != null) {
-                val font = prs.font
+                val font = prs.getFont()
                 return font
             }
             f = DEFAULT_FONT
@@ -230,7 +221,7 @@ open class StyleSheetRenderState : RenderState {
         if ((newFontSize == null) && (newFontWeight == null) && (newFontStyle == null) && (newFontFamily == null) && (newFontVariant == null)) {
             if (!isSuper && !isSub) {
                 if (prs != null) {
-                    return prs.font
+                    return prs.getFont()
                 } else {
                     f = DEFAULT_FONT
                     this.iFont = f
@@ -246,7 +237,7 @@ open class StyleSheetRenderState : RenderState {
             }
         } else {
             if (prs != null) {
-                fontSize = (prs.font?.getSize())?.toFloat()
+                fontSize = (prs.getFont()?.getSize())?.toFloat()
             } else {
                 fontSize = HtmlValues.DEFAULT_FONT_SIZE_BOX
             }
@@ -288,7 +279,7 @@ open class StyleSheetRenderState : RenderState {
         return f
     }
 
-    fun getColor(): Color? {
+    override fun getColor(): Color? {
         var c = this.iColor
         if (c != null) {
             return c
@@ -303,7 +294,7 @@ open class StyleSheetRenderState : RenderState {
         return c
     }
 
-    fun getBackgroundColor(): Color? {
+    override fun getBackgroundColor(): Color? {
         val c = this.iBackgroundColor
         if (c !== INVALID_COLOR) {
             return c
@@ -315,7 +306,7 @@ open class StyleSheetRenderState : RenderState {
         return localColor
     }
 
-    fun getTextBackgroundColor(): Color? {
+    override fun getTextBackgroundColor(): Color? {
         val c = this.iTextBackgroundColor
         if (c !== INVALID_COLOR) {
             return c
@@ -332,7 +323,7 @@ open class StyleSheetRenderState : RenderState {
         return localColor
     }
 
-    fun getOverlayColor(): Color? {
+    override fun getOverlayColor(): Color? {
         var c = this.iOverlayColor
         if (c !== INVALID_COLOR) {
             return c
@@ -347,7 +338,7 @@ open class StyleSheetRenderState : RenderState {
         return c
     }
 
-    fun getTextDecorationMask(): Int {
+    override fun getTextDecorationMask(): Int {
         var td = this.iTextDecoration
         if (td != -1) {
             return td
@@ -376,7 +367,7 @@ open class StyleSheetRenderState : RenderState {
         return td
     }
 
-    fun getTextTransform(): Int {
+    override fun getTextTransform(): Int {
         var tt = this.iTextTransform
         if (tt != -1) {
             return tt
@@ -406,7 +397,7 @@ open class StyleSheetRenderState : RenderState {
         return tt
     }
 
-    fun getFontMetrics(): FontMetrics {
+    override fun getFontMetrics(): FontMetrics {
         var fm = this.iFontMetrics
         if (fm == null) {
             // TODO getFontMetrics deprecated. How to get text width?
@@ -416,7 +407,7 @@ open class StyleSheetRenderState : RenderState {
         return fm
     }
 
-    fun getBlankWidth(): Int {
+    override fun getBlankWidth(): Int {
         var bw = this.iBlankWidth
         if (bw == -1) {
             bw = this.getFontMetrics().charWidth(' ')
@@ -425,30 +416,16 @@ open class StyleSheetRenderState : RenderState {
         return bw
     }
 
-    /**
-     * @return Returns the iHighlight.
-     */
-    fun isHighlight(): Boolean {
+
+    override fun isHighlight(): Boolean {
         return this.iHighlight
     }
 
-    /**
-     * @param highlight The iHighlight to set.
-     */
-    fun setHighlight(highlight: Boolean) {
+
+    override fun setHighlight(highlight: Boolean) {
         this.iHighlight = highlight
     }
 
-    override val float: Int
-        get() = TODO("Not yet implemented")
-    override val clear: Int
-        get() = TODO("Not yet implemented")
-    override val visibility: Int
-        get() = TODO("Not yet implemented")
-    override val font: Font?
-        get() = TODO("Not yet implemented")
-    override val fontBase: Int
-        get() = TODO("Not yet implemented")
 
     override fun getWordInfo(word: String): WordInfo {
         // Expected to be called only in the GUI (rendering) thread.
@@ -473,31 +450,8 @@ open class StyleSheetRenderState : RenderState {
         return wi
     }
 
-    override val color: Color?
-        get() = TODO("Not yet implemented")
-    override val backgroundColor: Color?
-        get() = TODO("Not yet implemented")
-    override val textBackgroundColor: Color?
-        get() = TODO("Not yet implemented")
-    override val backgroundInfo: BackgroundInfo?
-        get() = TODO("Not yet implemented")
-    override val overlayColor: Color?
-        get() = TODO("Not yet implemented")
-    override val textTransform: Int
-        get() = TODO("Not yet implemented")
-    override val textDecorationMask: Int
-        get() = TODO("Not yet implemented")
-    override val fontMetrics: FontMetrics?
-        get() = TODO("Not yet implemented")
-    override val fontXHeight: Double
-        get() = TODO("Not yet implemented")
-    override val blankWidth: Int
-        get() = TODO("Not yet implemented")
-    override var isHighlight: Boolean
-        get() = TODO("Not yet implemented")
-        set(value) {}
 
-    open fun getAlignXPercent(): Int {
+    override fun getAlignXPercent(): Int {
         var axp = this.alignXPercent
         if (axp != -1) {
             return axp
@@ -528,7 +482,7 @@ open class StyleSheetRenderState : RenderState {
         return axp
     }
 
-    open fun getAlignYPercent(): Int {
+    override fun getAlignYPercent(): Int {
         // This is only settable in table cells.
         // TODO: Does it work with display: table-cell?
         return 0
@@ -595,7 +549,7 @@ open class StyleSheetRenderState : RenderState {
         return prevValue
     }
 
-    open fun getBackgroundInfo(): BackgroundInfo? {
+    override fun getBackgroundInfo(): BackgroundInfo? {
         run {
             val binfo = this.iBackgroundInfo
             if (binfo !== INVALID_BACKGROUND_INFO) {
@@ -668,7 +622,7 @@ open class StyleSheetRenderState : RenderState {
     // }
     // }
     // }
-    fun getTextIndentText(): String {
+    override fun getTextIndentText(): String {
         var tiText = this.iTextIndentText
         if (tiText != null) {
             return tiText
@@ -691,12 +645,8 @@ open class StyleSheetRenderState : RenderState {
         }
     }
 
-    override val textIndentText: String?
-        get() = TODO("Not yet implemented")
-    override val whiteSpace: Int
-        get() = TODO("Not yet implemented")
 
-    open fun getWhiteSpace(): Int {
+    override fun getWhiteSpace(): Int {
         if (RenderThreadState.Companion.state.overrideNoWrap) {
             return RenderState.Companion.WS_NOWRAP
         }
@@ -723,7 +673,7 @@ open class StyleSheetRenderState : RenderState {
         return wsValue
     }
 
-    open fun getMarginInsets(): HtmlInsets? {
+    override fun getMarginInsets(): HtmlInsets? {
         var mi = this.marginInsets
         if (mi !== INVALID_INSETS) {
             return mi
@@ -738,7 +688,7 @@ open class StyleSheetRenderState : RenderState {
         return mi
     }
 
-    open fun getPaddingInsets(): HtmlInsets? {
+    override fun getPaddingInsets(): HtmlInsets? {
         var mi = this.paddingInsets
         if (mi !== INVALID_INSETS) {
             return mi
@@ -835,7 +785,7 @@ open class StyleSheetRenderState : RenderState {
         }
     }
 
-    fun getVisibility(): Int {
+    override fun getVisibility(): Int {
         val v = this.cachedVisibility
         if (v != null) {
             return v
@@ -897,7 +847,7 @@ open class StyleSheetRenderState : RenderState {
         return position
     }
 
-    fun getFloat(): Int {
+    override fun getFloat(): Int {
         val p = this.cachedFloat
         if (p != null) {
             return p
@@ -925,7 +875,7 @@ open class StyleSheetRenderState : RenderState {
         return floatValue
     }
 
-    fun getClear(): Int {
+    override fun getClear(): Int {
         if (cachedClear == null) {
             val props = this.cssProperties
             if (props == null) {
@@ -950,7 +900,7 @@ open class StyleSheetRenderState : RenderState {
         return "StyleSheetRenderState[font=" + this.getFont() + ",textDecoration=" + this.getTextDecorationMask() + "]"
     }
 
-    open fun getOverflowX(): Int {
+    override fun getOverflowX(): Int {
         var overflow = this.overflowX
         if (overflow != -1) {
             return overflow
@@ -985,7 +935,7 @@ open class StyleSheetRenderState : RenderState {
         return overflow
     }
 
-    open fun getOverflowY(): Int {
+    override fun getOverflowY(): Int {
         var overflow = this.overflowY
         if (overflow != -1) {
             return overflow
@@ -1020,7 +970,7 @@ open class StyleSheetRenderState : RenderState {
         return overflow
     }
 
-    open fun getBorderInfo(): BorderInfo? {
+    override fun getBorderInfo(): BorderInfo? {
         var binfo = this.borderInfo
         if (binfo !== INVALID_BORDER_INFO) {
             return binfo
@@ -1035,7 +985,7 @@ open class StyleSheetRenderState : RenderState {
         return binfo
     }
 
-    fun getCursor(): Optional<Cursor> {
+    override fun getCursor(): Optional<Cursor> {
         val prevCursorOpt: Optional<Cursor> = Optional.empty<Cursor>()
         val props = this.cssProperties
         if (props == null) {
@@ -1067,27 +1017,27 @@ open class StyleSheetRenderState : RenderState {
         }
     }
 
-    fun getLeft(): String? {
+    override fun getLeft(): String? {
         val props = this.cssProperties
         return if (props == null) null else props.left
     }
 
-    fun getTop(): String? {
+    override fun getTop(): String? {
         val props = this.cssProperties
         return if (props == null) null else props.top
     }
 
-    fun getRight(): String? {
+    override fun getRight(): String? {
         val props = this.cssProperties
         return if (props == null) null else props.right
     }
 
-    fun getBottom(): String? {
+    override fun getBottom(): String? {
         val props = this.cssProperties
         return if (props == null) null else props.bottom
     }
 
-    fun getFontXHeight(): Double {
+    override fun getFontXHeight(): Double {
         // TODO: Cache this
         val fm = getFontMetrics()
         val font = fm.getFont()
