@@ -76,10 +76,6 @@ internal class InputButtonControl(modelNode: HTMLBaseInputElement?) : BaseInputC
 
 
 
-    override var component: Component?
-        get() = TODO("Not yet implemented")
-        set(value) {}
-
     /*
      * (non-Javadoc)
      *

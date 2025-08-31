@@ -110,10 +110,6 @@ class ImgControl(modelNode: HTMLImageElementImpl) : BaseControl(modelNode), Imag
 
 
 
-    override var component: Component?
-        get() = TODO("Not yet implemented")
-        set(value) {}
-
     override fun vAlign(): VerticalAlign {
         val element = this.controlElement
         val verticalAlign = element?.getRenderState()?.verticalAlign

@@ -704,7 +704,7 @@ class RBlockViewport(
             )
             container.addDelayedPair(dp)
             if (renderable is RUIControl) {
-                this.container.addComponent(renderable.widget.component)
+                this.container.addComponent(renderable.widget.component())
             }
             return true
         }
@@ -1031,7 +1031,7 @@ class RBlockViewport(
             }
         }
         if (renderable is RUIControl) {
-            this.container?.addComponent(renderable.widget.component)
+            this.container?.addComponent(renderable.widget.component())
         }
     }
 
@@ -1194,7 +1194,7 @@ class RBlockViewport(
         }
         if (!isRelative) {
             if (block is RUIControl) {
-                this.container!!.addComponent(block.widget.component)
+                this.container!!.addComponent(block.widget.component())
             }
         }
     }
@@ -1712,7 +1712,7 @@ class RBlockViewport(
         addPosRenderable(pr)
         renderable.parent = (this)
         if (renderable is RUIControl) {
-            this.container?.addComponent(renderable.widget.component)
+            this.container?.addComponent(renderable.widget.component())
         }
     }
 
@@ -2746,12 +2746,6 @@ class RBlockViewport(
                     height - (insets.top + insets.bottom)
                 )
             }
-
-
-            override var component: Component?
-                get() = TODO("Not yet implemented")
-                set(value) {}
-
 
         }
     }

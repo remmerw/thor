@@ -79,11 +79,6 @@ class InputFileControl(modelNode: HTMLBaseInputElement?) : BaseInputControl(mode
     }
 
 
-
-    override var component: Component?
-        get() = TODO("Not yet implemented")
-        set(value) {}
-
     private inner class BrowseAction : AbstractAction() {
         override fun actionPerformed(e: ActionEvent?) {
             val chooser = JFileChooser()

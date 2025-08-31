@@ -34,7 +34,7 @@ import javax.swing.JComponent
 abstract class BaseControl(protected val controlElement: HTMLElementImpl?) : JComponent(), UIControl {
     protected var ruicontrol: RUIControl? = null
 
-    fun getComponent(): Component {
+    override fun component(): Component {
         return this
     }
 

@@ -9,7 +9,7 @@ import java.awt.Graphics
 
 class UIControlWrapper(
     val htmlObject: HtmlObject,
-    override var component: Component?
+    var component: Component?
 ) : UIControl {
 
 
@@ -26,7 +26,7 @@ class UIControlWrapper(
         TODO("Not yet implemented")
     }
 
-    fun getComponent(): Component {
+    override fun component(): Component {
         return this.component!!
     }
 

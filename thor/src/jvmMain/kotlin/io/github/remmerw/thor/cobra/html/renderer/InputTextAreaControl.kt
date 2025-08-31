@@ -76,10 +76,6 @@ internal class InputTextAreaControl(modelNode: HTMLBaseInputElement?) :
         }
     }
 
-    override var component: Component?
-        get() = TODO("Not yet implemented")
-        set(value) {}
-
     protected fun createTextField(): JTextComponent {
         return JTextArea()
     }

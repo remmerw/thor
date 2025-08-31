@@ -69,7 +69,7 @@ open class RUIControl(
 
     override fun focus() {
         super.focus()
-        val c = this.widget.component
+        val c = this.widget.component()
         c?.requestFocus()
     }
 

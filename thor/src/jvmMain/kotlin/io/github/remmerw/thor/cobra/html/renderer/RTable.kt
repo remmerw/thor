@@ -404,7 +404,7 @@ internal class RTable(
         )
         renderable.parent = (this)
         if (renderable is RUIControl) {
-            this.container!!.addComponent(renderable.widget.component!!)
+            this.container!!.addComponent(renderable.widget.component()!!)
         }
     }
 

@@ -47,10 +47,6 @@ internal open class InputTextControl(modelNode: HTMLBaseInputElement?) :
         return JTextField()
     }
 
-
-    override var component: Component?
-        get() = TODO("Not yet implemented")
-        set(value) {}
     override var name: String?
         get() = TODO("Not yet implemented")
         set(value) {}

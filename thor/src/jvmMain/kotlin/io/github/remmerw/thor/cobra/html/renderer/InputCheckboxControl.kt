@@ -93,11 +93,5 @@ internal class InputCheckboxControl(modelNode: HTMLBaseInputElement?) :
     override var value: String? = null
         get() = this.controlElement?.getAttribute("value")
 
-    override var component: Component?
-        get() = TODO("Not yet implemented")
-        set(value) {}
 
-    companion object {
-        private val serialVersionUID = -7156618963339104117L
-    }
 }

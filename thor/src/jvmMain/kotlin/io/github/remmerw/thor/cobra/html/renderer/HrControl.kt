@@ -47,10 +47,6 @@ internal class HrControl(modelNode: HTMLElementImpl?) : BaseControl(modelNode) {
 
 
 
-    override var component: Component?
-        get() = TODO("Not yet implemented")
-        set(value) {}
-
     override fun getPreferredSize(): Dimension {
         return Dimension(this.availWidth, 0)
     }

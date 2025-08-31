@@ -43,9 +43,7 @@ class InputImageControl(modelNode: HTMLBaseInputElement) : BaseInputControl(mode
     var preferredSize: Dimension? = null
 
 
-    override var component: Component?
-        get() = TODO("Not yet implemented")
-        set(value) {}
+
     private var declaredWidth = 0
     private var declaredHeight = 0
     private var imageResponse: ImageResponse? = null

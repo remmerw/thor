@@ -25,7 +25,7 @@ internal class BrowserFrameUIControl(
         return this.browserFrame.component?.getBackground()
     }
 
-    fun getComponent(): Component {
+    override fun component(): Component {
         return this.browserFrame.component!!
     }
 
@@ -127,19 +127,17 @@ internal class BrowserFrameUIControl(
     }
 
     override fun invalidate() {
-        this.component!!.invalidate()
+        this.component().invalidate()
     }
 
 
 
     override fun paint(g: Graphics?) {
         // We actually have to paint it.
-        this.component!!.paint(g)
+        this.component().paint(g)
     }
 
-    override var component: Component?
-        get() = TODO("Not yet implemented")
-        set(value) {}
+
 
     fun paintSelection(
         g: Graphics?,
@@ -152,7 +150,7 @@ internal class BrowserFrameUIControl(
     }
 
     override fun setBounds(x: Int, y: Int, width: Int, height: Int) {
-        this.component!!.setBounds(x, y, width, height)
+        this.component()!!.setBounds(x, y, width, height)
     }
 
     override fun setRUIControl(ruicontrol: RUIControl?) {
