@@ -34,14 +34,14 @@ class PositionedRenderable(
 ) : Renderable {
 
     val originalParent: RCollection?
-        get() = this.renderable.originalParent
+        get() = this.renderable.originalParent()
 
     override fun paint(gIn: Graphics) {
         if (isDelegated) {
             return
         }
 
-        val originalParent = this.renderable.originalParent
+        val originalParent = this.renderable.originalParent()
         val rparent = renderable.parent()
 
         /*
@@ -101,7 +101,7 @@ class PositionedRenderable(
 
     private val relativeBounds: Rectangle?
         get() {
-            val origParent = this.renderable.originalParent
+            val origParent = this.renderable.originalParent()
             var current = origParent
             var currentBounds = current!!.clipBoundsWithoutInsets()
             val parent = this.renderable.parent()
@@ -149,7 +149,7 @@ class PositionedRenderable(
             val offset = Point()
             val pos = this.renderable.modelNode()!!.renderState()!!.position
 
-            val originalParent = this.renderable.originalParent!!
+            val originalParent = this.renderable.originalParent()!!
             val rparent = renderable.parent()
             val or = originalParent.getOriginRelativeTo(rparent)
             if (isFloat || pos == RenderState.POSITION_ABSOLUTE || pos == RenderState.POSITION_FIXED) {

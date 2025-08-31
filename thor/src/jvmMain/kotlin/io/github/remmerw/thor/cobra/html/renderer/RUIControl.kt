@@ -241,9 +241,6 @@ open class RUIControl(
         return inSelection
     }
 
-    override var originalParent: RCollection?
-        get() = TODO("Not yet implemented")
-        set(value) {}
     override val visualX: Int
         get() = TODO("Not yet implemented")
     override val visualY: Int

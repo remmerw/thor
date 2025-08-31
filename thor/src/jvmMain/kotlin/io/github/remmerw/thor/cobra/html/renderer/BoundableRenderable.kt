@@ -64,7 +64,8 @@ interface BoundableRenderable : Renderable {
      * [.getParent] is not the parent where this renderable would have
      * been originally rendered.
      */
-    var originalParent: RCollection?
+    fun originalParent(): RCollection?
+    fun setOriginalParent(origParent: RCollection?)
 
     /**
      * Returns [.getOriginalParent] if not null. Otherwise it returns

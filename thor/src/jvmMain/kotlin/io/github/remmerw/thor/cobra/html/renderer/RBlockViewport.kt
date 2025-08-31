@@ -783,7 +783,7 @@ class RBlockViewport(
             )
             markupElement.uINode = renderable
         }
-        renderable.originalParent = (this)
+        renderable.setOriginalParent(this)
         this.positionRElement(
             markupElement,
             renderable,
@@ -1634,7 +1634,7 @@ class RBlockViewport(
     }
 
     private fun layoutFloat(renderable: RElement, layout: Boolean, leftFloat: Boolean) {
-        renderable.originalParent = (this)
+        renderable.setOriginalParent(this)
         if (layout) {
             val availWidth = this.availContentWidth
             val availHeight = this.availContentHeight
@@ -1784,10 +1784,6 @@ class RBlockViewport(
         }
 
 
-
-    override var originalParent: RCollection?
-        get() = TODO("Not yet implemented")
-        set(value) {}
 
     override val visualX: Int
         get() = TODO("Not yet implemented")
@@ -2872,7 +2868,7 @@ class RBlockViewport(
             } else {
                 renderable = node as RElement
             }
-            renderable.originalParent = (bodyLayout)
+            renderable.setOriginalParent(bodyLayout)
             when (currMethod) {
                 ADD_INLINE, ADD_INLINE_BLOCK -> bodyLayout.addRenderableToLineCheckStyle(
                     renderable,

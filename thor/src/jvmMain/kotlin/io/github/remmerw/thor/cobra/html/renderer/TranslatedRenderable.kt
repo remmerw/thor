@@ -70,17 +70,14 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
         return translatedChild.getOriginRelativeToNoScroll(ancestor)
     }
 
-    override var originalParent: RCollection?
-        get() = TODO("Not yet implemented")
-        set(value) {}
 
 
-    override fun getOriginalParent(): RCollection? {
-        return translatedChild.originalParent
+    override fun originalParent(): RCollection? {
+        return translatedChild.originalParent()
     }
 
     override fun setOriginalParent(origParent: RCollection?) {
-        translatedChild.originalParent = (origParent)
+        translatedChild.setOriginalParent(origParent)
     }
 
     override fun originalOrCurrentParent(): RCollection? {

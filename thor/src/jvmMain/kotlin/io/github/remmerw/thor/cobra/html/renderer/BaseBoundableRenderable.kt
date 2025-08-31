@@ -20,6 +20,7 @@ abstract class BaseBoundableRenderable(
     private var x: Int = 0
     private var y: Int = 0
     private var parent: RCollection? = null
+    private var originalParent: RCollection? = null
     /**
      * Starts as true because ancestors could be invalidated.
      */
@@ -218,11 +219,11 @@ abstract class BaseBoundableRenderable(
     /**
      * This is the parent based on the original element hierarchy.
      */
-    open fun getOriginalParent(): RCollection? {
+    override fun originalParent(): RCollection? {
         return this.originalParent
     }
 
-    open fun setOriginalParent(origParent: RCollection?) {
+    override fun setOriginalParent(origParent: RCollection?) {
         this.originalParent = origParent
     }
 
