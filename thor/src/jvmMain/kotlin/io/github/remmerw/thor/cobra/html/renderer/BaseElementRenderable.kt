@@ -78,7 +78,7 @@ abstract class BaseElementRenderable(
 
     @Volatile
     protected var backgroundImageError: Boolean = false
-    override var zIndex: Int = 0
+    protected var zIndex: Int = 0
     protected var borderTopColor: Color? = null
     protected var borderLeftColor: Color? = null
     protected var borderBottomColor: Color? = null
@@ -1242,7 +1242,7 @@ abstract class BaseElementRenderable(
     }
 
     override fun isReadyToPaint(): Boolean {
-        val superReady: Boolean = isReadyToPaint
+        val superReady: Boolean = isReadyToPaint()
         if (!superReady) {
             return false
         }

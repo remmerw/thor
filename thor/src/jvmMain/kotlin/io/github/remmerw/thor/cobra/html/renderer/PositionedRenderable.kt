@@ -30,8 +30,9 @@ import java.awt.Rectangle
 
 class PositionedRenderable(
     val renderable: BoundableRenderable, val verticalAlignable: Boolean, val ordinal: Int,
-    val isFloat: Boolean, override val isFixed: Boolean, private val isDelegated: Boolean
+    val isFloat: Boolean, val isFixed: Boolean, private val isDelegated: Boolean
 ) : Renderable {
+
     val originalParent: RCollection?
         get() = this.renderable.originalParent
 
@@ -127,7 +128,7 @@ class PositionedRenderable(
         return this.renderable.modelNode()
     }
 
-    fun isFixed(): Boolean {
+    override fun isFixed(): Boolean {
         return isFixed
     }
 
@@ -193,7 +194,7 @@ class PositionedRenderable(
         return this.visualBounds.contains(x, y)
     }
 
-    fun isReadyToPaint(): Boolean {
-        return renderable.isReadyToPaint
+    override fun isReadyToPaint(): Boolean {
+        return renderable.isReadyToPaint()
     }
 }

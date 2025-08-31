@@ -369,7 +369,7 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
         return clipBounds()
     }
 
-    open fun isReadyToPaint(): Boolean {
+     override fun isReadyToPaint(): Boolean {
         val renderables = renderables
         if (renderables == null) {
             return true
@@ -377,7 +377,7 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
 
         while (renderables.hasNext()) {
             val next = renderables.next()!!
-            if (!next.isReadyToPaint) {
+            if (!next.isReadyToPaint()) {
                 return false
             }
         }

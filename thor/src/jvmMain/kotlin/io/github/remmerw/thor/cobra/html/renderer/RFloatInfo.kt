@@ -41,6 +41,14 @@ internal class RFloatInfo(
         return this.modelNode
     }
 
+    override fun isFixed(): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun isReadyToPaint(): Boolean {
+        TODO("Not yet implemented")
+    }
+
     override fun paint(g: Graphics) {
         // nop
     }

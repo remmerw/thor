@@ -22,8 +22,8 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
         translatedChild.paintTranslated(g)
     }
 
-    fun isFixed(): Boolean {
-        return translatedChild.isFixed
+    override fun isFixed(): Boolean {
+        return translatedChild.isFixed()
     }
 
     override fun modelNode(): ModelNode? {
@@ -316,7 +316,7 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
         return clipBounds()
     }
 
-    fun isReadyToPaint(): Boolean {
-        return translatedChild.isReadyToPaint
+    override fun isReadyToPaint(): Boolean {
+        return translatedChild.isReadyToPaint()
     }
 }

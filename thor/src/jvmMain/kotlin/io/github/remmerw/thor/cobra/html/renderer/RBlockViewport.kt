@@ -1902,7 +1902,7 @@ class RBlockViewport(
                         // PositionedRenderable, etc because they don't inherit from BoundableRenderable
                         val isReplacedElement = robj!!.isReplacedElement
                         val selectedG =
-                            if (isReplacedElement) (if (robj.isFixed) gIn else g) else (if (robj.isFixed) gInUnClipped else gUnClipped)
+                            if (isReplacedElement) (if (robj.isFixed()) gIn else g) else (if (robj.isFixed()) gInUnClipped else gUnClipped)
 
                         if (modelNode() is HTMLDocument) {
                             var htmlRenderable = RenderUtils.findHtmlRenderable(this)
