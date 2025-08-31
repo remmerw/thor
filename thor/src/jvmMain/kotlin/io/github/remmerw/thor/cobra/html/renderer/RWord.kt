@@ -53,10 +53,10 @@ open class RWord(
         this.fontMetrics = fontMetrics
         this.descent = descent
         this.ascentPlusLeading = ascentPlusLeading
-        this.height = height
+        this.setHeight(height)
         // TODO: In anti-aliasing, stringWidth is said not to be reliable.
         // Dimensions set when constructed.
-        this.width = fontMetrics.stringWidth(renderedWord)
+        this.setWidth(fontMetrics.stringWidth(renderedWord))
     }
 
     override fun invalidateLayoutLocal() {
@@ -77,9 +77,9 @@ open class RWord(
         }
 
         val word = this.shownWord
-        val width = this.width
+        val width = this.width()
         val ascentPlusLeading = this.ascentPlusLeading
-        val height = this.height
+        val height = this.height()
         val textDecoration = rs.textDecorationMask
         val bkg = rs.textBackgroundColor
         if (bkg != null) {
@@ -181,17 +181,17 @@ open class RWord(
         }
         if ((width1 != -1) || (width2 != -1)) {
             val startPaint = if (width1 == -1) 0 else width1
-            val endPaint = if (width2 == -1) this.width else width2
+            val endPaint = if (width2 == -1) this.width() else width2
             g.color = SELECTION_COLOR
             g.setXORMode(SELECTION_XOR)
-            g.fillRect(startPaint, 0, endPaint - startPaint, this.height)
+            g.fillRect(startPaint, 0, endPaint - startPaint, this.height())
             g.setPaintMode()
             return (width2 == -1)
         } else {
             if (inSelection) {
                 g.color = SELECTION_COLOR
                 g.setXORMode(SELECTION_XOR)
-                g.fillRect(0, 0, this.width, this.height)
+                g.fillRect(0, 0, this.width(), this.height())
                 g.setPaintMode()
             }
             return inSelection

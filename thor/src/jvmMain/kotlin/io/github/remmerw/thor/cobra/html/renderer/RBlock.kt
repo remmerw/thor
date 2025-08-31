@@ -128,19 +128,19 @@ open class RBlock(
         if (hscroll) {
             if (point.x < insets.left) {
                 bodyLayout.setX(bodyLayout.x() + (insets.left - point.x))
-            } else if (point.x > (this.width - insets.right)) {
-                bodyLayout.setX((bodyLayout.x()) -(point.x - this.width) + insets.right)
+            } else if (point.x > (this.width() - insets.right)) {
+                bodyLayout.setX((bodyLayout.x()) -(point.x - this.width()) + insets.right)
             }
         }
         if (vscroll) {
             if (point.y < insets.top) {
                 bodyLayout.setY(bodyLayout.y() +(insets.top - point.y))
-            } else if (point.y > (this.height - insets.bottom)) {
-                bodyLayout.setY(bodyLayout.y() -(point.y - this.height) + insets.bottom)
+            } else if (point.y > (this.height() - insets.bottom)) {
+                bodyLayout.setY(bodyLayout.y() -(point.y - this.height()) + insets.bottom)
             }
         }
         if (hscroll || vscroll) {
-            this.correctViewportOrigin(insets, this.width, this.height)
+            this.correctViewportOrigin(insets, this.width(), this.height())
             if ((origX != bodyLayout.x()) || (origY != bodyLayout.y())) {
                 this.resetScrollBars(null)
                 // TODO: This could be paintImmediately.
@@ -220,8 +220,8 @@ open class RBlock(
             return Rectangle(
                 -relativeOffsetX,
                 -relativeOffsetY,
-                this.width - hInset,
-                this.height - vInset
+                this.width() - hInset,
+                this.height() - vInset
             )
         }
     }
@@ -238,8 +238,8 @@ open class RBlock(
             return Rectangle(
                 -relativeOffsetX,
                 -relativeOffsetY,
-                this.width - hInset,
-                this.height - vInset
+                this.width() - hInset,
+                this.height()- vInset
             )
         }
     }
@@ -271,8 +271,8 @@ open class RBlock(
             val newG = g.create(
                 insets.left,
                 insets.top,
-                this.width - insets.left - insets.right,
-                (this.height - insets.top
+                this.width() - insets.left - insets.right,
+                (this.height() - insets.top
                         - insets.bottom)
             )
             try {
@@ -297,7 +297,7 @@ open class RBlock(
         val hsb = this.hScrollBar
         if (hsb != null) {
             val sbg = g.create(
-                insets.left, this.height - insets.bottom, this.width - insets.left - insets.right,
+                insets.left, this.height() - insets.bottom, this.width() - insets.left - insets.right,
                 SCROLL_BAR_THICKNESS
             )
             try {
@@ -310,10 +310,10 @@ open class RBlock(
         if (vsb != null) {
             val sbg = g
                 .create(
-                    this.width - insets.right,
+                    this.width() - insets.right,
                     insets.top,
                     SCROLL_BAR_THICKNESS,
-                    this.height - insets.top - insets.bottom
+                    this.height() - insets.top - insets.bottom
                 )
             try {
                 vsb.paint(sbg)
@@ -781,8 +781,8 @@ open class RBlock(
         }
       }*/
         }
-        this.width = value.width
-        this.height = value.height
+        this.setWidth(value.width)
+        this.setHeight(value.height)
         this.hasHScrollBar = value.hasHScrollBar
         this.hasVScrollBar = value.hasVScrollBar
 
@@ -805,8 +805,8 @@ open class RBlock(
         if (viewPortX > insets.left) {
             bodyLayout.setX(insets.left)
             corrected = true
-        } else if (viewPortX < (blockWidth - insets.right - bodyLayout.width)) {
-            bodyLayout.setX(min(insets.left, blockWidth - insets.right - bodyLayout.width))
+        } else if (viewPortX < (blockWidth - insets.right - bodyLayout.width())) {
+            bodyLayout.setX(min(insets.left, blockWidth - insets.right - bodyLayout.width()))
             corrected = true
         }
         if (viewPortY > insets.top) {
@@ -993,9 +993,9 @@ open class RBlock(
                     )
                     // If we find that the viewport is not as wide as we
                     // presumed, then we'll use that as a new tentative width.
-                    if ((bodyLayout.width + insetsTotalWidth) < tentativeWidth) {
-                        tentativeWidth = bodyLayout.width + insetsTotalWidth
-                        tentativeHeight = bodyLayout.height + insetsTotalHeight
+                    if ((bodyLayout.width() + insetsTotalWidth) < tentativeWidth) {
+                        tentativeWidth = bodyLayout.width() + insetsTotalWidth
+                        tentativeHeight = bodyLayout.height() + insetsTotalHeight
                     }
                 } finally {
                     state.overrideNoWrap = false
@@ -1071,8 +1071,8 @@ open class RBlock(
             insetsTotalHeight = insets.top + insets.bottom
         }
 
-        val bodyWidth = bodyLayout.width
-        val bodyHeight = bodyLayout.height
+        val bodyWidth = bodyLayout.width()
+        val bodyHeight = bodyLayout.height()
 
         if ((declaredHeight == -1) && (bodyHeight == 0) && !(collapseTopMargin || collapseBottomMargin)) {
             if ((paddingInsets.top == 0) && (paddingInsets.bottom == 0) && (borderInsets!!.top == 0) && (borderInsets.bottom == 0)) {
@@ -1134,7 +1134,7 @@ open class RBlock(
             if (alignmentXPercent > 0) {
                 // TODO: OPTIMIZATION: alignment should not be done in table cell
                 // sizing determination.
-                val canvasWidth = max(bodyLayout.width, resultingWidth - insets.left - insets.right)
+                val canvasWidth = max(bodyLayout.width(), resultingWidth - insets.left - insets.right)
                 // Alignment is done afterwards because canvas dimensions might have
                 // changed.
                 bodyLayout.alignX(alignmentXPercent, canvasWidth, paddingInsets)
@@ -1159,7 +1159,7 @@ open class RBlock(
                 // TODO: OPTIMIZATION: alignment should not be done in table cell
                 // sizing determination.
                 val canvasHeight =
-                    max(bodyLayout.height, resultingHeight - insets.top - insets.bottom)
+                    max(bodyLayout.height(), resultingHeight - insets.top - insets.bottom)
                 // Alignment is done afterwards because canvas dimensions might have
                 // changed.
                 bodyLayout.alignY(alignmentYPercent, canvasHeight, paddingInsets)
@@ -1229,14 +1229,14 @@ open class RBlock(
             this.correctViewportOrigin(insets, resultingWidth, resultingHeight)
             // Now reset the scrollbar state. Depends
             // on block width and height.
-            this.width = resultingWidth
-            this.height = resultingHeight
+            this.setWidth(resultingWidth)
+            this.setHeight(resultingHeight)
             this.resetScrollBars(rs)
         } else {
             bodyLayout.setX(insets.left)
             bodyLayout.setY(insets.top)
-            this.width = resultingWidth
-            this.height = resultingHeight
+            this.setWidth(resultingWidth)
+            this.setHeight(resultingHeight)
         }
 
         // setupRelativePosition(rs, availWidth);
@@ -1304,7 +1304,7 @@ open class RBlock(
             val vsb = this.vScrollBar
             if (vsb != null) {
                 val newValue = insets.top - bodyLayout.y()
-                val newExtent = this.height - insets.top - insets.bottom
+                val newExtent = this.height() - insets.top - insets.bottom
                 val newMin = 0
                 val newMax = bodyLayout.visualHeight()
                 vsb.setValues(newValue, newExtent, newMin, newMax)
@@ -1314,7 +1314,7 @@ open class RBlock(
             val hsb = this.hScrollBar
             if (hsb != null) {
                 val newValue = insets.left - bodyLayout.x()
-                val newExtent = this.width - insets.left - insets.right
+                val newExtent = this.width() - insets.left - insets.right
                 val newMin = 0
                 val newMax = bodyLayout.visualWidth()
                 hsb.setValues(newValue, newExtent, newMin, newMax)
@@ -1344,8 +1344,8 @@ open class RBlock(
             newG.clipRect(
                 insets.left,
                 insets.top,
-                this.width - insets.left - insets.right,
-                this.height - insets.top - insets.bottom
+                this.width() - insets.left - insets.right,
+                this.height() - insets.top - insets.bottom
             )
             return super.paintSelection(newG, inSelection, startPoint, endPoint)
         } finally {
@@ -1417,8 +1417,8 @@ open class RBlock(
     override fun getLowestRenderableSpot(x: Int, y: Int): RenderableSpot? {
         val bodyLayout = this.rBlockViewport
         val insets = this.getInsetsMarginBorder(this.hasHScrollBar, this.hasVScrollBar)
-        if ((x - relativeOffsetX > insets.left) && (x - relativeOffsetX < (this.width - insets.right)) && (y - relativeOffsetY > insets.top)
-            && (y - relativeOffsetY < (this.height - insets.bottom))
+        if ((x - relativeOffsetX > insets.left) && (x - relativeOffsetX < (this.width() - insets.right)) && (y - relativeOffsetY > insets.top)
+            && (y - relativeOffsetY < (this.height() - insets.bottom))
         ) {
             return bodyLayout.getLowestRenderableSpot(
                 x - relativeOffsetX - bodyLayout.x(),
@@ -1568,8 +1568,8 @@ open class RBlock(
                 if (hsb != null) {
                     hsb.setBounds(
                         guiX + insets.left,
-                        (guiY + this.height) - insets.bottom,
-                        this.width - insets.left - insets.right,
+                        (guiY + this.height()) - insets.bottom,
+                        this.width() - insets.left - insets.right,
                         SCROLL_BAR_THICKNESS
                     )
                 }
@@ -1578,10 +1578,10 @@ open class RBlock(
                 val vsb = this.vScrollBar
                 if (vsb != null) {
                     vsb.setBounds(
-                        (guiX + this.width) - insets.right,
+                        (guiX + this.width()) - insets.right,
                         guiY + insets.top,
                         SCROLL_BAR_THICKNESS,
-                        (this.height - insets.top
+                        (this.height() - insets.top
                                 - insets.bottom)
                     )
                 }
@@ -1600,9 +1600,9 @@ open class RBlock(
             val prevX = bodyLayout.x()
             if (viewPortX > insets.left) {
                 bodyLayout.setX( insets.left)
-            } else if (viewPortX < (this.width - insets.right - bodyLayout.visualWidth())) {
+            } else if (viewPortX < (this.width() - insets.right - bodyLayout.visualWidth())) {
                 bodyLayout.setX(
-                    min(insets.left, this.width - insets.right - bodyLayout.visualWidth()))
+                    min(insets.left, this.width() - insets.right - bodyLayout.visualWidth()))
             } else {
                 bodyLayout.setX(viewPortX)
             }
@@ -1627,9 +1627,9 @@ open class RBlock(
             val prevY = bodyLayout.y()
             if (viewPortY > insets.top) {
                 bodyLayout.setY(insets.top)
-            } else if (viewPortY < (this.height - insets.bottom - bodyLayout.visualHeight())) {
+            } else if (viewPortY < (this.height() - insets.bottom - bodyLayout.visualHeight())) {
                 bodyLayout.setY(
-                    min(insets.top, this.height - insets.bottom - bodyLayout.visualHeight()))
+                    min(insets.top, this.height() - insets.bottom - bodyLayout.visualHeight()))
             } else {
                 bodyLayout.setY(viewPortY)
             }
@@ -1695,8 +1695,8 @@ open class RBlock(
         if (hscroll || vscroll) {
             val bv = this.rBlockViewport
             val insets = this.getInsetsMarginBorder(hscroll, vscroll)
-            val vpheight = this.height - insets.top - insets.bottom
-            val vpwidth = this.width - insets.left - insets.right
+            val vpheight = this.height() - insets.top - insets.bottom
+            val vpwidth = this.width() - insets.left - insets.right
             val tentativeX = insets.left - bounds.x
             val tentativeY = insets.top - bounds.y
             var needCorrection = false
@@ -1709,7 +1709,7 @@ open class RBlock(
                 needCorrection = true
             }
             if (needCorrection) {
-                this.correctViewportOrigin(insets, this.width, this.height)
+                this.correctViewportOrigin(insets, this.width(), this.height())
                 this.resetScrollBars(null)
             }
         }
@@ -1818,14 +1818,14 @@ open class RBlock(
         val insets = getInsets(hasHScrollBar, hasVScrollBar)
         val hInset = insets.left + insets.right
         rBlockViewport.setWidth(newWidth)
-        width = newWidth + hInset
+        setWidth(newWidth + hInset)
     }
 
     override fun setInnerHeight(newHeight: Int) {
         val insets = getInsets(hasHScrollBar, hasVScrollBar)
         val vInset = insets.top + insets.bottom
         rBlockViewport.setHeight(newHeight)
-        height = newHeight + vInset
+        setHeight(newHeight + vInset)
     }
 
 

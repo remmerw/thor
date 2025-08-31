@@ -15,8 +15,8 @@ abstract class BaseBoundableRenderable(
     protected val container: RenderableContainer?,
     private var modelNode: ModelNode?
 ) : BaseRenderable(), BoundableRenderable {
-    override var width: Int = 0
-    override var height: Int = 0
+    private var width: Int = 0
+    private var height: Int = 0
     private var x: Int = 0
     private var y: Int = 0
 
@@ -44,19 +44,19 @@ abstract class BaseBoundableRenderable(
         }
     }
 
-    open fun getHeight(): Int {
+    override fun height(): Int {
         return height
     }
 
-    open fun setHeight(height: Int) {
+    override fun setHeight(height: Int) {
         this.height = height
     }
 
-    open fun getWidth(): Int {
+    override fun width(): Int {
         return width
     }
 
-    open fun setWidth(width: Int) {
+    override fun setWidth(width: Int) {
         this.width = width
     }
 
@@ -69,11 +69,11 @@ abstract class BaseBoundableRenderable(
     }
 
     override fun visualHeight(): Int {
-        return getHeight()
+        return height()
     }
 
     override fun visualWidth(): Int {
-        return getWidth()
+        return width()
     }
 
     override fun x(): Int {

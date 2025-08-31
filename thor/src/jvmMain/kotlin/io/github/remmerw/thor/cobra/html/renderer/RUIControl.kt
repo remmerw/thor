@@ -196,8 +196,8 @@ open class RUIControl(
         this.widget.setBounds(
             guiX + insets.left,
             guiY + insets.top,
-            this.width - insets.left - insets.right,
-            (this.height - insets.top
+            this.width() - insets.left - insets.right,
+            (this.height() - insets.top
                     - insets.bottom)
         )
     }
@@ -227,7 +227,7 @@ open class RUIControl(
             val oldColor = g.color
             try {
                 g.color = over
-                g.fillRect(0, 0, this.width, this.height)
+                g.fillRect(0, 0, this.width(), this.height())
             } finally {
                 g.color = oldColor
             }
@@ -382,8 +382,8 @@ open class RUIControl(
                 this.lastLayoutValue = layoutValue
             }
         }
-        this.width = layoutValue.width
-        this.height = layoutValue.height
+        this.setWidth(layoutValue.width)
+        this.setHeight(layoutValue.height)
     }
 
     /**

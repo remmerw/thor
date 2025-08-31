@@ -1336,7 +1336,7 @@ class TableMatrix(
 
         for (cell in this.ALL_CELLS) {
             // Should clip table cells, just in case.
-            val newG = g.create(cell.x(), cell.y(), cell.width, cell.height)
+            val newG = g.create(cell.x(), cell.y(), cell.width(), cell.height())
             try {
                 cell.paint(newG)
             } finally {
@@ -1363,8 +1363,8 @@ class TableMatrix(
             for (cell in this.ALL_CELLS) {
                 val cx = cell.x() - 1
                 val cy = cell.y() - 1
-                val cwidth = cell.getWidth() + 1
-                val cheight = cell.getHeight() + 1
+                val cwidth = cell.width() + 1
+                val cheight = cell.height() + 1
                 g.drawRect(cx, cy, cwidth, cheight)
             }
         }
@@ -1863,7 +1863,7 @@ class TableMatrix(
             get() = TODO("Not yet implemented")
 
         override fun repaint() {
-            container?.repaint(x(), y(), width, height)
+            container?.repaint(x(), y(), width(), height())
         }
 
         override fun repaint(modelNode: ModelNode?) {

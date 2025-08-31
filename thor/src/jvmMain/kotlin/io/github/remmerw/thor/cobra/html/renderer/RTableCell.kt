@@ -89,7 +89,7 @@ internal open class RTableCell(
       this.doLayout(width, height, expandWidth, expandHeight, null, RenderState.OVERFLOW_NONE, RenderState.OVERFLOW_NONE, sizeOnly, useCache);
       */
             this.layout(width, height, expandWidth, expandHeight, null, sizeOnly)
-            return Dimension(this.width, this.height)
+            return Dimension(this.width(), this.height())
         } finally {
             this.layoutUpTreeCanBeInvalidated = true
             this.layoutDeepCanBeInvalidated = true

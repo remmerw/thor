@@ -121,7 +121,7 @@ class DelayedPair(
                 if (width != null) {
                     child.setInnerWidth(width - childVerticalScrollBarHeight)
                 }
-                val childWidth = child.width
+                val childWidth = child.width()
                 x = parent.innerWidth() - (childWidth + right - childVerticalScrollBarHeight)
             }
         } else {
@@ -140,7 +140,7 @@ class DelayedPair(
                     child.setInnerHeight(height - childHorizontalScrollBarHeight)
                 }
                 // final int childHeight = height == null? child.getHeight() : height;
-                val childHeight = child.height
+                val childHeight = child.height()
                 y =
                     parent.innerHeight() - (childHeight + bottom - childHorizontalScrollBarHeight)
             }

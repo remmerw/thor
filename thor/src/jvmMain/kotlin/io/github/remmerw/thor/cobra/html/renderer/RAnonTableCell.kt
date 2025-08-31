@@ -85,7 +85,7 @@ internal class RAnonTableCell(
       */
             this.layout(width, height, expandWidth, expandHeight, null, sizeOnly)
 
-            return Dimension(this.width, this.height)
+            return Dimension(this.width(), this.height())
         } finally {
             this.layoutUpTreeCanBeInvalidated = true
             this.layoutDeepCanBeInvalidated = true

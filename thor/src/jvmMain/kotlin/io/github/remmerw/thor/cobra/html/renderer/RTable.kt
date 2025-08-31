@@ -148,8 +148,9 @@ internal class RTable(
                 this.lastLayoutValue = layoutValue
             }
         }
-        this.width = layoutValue.width
-        this.height = layoutValue.height
+        this.setWidth(layoutValue.width)
+
+        this.setHeight(layoutValue.height)
         this.sendGUIComponentsToParent()
         this.sendDelayedPairsToParent()
     }

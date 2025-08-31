@@ -33,9 +33,11 @@ interface RenderableContainer {
 
     fun clearDelayedPairs()
 
-    val height: Int
+    fun height(): Int
+    fun setHeight(height: Int)
 
-    val width: Int
+    fun width(): Int
+    fun setWidth(width: Int)
 
     fun x(): Int
     fun setX(x: Int)
@@ -49,22 +51,22 @@ interface RenderableContainer {
 
     fun innerWidth(): Int {
         val insets = getInsetsMarginBorder(false, false)
-        return this.width - (insets!!.left + insets.right)
+        return this.width() - (insets!!.left + insets.right)
     }
 
     fun innerMostWidth(): Int {
         val insets = getInsets(false, false)
-        return this.width - (insets!!.left + insets.right)
+        return this.width() - (insets!!.left + insets.right)
     }
 
     fun innerMostHeight(): Int {
         val insets = getInsets(false, false)
-        return this.height - (insets!!.top + insets.bottom)
+        return this.height() - (insets!!.top + insets.bottom)
     }
 
     fun innerHeight(): Int {
         val insets = getInsetsMarginBorder(false, false)
-        return this.height - (insets!!.top + insets.bottom)
+        return this.height() - (insets!!.top + insets.bottom)
     }
 
     fun visualBounds(): Rectangle?

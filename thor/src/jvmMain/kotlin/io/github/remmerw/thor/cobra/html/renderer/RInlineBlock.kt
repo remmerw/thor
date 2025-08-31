@@ -52,8 +52,8 @@ class RInlineBlock(
     }
 
     private fun assignDimension() {
-        this.width = child.getWidth()
-        this.height = child.getHeight()
+        this.setWidth(child.width())
+        this.setHeight(child.height())
     }
 
     override fun getRenderables(topFirst: Boolean): MutableIterator<Renderable?> {

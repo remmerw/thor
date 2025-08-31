@@ -54,12 +54,12 @@ class RImgControl(
         if (!widthConstrained && heightConstrained) {
             val prefSize = widget.preferredSize()!!
             if (prefSize.height != 0) {
-                this.width = (prefSize.width * innerMostHeight()) / prefSize.height
+                this.setWidth((prefSize.width * innerMostHeight()) / prefSize.height)
             }
         } else if (!heightConstrained && widthConstrained) {
             val prefSize = widget.preferredSize()!!
             if (prefSize.width != 0) {
-                this.height = (prefSize.height * innerMostWidth()) / prefSize.width
+                this.setHeight((prefSize.height * innerMostWidth()) / prefSize.width)
             }
         }
     }

@@ -37,8 +37,8 @@ class RSpacing(me: ModelNode?, container: RenderableContainer?, width: Int, heig
     BaseBoundableRenderable(container, me) {
     init {
         // Dimensions set when constructed.
-        this.width = width
-        this.height = height
+        this.setWidth(width)
+        this.setHeight(height)
     }
 
     override fun invalidateLayoutLocal() {
@@ -122,7 +122,7 @@ class RSpacing(me: ModelNode?, container: RenderableContainer?, width: Int, heig
         }
         g.color = SELECTION_COLOR
         g.setXORMode(SELECTION_XOR)
-        g.fillRect(0, 0, this.width, this.height)
+        g.fillRect(0, 0, this.width(), this.height())
         g.setPaintMode()
         return true
     }

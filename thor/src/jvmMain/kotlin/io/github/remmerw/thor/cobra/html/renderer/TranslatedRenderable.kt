@@ -129,20 +129,20 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
         return translatedChild.visualY
     }
 
-    override fun getHeight(): Int {
-        return translatedChild.height
+    override fun height(): Int {
+        return translatedChild.height()
     }
 
     override fun setHeight(height: Int) {
-        translatedChild.height = (height)
+        translatedChild.setHeight (height)
     }
 
-    override fun getWidth(): Int {
-        return translatedChild.width
+    override fun width(): Int {
+        return translatedChild.width()
     }
 
     override fun setWidth(width: Int) {
-        translatedChild.width = (width)
+        translatedChild.setWidth(width)
     }
 
     override fun visualHeight(): Int {

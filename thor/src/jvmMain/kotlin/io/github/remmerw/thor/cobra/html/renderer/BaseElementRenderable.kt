@@ -386,7 +386,7 @@ abstract class BaseElementRenderable(
                     break
                 }
             }
-            return Rectangle(x, y, this.getWidth(), this.getHeight())
+            return Rectangle(x, y, this.width(), this.height())
         }
 
     protected open fun clearStyle(isRootBlock: Boolean) {
@@ -690,8 +690,8 @@ abstract class BaseElementRenderable(
     }
 
     protected fun prePaint(g: Graphics) {
-        val startWidth = this.width
-        val startHeight = this.height
+        val startWidth = this.width()
+        val startHeight = this.height()
         var totalWidth = startWidth
         var totalHeight = startHeight
         var startX = 0
@@ -1175,7 +1175,7 @@ abstract class BaseElementRenderable(
             // return new Rectangle(insets.left, insets.top, this.getVisualWidth() - hInset, this.getVisualHeight() - vInset);
             return null
         } else {
-            return Rectangle(insets.left, insets.top, this.width - hInset, this.height - vInset)
+            return Rectangle(insets.left, insets.top, this.width() - hInset, this.height() - vInset)
         }
     }
 

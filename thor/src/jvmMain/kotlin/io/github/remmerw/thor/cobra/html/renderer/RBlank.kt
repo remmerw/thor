@@ -42,8 +42,8 @@ class RBlank(
 ) : BaseBoundableRenderable(container, me) {
     init {
         // Dimensions set when constructed.
-        this.width = width
-        this.height = height
+        this.setWidth(width)
+        this.setHeight(height)
     }
 
     override fun invalidateLayoutLocal() {
@@ -113,7 +113,7 @@ class RBlank(
             val oldColor = g.color
             try {
                 g.color = bkg
-                g.fillRect(0, 0, this.width, this.height)
+                g.fillRect(0, 0, this.width(), this.height())
             } finally {
                 g.color = oldColor
             }
@@ -122,16 +122,16 @@ class RBlank(
         if (td != 0) {
             if ((td and RenderState.MASK_TEXTDECORATION_UNDERLINE) != 0) {
                 val lineOffset = this.ascentPlusLeading + 2
-                g.drawLine(0, lineOffset, this.width, lineOffset)
+                g.drawLine(0, lineOffset, this.width(), lineOffset)
             }
             if ((td and RenderState.MASK_TEXTDECORATION_LINE_THROUGH) != 0) {
                 val fm = this.fontMetrics
                 val lineOffset = fm.leading + ((fm.ascent + fm.descent) / 2)
-                g.drawLine(0, lineOffset, this.width, lineOffset)
+                g.drawLine(0, lineOffset, this.width(), lineOffset)
             }
             if ((td and RenderState.MASK_TEXTDECORATION_OVERLINE) != 0) {
                 val lineOffset = this.fontMetrics.leading
-                g.drawLine(0, lineOffset, this.width, lineOffset)
+                g.drawLine(0, lineOffset, this.width(), lineOffset)
             }
             if ((td and RenderState.MASK_TEXTDECORATION_BLINK) != 0) {
                 // TODO
@@ -142,7 +142,7 @@ class RBlank(
             val oldColor = g.color
             try {
                 g.color = over
-                g.fillRect(0, 0, width, height)
+                g.fillRect(0, 0, width(), height())
             } finally {
                 g.color = oldColor
             }
@@ -172,7 +172,7 @@ class RBlank(
         }
         g.color = SELECTION_COLOR
         g.setXORMode(SELECTION_XOR)
-        g.fillRect(0, 0, this.width, this.height)
+        g.fillRect(0, 0, this.width(), this.height())
         g.setPaintMode()
         return true
     }

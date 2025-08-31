@@ -32,7 +32,7 @@ class RTab(
     numSpaces: Int
 ) : RWord(me, "\t", container, fontMetrics, descent, ascentPlusLeading, height, 0) {
     init {
-        this.width = fontMetrics.charWidth(' ') * numSpaces
+        this.setWidth(fontMetrics.charWidth(' ') * numSpaces)
     }
 
     override fun extractSelectionText(

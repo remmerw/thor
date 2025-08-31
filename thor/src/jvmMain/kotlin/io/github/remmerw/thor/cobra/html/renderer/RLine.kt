@@ -70,7 +70,7 @@ import kotlin.math.max
         // at the beginning of the line, not a node that encloses the whole line.
         this.setX(x)
         this.setY(y)
-        this.height = height
+        this.setHeight(height)
         this.desiredMaxWidth = desiredMaxWidth
         // Layout here can always be "invalidated"
         this.layoutUpTreeCanBeInvalidated = true
@@ -210,7 +210,7 @@ import kotlin.math.max
     fun addWord(rword: RWord) {
         // Check if it fits horzizontally
         var offset = this.xoffset
-        val wiwidth = rword.width
+        val wiwidth = rword.width()
         val allowOverflow = this.allowOverflow
         val firstAllowOverflowWord = this.firstAllowOverflowWord
         if (allowOverflow && firstAllowOverflowWord) {
@@ -246,9 +246,9 @@ import kotlin.math.max
                 } else {
                     if (renderable is RBlank) {
                         newWidth = renderable.x()
-                        newOffset = newWidth + renderable.getWidth()
+                        newOffset = newWidth + renderable.width()
                     } else {
-                        newOffset = renderable.x() + renderable.width
+                        newOffset = renderable.x() + renderable.width()
                         newWidth = newOffset
                     }
                     break
@@ -264,7 +264,7 @@ import kotlin.math.max
                 }
             } else {
                 this.xoffset = newOffset
-                this.width = newWidth
+                this.setWidth(newWidth)
                 if (overflow == null) {
                     throw OverflowException(mutableSetOf<Renderable?>(rword))
                 } else {
@@ -276,7 +276,7 @@ import kotlin.math.max
 
         // Add it
         var extraHeight = 0
-        val maxDescent = this.height - this.baselineOffset
+        val maxDescent = this.height() - this.baselineOffset
         if (rword.descent > maxDescent) {
             extraHeight += (rword.descent - maxDescent)
         }
@@ -285,7 +285,7 @@ import kotlin.math.max
             extraHeight += (rword.ascentPlusLeading - maxAscentPlusLeading)
         }
         if (extraHeight > 0) {
-            val newHeight = this.height + extraHeight
+            val newHeight = this.height() + extraHeight
             this.adjustHeight(newHeight, newHeight, VerticalAlign.BOTTOM)
         }
         this.renderabl.add(rword)
@@ -293,14 +293,14 @@ import kotlin.math.max
         val x = offset
         offset += wiwidth
         this.xoffset = offset
-        this.width = this.xoffset
+        this.setWidth(this.xoffset)
         rword.setOrigin(x, this.baselineOffset - rword.ascentPlusLeading)
     }
 
     fun addBlank(rblank: RBlank) {
         // NOTE: Blanks may be added without concern for wrapping (?)
         val x = this.xoffset
-        val width = rblank.width
+        val width = rblank.width()
         rblank.setOrigin(x, this.baselineOffset - rblank.ascentPlusLeading)
         this.renderabl.add(rblank)
         rblank.setParent(this)
@@ -311,12 +311,12 @@ import kotlin.math.max
     fun addSpacing(rblank: RSpacing) {
         // NOTE: Spacing may be added without concern for wrapping (?)
         val x = this.xoffset
-        val width = rblank.width
-        rblank.setOrigin(x, (this.height - rblank.height) / 2)
+        val width = rblank.width()
+        rblank.setOrigin(x, (this.height() - rblank.height()) / 2)
         this.renderabl.add(rblank)
         rblank.setParent(this)
         this.xoffset = x + width
-        this.width = this.xoffset
+        this.setWidth(this.xoffset)
     }
 
     /**
@@ -330,8 +330,8 @@ import kotlin.math.max
         val yoffset: Int
         if (valign != null) {
             when (valign) {
-                VerticalAlign.BOTTOM -> yoffset = this.height - elementHeight
-                VerticalAlign.MIDDLE -> yoffset = (this.height - elementHeight) / 2
+                VerticalAlign.BOTTOM -> yoffset = this.height() - elementHeight
+                VerticalAlign.MIDDLE -> yoffset = (this.height() - elementHeight) / 2
                 VerticalAlign.BASELINE -> yoffset = this.baselineOffset - elementHeight
                 VerticalAlign.TOP -> yoffset = 0
                 else -> yoffset = this.baselineOffset - elementHeight
@@ -418,7 +418,7 @@ import kotlin.math.max
     fun checkFit(relement: RElement): Boolean {
         val origXOffset = this.xoffset
         val desiredMaxWidth = this.desiredMaxWidth
-        val pw = relement.width
+        val pw = relement.width()
         val allowOverflow = this.allowOverflow
         val firstAllowOverflowWord = this.firstAllowOverflowWord
         if (allowOverflow && firstAllowOverflowWord) {
@@ -437,10 +437,10 @@ import kotlin.math.max
 
         // Note: Renderable for widget doesn't paint the widget, but
         // it's needed for height readjustment.
-        val boundsh = this.height
+        val boundsh = this.height()
         val origXOffset = this.xoffset
-        val pw = relement.width
-        val ph = relement.height
+        val pw = relement.width()
+        val ph = relement.height()
         val requiredHeight: Int
 
         val valign = relement.vAlign()
@@ -466,7 +466,8 @@ import kotlin.math.max
         this.setElementY(relement, ph, valign)
         val newX = origXOffset + pw
         this.xoffset = newX
-        this.width = this.xoffset
+        this.setWidth(this.xoffset)
+
     }
 
     /**
@@ -479,7 +480,7 @@ import kotlin.math.max
     private fun adjustHeight(newHeight: Int, elementHeight: Int, valign: VerticalAlign?) {
         // Set new line height
         // int oldHeight = this.height;
-        this.height = newHeight
+        this.setHeight(newHeight)
         val renderables = this.renderabl
         // Find max baseline
         val firstFm = this.modelNode()!!.renderState()!!.fontMetrics
@@ -526,7 +527,7 @@ import kotlin.math.max
                 r.setY(baseline - r.ascentPlusLeading)
             } else if (r is RElement) {
                 // int w = relement.getWidth();
-                this.setElementY(r, r.height, r.vAlign())
+                this.setElementY(r, r.height(), r.vAlign())
             } else {
                 // RSpacing and RStyleChanger don't matter?
             }

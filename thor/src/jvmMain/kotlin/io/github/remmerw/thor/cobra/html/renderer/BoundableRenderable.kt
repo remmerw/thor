@@ -84,9 +84,12 @@ interface BoundableRenderable : Renderable {
 
     val visualY: Int
 
-    var height: Int
+    fun height(): Int
+    fun setHeight(height: Int)
 
-    var width: Int
+    fun width(): Int
+    fun setWidth(width: Int)
+
 
     fun visualHeight(): Int
 

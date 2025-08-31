@@ -416,8 +416,8 @@ class HtmlBlockPanel(
                     }
                 }
                 // Adjust for permanent vertical scrollbar.
-                val newPw = max(block.width + block.vScrollBarWidth, pw)
-                return Dimension(newPw, block.height)
+                val newPw = max(block.width() + block.vScrollBarWidth, pw)
+                return Dimension(newPw, block.height())
             }
         }
         return Dimension(600, 400)
@@ -986,10 +986,22 @@ class HtmlBlockPanel(
         throw UnsupportedOperationException("Delayed pairs are not being handled at this level.")
     }
 
-    override val height: Int
-        get() = TODO("Not yet implemented")
-    override val width: Int
-        get() = TODO("Not yet implemented")
+    override fun height(): Int {
+        TODO("Not yet implemented")
+    }
+
+    override fun setHeight(height: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override fun width(): Int {
+        TODO("Not yet implemented")
+    }
+
+    override fun setWidth(width: Int) {
+        TODO("Not yet implemented")
+    }
+
 
     override fun x(): Int {
         TODO("Not yet implemented")
