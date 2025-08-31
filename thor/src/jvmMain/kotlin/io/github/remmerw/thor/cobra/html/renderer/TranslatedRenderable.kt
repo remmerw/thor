@@ -92,12 +92,6 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
         translatedChild.setOrigin(x, y)
     }
 
-    override val visualX: Int
-        get() = TODO("Not yet implemented")
-    override val visualY: Int
-        get() = TODO("Not yet implemented")
-
-
     override fun x(): Int {
         return translatedChild.x()
     }
@@ -114,12 +108,12 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
         translatedChild.setY(y)
     }
 
-    override fun getVisualX(): Int {
-        return translatedChild.visualX
+    override fun visualX(): Int {
+        return translatedChild.visualX()
     }
 
-    override fun getVisualY(): Int {
-        return translatedChild.visualY
+    override fun visualY(): Int {
+        return translatedChild.visualY()
     }
 
     override fun height(): Int {

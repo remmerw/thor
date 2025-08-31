@@ -1223,12 +1223,12 @@ abstract class BaseElementRenderable(
         }
     }
 
-    override fun getVisualX(): Int {
-        return super.getVisualX() + relativeOffsetX
+    override fun visualX(): Int {
+        return super.visualX() + relativeOffsetX
     }
 
-    override fun getVisualY(): Int {
-        return super.getVisualY() + relativeOffsetY
+    override fun visualY(): Int {
+        return super.visualY() + relativeOffsetY
     }
 
     override fun setupRelativePosition(container: RenderableContainer) {

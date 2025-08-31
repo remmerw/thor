@@ -63,10 +63,6 @@ class RImgControl(
             }
         }
     }
-    override val visualX: Int
-        get() = TODO("Not yet implemented")
-    override val visualY: Int
-        get() = TODO("Not yet implemented")
 
     override fun setInnerWidth(newWidth: Int) {
         super.setInnerWidth(newWidth)

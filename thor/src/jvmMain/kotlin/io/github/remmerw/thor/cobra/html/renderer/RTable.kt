@@ -164,10 +164,6 @@ internal class RTable(
 
 
 
-    override val visualX: Int
-        get() = TODO("Not yet implemented")
-    override val visualY: Int
-        get() = TODO("Not yet implemented")
 
     /*
      * (non-Javadoc)
@@ -182,8 +178,8 @@ internal class RTable(
             while (i.hasNext()) {
                 val pr = i.next()
                 val r = pr.renderable
-                val childX = x - r.visualX
-                val childY = y - r.visualY
+                val childX = x - r.visualX()
+                val childY = y - r.visualY()
                 val rs = r.getLowestRenderableSpot(childX, childY)
                 if (rs != null) {
                     return rs
@@ -213,8 +209,8 @@ internal class RTable(
                 val r = pr.renderable
                 val bounds = r.visualBounds()!!
                 if (bounds.contains(x, y)) {
-                    val childX = x - r.visualX
-                    val childY = y - r.visualY
+                    val childX = x - r.visualX()
+                    val childY = y - r.visualY()
                     if (!r.onMouseClick(event, childX, childY)) {
                         return false
                     }
@@ -233,8 +229,8 @@ internal class RTable(
                 val r = pr.renderable
                 val bounds = r.visualBounds()!!
                 if (bounds.contains(x, y)) {
-                    val childX = x - r.visualX
-                    val childY = y - r.visualY
+                    val childX = x - r.visualX()
+                    val childY = y - r.visualY()
                     if (!r.onDoubleClick(event, childX, childY)) {
                         return false
                     }
@@ -265,8 +261,8 @@ internal class RTable(
                 val r = pr.renderable
                 val bounds = r.visualBounds()!!
                 if (bounds.contains(x, y)) {
-                    val childX = x - r.visualX
-                    val childY = y - r.visualY
+                    val childX = x - r.visualX()
+                    val childY = y - r.visualY()
                     if (!r.onMousePressed(event, childX, childY)) {
                         return false
                     }
@@ -292,8 +288,8 @@ internal class RTable(
                 val r = pr.renderable
                 val bounds = r.visualBounds()!!
                 if (bounds.contains(x, y)) {
-                    val childX = x - r.visualX
-                    val childY = y - r.visualY
+                    val childX = x - r.visualX()
+                    val childY = y - r.visualY()
                     if (!r.onMouseReleased(event, childX, childY)) {
                         return false
                     }

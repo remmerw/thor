@@ -61,11 +61,11 @@ abstract class BaseBoundableRenderable(
         this.width = width
     }
 
-    open fun getVisualX(): Int {
+    override fun visualX(): Int {
         return x()
     }
 
-    open fun getVisualY(): Int {
+    override fun visualY(): Int {
         return y()
     }
 
@@ -94,8 +94,8 @@ abstract class BaseBoundableRenderable(
     }
 
     override fun contains(x: Int, y: Int): Boolean {
-        val mx = this.getVisualX()
-        val my = this.getVisualY()
+        val mx = this.visualX()
+        val my = this.visualY()
         return (x >= mx) && (y >= my) && (x < (mx + this.visualWidth())) && (y < (my + this.visualHeight()))
     }
 
@@ -108,7 +108,7 @@ abstract class BaseBoundableRenderable(
      * They are distinct from layout bounds when {overflow:visible} or {position:relative} is set on the element
      */
     override fun visualBounds(): Rectangle {
-        return Rectangle(getVisualX(), getVisualY(), visualWidth(), visualHeight())
+        return Rectangle(visualX(), visualY(), visualWidth(), visualHeight())
     }
 
     override fun size(): Dimension? {
@@ -244,8 +244,8 @@ abstract class BaseBoundableRenderable(
         val parent: Renderable? = this.parent
         if (parent is BoundableRenderable) {
             parent.repaint(
-                x + this.getVisualX(),
-                y + this.getVisualY(),
+                x + this.visualX(),
+                y + this.visualY(),
                 visualWidth(),
                 visualHeight()
             )
@@ -308,8 +308,8 @@ abstract class BaseBoundableRenderable(
             return Point(0, 0)
         }
 
-        var x = this.getVisualX()
-        var y = this.getVisualY()
+        var x = this.visualX()
+        var y = this.visualY()
 
         var parent = this.parent
         while (true) {
@@ -324,8 +324,8 @@ abstract class BaseBoundableRenderable(
             if (parent === ancestor) {
                 return Point(x, y)
             }
-            x += parent.visualX
-            y += parent.visualY
+            x += parent.visualX()
+            y += parent.visualY()
             parent = parent.parent()
         }
     }
@@ -335,8 +335,8 @@ abstract class BaseBoundableRenderable(
             return Point(0, 0)
         }
 
-        var x = this.getVisualX()
-        var y = this.getVisualY()
+        var x = this.visualX()
+        var y = this.visualY()
 
         var nextX = 0
         var nextY = 0
@@ -356,8 +356,8 @@ abstract class BaseBoundableRenderable(
             }
             x += nextX
             y += nextY
-            nextX = parent.visualX
-            nextY = parent.visualY
+            nextX = parent.visualX()
+            nextY = parent.visualY()
             parent = parent.parent()
         }
     }
@@ -367,8 +367,8 @@ abstract class BaseBoundableRenderable(
             return Point(0, 0)
         }
 
-        var x = this.getVisualX()
-        var y = this.getVisualY()
+        var x = this.visualX()
+        var y = this.visualY()
 
 
         if (this is RBlockViewport) {
@@ -389,8 +389,8 @@ abstract class BaseBoundableRenderable(
             if (parent === ancestor) {
                 return Point(x, y)
             }
-            x += parent.visualX
-            y += parent.visualY
+            x += parent.visualX()
+            y += parent.visualY()
             parent = parent.parent()
         }
     }

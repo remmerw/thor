@@ -181,11 +181,6 @@ internal class RAnonTableCell(
         return cellNode.getRenderState()
     }
 
-    override val visualX: Int
-        get() = TODO("Not yet implemented")
-    override val visualY: Int
-        get() = TODO("Not yet implemented")
-
 
 
 

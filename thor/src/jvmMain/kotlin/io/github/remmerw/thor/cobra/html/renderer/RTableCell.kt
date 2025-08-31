@@ -208,10 +208,6 @@ internal open class RTableCell(
         return cellElement.getRenderState()
     }
 
-    override val visualX: Int
-        get() = TODO("Not yet implemented")
-    override val visualY: Int
-        get() = TODO("Not yet implemented")
 
     override fun vAlign(): CSSProperty.VerticalAlign? {
         TODO("Not yet implemented")

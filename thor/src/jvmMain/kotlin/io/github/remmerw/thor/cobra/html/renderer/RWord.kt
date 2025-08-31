@@ -316,10 +316,6 @@ open class RWord(
         }
     }
 
-    override val visualX: Int
-        get() = TODO("Not yet implemented")
-    override val visualY: Int
-        get() = TODO("Not yet implemented")
 
     override fun getLowestRenderableSpot(x: Int, y: Int): RenderableSpot {
         return RenderableSpot(this, x, y)

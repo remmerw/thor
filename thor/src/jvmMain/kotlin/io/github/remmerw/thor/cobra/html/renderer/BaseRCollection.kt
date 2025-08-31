@@ -265,8 +265,8 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
             if (oldRenderable != null) {
                 oldRenderable.onMouseOut(
                     event,
-                    x - oldRenderable.visualX,
-                    y - oldRenderable.visualY,
+                    x - oldRenderable.visualX(),
+                    y - oldRenderable.visualY(),
                     newLimit
                 )
             }

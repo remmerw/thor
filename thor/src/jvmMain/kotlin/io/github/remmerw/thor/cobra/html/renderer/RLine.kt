@@ -128,7 +128,7 @@ class RLine(
                 // RElements should be translated.
                 if (!r.isDelegated()) {
                     val newG = g.create()
-                    newG.translate(r.visualX, r.visualY)
+                    newG.translate(r.visualX(), r.visualY())
                     try {
                         r.paint(newG)
                     } finally {
@@ -567,10 +567,6 @@ class RLine(
         }
     }
 
-    override val visualX: Int
-        get() = TODO("Not yet implemented")
-    override val visualY: Int
-        get() = TODO("Not yet implemented")
 
     override fun getLowestRenderableSpot(x: Int, y: Int): RenderableSpot? {
         val rarray = this.renderabl.toArray<Renderable?>(Renderable.Companion.EMPTY_ARRAY)

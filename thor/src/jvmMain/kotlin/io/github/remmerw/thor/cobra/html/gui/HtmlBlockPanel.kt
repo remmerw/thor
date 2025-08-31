@@ -331,7 +331,7 @@ class HtmlBlockPanel(
                     // when the target node has blank content.
                     if (Nodes.isSameOrAncestorOf(node, r.modelNode() as Node)) {
                         val xInRoot =
-                            if (prevBoundable == null) 0 else prevBoundable.visualX + prevBoundable.visualWidth()
+                            if (prevBoundable == null) 0 else prevBoundable.visualX() + prevBoundable.visualWidth()
                         val rootOrigin = root.getOriginRelativeTo(relativeTo)
                         subBounds = Rectangle(
                             rootOrigin.x + xInRoot,
@@ -587,7 +587,7 @@ class HtmlBlockPanel(
 
     private fun getInnerMostRenderable(x: Int, y: Int): Renderable? {
         val block = this.rblock
-        var r = block!!.getRenderable(x - block.getVisualX(), y - block.getVisualY())
+        var r = block!!.getRenderable(x - block.visualX(), y - block.visualY())
 
         var xi = x
         var yi = y
