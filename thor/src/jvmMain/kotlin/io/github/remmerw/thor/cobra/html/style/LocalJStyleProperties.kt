@@ -620,7 +620,7 @@ class LocalJStyleProperties(private val element: HTMLElementImpl) :
         updateInlineStyle("z-index", zIndex)
     }
 
-    protected fun getNodeData(): NodeData? {
+    override fun getNodeData(): NodeData? {
         val ele = this.element
         val inlineStyle = ele.getAttribute("style")
         if ((inlineStyle != null) && (inlineStyle.length > 0)) {
@@ -660,6 +660,4 @@ class LocalJStyleProperties(private val element: HTMLElementImpl) :
         }
     }
 
-    override val nodeData: NodeData?
-        get() = TODO("Not yet implemented")
 }

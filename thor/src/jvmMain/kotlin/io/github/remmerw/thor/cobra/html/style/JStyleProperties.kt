@@ -52,7 +52,7 @@ abstract class JStyleProperties(
         // need to check if upstream can provide the absolute url of
         //  the image so that it can directly be passed.
         var quotedUri: String? = null
-        val t = this.nodeData!!.getValue("background-image", false) as TermURIImpl?
+        val t = this.getNodeData()!!.getValue("background-image", false) as TermURIImpl?
         if (t != null) {
             var finalUrl: URL? = null
             try {
@@ -604,10 +604,10 @@ abstract class JStyleProperties(
     val float: String?
         get() = helperGetProperty("float")
 
-    abstract val nodeData: NodeData?
+    abstract fun getNodeData(): NodeData?
 
     private fun helperGetValue(propertyName: String?): String? {
-        val nodeData = this.nodeData
+        val nodeData = this.getNodeData()
         if (nodeData != null) {
             val value = nodeData.getValue(propertyName, true)
             // The trim() is a temporary work around for #154
@@ -618,7 +618,7 @@ abstract class JStyleProperties(
     }
 
     private fun helperGetProperty(propertyName: String?): String? {
-        val nodeData = this.nodeData
+        val nodeData = this.getNodeData()
         if (nodeData != null) {
             val property = nodeData.getProperty<CSSProperty?>(propertyName, true)
             // final CSSProperty property = nodeData.getProperty(propertyName);
@@ -629,19 +629,8 @@ abstract class JStyleProperties(
     }
 
     fun helperTryBoth(propertyName: String?): String? {
-        // These two implementations were deprecated after the changes in https://github.com/radkovo/jStyleParser/issues/50
 
-        /* Original
-    final String value = helperGetValue(propertyName);
-    return value == null ? helperGetProperty(propertyName) : value;
-    */
-
-        /* Corrected (equivalent to below implementation, but less optimal)
-    final String property = helperGetProperty(propertyName);
-    return property == null || property.isEmpty() ? helperGetValue(propertyName) : property;
-    */
-
-        val nodeData = this.nodeData
+        val nodeData = this.getNodeData()
         if (nodeData == null) {
             return null
         }

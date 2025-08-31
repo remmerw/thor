@@ -111,7 +111,8 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
             if (currentStyle != null) {
                 return currentStyle!!
             }
-            currentStyle = ComputedJStyleProperties(this, getNodeData(null), true)
+            currentStyle = ComputedJStyleProperties(this,
+                getNodeData(null), true)
             return currentStyle!!
         }
     }

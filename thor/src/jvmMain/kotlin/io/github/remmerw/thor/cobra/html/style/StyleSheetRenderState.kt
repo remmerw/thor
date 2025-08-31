@@ -73,7 +73,7 @@ open class StyleSheetRenderState : RenderState {
         this.borderInfo = borderInfo
     }
 
-    var iWordInfoMap: MutableMap<String?, WordInfo?>? = null
+    private var iWordInfoMap: MutableMap<String?, WordInfo?>? = null
     private var iFont: Font? = null
     private var iFontMetrics: FontMetrics? = null
     private var iColor: Color? = null
@@ -90,9 +90,8 @@ open class StyleSheetRenderState : RenderState {
     private var iBlankWidth = -1
     private var iHighlight = false
     private var iDisplay: Int? = null
-    var alignXPercent = -1
-    val alignYPercent: Int
-        get() = TODO("Not yet implemented")
+    private var alignXPercent = -1
+    private val alignYPercent: Int = 0 // todo
     private var counters: MutableMap<String?, ArrayList<Int?>>? = null
     private var iTextIndentText: String? = null
     private var cachedVisibility: Int? = null
@@ -1071,7 +1070,7 @@ open class StyleSheetRenderState : RenderState {
     // TODO: This should return a more abstract type that can represent values like length and percentage
     override fun getVerticalAlign(): VerticalAlign? {
         val props = this.cssProperties()
-        val valignProperty = props!!.nodeData?.getProperty<VerticalAlign?>("vertical-align")
+        val valignProperty = props!!.getNodeData()?.getProperty<VerticalAlign?>("vertical-align")
         return valignProperty
     }
 

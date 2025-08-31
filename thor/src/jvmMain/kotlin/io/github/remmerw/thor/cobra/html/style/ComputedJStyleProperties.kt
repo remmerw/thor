@@ -3,11 +3,17 @@ package io.github.remmerw.thor.cobra.html.style
 import cz.vutbr.web.css.NodeData
 import org.w3c.dom.DOMException
 
+
 class ComputedJStyleProperties(
     context: CSS2PropertiesContext,
-    override val nodeData: NodeData?,
+    private val nodeData: NodeData?,
     nullIfAbsent: Boolean
 ) : JStyleProperties(context, nullIfAbsent) {
+
+    override fun getNodeData(): NodeData?{
+        return nodeData
+    }
+
     //TODO need to implement all the unimplemented setters.
     @Throws(DOMException::class)
     override fun setAzimuth(azimuth: String?) {
@@ -619,7 +625,4 @@ class ComputedJStyleProperties(
         throw UnsupportedOperationException()
     }
 
-    protected fun getNodeData(): NodeData? {
-        return this.nodeData
-    }
 }

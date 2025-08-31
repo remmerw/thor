@@ -79,8 +79,8 @@ abstract class BaseElementRenderable(
     @Volatile
     protected var backgroundImageError: Boolean = false
     protected var zIndex: Int = 0
-    protected var borderTopColor: Color? = null
-    protected var borderLeftColor: Color? = null
+    private var borderTopColor: Color? = null
+    private var borderLeftColor: Color? = null
     protected var borderBottomColor: Color? = null
     protected var borderRightColor: Color? = null
     protected var borderInsets: Insets? = null
