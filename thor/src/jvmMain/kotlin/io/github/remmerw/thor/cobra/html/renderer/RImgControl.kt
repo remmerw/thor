@@ -90,10 +90,6 @@ class RImgControl(
     }
 
 
-    override fun isReadyToPaint(): Boolean {
-        return super.isReadyToPaint() && widget.isReadyToPaint
-    }
-
     override fun toString(): String {
         return "RImgControl : " + modelNode
     }

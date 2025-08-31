@@ -9,11 +9,7 @@ import java.awt.Graphics
 interface UIControl {
     fun setRUIControl(ruicontrol: RUIControl?)
 
-    /**
-     * Called as the control is layed out, either the first time HTML layout
-     * occurs or when the DOM changes. This method should reset its state assuming
-     * the element has changed, and change its preferred size if appropriate.
-     */
+
     fun reset(availWidth: Int, availHeight: Int)
 
     fun preferredSize(): Dimension?
@@ -26,12 +22,7 @@ interface UIControl {
 
     fun backgroundColor(): Color?
 
-    // public boolean paintSelection(Graphics g, boolean inSelection,
-    // RenderableSpot startPoint, RenderableSpot endPoint);
     fun paint(g: Graphics?)
 
     fun component(): Component
-
-    val isReadyToPaint: Boolean
-        get() = true
 }
