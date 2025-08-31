@@ -141,7 +141,7 @@ class HTMLFrameElementImpl(name: String) : HTMLElementImpl(name), HTMLFrameEleme
             // Not loaded yet
             return null
         }
-        return frame.contentDocument
+        return frame.contentDocument()
     }
 
     val contentWindow: Window?
@@ -151,7 +151,7 @@ class HTMLFrameElementImpl(name: String) : HTMLElementImpl(name), HTMLFrameEleme
                 // Not loaded yet
                 return null
             }
-            return Window.getWindow(frame.htmlRendererContext)
+            return Window.getWindow(frame.htmlRendererContext())
         }
 
 }

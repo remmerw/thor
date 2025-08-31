@@ -33,9 +33,7 @@ import java.awt.Component
  * @see ClientletContext.setResultingContent
  */
 interface ComponentContent {
-    fun disableRenderHints() {
-        // NOP
-    }
+
 
     var component: Component?
 

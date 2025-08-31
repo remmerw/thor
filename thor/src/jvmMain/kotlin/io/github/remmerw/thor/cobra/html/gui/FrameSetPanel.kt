@@ -131,9 +131,9 @@ class FrameSetPanel : JComponent(), NodeRenderer {
                             if (frameElement.getBrowserFrame() == null) {
                                 val frame = context.createBrowserFrame()
                                 frameElement.setBrowserFrame(frame)
-                                frameComponents[i] = frame?.component!!
+                                frameComponents[i] = frame?.component()!!
                             } else {
-                                frameComponents[i] = frameElement.getBrowserFrame()!!.component!!
+                                frameComponents[i] = frameElement.getBrowserFrame()!!.component()!!
                             }
                         } else {
                             frameComponents[i] = JPanel()

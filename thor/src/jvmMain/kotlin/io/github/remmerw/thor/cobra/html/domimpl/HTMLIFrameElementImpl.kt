@@ -96,7 +96,7 @@ class HTMLIFrameElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLIFr
             // The browser frame is created by the layout thread, but the iframe is loaded in the window's JS Scheduler thread.
             // See GH #140
             var count = 10
-            while (count > 0 && frame.contentDocument == null) {
+            while (count > 0 && frame.contentDocument() == null) {
                 try {
                     Thread.sleep(100)
                 } catch (e: InterruptedException) {
@@ -106,17 +106,10 @@ class HTMLIFrameElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLIFr
             }
         }
 
-        return frame.contentDocument
+        return frame.contentDocument()
     }
 
-    fun setContentDocument(d: Document?) {
-        val frame = this.getBrowserFrame()
-        if (frame == null) {
-            // TODO: This needs to be handled.
-            return
-        }
-        frame.contentDocument = d
-    }
+
 
     val contentWindow: Window?
         get() {
@@ -125,7 +118,7 @@ class HTMLIFrameElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLIFr
                 // Not loaded yet
                 return null
             }
-            return Window.getWindow(frame.htmlRendererContext)
+            return Window.getWindow(frame.htmlRendererContext())
         }
 
     override fun getFrameBorder(): String? {
@@ -237,7 +230,7 @@ class HTMLIFrameElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLIFr
                             )
                         )
                     ) {
-                        frame.htmlRendererContext!!.setJobFinishedHandler(object : Runnable {
+                        frame.htmlRendererContext()!!.setJobFinishedHandler(object : Runnable {
                             override fun run() {
                                 println("Iframes window's job over!")
                                 markJobDone(1, true)

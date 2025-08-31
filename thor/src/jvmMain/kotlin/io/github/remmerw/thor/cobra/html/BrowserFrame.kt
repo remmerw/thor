@@ -38,7 +38,7 @@ interface BrowserFrame {
      * Gets the component that renders the frame. This can be a
      * [HtmlPanel].
      */
-    val component: Component?
+    fun component(): Component?
 
     /**
      * Loads a URL in the frame.
@@ -51,12 +51,12 @@ interface BrowserFrame {
     /**
      * Sets the content document.
      */
-    var contentDocument: Document?
+    fun contentDocument(): Document?
 
     /**
      * Gets the [HtmlRendererContext] of the frame.
      */
-    val htmlRendererContext: HtmlRendererContext?
+    fun htmlRendererContext(): HtmlRendererContext?
 
     /**
      * Sets the default margin insets of the browser frame.

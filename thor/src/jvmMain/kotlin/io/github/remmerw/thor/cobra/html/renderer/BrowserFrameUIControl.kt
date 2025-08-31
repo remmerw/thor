@@ -22,11 +22,11 @@ internal class BrowserFrameUIControl(
 
 
     override fun backgroundColor(): Color? {
-        return this.browserFrame.component?.getBackground()
+        return this.browserFrame.component()?.getBackground()
     }
 
     override fun component(): Component {
-        return this.browserFrame.component!!
+        return this.browserFrame.component()!!
     }
 
     override fun reset(availWidth: Int, availHeight: Int) {
