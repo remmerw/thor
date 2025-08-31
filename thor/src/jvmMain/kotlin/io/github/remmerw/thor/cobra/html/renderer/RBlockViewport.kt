@@ -2897,7 +2897,7 @@ class RBlockViewport(
     private class CommonLayout : MarkupLayout {
         override fun layoutMarkup(bodyLayout: RBlockViewport, markupElement: HTMLElementImpl) {
             val rs = markupElement.getRenderState()
-            var display = rs.display
+            var display = rs.getDisplay()
             if (display == RenderState.DISPLAY_INLINE || display == RenderState.DISPLAY_INLINE_BLOCK || display == RenderState.DISPLAY_INLINE_TABLE) {
                 // Inline elements with absolute or fixed positions need to be treated as blocks.
                 // TODO: ^^Verify; is that an internal hack or a spec requirement?
@@ -3036,7 +3036,7 @@ class RBlockViewport(
         ): Boolean {
             val mn = block.modelNode()!!
             val rs: RenderState = mn.renderState()!!
-            val isDisplayBlock = rs.display == RenderState.DISPLAY_BLOCK
+            val isDisplayBlock = rs.getDisplay() == RenderState.DISPLAY_BLOCK
             val isPosStaticOrRelative =
                 rs.position == RenderState.POSITION_STATIC || rs.position == RenderState.POSITION_RELATIVE
             val borderInsets = rs.borderInfo!!.insets

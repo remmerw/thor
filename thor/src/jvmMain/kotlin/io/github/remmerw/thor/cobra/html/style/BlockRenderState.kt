@@ -81,8 +81,6 @@ class BlockRenderState : StyleSheetRenderState {
         set(value) {}
     override val alignYPercent: Int
         get() = TODO("Not yet implemented")
-    override val display: Int
-        get() = TODO("Not yet implemented")
     override val textIndentText: String?
         get() = TODO("Not yet implemented")
     override val whiteSpace: Int

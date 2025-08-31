@@ -41,7 +41,7 @@ class RInlineBlock(
     private val child: BaseBlockyRenderable
 
     init {
-        val display = modelNode.getRenderState().display
+        val display = modelNode.getRenderState().getDisplay()
         val child = if (display == RenderState.DISPLAY_INLINE_TABLE)
             RTable(modelNode, userAgentContext, rendererContext, frameContext, this)
         else

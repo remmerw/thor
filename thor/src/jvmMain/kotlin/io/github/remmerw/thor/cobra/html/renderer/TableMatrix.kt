@@ -209,7 +209,7 @@ class TableMatrix(
         if (tChildren != null) {
             for (cn in tChildren) {
                 if (cn is HTMLElementImpl) {
-                    val display = cn.getRenderState().display
+                    val display = cn.getRenderState().getDisplay()
                     if (display == RenderState.DISPLAY_TABLE_ROW_GROUP || display == RenderState.DISPLAY_TABLE_HEADER_GROUP || display == RenderState.DISPLAY_TABLE_FOOTER_GROUP) {
                         processRowGroup(cn, rowRelation)
                     } else if (display == RenderState.DISPLAY_TABLE_ROW) {
@@ -272,7 +272,7 @@ class TableMatrix(
         if (rChildren != null) {
             for (cn in rChildren) {
                 if (cn is HTMLElementImpl) {
-                    val display = cn.getRenderState().display
+                    val display = cn.getRenderState().getDisplay()
                     if (display == RenderState.DISPLAY_TABLE_CELL) {
                         processCell(cn, rowGroupElem, rowE, rowRelation)
                     } else {
@@ -290,7 +290,7 @@ class TableMatrix(
         if (rChildren != null) {
             for (cn in rChildren) {
                 if (cn is HTMLElementImpl) {
-                    val display = cn.getRenderState().display
+                    val display = cn.getRenderState().getDisplay()
                     if (display == RenderState.DISPLAY_TABLE_ROW) {
                         processRow(cn, rowGroupElem, rowRelation)
                     } else {

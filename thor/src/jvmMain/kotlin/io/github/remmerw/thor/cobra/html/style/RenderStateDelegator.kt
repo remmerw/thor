@@ -147,8 +147,6 @@ abstract class RenderStateDelegator(protected val delegate: RenderState) : Rende
         return this.delegate.getCount(counter, nesting)
     }
 
-    override val display: Int
-        get() = TODO("Not yet implemented")
 
     override fun resetCount(counter: String?, nesting: Int, value: Int) {
         this.delegate.resetCount(counter, nesting, value)
@@ -162,8 +160,8 @@ abstract class RenderStateDelegator(protected val delegate: RenderState) : Rende
         return this.delegate.backgroundInfo
     }
 
-    fun getDisplay(): Int {
-        return this.delegate.display
+    override fun getDisplay(): Int {
+        return this.delegate.getDisplay()
     }
 
     fun getTextBackgroundColor(): Color? {

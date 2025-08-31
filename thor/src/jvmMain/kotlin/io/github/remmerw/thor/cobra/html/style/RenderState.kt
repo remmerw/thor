@@ -50,7 +50,7 @@ interface RenderState {
 
     fun getCount(counter: String?, nesting: Int): Int
 
-    val display: Int
+    fun getDisplay(): Int
 
     fun resetCount(counter: String?, nesting: Int, value: Int)
 

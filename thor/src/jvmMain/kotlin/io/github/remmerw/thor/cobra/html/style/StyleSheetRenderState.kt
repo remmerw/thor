@@ -107,7 +107,7 @@ open class StyleSheetRenderState : RenderState {
     protected open val defaultDisplay: Int
         get() = RenderState.Companion.DISPLAY_INLINE
 
-    fun getDisplay(): Int {
+    override fun getDisplay(): Int {
         val d = this.iDisplay
         if (d != null) {
             return d
@@ -554,8 +554,6 @@ open class StyleSheetRenderState : RenderState {
         return if (integer == null) 0 else integer
     }
 
-    override val display: Int
-        get() = TODO("Not yet implemented")
 
     override fun resetCount(counter: String?, nesting: Int, value: Int) {
         // Expected to be called only in the GUI thread.
