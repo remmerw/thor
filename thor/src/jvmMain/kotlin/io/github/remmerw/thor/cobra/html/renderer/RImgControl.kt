@@ -95,7 +95,4 @@ class RImgControl(
     }
 
 
-    override val parentContainer: RenderableContainer?
-        get() = TODO("Not yet implemented")
-
 }

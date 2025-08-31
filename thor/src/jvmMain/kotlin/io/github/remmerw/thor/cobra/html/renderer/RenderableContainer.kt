@@ -54,7 +54,7 @@ interface RenderableContainer {
 
     val delayedPairs: MutableCollection<DelayedPair?>?
 
-    val parentContainer: RenderableContainer?
+    fun parentContainer(): RenderableContainer?
 
     fun clearDelayedPairs()
 
@@ -102,7 +102,7 @@ interface RenderableContainer {
 
     fun visualHeight(): Int
 
-    fun translateDescendentPoint(descendent: BoundableRenderable, x: Int, y: Int): Point
+    fun translateDescendantPoint(descendant: BoundableRenderable, x: Int, y: Int): Point
 
     fun getOriginRelativeTo(bodyLayout: RCollection?): Point?
 

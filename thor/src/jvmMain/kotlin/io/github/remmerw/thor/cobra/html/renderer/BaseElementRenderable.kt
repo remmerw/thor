@@ -1049,7 +1049,7 @@ abstract class BaseElementRenderable(
         gc.add(pair)
     }
 
-    fun getParentContainer(): RenderableContainer {
+    override fun parentContainer(): RenderableContainer {
         return this.container!!
     }
 
@@ -1137,13 +1137,13 @@ abstract class BaseElementRenderable(
         applyLook()
     }
 
-    override fun translateDescendentPoint(
-        descendent: BoundableRenderable,
+    override fun translateDescendantPoint(
+        descendant: BoundableRenderable,
         px: Int,
         py: Int
     ): Point {
 
-        val p = descendent.getOriginRelativeTo(this)
+        val p = descendant.getOriginRelativeTo(this)
         p.translate(px, py)
         return p
 

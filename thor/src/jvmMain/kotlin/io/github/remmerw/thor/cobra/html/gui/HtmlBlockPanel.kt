@@ -964,18 +964,17 @@ class HtmlBlockPanel(
         }
     }
 
-    fun getParentContainer(): RenderableContainer? {
-        return null
-    }
-
     override fun addDelayedPair(pair: DelayedPair?) {
         throw UnsupportedOperationException("Delayed pairs are not being handled at this level.")
     }
 
     override val delayedPairs: MutableCollection<DelayedPair?>?
         get() = TODO("Not yet implemented")
-    override val parentContainer: RenderableContainer?
-        get() = TODO("Not yet implemented")
+
+    override fun parentContainer(): RenderableContainer? {
+       return null
+    }
+
 
     fun getDelayedPairs(): MutableCollection<DelayedPair?>? {
         throw UnsupportedOperationException("Delayed pairs are not being handled at this level.")
@@ -1120,8 +1119,8 @@ class HtmlBlockPanel(
         return Rectangle(x, y, visualWidth(), visualHeight())
     }
 
-    override fun translateDescendentPoint(descendent: BoundableRenderable, x: Int, y: Int): Point {
-        return rblock!!.translateDescendentPoint(descendent, x, y)
+    override fun translateDescendantPoint(descendant: BoundableRenderable, x: Int, y: Int): Point {
+        return rblock!!.translateDescendantPoint(descendant, x, y)
     }
 
     override fun getOriginRelativeTo(bodyLayout: RCollection?): Point? {

@@ -130,10 +130,6 @@ class RInlineBlock(
     }
 
 
-    override val parentContainer: RenderableContainer?
-        get() = TODO("Not yet implemented")
-
-
     override fun toString(): String {
         return "RInlineBlock [" + this.child + "]"
     }

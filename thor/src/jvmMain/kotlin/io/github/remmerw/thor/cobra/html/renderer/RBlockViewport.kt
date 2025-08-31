@@ -3192,10 +3192,10 @@ class RBlockViewport(
         }
 
         private fun getRootContainer(container: RenderableContainer): RenderableContainer {
-            var c = container.parentContainer
+            var c = container.parentContainer()
             var prevC: RenderableContainer? = container
             while (true) {
-                val newContainer = c!!.parentContainer
+                val newContainer = c!!.parentContainer()
                 if (newContainer == null) {
                     break
                 }
@@ -3220,7 +3220,7 @@ class RBlockViewport(
                         if (position != RenderState.POSITION_STATIC) {
                             break
                         }
-                        val newContainer = containingBlock.parentContainer
+                        val newContainer = containingBlock.parentContainer()
                         if (newContainer == null) {
                             break
                         }

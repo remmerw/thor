@@ -7,8 +7,7 @@ import java.awt.Dimension
 import java.awt.Graphics
 
 interface UIControl {
-    fun setRUIControl(ruicontrol: RUIControl?)
-
+    fun setRUIControl(ruiControl: RUIControl?)
 
     fun reset(availWidth: Int, availHeight: Int)
 

@@ -431,8 +431,6 @@ internal class RTable(
 
 
 
-    override val parentContainer: RenderableContainer?
-        get() = TODO("Not yet implemented")
 
 
     override fun vAlign(): CSSProperty.VerticalAlign? {
