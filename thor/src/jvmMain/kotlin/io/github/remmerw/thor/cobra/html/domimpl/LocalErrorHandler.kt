@@ -29,11 +29,7 @@ import org.xml.sax.SAXParseException
 import java.util.logging.Level
 import java.util.logging.Logger
 
-internal class LocalErrorHandler
-/**
- * @param context
- */
-    : ErrorHandler {
+internal class LocalErrorHandler : ErrorHandler {
     @Throws(SAXException::class)
     override fun warning(exception: SAXParseException) {
         logger.log(Level.WARNING, exception.message, exception.cause)

@@ -110,7 +110,6 @@ class HTMLIFrameElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLIFr
     }
 
 
-
     val contentWindow: Window?
         get() {
             val frame = this.getBrowserFrame()

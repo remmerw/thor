@@ -24,14 +24,12 @@
 package io.github.remmerw.thor.cobra.html.domimpl
 
 import io.github.remmerw.thor.cobra.html.FormInput
-import org.w3c.dom.html.HTMLFormElement
 import org.w3c.dom.html.HTMLInputElement
 import java.util.Locale
 import java.util.logging.Level
 
 class HTMLInputElementImpl(name: String) : HTMLBaseInputElement(name), HTMLInputElement {
     private var defaultChecked = false
-
 
 
     override fun getDefaultChecked(): Boolean {
@@ -58,7 +56,6 @@ class HTMLInputElementImpl(name: String) : HTMLBaseInputElement(name), HTMLInput
             ic.checked = (checked)
         }
     }
-
 
 
     override fun getMaxLength(): Int {
@@ -114,7 +111,6 @@ class HTMLInputElementImpl(name: String) : HTMLBaseInputElement(name), HTMLInput
         this.setAttribute("usemap", useMap)
     }
 
-  
 
     override fun click() {
         val ic = this.getInputContext()

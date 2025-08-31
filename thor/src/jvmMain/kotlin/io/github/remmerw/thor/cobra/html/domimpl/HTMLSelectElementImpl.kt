@@ -5,7 +5,6 @@ import org.mozilla.javascript.Function
 import org.w3c.dom.DOMException
 import org.w3c.dom.html.HTMLCollection
 import org.w3c.dom.html.HTMLElement
-import org.w3c.dom.html.HTMLFormElement
 import org.w3c.dom.html.HTMLSelectElement
 
 open class HTMLSelectElementImpl(name: String) : HTMLBaseInputElement(name), HTMLSelectElement {
@@ -102,7 +101,7 @@ open class HTMLSelectElementImpl(name: String) : HTMLBaseInputElement(name), HTM
     }
 
     fun setSelectedIndexImpl(selectedIndex: Int) {
-        val ic =this.getInputContext()
+        val ic = this.getInputContext()
         if (ic != null) {
             ic.selectedIndex = (selectedIndex)
         } else {

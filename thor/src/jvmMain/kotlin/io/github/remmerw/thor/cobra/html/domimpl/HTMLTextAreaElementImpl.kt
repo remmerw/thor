@@ -24,7 +24,6 @@
 package io.github.remmerw.thor.cobra.html.domimpl
 
 import io.github.remmerw.thor.cobra.html.FormInput
-import org.w3c.dom.html.HTMLFormElement
 import org.w3c.dom.html.HTMLTextAreaElement
 
 class HTMLTextAreaElementImpl : HTMLBaseInputElement, HTMLTextAreaElement {
@@ -40,7 +39,7 @@ class HTMLTextAreaElementImpl : HTMLBaseInputElement, HTMLTextAreaElement {
 
 
     override fun getCols(): Int {
-        val ic =this.getInputContext()
+        val ic = this.getInputContext()
         return if (ic == null) 0 else ic.cols
     }
 

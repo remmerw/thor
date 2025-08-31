@@ -9,5 +9,5 @@ interface FrameNode {
 
     fun getBrowserFrame(): BrowserFrame?
 
-    fun setBrowserFrame(frame:BrowserFrame?)
+    fun setBrowserFrame(frame: BrowserFrame?)
 }

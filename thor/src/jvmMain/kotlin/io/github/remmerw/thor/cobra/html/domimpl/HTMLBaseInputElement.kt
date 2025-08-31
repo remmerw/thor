@@ -44,7 +44,7 @@ abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) 
     private var imageSrc: String? = null
 
 
-    fun  getInputContext() : InputContext?{
+    fun getInputContext(): InputContext? {
         return inputContext
     }
 
@@ -75,22 +75,22 @@ abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) 
     }
 
 
-    fun getDefaultValue() :String? {
+    fun getDefaultValue(): String? {
         return this.getAttribute("defaultValue")
     }
-    fun setDefaultValue(defaultValue :String?){
+
+    fun setDefaultValue(defaultValue: String?) {
         this.setAttribute("defaultValue", defaultValue)
     }
 
 
-
     fun getForm(): HTMLFormElement? {
-            var parent = this.nodeParent
-            while ((parent != null) && parent !is HTMLFormElement) {
-                parent = parent.parentNode
-            }
-            return parent
+        var parent = this.nodeParent
+        while ((parent != null) && parent !is HTMLFormElement) {
+            parent = parent.parentNode
         }
+        return parent
+    }
 
     fun submitForm(extraFormInputs: Array<FormInput>?) {
         val form = this.getForm() as HTMLFormElementImpl?
@@ -109,6 +109,7 @@ abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) 
     fun getAccept(): String? {
         return this.getAttribute("accept")
     }
+
     fun setAccept(accept: String?) {
         this.setAttribute("accept", accept)
     }
@@ -116,6 +117,7 @@ abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) 
     fun getAccessKey(): String? {
         return this.getAttribute("accessKey")
     }
+
     fun setAccessKey(accept: String?) {
         this.setAttribute("accessKey", accept)
     }
@@ -123,6 +125,7 @@ abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) 
     fun getAlign(): String? {
         return this.getAttribute("align")
     }
+
     fun setAlign(align: String?) {
         this.setAttribute("align", align)
     }
@@ -130,12 +133,15 @@ abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) 
     fun getAlt(): String? {
         return this.getAttribute("alt")
     }
+
     fun setAlt(alt: String?) {
         this.setAttribute("alt", alt)
     }
+
     fun getName(): String? {
         return this.getAttribute("name") // TODO: Should this return value of "id"?
     }
+
     fun setName(name: String?) {
         this.setAttribute("name", name) // TODO: Should this return value of "id"?
     }
@@ -160,7 +166,6 @@ abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) 
     }
 
 
-
     fun getReadOnly(): Boolean {
         val ic = this.inputContext
         if (ic == null) {
@@ -180,7 +185,7 @@ abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) 
         }
     }
 
-     open fun getChecked(): Boolean {
+    open fun getChecked(): Boolean {
         val ic = this.inputContext
         if (ic == null) {
             val db = this.deferredChecked
@@ -200,56 +205,56 @@ abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) 
     }
 
 
-     fun getTabIndex(): Int {
-         val ic = this.inputContext
-         return if (ic == null) 0 else ic.tabIndex
+    fun getTabIndex(): Int {
+        val ic = this.inputContext
+        return if (ic == null) 0 else ic.tabIndex
     }
 
-     fun setTabIndex(tabIndex: Int) {
-         val ic = this.inputContext
-         if (ic != null) {
-             ic.tabIndex = (tabIndex)
-         }
+    fun setTabIndex(tabIndex: Int) {
+        val ic = this.inputContext
+        if (ic != null) {
+            ic.tabIndex = (tabIndex)
+        }
     }
 
-     fun getValue(): String? {
-         val ic = this.inputContext
-         if (ic != null) {
-             // Note: Per HTML Spec, setValue does not set attribute.
-             return ic.value
-         } else {
-             val dv = this.deferredValue
-             if (dv != null) {
-                 return dv
-             } else {
-                 val `val` = this.getAttribute("value")
-                 return if (`val` == null) "" else `val`
-             }
-         }
+    fun getValue(): String? {
+        val ic = this.inputContext
+        if (ic != null) {
+            // Note: Per HTML Spec, setValue does not set attribute.
+            return ic.value
+        } else {
+            val dv = this.deferredValue
+            if (dv != null) {
+                return dv
+            } else {
+                val `val` = this.getAttribute("value")
+                return if (`val` == null) "" else `val`
+            }
+        }
     }
 
-     fun setValue(value: String?) {
-         var ic: InputContext? = null
-         synchronized(this) {
-             ic = this.inputContext
-             if (ic == null) {
-                 this.deferredValue = value
-             }
-         }
-         if (ic != null) {
-             ic.value = (value)
-         }
+    fun setValue(value: String?) {
+        var ic: InputContext? = null
+        synchronized(this) {
+            ic = this.inputContext
+            if (ic == null) {
+                this.deferredValue = value
+            }
+        }
+        if (ic != null) {
+            ic.value = (value)
+        }
     }
 
 
     fun fileValue(): File? {
-            val ic = this.inputContext
-            if (ic != null) {
-                return ic.fileValue
-            } else {
-                return null
-            }
+        val ic = this.inputContext
+        if (ic != null) {
+            return ic.fileValue
+        } else {
+            return null
         }
+    }
 
     override fun blur() {
         val ic = this.inputContext
@@ -275,11 +280,11 @@ abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) 
     override fun handleAttributeChanged(name: String, oldValue: String?, newValue: String?) {
         super.handleAttributeChanged(name, oldValue, newValue)
         if ("value" == name) {
-            this.setValue( newValue)
+            this.setValue(newValue)
         } else if ("checked" == name) {
             this.setChecked(newValue != null)
         } else if ("disabled" == name) {
-            this.setDisabled( newValue != null)
+            this.setDisabled(newValue != null)
         } else if ("readonly" == name) {
             this.setReadOnly(newValue != null)
         } else if ("src" == name) {

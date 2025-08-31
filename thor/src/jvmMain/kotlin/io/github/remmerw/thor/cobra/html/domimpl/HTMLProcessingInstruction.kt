@@ -5,8 +5,10 @@ import org.w3c.dom.Node
 import org.w3c.dom.Node.PROCESSING_INSTRUCTION_NODE
 import org.w3c.dom.ProcessingInstruction
 
-class HTMLProcessingInstruction(private var target: String,
-                                private var data: String?) : NodeImpl(),
+class HTMLProcessingInstruction(
+    private var target: String,
+    private var data: String?
+) : NodeImpl(),
     ProcessingInstruction, Cloneable {
     override fun createSimilarNode(): Node {
         return clone() as Node

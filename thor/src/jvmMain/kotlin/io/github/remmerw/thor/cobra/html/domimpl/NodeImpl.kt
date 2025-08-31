@@ -217,7 +217,7 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
 
     fun getChildren(): HTMLCollection {
         // TODO: This is needed to be implemented only by Element, Document and DocumentFragment as per https://developer.mozilla.org/en-US/docs/Web/API/ParentNode
-        return DescendentHTMLCollection(
+        return DescendantHTMLCollection(
             this,
             NodeFilter.ElementFilter(),
             this.treeLock
@@ -327,10 +327,10 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
     }
 
     fun nodeIndex(): Int {
-            val parent =
-                this.nodeParent as NodeImpl?
-            return if (parent == null) -1 else parent.getChildIndex(this)
-        }
+        val parent =
+            this.nodeParent as NodeImpl?
+        return if (parent == null) -1 else parent.getChildIndex(this)
+    }
 
     fun getChildIndex(child: Node?): Int {
         synchronized(this.treeLock) {
@@ -1091,6 +1091,7 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
             return URL(cleanSpec)
         }
     }
+
     open fun getDocumentURL(): URL? {
         val doc: Any? = this.document
         if (doc is HTMLDocumentImpl) {
@@ -1099,7 +1100,6 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
             return null
         }
     }
-
 
 
     override fun getDocumentItem(name: String?): Any? {
@@ -1263,12 +1263,12 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
 
     fun innerHTML(): String {
 
-            val buffer = StringBuffer()
-            synchronized(this) {
-                this.appendInnerHTMLImpl(buffer)
-            }
-            return buffer.toString()
+        val buffer = StringBuffer()
+        synchronized(this) {
+            this.appendInnerHTMLImpl(buffer)
         }
+        return buffer.toString()
+    }
 
     protected fun appendInnerHTMLImpl(buffer: StringBuffer) {
         val nl = this.nodeList

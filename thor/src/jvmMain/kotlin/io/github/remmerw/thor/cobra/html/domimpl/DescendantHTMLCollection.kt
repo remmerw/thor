@@ -32,13 +32,13 @@ import org.w3c.dom.Node
 import org.w3c.dom.html.HTMLCollection
 import java.lang.ref.WeakReference
 
-open class DescendentHTMLCollection @JvmOverloads constructor(
+open class DescendantHTMLCollection @JvmOverloads constructor(
     private val rootNode: NodeImpl,
     private val nodeFilter: NodeFilter?,
     private val treeLock: Any,
     private val nestIntoMatchingNodes: Boolean = true
 ) : ScriptableDelegate, HTMLCollection {
-    var scriptable: Scriptable? = null
+    private val scriptable: Scriptable? = null
 
     override fun scriptable(): Scriptable? {
         return scriptable
@@ -218,12 +218,12 @@ open class DescendentHTMLCollection @JvmOverloads constructor(
     // }
     private class LocalNotificationListener(// Needs to be a static class with a weak reference to
         // the collection object.
-        private val document: HTMLDocumentImpl, collection: DescendentHTMLCollection?
+        private val document: HTMLDocumentImpl, collection: DescendantHTMLCollection?
     ) : DocumentNotificationAdapter() {
-        private val collectionRef: WeakReference<DescendentHTMLCollection?>
+        private val collectionRef: WeakReference<DescendantHTMLCollection?>
 
         init {
-            this.collectionRef = WeakReference<DescendentHTMLCollection?>(collection)
+            this.collectionRef = WeakReference<DescendantHTMLCollection?>(collection)
         }
 
         override fun structureInvalidated(node: NodeImpl) {

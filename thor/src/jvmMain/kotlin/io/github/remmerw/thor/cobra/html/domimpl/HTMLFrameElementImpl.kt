@@ -30,7 +30,6 @@ import io.github.remmerw.thor.cobra.ua.UserAgentContext.RequestKind
 import org.w3c.dom.Document
 import org.w3c.dom.html.HTMLFrameElement
 import java.net.MalformedURLException
-import kotlin.concurrent.Volatile
 
 class HTMLFrameElementImpl(name: String) : HTMLElementImpl(name), HTMLFrameElement, FrameNode {
 
@@ -61,6 +60,7 @@ class HTMLFrameElementImpl(name: String) : HTMLElementImpl(name), HTMLFrameEleme
     override fun getBrowserFrame(): BrowserFrame? {
         return this.browserFrame!!
     }
+
     override fun setBrowserFrame(frame: BrowserFrame?) {
         this.browserFrame = frame
         loadURL()

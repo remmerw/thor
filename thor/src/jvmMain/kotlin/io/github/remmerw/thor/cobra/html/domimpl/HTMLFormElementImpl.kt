@@ -85,7 +85,7 @@ class HTMLFormElementImpl : HTMLAbstractUIElement, HTMLFormElement {
     override fun getElements(): HTMLCollection {
         var elements = this.elements
         if (elements == null) {
-            elements = DescendentHTMLCollection(
+            elements = DescendantHTMLCollection(
                 this,
                 InputFilter(),
                 this.treeLock,

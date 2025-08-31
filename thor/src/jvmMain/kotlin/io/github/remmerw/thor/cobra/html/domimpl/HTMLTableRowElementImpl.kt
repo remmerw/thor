@@ -68,7 +68,7 @@ class HTMLTableRowElementImpl(name: String) : HTMLElementImpl(name), HTMLTableRo
                 return node is HTMLTableCellElementImpl
             }
         }
-        return DescendentHTMLCollection(this, filter, this.treeLock, false)
+        return DescendantHTMLCollection(this, filter, this.treeLock, false)
     }
 
     override fun getAlign(): String? {

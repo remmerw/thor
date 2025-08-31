@@ -73,13 +73,13 @@ class HTMLTableElementImpl : HTMLAbstractUIElement, HTMLTableElement {
 
     override fun getRows(): HTMLCollection {
         // TODO: filter by display: table-row
-        return DescendentHTMLCollection(this, NodeNameFilter("TR"), this.treeLock, false)
+        return DescendantHTMLCollection(this, NodeNameFilter("TR"), this.treeLock, false)
     }
 
     @PropertyName("tBodies")
     override fun getTBodies(): HTMLCollection {
         // TODO: filter by display: table-row-group
-        return DescendentHTMLCollection(this, NodeNameFilter("TBODY"), this.treeLock, false)
+        return DescendantHTMLCollection(this, NodeNameFilter("TBODY"), this.treeLock, false)
     }
 
     override fun getAlign(): String? {

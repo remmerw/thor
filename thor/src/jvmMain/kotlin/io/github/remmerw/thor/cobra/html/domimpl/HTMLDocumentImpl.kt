@@ -125,6 +125,7 @@ class HTMLDocumentImpl(
     val styleSheetManager: StyleSheetManager = StyleSheetManager()
     private val factory: ElementFactory
     private var documentURL: URL? = null
+
     @JvmField
     val window: Window
     private val elementsById: MutableMap<String, Element?> = mutableMapOf()
@@ -168,7 +169,7 @@ class HTMLDocumentImpl(
         get() {
             synchronized(this) {
                 if (field == null) {
-                    field = DescendentHTMLCollection(this, FrameFilter(), this.treeLock)
+                    field = DescendantHTMLCollection(this, FrameFilter(), this.treeLock)
                 }
                 return field
             }
@@ -342,7 +343,7 @@ class HTMLDocumentImpl(
         synchronized(this) {
             if (this.images == null) {
                 this.images =
-                    DescendentHTMLCollection(this, NodeFilter.ImageFilter(), this.treeLock)
+                    DescendantHTMLCollection(this, NodeFilter.ImageFilter(), this.treeLock)
             }
             return this.images!!
         }
@@ -352,7 +353,7 @@ class HTMLDocumentImpl(
         synchronized(this) {
             if (this.applets == null) {
                 // TODO: Should include OBJECTs that are applets?
-                this.applets = DescendentHTMLCollection(this, AppletFilter(), this.treeLock)
+                this.applets = DescendantHTMLCollection(this, AppletFilter(), this.treeLock)
             }
             return this.applets!!
         }
@@ -361,7 +362,7 @@ class HTMLDocumentImpl(
     override fun getLinks(): HTMLCollection {
         synchronized(this) {
             if (this.links == null) {
-                this.links = DescendentHTMLCollection(this, LinkFilter(), this.treeLock)
+                this.links = DescendantHTMLCollection(this, LinkFilter(), this.treeLock)
             }
             return this.links!!
         }
@@ -370,7 +371,7 @@ class HTMLDocumentImpl(
     override fun getForms(): HTMLCollection {
         synchronized(this) {
             if (this.forms == null) {
-                this.forms = DescendentHTMLCollection(this, FormFilter(), this.treeLock)
+                this.forms = DescendantHTMLCollection(this, FormFilter(), this.treeLock)
             }
             return this.forms!!
         }
@@ -379,7 +380,7 @@ class HTMLDocumentImpl(
     override fun getAnchors(): HTMLCollection {
         synchronized(this) {
             if (this.anchors == null) {
-                this.anchors = DescendentHTMLCollection(this, AnchorFilter(), this.treeLock)
+                this.anchors = DescendantHTMLCollection(this, AnchorFilter(), this.treeLock)
             }
             return this.anchors!!
         }

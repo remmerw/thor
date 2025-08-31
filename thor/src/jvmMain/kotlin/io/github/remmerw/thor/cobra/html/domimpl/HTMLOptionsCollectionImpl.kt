@@ -6,7 +6,7 @@ import org.w3c.dom.html.HTMLCollection
 import org.w3c.dom.html.HTMLOptionElement
 
 class HTMLOptionsCollectionImpl(selectElement: HTMLElementImpl) :
-    DescendentHTMLCollection(selectElement, OPTION_FILTER, selectElement.treeLock, false),
+    DescendantHTMLCollection(selectElement, OPTION_FILTER, selectElement.treeLock, false),
     HTMLCollection {
     @Throws(DOMException::class)
     fun setLength(length: Int) {
