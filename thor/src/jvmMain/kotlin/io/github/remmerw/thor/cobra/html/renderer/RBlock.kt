@@ -1436,7 +1436,7 @@ open class RBlock(
      */
     override fun invalidateLayoutLocal() {
         // Threads.dumpStack(4);
-        this.delayedPairs = null
+
         super.invalidateLayoutLocal()
         // this.cachedLayout.clear();
         // this.lastLayoutKey = null;

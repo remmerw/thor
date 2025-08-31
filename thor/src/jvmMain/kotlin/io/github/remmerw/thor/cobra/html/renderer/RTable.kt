@@ -124,7 +124,7 @@ internal class RTable(
 
             // Import applicable delayed pairs.
             // Only needs to be done if layout was forced. Otherwise, they should've been imported already.
-            val pairs = this.delayedPairs
+            val pairs = this.delayedPairs()
             if (pairs != null) {
                 val i: MutableIterator<DelayedPair?> = pairs.iterator()
                 while (i.hasNext()) {

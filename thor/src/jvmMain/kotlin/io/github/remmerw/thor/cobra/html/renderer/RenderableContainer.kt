@@ -25,9 +25,9 @@ interface RenderableContainer {
 
     fun focus()
 
-    fun addDelayedPair(pair: DelayedPair?)
+    fun addDelayedPair(pair: DelayedPair)
 
-    val delayedPairs: MutableCollection<DelayedPair?>?
+    fun delayedPairs(): MutableCollection<DelayedPair>?
 
     fun parentContainer(): RenderableContainer?
 

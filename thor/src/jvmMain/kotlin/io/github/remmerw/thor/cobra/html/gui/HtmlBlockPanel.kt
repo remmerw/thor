@@ -964,12 +964,14 @@ class HtmlBlockPanel(
         }
     }
 
-    override fun addDelayedPair(pair: DelayedPair?) {
+    override fun addDelayedPair(pair: DelayedPair) {
         throw UnsupportedOperationException("Delayed pairs are not being handled at this level.")
     }
 
-    override val delayedPairs: MutableCollection<DelayedPair?>?
-        get() = TODO("Not yet implemented")
+    override fun delayedPairs(): MutableCollection<DelayedPair>? {
+        TODO("Not yet implemented")
+    }
+
 
     override fun parentContainer(): RenderableContainer? {
        return null

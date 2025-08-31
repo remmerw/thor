@@ -2497,7 +2497,7 @@ class RBlockViewport(
     }
 
     fun positionDelayed() {
-        val delayedPairs = container!!.delayedPairs
+        val delayedPairs = container!!.delayedPairs()
         if ((delayedPairs != null) && (delayedPairs.size > 0)) {
             // Add positioned renderables that belong here
             val i: MutableIterator<DelayedPair?> = delayedPairs.iterator()

@@ -65,7 +65,7 @@ abstract class BaseElementRenderable(
     /**
      * A list of absolute positioned or float parent-child pairs.
      */
-    override var delayedPairs: MutableCollection<DelayedPair?>? = null
+    private var delayedPairs: MutableCollection<DelayedPair>? = null
 
     /**
      * Background color which may be different to that from RenderState in the
@@ -1023,7 +1023,7 @@ abstract class BaseElementRenderable(
         }
     }
 
-    fun getDelayedPairs(): MutableCollection<DelayedPair?>? {
+    override fun delayedPairs(): MutableCollection<DelayedPair>? {
         return this.delayedPairs
     }
 
@@ -1032,18 +1032,18 @@ abstract class BaseElementRenderable(
      *
      * @see org.xamjwg.html.renderer.RenderableContainer#add(java.awt.Component)
      */
-    override fun addDelayedPair(pair: DelayedPair?) {
+    override fun addDelayedPair(pair: DelayedPair) {
         // Expected to be called in GUI thread.
         // Adds only in local collection.
         // Does not remove from parent.
         // Sending components to parent is done
         // by sendDelayedPairsToParent().
-        var gc = this.delayedPairs
+        var gc = this.delayedPairs()
         if (gc == null) {
             // Sequence is important.
             // TODO: But possibly added multiple
             // times in table layout?
-            gc = LinkedList<DelayedPair?>()
+            gc = LinkedList<DelayedPair>()
             this.delayedPairs = gc
         }
         gc.add(pair)
