@@ -133,8 +133,7 @@ abstract class RenderStateDelegator(protected val delegate: RenderState) : Rende
         get() = TODO("Not yet implemented")
     override val bottom: String?
         get() = TODO("Not yet implemented")
-    override val verticalAlign: VerticalAlign?
-        get() = TODO("Not yet implemented")
+
 
     fun isHighlight(): Boolean {
         return delegate.isHighlight
@@ -256,7 +255,7 @@ abstract class RenderStateDelegator(protected val delegate: RenderState) : Rende
         return this.delegate.fontXHeight
     }
 
-    fun getVerticalAlign(): VerticalAlign? {
-        return this.delegate.verticalAlign
+    override fun getVerticalAlign(): VerticalAlign? {
+        return this.delegate.getVerticalAlign()
     }
 }

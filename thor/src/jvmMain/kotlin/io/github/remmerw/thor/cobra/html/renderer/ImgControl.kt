@@ -112,7 +112,7 @@ class ImgControl(modelNode: HTMLImageElementImpl) : BaseControl(modelNode), Imag
 
     override fun vAlign(): VerticalAlign {
         val element = this.controlElement
-        val verticalAlign = element?.getRenderState()?.verticalAlign
+        val verticalAlign = element?.getRenderState()?.getVerticalAlign()
         return if (verticalAlign == null) VerticalAlign.BASELINE else verticalAlign
     }
 

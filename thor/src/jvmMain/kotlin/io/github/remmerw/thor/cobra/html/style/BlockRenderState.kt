@@ -97,6 +97,5 @@ class BlockRenderState : StyleSheetRenderState {
         get() = TODO("Not yet implemented")
     override val bottom: String?
         get() = TODO("Not yet implemented")
-    override val verticalAlign: CSSProperty.VerticalAlign?
-        get() = TODO("Not yet implemented")
+
 }

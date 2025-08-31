@@ -292,6 +292,9 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
         this.setAttribute("class", className)
     }
 
+
+
+
     var charset: String?
         get() = this.getAttribute("charset")
         set(charset) {

@@ -86,7 +86,7 @@ class InputImageControl(modelNode: HTMLBaseInputElement) : BaseInputControl(mode
 
     override fun vAlign(): VerticalAlign? {
         val element = this.controlElement
-        return element?.getRenderState()?.verticalAlign
+        return element?.getRenderState()?.getVerticalAlign()
     }
 
     override fun paintComponent(g: Graphics) {

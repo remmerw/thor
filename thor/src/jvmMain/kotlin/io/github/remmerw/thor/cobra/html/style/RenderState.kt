@@ -85,7 +85,7 @@ interface RenderState {
     val bottom: String?
 
     // TODO: This should return a more abstract type that can represent values like length and percentage
-    val verticalAlign: VerticalAlign?
+    fun getVerticalAlign(): VerticalAlign?
 
     companion object {
         const val MASK_TEXTDECORATION_UNDERLINE: Int = 1

@@ -30,8 +30,6 @@ import org.w3c.dom.html.HTMLTextAreaElement
 class HTMLTextAreaElementImpl : HTMLBaseInputElement, HTMLTextAreaElement {
     constructor(name: String) : super(name)
 
-    constructor() : super("TEXTAREA")
-
     protected fun getFormInputs(): Array<FormInput>? {
         val name = this.name
         if (name == null) {

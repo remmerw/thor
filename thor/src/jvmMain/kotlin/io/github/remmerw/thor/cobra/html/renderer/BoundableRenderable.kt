@@ -1,23 +1,3 @@
-/*
-    GNU LESSER GENERAL PUBLIC LICENSE
-    Copyright (C) 2006 The Lobo Project
-
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-    Contact info: lobochief@users.sourceforge.net
- */
 package io.github.remmerw.thor.cobra.html.renderer
 
 import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
@@ -32,7 +12,6 @@ import java.awt.event.MouseEvent
  * interface.
  */
 interface BoundableRenderable : Renderable {
-
 
     fun bounds(): Rectangle?
 
@@ -50,27 +29,13 @@ interface BoundableRenderable : Renderable {
 
     fun getOriginRelativeToNoScroll(ancestor: RCollection?): Point?
 
-    /**
-     * Gets the parent where the renderable is rendered.
-     */
     fun parent(): RCollection?
 
     fun setParent(parent: RCollection?)
 
-    /**
-     * Gets the parent set with [.setOriginalParent]. It
-     * represents the parent where the renderable would have been originally
-     * rendered according to the DOM. This will be non-null only if
-     * [.getParent] is not the parent where this renderable would have
-     * been originally rendered.
-     */
     fun originalParent(): RCollection?
     fun setOriginalParent(origParent: RCollection?)
 
-    /**
-     * Returns [.getOriginalParent] if not null. Otherwise it returns
-     * [.getParent].
-     */
      fun originalOrCurrentParent(): RCollection?
 
     fun setBounds(x: Int, y: Int, with: Int, height: Int)
