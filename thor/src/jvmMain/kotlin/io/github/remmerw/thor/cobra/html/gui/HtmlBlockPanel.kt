@@ -106,8 +106,8 @@ class HtmlBlockPanel(
     protected var endSelection: RenderableSpot? = null
     protected var rblock: RBlock? = null
     protected var preferredWidth: Int = -1
-    protected var defaultOverflowX: Int = RenderState.OVERFLOW_AUTO
-    protected var defaultOverflowY: Int = RenderState.OVERFLOW_SCROLL
+    private var defaultOverflowX: Int = RenderState.OVERFLOW_AUTO
+    private var defaultOverflowY: Int = RenderState.OVERFLOW_SCROLL
 
     @Volatile
     private var scrollCompleted = false

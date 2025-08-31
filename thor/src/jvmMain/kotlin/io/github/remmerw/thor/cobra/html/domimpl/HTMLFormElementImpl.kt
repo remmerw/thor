@@ -196,15 +196,15 @@ class HTMLFormElementImpl : HTMLAbstractUIElement, HTMLFormElement {
         if (context != null) {
             val formInputs = ArrayList<FormInput?>()
             if (extraFormInputs != null) {
-                Collections.addAll<FormInput?>(formInputs, *extraFormInputs)
+                Collections.addAll(formInputs, *extraFormInputs)
             }
             this.visit(object : NodeVisitor {
                 override fun visit(node: Node) {
                     if (node is HTMLElementImpl) {
-                        val fis = node.formInputs
+                        val fis = node.getFormInputs()
                         if (fis != null) {
                             for (fi in fis) {
-                                checkNotNull(fi?.name) { "Form input does not have a name: " + node }
+                                checkNotNull(fi.name) { "Form input does not have a name: " + node }
                                 formInputs.add(fi)
                             }
                         }

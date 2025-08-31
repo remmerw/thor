@@ -160,7 +160,7 @@ class HTMLInputElementImpl(name: String) : HTMLBaseInputElement(name), HTMLInput
         }
     }
 
-    fun getFormInputs(): Array<FormInput>? {
+    override fun getFormInputs(): Array<FormInput>? {
         val type = this.getType()
         val name = this.name
         if (name == null) {
@@ -188,7 +188,7 @@ class HTMLInputElementImpl(name: String) : HTMLBaseInputElement(name), HTMLInput
                 // It's done as an "extra" form input
                 return null
             } else if ("file" == type) {
-                val file = this.fileValue
+                val file = this.fileValue()
                 if (file == null) {
                     if (logger.isLoggable(Level.INFO)) {
                         logger.info("getFormInputs(): File input named " + name + " has null file.")

@@ -11,7 +11,6 @@ import org.w3c.dom.html.HTMLSelectElement
 open class HTMLSelectElementImpl(name: String) : HTMLBaseInputElement(name), HTMLSelectElement {
     private var multipleState: Boolean? = null
 
-    // private HTMLOptionsCollection options;
     private var options: HTMLCollection? = null
     private var deferredSelectedIndex = -1
     var onchange: Function? = null
@@ -22,14 +21,6 @@ open class HTMLSelectElementImpl(name: String) : HTMLBaseInputElement(name), HTM
         this.insertBefore(element, before)
     }
 
-    /* public HTMLOptionsCollection getOptions() {
-    synchronized (this) {
-      if (this.options == null) {
-        this.options = new HTMLOptionsCollectionImpl(this);
-      }
-      return this.options;
-    }
-  }*/
     override fun getLength(): Int {
         return this.options!!.length
     }
@@ -70,9 +61,6 @@ open class HTMLSelectElementImpl(name: String) : HTMLBaseInputElement(name), HTM
         }
     }
 
-    /* public void setLength(final int length) throws DOMException {
-    this.getOptions().setLength(length);
-  }*/
     override fun setSelectedIndex(selectedIndex: Int) {
         this.setSelectedIndexImpl(selectedIndex)
         val options = this.options
@@ -122,7 +110,7 @@ open class HTMLSelectElementImpl(name: String) : HTMLBaseInputElement(name), HTM
         }
     }
 
-    protected fun getFormInputs(): Array<FormInput>? {
+    override fun getFormInputs(): Array<FormInput>? {
         // Needs to be overriden for forms to submit.
         val ic = this.getInputContext()
         var values = if (ic == null) null else ic.values

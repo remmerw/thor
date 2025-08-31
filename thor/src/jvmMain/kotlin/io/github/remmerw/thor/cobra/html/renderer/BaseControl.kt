@@ -71,7 +71,6 @@ abstract class BaseControl(protected val controlElement: HTMLElementImpl?) : JCo
 
     companion object {
         protected val ZERO_DIMENSION: Dimension = Dimension(0, 0)
-        private const val serialVersionUID = 7061225345785659580L
         private val logger: Logger = Logger.getLogger(BaseControl::class.java.name)
     }
 }

@@ -105,11 +105,7 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
         }
     }
 
-    /**
-     * Gets the style object associated with the element. It may return null only
-     * if the type of element does not handle stylesheets.
-     * Hiding from JS because it is not a standard property. See GH #141
-     */
+
 
     open fun getCurrentStyle(): JStyleProperties {
         synchronized(this) {
@@ -197,25 +193,15 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
         return afterNode
     }
 
-    /*
-   currentStyle is not a standard property. See GH 141.
-  public void setCurrentStyle(final Object value) {
-    throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "Cannot set currentStyle property");
-  }
-  */
-    var style: Any?
-        /**
-         * Gets the local style object associated with the element. The properties
-         * object returned only includes properties from the local style attribute. It
-         * may return null only if the type of element does not handle stylesheets.
-         */
-        get() = LocalJStyleProperties(this)
-        set(value) {
+    fun style(): Any? {
+        return LocalJStyleProperties(this)
+    }
+    fun setStyle() {
             throw DOMException(
                 DOMException.NOT_SUPPORTED_ERR,
                 "Cannot set style property"
             )
-        }
+    }
 
     private val inlineJStyle: StyleSheet?
         get() {
@@ -413,13 +399,13 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
         )
     }
 
-    val pseudoNames: MutableSet<String?>?
+    fun pseudoNames(): MutableSet<String?>?
         /**
          * Gets the pseudo-element lowercase names currently applicable to this
          * element. Method must return `null` if there are no such
          * pseudo-elements.
          */
-        get() {
+         {
             var pnset: MutableSet<String?>? = null
             if (this.isMouseOver) {
                 pnset = HashSet<String?>(1)
@@ -448,21 +434,6 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
             super.informLookInvalid()
         }
     }
-
-    // TODO: Use the handleAttributeChanged() system and remove informInvalidAttribute
-    /*
-  private void informInvalidAttibute(final String normalName) {
-    if (isAttachedToDocument()) {
-      // This is called when an attribute changes while
-      // the element is allowing notifications.
-      if ("style".equals(normalName)) {
-        this.forgetLocalStyle();
-      }
-
-      forgetStyle(true);
-      informInvalidRecursive();
-    }
-  }*/
     private fun informInvalidRecursive() {
         super.informInvalid()
         val nodeList = this.getChildrenArray()
@@ -475,14 +446,9 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
         }
     }
 
-    open val formInputs: Array<FormInput?>?
-        /**
-         * Gets form input due to the current element. It should return
-         * `null` except when the element is a form input element.
-         */
-        get() =// Override in input elements
-            null
-
+    open fun getFormInputs(): Array<FormInput>? {
+        return null
+    }
     private fun classMatch(classTL: String?): Boolean {
         val classNames = this.getClassName()
         if ((classNames == null) || (classNames.length == 0)) {
@@ -529,8 +495,8 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
         return null
     }
 
-    val preceedingSiblingElement: HTMLElementImpl?
-        get() {
+    fun preceedingSiblingElement(): HTMLElementImpl?
+        {
             val parentNode = this.nodeParent
             if (parentNode == null) {
                 return null
@@ -554,7 +520,7 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
         }
 
     fun getPreceedingSiblingWithClass(elementTL: String, classTL: String?): HTMLElementImpl? {
-        val psibling = this.preceedingSiblingElement
+        val psibling = this.preceedingSiblingElement()
         if (psibling != null) {
             val pelementTL = psibling.tagName.lowercase(Locale.getDefault())
             if (("*" == elementTL || elementTL == pelementTL) && psibling.classMatch(classTL)) {
@@ -593,7 +559,7 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
     }
 
     fun getPreceedingSiblingWithId(elementTL: String, idTL: String): HTMLElementImpl? {
-        val psibling = this.preceedingSiblingElement
+        val psibling = this.preceedingSiblingElement()
         if (psibling != null) {
             val pelementTL = psibling.tagName.lowercase(Locale.getDefault())
             val pid = psibling.id
@@ -636,7 +602,7 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
     }
 
     fun getPreceedingSibling(elementTL: String): HTMLElementImpl? {
-        val psibling = this.preceedingSiblingElement
+        val psibling = this.preceedingSiblingElement()
         if (psibling != null) {
             if ("*" == elementTL) {
                 return psibling
@@ -690,8 +656,8 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
         }
     }
 
-    val outerHTML: String
-        get() {
+    fun outerHTML(): String
+         {
             val buffer = StringBuffer()
             synchronized(this) {
                 this.appendOuterHTMLImpl(buffer)
@@ -733,28 +699,26 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
         return StyleSheetRenderState(prevRenderState, this)
     }
 
-    val offsetTop: Int
-        get() {
+    fun offsetTop(): Int {
             // TODO: Sometimes this can be called while parsing, and
             // browsers generally give the right answer.
             val uiNode = this.uINode
             return if (uiNode == null) 0 else uiNode.boundsRelativeToBlock()!!.y
         }
 
-    val offsetLeft: Int
-        get() {
+    fun offsetLeft(): Int
+         {
             val uiNode = this.uINode
             return if (uiNode == null) 0 else uiNode.boundsRelativeToBlock()!!.x
         }
 
-    val offsetWidth: Int
-        get() {
+    fun offsetWidth(): Int {
             val uiNode = this.uINode
             return if (uiNode == null) 0 else uiNode.boundsRelativeToBlock()!!.width
         }
 
-    val offsetHeight: Int
-        get() {
+    fun offsetHeight(): Int
+        {
             val uiNode = this.uINode
             return if (uiNode == null) 0 else uiNode.boundsRelativeToBlock()!!.height
         }
@@ -777,8 +741,7 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
         super.handleDocumentAttachmentChanged()
     }
 
-    val classList: DOMTokenList
-        get() = DOMTokenList()
+
 
     // Based on http://www.w3.org/TR/dom/#domtokenlist
     inner class DOMTokenList {

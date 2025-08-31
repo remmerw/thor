@@ -242,15 +242,7 @@ abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) 
     }
 
 
-    protected val fileValue: File?
-        /*
-             * (non-Javadoc)
-             *
-             * @see
-             * org.xamjwg.html.domimpl.HTMLElementImpl#assignAttributeField(java.lang.
-             * String, java.lang.String)
-             */
-        get() {
+    fun fileValue(): File? {
             val ic = this.inputContext
             if (ic != null) {
                 return ic.fileValue
@@ -309,12 +301,7 @@ abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) 
         }
     }
 
-    /**
-     * Adds a listener of image loading events. The listener gets called right
-     * away if there's already an image.
-     *
-     * @param listener
-     */
+
     fun addImageListener(listener: ImageListener) {
         val l = this.imageListeners
         val currentImageResponse: ImageResponse?
