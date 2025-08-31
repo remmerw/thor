@@ -575,8 +575,6 @@ import kotlin.math.max
     override var originalParent: RCollection?
         get() = TODO("Not yet implemented")
         set(value) {}
-    override val originalOrCurrentParent: RCollection?
-        get() = TODO("Not yet implemented")
     override val visualX: Int
         get() = TODO("Not yet implemented")
     override val visualY: Int

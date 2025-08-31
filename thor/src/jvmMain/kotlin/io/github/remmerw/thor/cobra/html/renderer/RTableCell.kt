@@ -211,18 +211,12 @@ internal open class RTableCell(
     override var originalParent: RCollection?
         get() = TODO("Not yet implemented")
         set(value) {}
-    override val originalOrCurrentParent: RCollection?
-        get() = TODO("Not yet implemented")
     override val visualX: Int
         get() = TODO("Not yet implemented")
     override val visualY: Int
         get() = TODO("Not yet implemented")
     override val isContainedByNode: Boolean
         get() = TODO("Not yet implemented")
-
-
-
-
 
     override fun vAlign(): CSSProperty.VerticalAlign? {
         TODO("Not yet implemented")

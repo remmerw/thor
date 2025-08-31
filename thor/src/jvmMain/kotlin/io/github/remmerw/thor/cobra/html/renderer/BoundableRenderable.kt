@@ -70,7 +70,7 @@ interface BoundableRenderable : Renderable {
      * Returns [.getOriginalParent] if not null. Otherwise it returns
      * [.getParent].
      */
-    val originalOrCurrentParent: RCollection?
+     fun originalOrCurrentParent(): RCollection?
 
     fun setBounds(x: Int, y: Int, with: Int, height: Int)
 

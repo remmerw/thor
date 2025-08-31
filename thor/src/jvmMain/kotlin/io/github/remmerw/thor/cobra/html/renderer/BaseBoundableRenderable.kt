@@ -226,7 +226,7 @@ abstract class BaseBoundableRenderable(
         this.originalParent = origParent
     }
 
-    open fun getOriginalOrCurrentParent(): RCollection? {
+    override fun originalOrCurrentParent(): RCollection? {
         val origParent = this.originalParent
         if (origParent == null) {
             return this.parent

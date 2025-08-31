@@ -73,8 +73,7 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
     override var originalParent: RCollection?
         get() = TODO("Not yet implemented")
         set(value) {}
-    override val originalOrCurrentParent: RCollection?
-        get() = TODO("Not yet implemented")
+
 
     override fun getOriginalParent(): RCollection? {
         return translatedChild.originalParent
@@ -84,12 +83,12 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
         translatedChild.originalParent = (origParent)
     }
 
-    override fun getOriginalOrCurrentParent(): RCollection? {
-        return translatedChild.originalOrCurrentParent
+    override fun originalOrCurrentParent(): RCollection? {
+        return translatedChild.originalOrCurrentParent()
     }
 
-    override fun setBounds(x: Int, y: Int, with: Int, height: Int) {
-        translatedChild.setBounds(x, y, with, height)
+    override fun setBounds(x: Int, y: Int, width: Int, height: Int) {
+        translatedChild.setBounds(x, y, width, height)
     }
 
     override fun setOrigin(x: Int, y: Int) {

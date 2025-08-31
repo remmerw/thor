@@ -112,9 +112,9 @@ internal class RListItem(
         var bulletType = if (listStyle == null) ListStyle.TYPE_UNSET else listStyle.type
         if (bulletType != ListStyle.TYPE_NONE) {
             if (bulletType == ListStyle.TYPE_UNSET) {
-                var parent = this.getOriginalOrCurrentParent()
+                var parent = this.originalOrCurrentParent()
                 if (parent !is RList) {
-                    parent = parent?.originalOrCurrentParent
+                    parent = parent?.originalOrCurrentParent()
                 }
                 if (parent is RList) {
                     val parentListStyle = parent.listStyle

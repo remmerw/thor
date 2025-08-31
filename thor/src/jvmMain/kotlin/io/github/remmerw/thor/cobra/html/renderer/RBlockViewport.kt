@@ -890,9 +890,9 @@ class RBlockViewport(
     val parentViewport: RBlockViewport?
         get() {
             // Use originalParent, which for one, is not going to be null during layout.
-            var parent = this.getOriginalOrCurrentParent()
+            var parent = this.originalOrCurrentParent()
             while ((parent != null) && parent !is RBlockViewport) {
-                parent = parent.originalOrCurrentParent
+                parent = parent.originalOrCurrentParent()
             }
             return parent
         }
@@ -1788,8 +1788,7 @@ class RBlockViewport(
     override var originalParent: RCollection?
         get() = TODO("Not yet implemented")
         set(value) {}
-    override val originalOrCurrentParent: RCollection?
-        get() = TODO("Not yet implemented")
+
     override val visualX: Int
         get() = TODO("Not yet implemented")
     override val visualY: Int
@@ -2147,11 +2146,11 @@ class RBlockViewport(
 
     private val isFloatLimitImpl: Boolean
         get() {
-            val parent: Any? = this.getOriginalOrCurrentParent()
+            val parent: Any? = this.originalOrCurrentParent()
             if (parent !is RBlock) {
                 return java.lang.Boolean.TRUE
             }
-            val grandParent: Any? = parent.getOriginalOrCurrentParent()
+            val grandParent: Any? = parent.originalOrCurrentParent()
             if (grandParent !is RBlockViewport) {
                 // Could be contained in a table, or it could
                 // be a list item, for example.
