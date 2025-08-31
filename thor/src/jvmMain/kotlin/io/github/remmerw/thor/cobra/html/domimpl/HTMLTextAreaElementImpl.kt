@@ -38,31 +38,7 @@ class HTMLTextAreaElementImpl : HTMLBaseInputElement, HTMLTextAreaElement {
         return arrayOf<FormInput>(FormInput(name, this.value))
     }
 
-    override fun getDefaultValue(): String? {
-        TODO("Not yet implemented")
-    }
 
-    override fun setDefaultValue(p0: String?) {
-        TODO("Not yet implemented")
-    }
-
-    override fun getForm(): HTMLFormElement? {
-        TODO("Not yet implemented")
-    }
-
-    override fun getAccessKey(): String? {
-        TODO("Not yet implemented")
-    }
-
-    override fun setAccessKey(p0: String?) {
-        TODO("Not yet implemented")
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.w3c.dom.html2.HTMLTextAreaElement#getCols()
-     */
     override fun getCols(): Int {
         val ic =this.getInputContext()
         return if (ic == null) 0 else ic.cols
@@ -80,45 +56,12 @@ class HTMLTextAreaElementImpl : HTMLBaseInputElement, HTMLTextAreaElement {
         }
     }
 
-    override fun getDisabled(): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override fun setDisabled(p0: Boolean) {
-        TODO("Not yet implemented")
-    }
-
-    override fun getName(): String? {
-        TODO("Not yet implemented")
-    }
-
-    override fun setName(p0: String?) {
-        TODO("Not yet implemented")
-    }
-
-    override fun getReadOnly(): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override fun setReadOnly(p0: Boolean) {
-        TODO("Not yet implemented")
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.w3c.dom.html2.HTMLTextAreaElement#getRows()
-     */
     override fun getRows(): Int {
         val ic = this.getInputContext()
         return if (ic == null) 0 else ic.rows
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.w3c.dom.html2.HTMLTextAreaElement#setRows(int)
-     */
+
     override fun setRows(rows: Int) {
         val ic = this.getInputContext()
         if (ic != null) {
@@ -126,28 +69,8 @@ class HTMLTextAreaElementImpl : HTMLBaseInputElement, HTMLTextAreaElement {
         }
     }
 
-    override fun getTabIndex(): Int {
-        TODO("Not yet implemented")
-    }
-
-    override fun setTabIndex(p0: Int) {
-        TODO("Not yet implemented")
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.w3c.dom.html2.HTMLTextAreaElement#getType()
-     */
     override fun getType(): String {
         return "textarea"
     }
 
-    override fun getValue(): String? {
-        TODO("Not yet implemented")
-    }
-
-    override fun setValue(p0: String?) {
-        TODO("Not yet implemented")
-    }
 }

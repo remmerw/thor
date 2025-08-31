@@ -287,11 +287,7 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), Element, Even
         return ELEMENT_NODE
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.NodeImpl#getNodeValue()
-     */
+
     @Throws(DOMException::class)
     override fun getNodeValue(): String? {
         return null

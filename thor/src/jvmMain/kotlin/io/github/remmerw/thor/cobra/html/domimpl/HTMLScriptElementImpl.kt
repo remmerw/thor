@@ -71,14 +71,6 @@ class HTMLScriptElementImpl(name: String) : HTMLElementImpl(name), HTMLScriptEle
         this.setAttribute("event", event)
     }
 
-    override fun getCharset(): String? {
-        TODO("Not yet implemented")
-    }
-
-    override fun setCharset(p0: String?) {
-        TODO("Not yet implemented")
-    }
-
     override fun getDefer(): Boolean {
         return this.defer
     }
@@ -220,7 +212,7 @@ class HTMLScriptElementImpl(name: String) : HTMLElementImpl(name), HTMLScriptEle
 
     override fun handleDocumentAttachmentChanged() {
         if (isAttachedToDocument) {
-            (document as HTMLDocumentImpl).addJob(Runnable { processScript() }, false)
+            (document as HTMLDocumentImpl).addJob({ processScript() }, false)
         } else {
             // TODO What does script element do when detached?
         }

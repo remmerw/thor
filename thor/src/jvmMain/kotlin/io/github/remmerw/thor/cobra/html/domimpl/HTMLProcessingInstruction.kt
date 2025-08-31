@@ -1,8 +1,3 @@
-/*
- * HtmlProcessingInstruction.java
- * Selima Prague FBI Project
- * 5th-March-2008
- */
 package io.github.remmerw.thor.cobra.html.domimpl
 
 import org.w3c.dom.DOMException
@@ -10,12 +5,6 @@ import org.w3c.dom.Node
 import org.w3c.dom.Node.PROCESSING_INSTRUCTION_NODE
 import org.w3c.dom.ProcessingInstruction
 
-/**
- * HTML DOM object representing processing instruction as per HTML 4.0
- * specification.
- *
- * @author vitek
- */
 class HTMLProcessingInstruction(var target: String, var data: String?) : NodeImpl(),
     ProcessingInstruction, Cloneable {
     override fun createSimilarNode(): Node {

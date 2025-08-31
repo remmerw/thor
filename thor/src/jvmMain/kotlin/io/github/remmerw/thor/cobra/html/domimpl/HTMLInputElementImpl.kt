@@ -31,13 +31,8 @@ import java.util.logging.Level
 
 class HTMLInputElementImpl(name: String) : HTMLBaseInputElement(name), HTMLInputElement {
     private var defaultChecked = false
-    override fun getDefaultValue(): String {
-        TODO("Not yet implemented")
-    }
 
-    override fun setDefaultValue(p0: String?) {
-        TODO("Not yet implemented")
-    }
+
 
     override fun getDefaultChecked(): Boolean {
         return this.defaultChecked
@@ -47,41 +42,6 @@ class HTMLInputElementImpl(name: String) : HTMLBaseInputElement(name), HTMLInput
         this.defaultChecked = defaultChecked
     }
 
-    override fun getForm(): HTMLFormElement? {
-        TODO("Not yet implemented")
-    }
-
-    override fun getAccept(): String? {
-        TODO("Not yet implemented")
-    }
-
-    override fun setAccept(p0: String?) {
-        TODO("Not yet implemented")
-    }
-
-    override fun getAccessKey(): String? {
-        TODO("Not yet implemented")
-    }
-
-    override fun setAccessKey(p0: String?) {
-        TODO("Not yet implemented")
-    }
-
-    override fun getAlign(): String? {
-        TODO("Not yet implemented")
-    }
-
-    override fun setAlign(p0: String?) {
-        TODO("Not yet implemented")
-    }
-
-    override fun getAlt(): String? {
-        TODO("Not yet implemented")
-    }
-
-    override fun setAlt(p0: String?) {
-        TODO("Not yet implemented")
-    }
 
     override fun getChecked(): Boolean {
         val ic = this.getInputContext()
@@ -99,13 +59,7 @@ class HTMLInputElementImpl(name: String) : HTMLBaseInputElement(name), HTMLInput
         }
     }
 
-    override fun getDisabled(): Boolean {
-        TODO("Not yet implemented")
-    }
 
-    override fun setDisabled(p0: Boolean) {
-        TODO("Not yet implemented")
-    }
 
     override fun getMaxLength(): Int {
         val ic = this.getInputContext()
@@ -119,33 +73,6 @@ class HTMLInputElementImpl(name: String) : HTMLBaseInputElement(name), HTMLInput
         }
     }
 
-    override fun getName(): String? {
-        TODO("Not yet implemented")
-    }
-
-    override fun setName(p0: String?) {
-        TODO("Not yet implemented")
-    }
-
-    override fun getReadOnly(): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override fun setReadOnly(p0: Boolean) {
-        TODO("Not yet implemented")
-    }
-
-    /* public int getSize() {
-    final InputContext ic = this.inputContext;
-    return ic == null ? 0 : ic.getControlSize();
-
-  public void setSize(final int size) {
-    final InputContext ic = this.inputContext;
-    if (ic != null) {
-      ic.setControlSize(size);
-    }
-  }
-  }*/
     override fun getSize(): String {
         val ic = this.getInputContext()
         val size = if (ic == null) 0 else ic.controlSize
@@ -165,14 +92,6 @@ class HTMLInputElementImpl(name: String) : HTMLBaseInputElement(name), HTMLInput
 
     override fun setSrc(src: String?) {
         this.setAttribute("src", src)
-    }
-
-    override fun getTabIndex(): Int {
-        TODO("Not yet implemented")
-    }
-
-    override fun setTabIndex(p0: Int) {
-        TODO("Not yet implemented")
     }
 
     /**
@@ -195,13 +114,7 @@ class HTMLInputElementImpl(name: String) : HTMLBaseInputElement(name), HTMLInput
         this.setAttribute("usemap", useMap)
     }
 
-    override fun getValue(): String? {
-        TODO("Not yet implemented")
-    }
-
-    override fun setValue(p0: String?) {
-        TODO("Not yet implemented")
-    }
+  
 
     override fun click() {
         val ic = this.getInputContext()
@@ -247,7 +160,7 @@ class HTMLInputElementImpl(name: String) : HTMLBaseInputElement(name), HTMLInput
         }
     }
 
-    protected fun getFormInputs(): Array<FormInput>? {
+    fun getFormInputs(): Array<FormInput>? {
         val type = this.getType()
         val name = this.name
         if (name == null) {

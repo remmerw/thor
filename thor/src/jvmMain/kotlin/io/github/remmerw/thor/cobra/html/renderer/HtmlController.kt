@@ -112,11 +112,11 @@ internal class HtmlController {
             }
             if ("submit" == type) {
                 val formInputs: Array<FormInput>?
-                val name = node.name
+                val name = node.getName()
                 if (name == null) {
                     formInputs = null
                 } else {
-                    formInputs = arrayOf(FormInput(name, node.value))
+                    formInputs = arrayOf(FormInput(name, node.getValue()))
                 }
                 node.submitForm(formInputs)
                 return false

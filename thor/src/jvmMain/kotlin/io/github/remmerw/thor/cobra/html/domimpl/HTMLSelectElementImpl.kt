@@ -34,9 +34,6 @@ open class HTMLSelectElementImpl(name: String) : HTMLBaseInputElement(name), HTM
         return this.options!!.length
     }
 
-    override fun getForm(): HTMLFormElement? {
-        TODO("Not yet implemented")
-    }
 
     override fun getMultiple(): Boolean {
         val m = this.multipleState
@@ -54,14 +51,6 @@ open class HTMLSelectElementImpl(name: String) : HTMLBaseInputElement(name), HTM
         }
     }
 
-    override fun getName(): String? {
-        TODO("Not yet implemented")
-    }
-
-    override fun setName(p0: String?) {
-        TODO("Not yet implemented")
-    }
-
     override fun getOptions(): HTMLCollection {
         synchronized(this) {
             if (this.options == null) {
@@ -71,13 +60,6 @@ open class HTMLSelectElementImpl(name: String) : HTMLBaseInputElement(name), HTM
         }
     }
 
-    override fun getDisabled(): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override fun setDisabled(p0: Boolean) {
-        TODO("Not yet implemented")
-    }
 
     override fun getSelectedIndex(): Int {
         val ic = this.getInputContext()
@@ -101,13 +83,6 @@ open class HTMLSelectElementImpl(name: String) : HTMLBaseInputElement(name), HTM
         }
     }
 
-    override fun getValue(): String? {
-        TODO("Not yet implemented")
-    }
-
-    override fun setValue(p0: String?) {
-        TODO("Not yet implemented")
-    }
 
     override fun getSize(): Int {
         val ic = this.getInputContext()
@@ -125,13 +100,6 @@ open class HTMLSelectElementImpl(name: String) : HTMLBaseInputElement(name), HTM
         }
     }
 
-    override fun getTabIndex(): Int {
-        TODO("Not yet implemented")
-    }
-
-    override fun setTabIndex(p0: Int) {
-        TODO("Not yet implemented")
-    }
 
     override fun getType(): String {
         return if (this.getMultiple()) "select-multiple" else "select-one"

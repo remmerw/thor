@@ -841,11 +841,7 @@ class HTMLDocumentImpl(
         return DOCUMENT_NODE
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.NodeImpl#getNodeValue()
-     */
+
     @Throws(DOMException::class)
     override fun getNodeValue(): String? {
         // Always null for document

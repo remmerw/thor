@@ -86,13 +86,7 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
         // TODO: OPTIMIZATION: If we had a ComputedStyle map in
         // window (Mozilla model) the map could be cleared in one shot.
         synchronized(treeLock) {
-            //TODO to be reconsidered in issue #41
-            /*
-      this.currentStyleDeclarationState = null;
-      this.computedStyles = null;
-      this.isHoverStyle = null;
-      this.hasHoverStyleByElement = null;
-       */
+
             this.currentStyle = null
             this.cachedRules = null
             this.cachedNodeData = null
@@ -294,25 +288,14 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
 
 
 
-
-    var charset: String?
-        get() = this.getAttribute("charset")
-        set(charset) {
-            this.setAttribute("charset", charset)
-        }
-
-    /*
-  @Override
-  protected void assignAttributeField(final String normalName, final String value) {
-    if (!this.notificationsSuspended) {
-      this.informInvalidAttibute(normalName);
-    } else {
-      if ("style".equals(normalName)) {
-        this.forgetLocalStyle();
-      }
+     fun getCharset(): String? {
+        return this.getAttribute("charset")
     }
-    super.assignAttributeField(normalName, value);
-  }*/
+
+     fun setCharset(charset: String?) {
+        this.setAttribute("charset", charset)
+    }
+
     override fun warn(message: String?, err: Throwable?) {
         logger.log(Level.WARNING, message, err)
     }
@@ -364,43 +347,19 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
         }
     }
 
-    /* Not required anymore
-  private static boolean isSameNodeData(final NodeData a, final NodeData b) {
-    final Collection<String> aProps = a.getPropertyNames();
-    final Collection<String> bProps = b.getPropertyNames();
-    if (aProps.size() == bProps.size()) {
-      for (final String ap : aProps) {
-        final Term<?> aVal = a.getValue(ap, true);
-        final Term<?> bVal = b.getValue(ap, true);
-        if (aVal != null) {
-          if (!aVal.equals(bVal)) {
-            return false;
-          }
-        }
-        final CSSProperty aProp = a.getProperty(ap);
-        final CSSProperty bProp = b.getProperty(ap);
-        if (!aProp.equals(bProp)) {
-          return false;
-        }
-      }
-      return true;
-    }
-    return false;
-  }
-  */
     private fun invalidateDescendentsForHover(mouseOver: Boolean) {
         synchronized(this.treeLock) {
             if (!mouseOver) {
                 val hoverCondition = elementMatchCondition.clone() as MatchConditionOnElements
                 hoverCondition.addMatch(this, Selector.PseudoClassType.HOVER)
-                invalidateDescendentsForHoverImpl(this, hoverCondition)
+                invalidateDescendantsForHoverImpl(this, hoverCondition)
             } else {
-                invalidateDescendentsForHoverImpl(this, elementMatchCondition)
+                invalidateDescendantsForHoverImpl(this, elementMatchCondition)
             }
         }
     }
 
-    private fun invalidateDescendentsForHoverImpl(
+    private fun invalidateDescendantsForHoverImpl(
         ancestor: HTMLElementImpl?,
         hoverCondition: MatchCondition?
     ) {
@@ -414,7 +373,7 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
                     if (hasMatch) {
                         node.informLocalInvalid()
                     }
-                    node.invalidateDescendentsForHoverImpl(ancestor, hoverCondition)
+                    node.invalidateDescendantsForHoverImpl(ancestor, hoverCondition)
                 }
             }
         }

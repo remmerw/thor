@@ -326,8 +326,7 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
         }
     }
 
-    private val nodeIndex: Int
-        get() {
+    fun nodeIndex(): Int {
             val parent =
                 this.nodeParent as NodeImpl?
             return if (parent == null) -1 else parent.getChildIndex(this)
@@ -405,9 +404,9 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
             throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Unknwon node implementation")
         }
         if ((parent != null) && (parent === other.nodeParent)) {
-            val thisIndex = this.nodeIndex
+            val thisIndex = this.nodeIndex()
             val otherIndex =
-                other.nodeIndex
+                other.nodeIndex()
             if ((thisIndex == -1) || (otherIndex == -1)) {
                 return Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
             }
@@ -1262,8 +1261,8 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
         }
     }
 
-    val innerHTML: String
-        get() {
+    fun innerHTML(): String {
+
             val buffer = StringBuffer()
             synchronized(this) {
                 this.appendInnerHTMLImpl(buffer)
@@ -1296,55 +1295,6 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
         return Strings.strictHtmlEncode(text, false)
     }
 
-    /*
-  protected void dispatchEventToHandlers(final Event event, final List<Function> handlers) {
-    if (handlers != null) {
-      // We clone the collection and check if original collection still contains
-      // the handler before dispatching
-      // This is to avoid ConcurrentModificationException during dispatch
-      // TODO: Event Bubbling
-      final ArrayList<Function> handlersCopy = new ArrayList<>(handlers);
-      for (final Function h : handlersCopy) {
-        if (handlers.contains(h)) {
-          Executor.executeFunction(this, h, event);
-        }
-      }
-    }
-  }
-
-  private final Map<String, List<Function>> onEventHandlers = new HashMap<>();
-
-  public void addEventListener(final String type, final Function listener) {
-    addEventListener(type, listener, false);
-  }
-
-  public void addEventListener(final String type, final Function listener, final boolean useCapture) {
-    // TODO
-    System.out.println("node by name: " + getNodeName() + " adding Event listener of type: " + type);
-
-    List<Function> handlerList = null;
-    if (onEventHandlers.containsKey(type)) {
-      handlerList = onEventHandlers.get(type);
-    } else {
-      handlerList = new ArrayList<>();
-      onEventHandlers.put(type, handlerList);
-    }
-    handlerList.add(listener);
-  }
-
-  public void removeEventListener(final String type, final Function listener, final boolean useCapture) {
-    // TODO
-    System.out.println("node remove Event listener: " + type);
-    if (onEventHandlers.containsKey(type)) {
-      onEventHandlers.get(type).remove(listener);
-    }
-  }
-
-  public boolean dispatchEvent(final Event evt) {
-    System.out.println("Dispatching event: " + evt);
-    dispatchEventToHandlers(evt, onEventHandlers.get(evt.getType()));
-    return false;
-  }*/
     fun getInnerText(): String
             /**
              * Attempts to convert the subtree starting at this point to a close text
@@ -1445,29 +1395,6 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
         }
     }
 
-    /*
-  public void addEventListener(final String type, final EventListener listener) {
-    addEventListener(type, listener, false);
-  }
-
-  public void addEventListener(final String type, final EventListener listener, final boolean useCapture) {
-    if (useCapture) {
-      throw new UnSupportedOperationException();
-    }
-  }
-
-  public void removeEventListener(final String type, final EventListener listener, final boolean useCapture) {
-    // TODO Auto-generated method stub
-
-  }
-
-  public boolean dispatchEvent(final org.w3c.dom.events.Event evt) throws EventException {
-    // TODO Auto-generated method stub
-    return false;
-  }*/
-    /**
-     * Common tasks to be performed when the NodeList of an element is changed.
-     */
     private fun postChildListChanged() {
         this.handleChildListChanged()
 
@@ -1499,26 +1426,6 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
         )
     }
 
-    /*
-  public void addEventListener(final String type, final EventListener listener) {
-    addEventListener(type, listener, false);
-  }
-
-  public void addEventListener(final String type, final EventListener listener, final boolean useCapture) {
-    if (useCapture) {
-      throw new UnSupportedOperationException();
-    }
-  }
-
-  public void removeEventListener(final String type, final EventListener listener, final boolean useCapture) {
-    // TODO Auto-generated method stub
-
-  }
-
-  public boolean dispatchEvent(final org.w3c.dom.events.Event evt) throws EventException {
-    // TODO Auto-generated method stub
-    return false;
-  }*/
     fun dispatchEvent(evt: Event): kotlin.Boolean {
         println("Dispatching event: " + evt)
         // dispatchEventToHandlers(evt, onEventHandlers.get(evt.getType()));
@@ -1536,24 +1443,7 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
         }
     }
 
-    /*
-  protected Collection<Node> getMatchingChildren(CombinedSelector selectors) {
-    final Collection<Node> matchingElements = new LinkedList<>();
-    final NodeImpl[] childrenArray = getChildrenArray();
-    if (childrenArray != null) {
-      for (final NodeImpl n : childrenArray) {
-        if (n instanceof ElementImpl) {
-          final ElementImpl element = (ElementImpl) n;
-          if (selectors.stream().anyMatch(selector -> selector.matches(element))) {
-            System.out.println("Found match: " + element + " of class: " + element.getClass());
-            matchingElements.add(element);
-          }
-          matchingElements.addAll(element.getMatchingChildren(selectors));
-        }
-      }
-    }
-    return matchingElements;
-  }*/
+
     protected fun getMatchingChildren(selectors: MutableList<Selector>): MutableCollection<Node> {
         val matchingElements: MutableCollection<Node> = LinkedList<Node>()
         val numSelectors = selectors.size

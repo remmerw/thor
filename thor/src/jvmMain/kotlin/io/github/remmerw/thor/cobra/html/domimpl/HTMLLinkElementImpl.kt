@@ -49,13 +49,6 @@ class HTMLLinkElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLLinkE
         }
     }
 
-    override fun getCharset(): String? {
-        TODO("Not yet implemented")
-    }
-
-    override fun setCharset(p0: String?) {
-        TODO("Not yet implemented")
-    }
 
     //TODO hide from JS
     fun setDisabledImpl(disabled: Boolean) {
@@ -193,42 +186,6 @@ class HTMLLinkElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLLinkE
         return false
     }
 
-    /*
-   * Not used anymore after removal of createRenderState. However, it can be re-implemented using
-   * HTMLElementImple.elementMatchCondition.
-   * Note that there are privacy implications here. It is better to understand them before
-   * re-implementing.
-  private java.awt.Color getLinkColor() {
-    final HTMLDocument doc = (HTMLDocument) this.document;
-    if (doc != null) {
-      final HTMLBodyElement body = (HTMLBodyElement) doc.getBody();
-      if (body != null) {
-        final String vlink = body.getVLink();
-        final String link = body.getLink();
-        if (vlink != null || link != null) {
-          final HtmlRendererContext rcontext = this.getHtmlRendererContext();
-          if (rcontext != null) {
-            final boolean visited = rcontext.isVisitedLink(this);
-            final String colorText = visited ? vlink : link;
-            if (colorText != null) {
-              return ColorFactory.getInstance().getColor(colorText);
-            }
-          }
-        }
-      }
-    }
-    return java.awt.Color.BLUE;
-  }*/
-    /*
-  protected RenderState createRenderState(RenderState prevRenderState) {
-    if (this.hasAttribute("href")) {
-      // Removed the following three as part of #135
-      // prevRenderState = new TextDecorationRenderState(prevRenderState, RenderState.MASK_TEXTDECORATION_UNDERLINE);
-      // prevRenderState = new ColorRenderState(prevRenderState, this.getLinkColor());
-      // prevRenderState = new CursorRenderState(prevRenderState, Optional.of(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)));
-    }
-    return super.createRenderState(prevRenderState);
-  }*/
     override fun toString(): String {
         // Javascript code often depends on this being exactly href. See js9.html.
         // To change, perhaps add method to AbstractScriptableDelegate.
