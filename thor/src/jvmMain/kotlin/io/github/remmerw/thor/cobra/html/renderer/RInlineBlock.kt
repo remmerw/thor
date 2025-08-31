@@ -62,9 +62,6 @@ class RInlineBlock(
 
 
 
-    override var parent: RCollection?
-        get() = TODO("Not yet implemented")
-        set(value) {}
     override var originalParent: RCollection?
         get() = TODO("Not yet implemented")
         set(value) {}

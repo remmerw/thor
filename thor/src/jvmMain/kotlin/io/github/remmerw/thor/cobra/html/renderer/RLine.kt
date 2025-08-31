@@ -461,7 +461,7 @@ import kotlin.math.max
             this.adjustHeight(requiredHeight, ph, valign)
         }
         this.renderabl.add(relement)
-        relement.parent = (this)
+        relement.setParent(this)
         relement.setX(origXOffset)
         this.setElementY(relement, ph, valign)
         val newX = origXOffset + pw
@@ -572,9 +572,6 @@ import kotlin.math.max
     override val isContainedByNode: Boolean
         get() = TODO("Not yet implemented")
 
-    override var parent: RCollection?
-        get() = TODO("Not yet implemented")
-        set(value) {}
     override var originalParent: RCollection?
         get() = TODO("Not yet implemented")
         set(value) {}
@@ -700,6 +697,6 @@ import kotlin.math.max
     }
 
     override fun toString(): String {
-        return "RLine belonging to: " + getParent()
+        return "RLine belonging to: " + parent()
     }
 }

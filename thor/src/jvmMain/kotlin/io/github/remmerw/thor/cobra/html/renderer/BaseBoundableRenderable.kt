@@ -19,7 +19,7 @@ abstract class BaseBoundableRenderable(
     private var height: Int = 0
     private var x: Int = 0
     private var y: Int = 0
-
+    private var parent: RCollection? = null
     /**
      * Starts as true because ancestors could be invalidated.
      */
@@ -34,7 +34,7 @@ abstract class BaseBoundableRenderable(
     }
 
     override fun getGUIPoint(clientX: Int, clientY: Int): Point? {
-        val parent: Renderable? = this.getParent()
+        val parent: Renderable? = this.parent()
         if (parent is BoundableRenderable) {
             return parent.getGUIPoint(clientX + this.x, clientY + this.y)
         } else if (parent == null) {
@@ -207,11 +207,11 @@ abstract class BaseBoundableRenderable(
         }
     }
 
-    fun getParent(): RCollection? {
+    override fun parent(): RCollection? {
         return this.parent
     }
 
-    fun setParent(parent: RCollection?) {
+    override fun setParent(parent: RCollection?) {
         this.parent = parent
     }
 
@@ -325,7 +325,7 @@ abstract class BaseBoundableRenderable(
             }
             x += parent.visualX
             y += parent.visualY
-            parent = parent.parent
+            parent = parent.parent()
         }
     }
 
@@ -357,7 +357,7 @@ abstract class BaseBoundableRenderable(
             y += nextY
             nextX = parent.visualX
             nextY = parent.visualY
-            parent = parent.parent
+            parent = parent.parent()
         }
     }
 
@@ -390,7 +390,7 @@ abstract class BaseBoundableRenderable(
             }
             x += parent.visualX
             y += parent.visualY
-            parent = parent.parent
+            parent = parent.parent()
         }
     }
 

@@ -70,9 +70,6 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
         return translatedChild.getOriginRelativeToNoScroll(ancestor)
     }
 
-    override var parent: RCollection?
-        get() = TODO("Not yet implemented")
-        set(value) {}
     override var originalParent: RCollection?
         get() = TODO("Not yet implemented")
         set(value) {}
@@ -243,12 +240,12 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
     override fun repaint(x: Int, y: Int, width: Int, height: Int) {
         // translatedChild.repaint(x, y, width, height);
         // getParent().repaint(x, y, width, height);
-        val or = translatedChild.getOriginRelativeTo(getParent())
+        val or = translatedChild.getOriginRelativeTo(parent())
         run {
             val rect = Rectangle(x, y, width, height)
             rect.translate(or.x, or.y)
         }
-        getParent()?.repaint(x + or.x, y + or.y, width, height)
+        parent()?.repaint(x + or.x, y + or.y, width, height)
     }
 
     override fun relayout() {

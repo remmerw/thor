@@ -53,7 +53,9 @@ interface BoundableRenderable : Renderable {
     /**
      * Gets the parent where the renderable is rendered.
      */
-    var parent: RCollection?
+    fun parent(): RCollection?
+
+    fun setParent(parent: RCollection?)
 
     /**
      * Gets the parent set with [.setOriginalParent]. It

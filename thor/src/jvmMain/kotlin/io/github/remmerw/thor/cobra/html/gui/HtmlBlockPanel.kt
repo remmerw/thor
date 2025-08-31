@@ -624,7 +624,7 @@ class HtmlBlockPanel(
         } else if (r == null) {
             return null
         } else if (r is BoundableRenderable) {
-            return getContainingBlock(r.parent)
+            return getContainingBlock(r.parent())
         } else {
             return null
         }
@@ -643,7 +643,7 @@ class HtmlBlockPanel(
                     do {
                         if (innerBlock != null) {
                             consumed = innerBlock.scrollByUnits(Adjustable.VERTICAL, units)
-                            innerBlock = getContainingBlock(innerBlock.getParent())
+                            innerBlock = getContainingBlock(innerBlock.parent())
                         }
                     } while ((!consumed) && (innerBlock != null))
                 }

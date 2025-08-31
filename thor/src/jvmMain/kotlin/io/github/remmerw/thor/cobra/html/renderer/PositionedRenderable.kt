@@ -41,7 +41,7 @@ class PositionedRenderable(
         }
 
         val originalParent = this.renderable.originalParent
-        val rparent = renderable.parent
+        val rparent = renderable.parent()
 
         /*
     System.out.println("pr: " + this);
@@ -103,9 +103,9 @@ class PositionedRenderable(
             val origParent = this.renderable.originalParent
             var current = origParent
             var currentBounds = current!!.clipBoundsWithoutInsets()
-            val parent = this.renderable.parent
+            val parent = this.renderable.parent()
             while (current !== parent) {
-                current = current!!.parent!!
+                current = current!!.parent()!!
                 if (current.modelNode() is HTMLHtmlElement) {
                     break
                 }
@@ -149,7 +149,7 @@ class PositionedRenderable(
             val pos = this.renderable.modelNode()!!.renderState()!!.position
 
             val originalParent = this.renderable.originalParent!!
-            val rparent = renderable.parent
+            val rparent = renderable.parent()
             val or = originalParent.getOriginRelativeTo(rparent)
             if (isFloat || pos == RenderState.POSITION_ABSOLUTE || pos == RenderState.POSITION_FIXED) {
                 val some = this.some
@@ -165,7 +165,7 @@ class PositionedRenderable(
     private val some: Point?
         // TODO: name this function well: what exactly does it compute?
         get() {
-            val rparent = renderable.parent!!
+            val rparent = renderable.parent()!!
             if (!isFixed && rparent.modelNode() is HTMLDocument) {
                 var htmlRenderable = RenderUtils.findHtmlRenderable(rparent)
                 if (htmlRenderable is PositionedRenderable) {

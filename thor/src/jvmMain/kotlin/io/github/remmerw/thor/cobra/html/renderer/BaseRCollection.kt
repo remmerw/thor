@@ -16,7 +16,7 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
     }
 
     override fun blur() {
-        val parent = this.parent
+        val parent = this.parent()
         if (parent != null) {
             parent.focus()
         } else {

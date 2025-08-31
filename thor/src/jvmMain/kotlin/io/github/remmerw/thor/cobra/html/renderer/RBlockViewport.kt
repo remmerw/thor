@@ -72,9 +72,12 @@ class RBlockViewport(
     modelNode: ModelNode?, container: RenderableContainer?, listNesting: Int,
     pcontext: UserAgentContext,
     rcontext: HtmlRendererContext, frameContext: FrameContext?,
-    override var parent: RCollection?
+    private var parent: RCollection?
 ) : BaseRCollection(container, modelNode) {
-    // private final ArrayList awtComponents = new ArrayList();
+
+    init {
+        setParent(parent)
+    }
     private val listNesting: Int
     private val userAgentContext: UserAgentContext
     private val rendererContext: HtmlRendererContext
@@ -1097,7 +1100,7 @@ class RBlockViewport(
         if (block !is RElement) {
             return block.height()
         }
-        val parent = this.getParent()
+        val parent = this.parent()
         if (parent !is RElement) {
             return block.height()
         }
@@ -1165,7 +1168,7 @@ class RBlockViewport(
         block.setOrigin(blockX, blockY)
         if (!isRelative) {
             sr.add(block)
-            block.parent = (this)
+            block.setParent(this)
         }
         if ((blockX + blockWidth) > this.maxX) {
             this.maxX = blockX + blockWidth
@@ -1710,7 +1713,7 @@ class RBlockViewport(
             isDelegated
         )
         addPosRenderable(pr)
-        renderable.parent = (this)
+        renderable.setParent(this)
         if (renderable is RUIControl) {
             this.container?.addComponent(renderable.widget.component())
         }
@@ -1960,7 +1963,7 @@ class RBlockViewport(
         }
         inlineBlock.doLayout(availContentWidth, availContentHeight, sizeOnly)
         addRenderableToLine(inlineBlock)
-        inlineBlock.setOriginalParent(inlineBlock.getParent())
+        inlineBlock.setOriginalParent(inlineBlock.parent())
         bubbleUpIfRelative(markupElement, inlineBlock)
     }
 

@@ -164,9 +164,6 @@ internal class RTable(
 
 
 
-    override var parent: RCollection?
-        get() = TODO("Not yet implemented")
-        set(value) {}
     override var originalParent: RCollection?
         get() = TODO("Not yet implemented")
         set(value) {}
@@ -403,7 +400,7 @@ internal class RTable(
                 false
             )
         )
-        renderable.parent = (this)
+        renderable.setParent (this)
         if (renderable is RUIControl) {
             this.container!!.addComponent(renderable.widget.component()!!)
         }
