@@ -2901,7 +2901,7 @@ class RBlockViewport(
             if (display == RenderState.DISPLAY_INLINE || display == RenderState.DISPLAY_INLINE_BLOCK || display == RenderState.DISPLAY_INLINE_TABLE) {
                 // Inline elements with absolute or fixed positions need to be treated as blocks.
                 // TODO: ^^Verify; is that an internal hack or a spec requirement?
-                val position = rs.position
+                val position = rs.getPosition()
                 if ((position == RenderState.POSITION_ABSOLUTE) || (position == RenderState.POSITION_FIXED)) {
                     display = RenderState.DISPLAY_BLOCK
                 } else {
@@ -3027,7 +3027,7 @@ class RBlockViewport(
         //
         private fun getPosition(element: HTMLElementImpl): Int {
             val rs = element.getRenderState()
-            return rs.position
+            return rs.getPosition()
         }
 
         private fun isCollapsibleBlock(
@@ -3038,7 +3038,7 @@ class RBlockViewport(
             val rs: RenderState = mn.renderState()!!
             val isDisplayBlock = rs.getDisplay() == RenderState.DISPLAY_BLOCK
             val isPosStaticOrRelative =
-                rs.position == RenderState.POSITION_STATIC || rs.position == RenderState.POSITION_RELATIVE
+                rs.getPosition() == RenderState.POSITION_STATIC || rs.getPosition() == RenderState.POSITION_RELATIVE
             val borderInsets = rs.borderInfo!!.insets
             val paddingInsets = rs.paddingInsets
             val isZeroBorderAndPadding =

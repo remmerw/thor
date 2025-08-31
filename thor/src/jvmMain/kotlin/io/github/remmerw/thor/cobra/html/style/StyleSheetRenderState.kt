@@ -439,8 +439,6 @@ open class StyleSheetRenderState : RenderState {
         this.iHighlight = highlight
     }
 
-    override val position: Int
-        get() = TODO("Not yet implemented")
     override val float: Int
         get() = TODO("Not yet implemented")
     override val clear: Int
@@ -867,7 +865,7 @@ open class StyleSheetRenderState : RenderState {
         return visibility
     }
 
-    fun getPosition(): Int {
+    override fun getPosition(): Int {
         val p = this.cachedPosition
         if (p != null) {
             return p

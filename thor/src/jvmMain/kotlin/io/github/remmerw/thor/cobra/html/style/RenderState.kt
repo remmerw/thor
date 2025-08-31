@@ -8,7 +8,7 @@ import java.awt.FontMetrics
 import java.util.Optional
 
 interface RenderState {
-    val position: Int
+    fun getPosition(): Int
 
     val float: Int
 

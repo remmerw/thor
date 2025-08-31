@@ -50,7 +50,7 @@ class PositionedRenderable(
     System.out.println("  orig parent: " + originalParent);
     */
         val or = originalParent!!.getOriginRelativeTo(rparent)
-        val pos = this.renderable.modelNode()!!.renderState()!!.position
+        val pos = this.renderable.modelNode()!!.renderState()!!.getPosition()
 
         if (isFloat || pos == RenderState.POSITION_ABSOLUTE || pos == RenderState.POSITION_FIXED) {
             val g2 = gIn.create()
@@ -147,7 +147,7 @@ class PositionedRenderable(
     val offset: Point
         get() {
             val offset = Point()
-            val pos = this.renderable.modelNode()!!.renderState()!!.position
+            val pos = this.renderable.modelNode()!!.renderState()!!.getPosition()
 
             val originalParent = this.renderable.originalParent()!!
             val rparent = renderable.parent()

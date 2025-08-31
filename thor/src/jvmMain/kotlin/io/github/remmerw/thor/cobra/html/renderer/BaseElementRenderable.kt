@@ -1185,7 +1185,7 @@ abstract class BaseElementRenderable(
     }
 
     private fun setupRelativePosition(rs: RenderState, containerWidth: Int, containerHeight: Int) {
-        if (rs.position == RenderState.POSITION_RELATIVE) {
+        if (rs.getPosition() == RenderState.POSITION_RELATIVE) {
             val leftText = rs.left
             val topText = rs.top
 

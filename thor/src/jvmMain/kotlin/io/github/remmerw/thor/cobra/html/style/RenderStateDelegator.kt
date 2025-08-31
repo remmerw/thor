@@ -72,8 +72,6 @@ abstract class RenderStateDelegator(protected val delegate: RenderState) : Rende
         return delegate.textTransform
     }
 
-    override val position: Int
-        get() = TODO("Not yet implemented")
     override val float: Int
         get() = TODO("Not yet implemented")
     override val clear: Int
@@ -205,8 +203,8 @@ abstract class RenderStateDelegator(protected val delegate: RenderState) : Rende
         return this.delegate.visibility
     }
 
-    fun getPosition(): Int {
-        return this.delegate.position
+    override fun getPosition(): Int {
+        return this.delegate.getPosition()
     }
 
     fun getFloat(): Int {

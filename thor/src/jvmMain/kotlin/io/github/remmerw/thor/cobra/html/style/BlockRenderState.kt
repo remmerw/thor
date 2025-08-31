@@ -44,8 +44,6 @@ class BlockRenderState : StyleSheetRenderState {
         return RenderState.Companion.DISPLAY_BLOCK
     }
 
-    override val position: Int
-        get() = TODO("Not yet implemented")
     override val float: Int
         get() = TODO("Not yet implemented")
     override val clear: Int

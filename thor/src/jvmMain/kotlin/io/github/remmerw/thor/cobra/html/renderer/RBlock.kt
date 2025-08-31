@@ -1196,7 +1196,8 @@ open class RBlock(
             )
         }
 
-        if (renderState.position == RenderState.POSITION_STATIC || renderState.position == RenderState.POSITION_RELATIVE) {
+        if (renderState.getPosition() == RenderState.POSITION_STATIC ||
+            renderState.getPosition() == RenderState.POSITION_RELATIVE) {
             val changes =
                 this.applyAutoStyles(availWidth - resultingWidth, availHeight - resultingHeight)
             if (changes != null) {
