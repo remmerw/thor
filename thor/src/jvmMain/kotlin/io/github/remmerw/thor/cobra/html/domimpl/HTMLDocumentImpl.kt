@@ -1529,7 +1529,7 @@ class HTMLDocumentImpl(
                         }
                     } else if (ownerNode is HTMLLinkElementImpl) {
                         if (ownerNode.disabled != disabled) {
-                            ownerNode.setDisabledImpl(disabled)
+                            ownerNode.setDisabledInternal(disabled)
                         }
                     }
                 }

@@ -50,8 +50,7 @@ class HTMLLinkElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLLinkE
     }
 
 
-    //TODO hide from JS
-    fun setDisabledImpl(disabled: Boolean) {
+    fun setDisabledInternal(disabled: Boolean) {
         this.disabled = disabled
     }
 

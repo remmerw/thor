@@ -20,8 +20,7 @@ import kotlin.concurrent.Volatile
  *
  * This class implements the common methods between the two class mentioned.
  */
-class JStyleSheetWrapper internal constructor(// TODO hide it from JS
-    // TODO hide it from JS
+class JStyleSheetWrapper internal constructor(
     @JvmField @field:Volatile var jStyleSheet: StyleSheet?,
     private val mediaStr: String?,
     private val href: String?,
