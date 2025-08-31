@@ -127,7 +127,7 @@ interface BoundableRenderable : Renderable {
      * Returns true if the renderable is fully contained by its modelNode, but
      * said modelNode does not fully contain an ancestor renderable.
      */
-    val isContainedByNode: Boolean
+    fun isContainedByNode(): Boolean
 
     /**
      * Asks the Renderable to paint the selection between two points. Nothing will

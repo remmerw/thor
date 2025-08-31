@@ -79,8 +79,6 @@ class RInlineBlock(
         return this.child.onDoubleClick(event, x, y)
     }
 
-    override val isContainedByNode: Boolean
-        get() = TODO("Not yet implemented")
 
 
     override fun onMouseClick(event: MouseEvent?, x: Int, y: Int): Boolean {

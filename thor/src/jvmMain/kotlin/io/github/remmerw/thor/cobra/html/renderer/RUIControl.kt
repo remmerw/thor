@@ -131,8 +131,6 @@ open class RUIControl(
         }
     }
 
-    override val isContainedByNode: Boolean
-        get() = TODO("Not yet implemented")
 
     override fun onMousePressed(event: MouseEvent?, x: Int, y: Int): Boolean {
         val me = this.modelNode()

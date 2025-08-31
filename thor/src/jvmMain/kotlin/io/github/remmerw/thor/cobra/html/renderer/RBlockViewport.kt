@@ -1821,8 +1821,6 @@ class RBlockViewport(
         return true
     }
 
-    override val isContainedByNode: Boolean
-        get() = TODO("Not yet implemented")
 
     override fun zIndex(): Int {
         TODO("Not yet implemented")
@@ -1940,7 +1938,7 @@ class RBlockViewport(
         }
     }
 
-    fun isContainedByNode(): Boolean {
+    override fun isContainedByNode(): Boolean {
         return false
     }
 

@@ -199,11 +199,9 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
         translatedChild.onMouseOut(event, x, y, limit)
     }
 
-    override val isContainedByNode: Boolean
-        get() = TODO("Not yet implemented")
 
-    fun isContainedByNode(): Boolean {
-        return translatedChild.isContainedByNode
+    override fun isContainedByNode(): Boolean {
+        return translatedChild.isContainedByNode()
     }
 
     override fun paintSelection(

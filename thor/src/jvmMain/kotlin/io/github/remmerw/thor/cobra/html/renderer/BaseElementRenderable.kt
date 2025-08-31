@@ -1053,7 +1053,7 @@ abstract class BaseElementRenderable(
         return this.container!!
     }
 
-    fun isContainedByNode(): Boolean {
+    override fun isContainedByNode(): Boolean {
         return true
     }
 

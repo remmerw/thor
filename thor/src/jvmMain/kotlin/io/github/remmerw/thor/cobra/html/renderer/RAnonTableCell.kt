@@ -190,8 +190,7 @@ internal class RAnonTableCell(
     override val visualY: Int
         get() = TODO("Not yet implemented")
 
-    override val isContainedByNode: Boolean
-        get() = TODO("Not yet implemented")
+
 
 
     override fun vAlign(): CSSProperty.VerticalAlign? {

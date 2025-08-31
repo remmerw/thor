@@ -27,14 +27,12 @@ import cz.vutbr.web.css.CSSProperty.VerticalAlign
 import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
 import io.github.remmerw.thor.cobra.html.style.RenderState
 import java.awt.Color
-import java.awt.Dimension
 import java.awt.Graphics
-import java.awt.Point
 import java.awt.Rectangle
 import java.awt.event.MouseEvent
 import kotlin.math.max
 
- class RLine(
+class RLine(
     modelNode: ModelNode?, container: RenderableContainer?, x: Int, y: Int, desiredMaxWidth: Int,
     height: Int,
     initialAllowOverflow: Boolean
@@ -167,9 +165,9 @@ import kotlin.math.max
         return result
     }
 
-     override fun zIndex(): Int {
-         TODO("Not yet implemented")
-     }
+    override fun zIndex(): Int {
+        TODO("Not yet implemented")
+    }
 
 
     fun addStyleChanger(sc: RStyleChanger) {
@@ -341,7 +339,7 @@ import kotlin.math.max
         }
         // RLine only sets origins, not sizes.
         // relement.setBounds(x, yoffset, width, height);
-        relement.setY (yoffset)
+        relement.setY(yoffset)
     }
 
     /**
@@ -569,9 +567,6 @@ import kotlin.math.max
         }
     }
 
-    override val isContainedByNode: Boolean
-        get() = TODO("Not yet implemented")
-
     override var originalParent: RCollection?
         get() = TODO("Not yet implemented")
         set(value) {}
@@ -665,31 +660,21 @@ import kotlin.math.max
         return this.container!!.paintedBackgroundColor()
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.renderer.RCollection#getRenderables()
-     */
     override fun getRenderables(topFirst: Boolean): MutableIterator<Renderable> {
         // TODO: Returning Renderables in order always, assuming that they don't overlap.
         //       Need to check the assumption
         return this.renderabl.iterator()
-        /*
-    if (topFirst) {
-      return CollectionUtilities.reverseIterator(this.renderables);
-    } else {
-      return this.renderables.iterator();
-    }*/
+
     }
 
-    fun isContainedByNode(): Boolean {
+    override fun isContainedByNode(): Boolean {
         return false
     }
 
     val isEmpty: Boolean
         get() = this.xoffset == 0
 
-     override fun clipBounds(): Rectangle? {
+    override fun clipBounds(): Rectangle? {
         // throw new NotImplementedYetException("This method is not expected to be called for RLine");
         return null
     }

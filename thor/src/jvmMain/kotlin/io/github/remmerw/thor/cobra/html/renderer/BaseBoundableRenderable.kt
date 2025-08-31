@@ -278,7 +278,7 @@ abstract class BaseBoundableRenderable(
     }
 
     override fun onMouseOut(event: MouseEvent?, x: Int, y: Int, limit: ModelNode?) {
-        if (this.isContainedByNode) {
+        if (this.isContainedByNode()) {
             HtmlController.Companion.instance.onMouseOut(this.modelNode, event, x, y, limit)
         }
     }
@@ -291,7 +291,7 @@ abstract class BaseBoundableRenderable(
         limit: ModelNode?
     ) {
         if (triggerEvent) {
-            if (this.isContainedByNode) {
+            if (this.isContainedByNode()) {
                 HtmlController.Companion.instance
                     .onMouseOver(this, this.modelNode, event, x, y, limit)
             }

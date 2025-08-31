@@ -1478,16 +1478,6 @@ open class RBlock(
         return this.backgroundColor == null
     }
 
-    override val isContainedByNode: Boolean
-        get() = TODO("Not yet implemented")
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.xamjwg.html.renderer.BoundableRenderable#onMouseDisarmed(java.awt.event
-     * .MouseEvent)
-     */
     override fun onMouseDisarmed(event: MouseEvent?): Boolean {
         val br = this.armedRenderable
         if (br != null) {

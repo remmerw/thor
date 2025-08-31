@@ -255,7 +255,7 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
         val r: Renderable? = this.getRenderable(x, y)
         val newRenderable = if (r is BoundableRenderable) r else null
         val newLimit: ModelNode?
-        if (this.isContainedByNode) {
+        if (this.isContainedByNode()) {
             newLimit = this.modelNode()
         } else {
             newLimit = limit
@@ -310,7 +310,7 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
         if (oldRenderable != null) {
             this.renderableWithMouse = null
             val newLimit: ModelNode?
-            if (this.isContainedByNode) {
+            if (this.isContainedByNode()) {
                 newLimit = this.modelNode()
             } else {
                 newLimit = limit

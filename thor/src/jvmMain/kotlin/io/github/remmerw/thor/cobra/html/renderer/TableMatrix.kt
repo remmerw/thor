@@ -1855,9 +1855,6 @@ class TableMatrix(
             return false
         }
 
-        override val isContainedByNode: Boolean
-            get() = TODO("Not yet implemented")
-
         override fun repaint() {
             container?.repaint(x(), y(), width(), height())
         }

@@ -215,7 +215,7 @@ class RBlank(
         return RenderableSpot(this, x, y)
     }
 
-    fun isContainedByNode(): Boolean {
+    override fun isContainedByNode(): Boolean {
         return true
     }
 
@@ -228,6 +228,4 @@ class RBlank(
         }
     }
 
-    override val isContainedByNode: Boolean
-        get() = TODO("Not yet implemented")
 }

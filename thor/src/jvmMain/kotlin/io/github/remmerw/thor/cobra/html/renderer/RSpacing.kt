@@ -160,7 +160,7 @@ class RSpacing(me: ModelNode?, container: RenderableContainer?, width: Int, heig
         return RenderableSpot(this, x, y)
     }
 
-    fun isContainedByNode(): Boolean {
+    override fun isContainedByNode(): Boolean {
         return true
     }
 
@@ -173,6 +173,4 @@ class RSpacing(me: ModelNode?, container: RenderableContainer?, width: Int, heig
         }
     }
 
-    override val isContainedByNode: Boolean
-        get() = TODO("Not yet implemented")
 }

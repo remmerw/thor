@@ -248,17 +248,7 @@ internal class RTable(
         return this.tableMatrix.onDoubleClick(event, x, y)
     }
 
-    override val isContainedByNode: Boolean
-        get() = TODO("Not yet implemented")
 
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.xamjwg.html.renderer.BoundableRenderable#onMouseDisarmed(java.awt.event
-     * .MouseEvent)
-     */
     override fun onMouseDisarmed(event: MouseEvent?): Boolean {
         return this.tableMatrix.onMouseDisarmed(event)
     }

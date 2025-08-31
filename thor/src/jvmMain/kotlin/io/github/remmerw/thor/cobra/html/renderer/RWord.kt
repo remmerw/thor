@@ -25,11 +25,8 @@ package io.github.remmerw.thor.cobra.html.renderer
 
 import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
 import io.github.remmerw.thor.cobra.html.style.RenderState
-import java.awt.Dimension
 import java.awt.FontMetrics
 import java.awt.Graphics
-import java.awt.Point
-import java.awt.Rectangle
 import java.awt.event.MouseEvent
 import java.util.Locale
 
@@ -274,7 +271,6 @@ open class RWord(
     }
 
 
-
     override fun onMouseClick(event: MouseEvent?, x: Int, y: Int): Boolean {
         val me = this.modelNode()
         if (me != null) {
@@ -332,7 +328,7 @@ open class RWord(
         return RenderableSpot(this, x, y)
     }
 
-    fun isContainedByNode(): Boolean {
+    override fun isContainedByNode(): Boolean {
         return true
     }
 
@@ -345,8 +341,6 @@ open class RWord(
         }
     }
 
-    override val isContainedByNode: Boolean
-        get() = TODO("Not yet implemented")
 
     override fun toString(): String {
         return "RWord[word=" + this.shownWord + "]"
