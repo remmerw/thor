@@ -256,7 +256,7 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
         val newRenderable = if (r is BoundableRenderable) r else null
         val newLimit: ModelNode?
         if (this.isContainedByNode) {
-            newLimit = this.modelNode
+            newLimit = this.modelNode()
         } else {
             newLimit = limit
         }
@@ -289,7 +289,7 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
                 return false
             }
         }
-        return HtmlController.Companion.instance.onMouseDown(this.modelNode!!, event, x, y)
+        return HtmlController.Companion.instance.onMouseDown(this.modelNode()!!, event, x, y)
     }
 
     override fun onMouseClick(event: MouseEvent?, x: Int, y: Int): Boolean {
@@ -301,7 +301,7 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
                 return false
             }
         }
-        return HtmlController.Companion.instance.onMouseClick(this.modelNode!!, event, x, y)
+        return HtmlController.Companion.instance.onMouseClick(this.modelNode()!!, event, x, y)
     }
 
     override fun onMouseOut(event: MouseEvent?, x: Int, y: Int, limit: ModelNode?) {
@@ -311,7 +311,7 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
             this.renderableWithMouse = null
             val newLimit: ModelNode?
             if (this.isContainedByNode) {
-                newLimit = this.modelNode
+                newLimit = this.modelNode()
             } else {
                 newLimit = limit
             }
@@ -347,7 +347,7 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
     override fun onMiddleClick(event: MouseEvent?, x: Int, y: Int): Boolean {
         val br = this.getRenderable(x, y)
         if (br == null) {
-            return HtmlController.Companion.instance.onMiddleClick(this.modelNode!!, event, x, y)
+            return HtmlController.Companion.instance.onMiddleClick(this.modelNode()!!, event, x, y)
         } else {
             val or = br.getOriginRelativeTo(this)
             return br.onMiddleClick(event, x - or.x, y - or.y)
@@ -357,7 +357,7 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
     override fun onRightClick(event: MouseEvent?, x: Int, y: Int): Boolean {
         val br = this.getRenderable(x, y)
         if (br == null) {
-            return HtmlController.Companion.instance.onContextMenu(this.modelNode!!, event, x, y)
+            return HtmlController.Companion.instance.onContextMenu(this.modelNode()!!, event, x, y)
         } else {
             val or = br.getOriginRelativeTo(this)
             return br.onRightClick(event, x - or.x, y - or.y)

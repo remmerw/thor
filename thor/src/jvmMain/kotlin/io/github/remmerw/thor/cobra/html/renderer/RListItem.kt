@@ -53,7 +53,7 @@ internal class RListItem(
     private fun getValue(): Int {
         var value = this.value
         if (value == null) {
-            val node = this.modelNode as HTMLElement?
+            val node = this.modelNode() as HTMLElement?
             val valueText = if (node == null) null else node.getAttribute("value")
             if (valueText == null) {
                 value = UNSET
@@ -85,7 +85,7 @@ internal class RListItem(
             sizeOnly
         )
         // Note: Count must be calculated even if layout is valid.
-        val renderState: RenderState = this.modelNode!!.renderState()!!
+        val renderState: RenderState = this.modelNode()!!.renderState()!!
         val value = this.getValue()
         if (value === UNSET) {
             this.count = renderState.incrementCount(
@@ -105,7 +105,7 @@ internal class RListItem(
 
     override fun paintShifted(g: Graphics) {
         super.paintShifted(g)
-        val rs: RenderState = this.modelNode!!.renderState()!!
+        val rs: RenderState = this.modelNode()!!.renderState()!!
         val marginInsets = this.marginInsets
         // TODO val layout = this.bodyLayout
         val listStyle = this.listStyle

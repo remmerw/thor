@@ -246,7 +246,7 @@ open class RBlock(
 
     public override fun paintShifted(g: Graphics) {
         // TODO: Move this to common logic in BaseElementEenderable.pain();
-        val rs = this.modelNode!!.renderState()
+        val rs = this.modelNode()!!.renderState()
         if ((rs != null) && (rs.visibility != RenderState.VISIBILITY_VISIBLE)) {
             // Just don't paint it.
             return
@@ -258,7 +258,7 @@ open class RBlock(
         val bodyLayout = this.rBlockViewport
         val overflowX = this.overflowX
         val overflowY = this.overflowY
-        val isHtmlElem = (this.getModelNode() is HTMLHtmlElement)
+        val isHtmlElem = (this.modelNode() is HTMLHtmlElement)
         val xVisible =
             (overflowX == RenderState.OVERFLOW_NONE) || (overflowX == RenderState.OVERFLOW_VISIBLE)
         val yVisible =
@@ -721,7 +721,7 @@ open class RBlock(
         defaultOverflowX: Int, defaultOverflowY: Int, sizeOnly: Boolean, useCache: Boolean
     ) {
         // Expected to be invoked in the GUI thread.
-        val renderState: RenderState = this.modelNode!!.renderState()!!
+        val renderState: RenderState = this.modelNode()!!.renderState()!!
         /*
     final Font font = renderState == null ? null : renderState.getFont();
     final int whiteSpace = renderState == null ? RenderState.WS_NORMAL : renderState.getWhiteSpace();
@@ -880,7 +880,7 @@ open class RBlock(
         this.applyStyle(availWidth, availHeight)
 
         val bodyLayout = this.rBlockViewport
-        val node = this.modelNode as NodeImpl?
+        val node = this.modelNode() as NodeImpl?
         if (node == null) {
             val insets = this.getInsetsMarginBorder(false, false)
             return LayoutValue(insets.left + insets.right, insets.bottom + insets.top, false, false)
@@ -934,7 +934,7 @@ open class RBlock(
       tentativeAvailHeight = Math.min(tentativeAvailHeight, declaredMaxHeight);
     }
     */
-        val isHtmlElem = getModelNode() is HTMLHtmlElement
+        val isHtmlElem = modelNode() is HTMLHtmlElement
         var actualAvailWidth = tentativeAvailWidth
 
         val actualAvailHeight = tentativeAvailHeight
@@ -1526,7 +1526,7 @@ open class RBlock(
                 br.onMouseDisarmed(event)
             }
         }
-        if (!HtmlController.Companion.instance.onMouseUp(this.modelNode!!, event, x, y)) {
+        if (!HtmlController.Companion.instance.onMouseUp(this.modelNode()!!, event, x, y)) {
             return false
         }
         return this.backgroundColor == null
@@ -1800,7 +1800,7 @@ open class RBlock(
     }
   } */
     override fun toString(): String {
-        return "RBlock[node=" + this.modelNode + "]"
+        return "RBlock[node=" + this.modelNode() + "]"
     }
 
     val exportableFloatingInfo: FloatingInfo?

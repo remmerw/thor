@@ -62,7 +62,7 @@ internal class RTable(
     }
 
     override fun paintShifted(g: Graphics) {
-        val rs = this.modelNode?.renderState()
+        val rs = this.modelNode()?.renderState()
         if ((rs != null) && (rs.visibility != RenderState.VISIBILITY_VISIBLE)) {
             // Just don't paint it.
             return
@@ -89,7 +89,7 @@ internal class RTable(
 
     override fun doLayout(availWidth: Int, availHeight: Int, sizeOnly: Boolean) {
         val cachedLayout = this.cachedLayout
-        val rs = this.modelNode!!.renderState()
+        val rs = this.modelNode()!!.renderState()
         val whitespace = if (rs == null) RenderState.WS_NORMAL else rs.whiteSpace
         val font = if (rs == null) null else rs.font
         // Having whiteSpace == NOWRAP and having a NOWRAP override
@@ -415,7 +415,7 @@ internal class RTable(
     }
 
     override fun toString(): String {
-        return "RTable[this=" + System.identityHashCode(this) + ",node=" + this.modelNode + "]"
+        return "RTable[this=" + System.identityHashCode(this) + ",node=" + this.modelNode() + "]"
     }
 
     override fun layout(

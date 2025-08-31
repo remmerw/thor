@@ -321,7 +321,7 @@ class HtmlBlockPanel(
                     subBounds = this.scanNodeBounds(r, node, relativeTo)
                 } else if (r is BoundableRenderable) {
                     prevBoundable = r
-                    if (Nodes.isSameOrAncestorOf(node, r.modelNode as Node)) {
+                    if (Nodes.isSameOrAncestorOf(node, r.modelNode() as Node)) {
                         val origin = r.getOriginRelativeTo(relativeTo)
                         val size = r.size()
                         subBounds = Rectangle(origin, size)
@@ -329,7 +329,7 @@ class HtmlBlockPanel(
                 } else {
                     // This would have to be a RStyleChanger. We rely on these
                     // when the target node has blank content.
-                    if (Nodes.isSameOrAncestorOf(node, r.modelNode as Node)) {
+                    if (Nodes.isSameOrAncestorOf(node, r.modelNode() as Node)) {
                         val xInRoot =
                             if (prevBoundable == null) 0 else prevBoundable.visualX + prevBoundable.visualWidth()
                         val rootOrigin = root.getOriginRelativeTo(relativeTo)
@@ -462,8 +462,8 @@ class HtmlBlockPanel(
             val end = this.endSelection
             if ((start != null) && (end != null)) {
                 return Nodes.getCommonAncestor(
-                    start.renderable.getModelNode() as Node?,
-                    end.renderable.getModelNode() as Node?
+                    start.renderable.modelNode() as Node?,
+                    end.renderable.modelNode() as Node?
                 )
             } else {
                 return null
@@ -492,7 +492,7 @@ class HtmlBlockPanel(
 
     private fun getRootNode(): NodeImpl? {
         val block = this.rblock
-        return if (block == null) null else block.getModelNode() as NodeImpl?
+        return if (block == null) null else block.modelNode() as NodeImpl?
     }
 
     /**
@@ -1143,7 +1143,7 @@ class HtmlBlockPanel(
         get() {
             val block = this.rblock
             if (block != null) {
-                val doc = block.getModelNode() as HTMLDocumentImpl
+                val doc = block.modelNode() as HTMLDocumentImpl
                 return (!doc.window.hasPendingTasks()) && block.isReadyToPaint()
             }
             return false

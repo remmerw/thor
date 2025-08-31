@@ -69,7 +69,7 @@ open class RWord(
      * net.sourceforge.xamj.domimpl.markup.Renderable#paint(java.awt.Graphics)
      */
     override fun paint(g: Graphics) {
-        val rs: RenderState = this.modelNode!!.renderState()!!
+        val rs: RenderState = this.modelNode()!!.renderState()!!
 
         if (rs.visibility != RenderState.VISIBILITY_VISIBLE) {
             // Just don't paint it.
@@ -276,7 +276,7 @@ open class RWord(
 
 
     override fun onMouseClick(event: MouseEvent?, x: Int, y: Int): Boolean {
-        val me = this.modelNode
+        val me = this.modelNode()
         if (me != null) {
             return HtmlController.Companion.instance.onMouseClick(me, event, x, y)
         } else {
@@ -285,7 +285,7 @@ open class RWord(
     }
 
     override fun onDoubleClick(event: MouseEvent?, x: Int, y: Int): Boolean {
-        val me = this.modelNode
+        val me = this.modelNode()
         if (me != null) {
             return HtmlController.Companion.instance.onDoubleClick(me, event, x, y)
         } else {
@@ -294,7 +294,7 @@ open class RWord(
     }
 
     override fun onMousePressed(event: MouseEvent?, x: Int, y: Int): Boolean {
-        val me = this.modelNode
+        val me = this.modelNode()
         if (me != null) {
             return HtmlController.Companion.instance.onMouseDown(me, event, x, y)
         } else {
@@ -303,7 +303,7 @@ open class RWord(
     }
 
     override fun onMouseReleased(event: MouseEvent?, x: Int, y: Int): Boolean {
-        val me = this.modelNode
+        val me = this.modelNode()
         if (me != null) {
             return HtmlController.Companion.instance.onMouseUp(me, event, x, y)
         } else {
@@ -312,7 +312,7 @@ open class RWord(
     }
 
     override fun onMouseDisarmed(event: MouseEvent?): Boolean {
-        val me = this.modelNode
+        val me = this.modelNode()
         if (me != null) {
             return HtmlController.Companion.instance.onMouseDisarmed(me, event)
         } else {
@@ -343,7 +343,7 @@ open class RWord(
     }
 
     override fun onRightClick(event: MouseEvent?, x: Int, y: Int): Boolean {
-        val me = this.modelNode
+        val me = this.modelNode()
         if (me != null) {
             return HtmlController.Companion.instance.onContextMenu(me, event, x, y)
         } else {

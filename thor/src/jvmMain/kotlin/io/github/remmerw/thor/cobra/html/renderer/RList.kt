@@ -40,7 +40,7 @@ internal class RList(
         super.applyStyle(availWidth, availHeight, updateLayout)
         var listStyle = this.listStyle
         if ((listStyle == null) || (listStyle.type == ListStyle.TYPE_UNSET)) {
-            val rootNode: Any? = this.modelNode
+            val rootNode: Any? = this.modelNode()
             if (rootNode !is HTMLElementImpl) {
                 return
             }
@@ -68,9 +68,9 @@ internal class RList(
         floatBoundsSource: FloatingBoundsSource?,
         defaultOverflowX: Int, defaultOverflowY: Int, sizeOnly: Boolean
     ) {
-        val renderState: RenderState = this.modelNode!!.renderState()!!
+        val renderState: RenderState = this.modelNode()!!.renderState()!!
         var counterStart = 1
-        val rootNode: Any = this.modelNode!!
+        val rootNode: Any = this.modelNode()!!
         if (rootNode !is HTMLElementImpl) {
             return
         }

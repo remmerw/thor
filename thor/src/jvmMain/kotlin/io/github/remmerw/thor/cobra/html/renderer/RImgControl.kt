@@ -91,7 +91,7 @@ class RImgControl(
 
 
     override fun toString(): String {
-        return "RImgControl : " + modelNode
+        return "RImgControl : " + modelNode()
     }
 
 

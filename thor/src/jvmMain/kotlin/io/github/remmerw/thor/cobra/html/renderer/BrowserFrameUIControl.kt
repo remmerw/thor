@@ -34,7 +34,7 @@ internal class BrowserFrameUIControl(
         this.availHeight = availHeight
         val ruiControl = this.ruiControl
         if (ruiControl != null) {
-            val node = ruiControl.getModelNode()
+            val node = ruiControl.modelNode()
             val element = node as HTMLElement?
             val renderState: RenderState = node?.renderState()!!
             var insets: HtmlInsets? = null

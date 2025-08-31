@@ -50,7 +50,7 @@ class RBlank(
     }
 
     override fun onMouseClick(event: MouseEvent?, x: Int, y: Int): Boolean {
-        val me = this.modelNode
+        val me = this.modelNode()
         if (me != null) {
             return HtmlController.Companion.instance.onMouseClick(me, event, x, y)
         } else {
@@ -59,7 +59,7 @@ class RBlank(
     }
 
     override fun onDoubleClick(event: MouseEvent?, x: Int, y: Int): Boolean {
-        val me = this.modelNode
+        val me = this.modelNode()
         if (me != null) {
             return HtmlController.Companion.instance.onDoubleClick(me, event, x, y)
         } else {
@@ -68,7 +68,7 @@ class RBlank(
     }
 
     override fun onMousePressed(event: MouseEvent?, x: Int, y: Int): Boolean {
-        val me = this.modelNode
+        val me = this.modelNode()
         if (me != null) {
             return HtmlController.Companion.instance.onMouseDown(me, event, x, y)
         } else {
@@ -77,7 +77,7 @@ class RBlank(
     }
 
     override fun onMouseReleased(event: MouseEvent?, x: Int, y: Int): Boolean {
-        val me = this.modelNode
+        val me = this.modelNode()
         if (me != null) {
             return HtmlController.Companion.instance.onMouseUp(me, event, x, y)
         } else {
@@ -86,7 +86,7 @@ class RBlank(
     }
 
     override fun onMouseDisarmed(event: MouseEvent?): Boolean {
-        val me = this.modelNode
+        val me = this.modelNode()
         if (me != null) {
             return HtmlController.Companion.instance.onMouseDisarmed(me, event)
         } else {
@@ -101,7 +101,7 @@ class RBlank(
      * net.sourceforge.xamj.domimpl.markup.Renderable#paint(java.awt.Graphics)
      */
     override fun paint(g: Graphics) {
-        val rs: RenderState = this.modelNode?.renderState()!!
+        val rs: RenderState = this.modelNode()?.renderState()!!
 
         if (rs.visibility != RenderState.VISIBILITY_VISIBLE) {
             // Just don't paint it.
@@ -225,7 +225,7 @@ class RBlank(
     }
 
     override fun onRightClick(event: MouseEvent?, x: Int, y: Int): Boolean {
-        val me = this.modelNode
+        val me = this.modelNode()
         if (me != null) {
             return HtmlController.Companion.instance.onContextMenu(me, event, x, y)
         } else {

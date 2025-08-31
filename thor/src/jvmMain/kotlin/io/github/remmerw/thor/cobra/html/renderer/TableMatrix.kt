@@ -1935,7 +1935,7 @@ class TableMatrix(
 
         fun prePaintBackground(g: Graphics) {
             val bi = r.getBorderInsets()
-            val rowGroupElem = r.getModelNode()
+            val rowGroupElem = r.modelNode()
             r.prePaintBackground(
                 g,
                 width - (bi.left / 2),

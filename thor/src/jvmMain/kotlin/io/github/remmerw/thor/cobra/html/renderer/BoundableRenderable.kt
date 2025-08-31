@@ -32,7 +32,7 @@ import java.awt.event.MouseEvent
  * interface.
  */
 interface BoundableRenderable : Renderable {
-    fun getModelNode(): ModelNode?
+
 
     fun bounds(): Rectangle?
 

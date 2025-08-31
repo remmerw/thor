@@ -49,7 +49,7 @@ class PositionedRenderable(
     System.out.println("  orig parent: " + originalParent);
     */
         val or = originalParent!!.getOriginRelativeTo(rparent)
-        val pos = this.renderable.getModelNode()!!.renderState()!!.position
+        val pos = this.renderable.modelNode()!!.renderState()!!.position
 
         if (isFloat || pos == RenderState.POSITION_ABSOLUTE || pos == RenderState.POSITION_FIXED) {
             val g2 = gIn.create()
@@ -98,10 +98,6 @@ class PositionedRenderable(
         }
     }
 
-    override var modelNode: ModelNode?
-        get() = TODO("Not yet implemented")
-        set(value) {}
-
     private val relativeBounds: Rectangle?
         get() {
             val origParent = this.renderable.originalParent
@@ -110,7 +106,7 @@ class PositionedRenderable(
             val parent = this.renderable.parent
             while (current !== parent) {
                 current = current!!.parent!!
-                if (current.getModelNode() is HTMLHtmlElement) {
+                if (current.modelNode() is HTMLHtmlElement) {
                     break
                 }
                 val newBounds = current.clipBoundsWithoutInsets()
@@ -127,8 +123,8 @@ class PositionedRenderable(
             return currentBounds
         }
 
-    fun getModelNode(): ModelNode? {
-        return this.renderable.getModelNode()
+    override fun modelNode(): ModelNode? {
+        return this.renderable.modelNode()
     }
 
     fun isFixed(): Boolean {
@@ -150,7 +146,7 @@ class PositionedRenderable(
     val offset: Point
         get() {
             val offset = Point()
-            val pos = this.renderable.getModelNode()!!.renderState()!!.position
+            val pos = this.renderable.modelNode()!!.renderState()!!.position
 
             val originalParent = this.renderable.originalParent!!
             val rparent = renderable.parent
@@ -170,7 +166,7 @@ class PositionedRenderable(
         // TODO: name this function well: what exactly does it compute?
         get() {
             val rparent = renderable.parent!!
-            if (!isFixed && rparent.getModelNode() is HTMLDocument) {
+            if (!isFixed && rparent.modelNode() is HTMLDocument) {
                 var htmlRenderable = RenderUtils.findHtmlRenderable(rparent)
                 if (htmlRenderable is PositionedRenderable) {
                     htmlRenderable = htmlRenderable.renderable

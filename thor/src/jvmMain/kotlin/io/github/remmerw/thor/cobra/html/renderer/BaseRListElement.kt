@@ -37,7 +37,7 @@ internal abstract class BaseRListElement(
     override fun applyStyle(availWidth: Int, availHeight: Int, updateLayout: Boolean) {
         this.listStyle = null
         super.applyStyle(availWidth, availHeight, updateLayout)
-        val rootNode: Any? = this.modelNode
+        val rootNode: Any? = this.modelNode()
         if (rootNode !is HTMLElementImpl) {
             return
         }
@@ -74,7 +74,7 @@ internal abstract class BaseRListElement(
     }
 
     override fun toString(): String {
-        return "BaseRListElement[node=" + this.modelNode + "]"
+        return "BaseRListElement[node=" + this.modelNode() + "]"
     }
 
     companion object {

@@ -216,7 +216,7 @@ class RBlockViewport(
         this.availContentWidth = availw
 
         // New floating algorithm.
-        this.layoutPass((this.modelNode as NodeImpl?)!!)
+        this.layoutPass((this.modelNode() as NodeImpl?)!!)
 
         // Compute maxY according to last block.
         var maxY = this.maxY
@@ -444,7 +444,7 @@ class RBlockViewport(
         val initialAllowOverflow: Boolean
         if (prevLine == null) {
             // Note: Assumes that prevLine == null means it's the first line.
-            val rs = this.modelNode!!.renderState()
+            val rs = this.modelNode()!!.renderState()
             initialAllowOverflow = rs != null && rs.whiteSpace == RenderState.WS_NOWRAP
             // Text indentation only applies to the first line in the block.
             val textIndent = if (rs == null) 0 else rs.getTextIndent(this.availContentWidth)
@@ -602,10 +602,10 @@ class RBlockViewport(
 
     private fun positionRBlock(markupElement: HTMLElementImpl, renderable: RBlock) {
         run {
-            val rs: RenderState = renderable.modelNode!!.renderState()!!
+            val rs: RenderState = renderable.modelNode()!!.renderState()!!
             val clear = rs.clear
             if (clear != LineBreak.Companion.NONE) {
-                addLineBreak(renderable.modelNode!!, clear)
+                addLineBreak(renderable.modelNode()!!, clear)
             }
         }
         if (!this.addElsewhereIfPositioned(renderable, markupElement, false, true, false)) {
@@ -1022,7 +1022,7 @@ class RBlockViewport(
             }
         } catch (oe: OverflowException) {
             val nextY = if (emptyLine) cleary else liney + line.height
-            this.addLine(renderable.modelNode, line, nextY)
+            this.addLine(renderable.modelNode(), line, nextY)
             val renderables = oe.renderables
             val i: MutableIterator<Renderable?> = renderables!!.iterator()
             while (i.hasNext()) {
@@ -1060,7 +1060,7 @@ class RBlockViewport(
             }
         } catch (oe: OverflowException) {
             val nextY = if (emptyLine) cleary else liney + line.height
-            this.addLine(renderable.getModelNode(), line, nextY)
+            this.addLine(renderable.modelNode(), line, nextY)
             val renderables = oe.renderables
             val i: MutableIterator<Renderable?> = renderables!!.iterator()
             while (i.hasNext()) {
@@ -1178,7 +1178,7 @@ class RBlockViewport(
             val leftOffset = this.fetchLeftOffset(newLineY)
             val newX = leftOffset
             val newMaxWidth = this.desiredWidth - this.fetchRightOffset(newLineY) - leftOffset
-            val lineNode = block.getModelNode()!!.parentModelNode()
+            val lineNode = block.modelNode()!!.parentModelNode()
             val newLine = RLine(
                 lineNode,
                 this.container,
@@ -1245,7 +1245,7 @@ class RBlockViewport(
         } else {
             initialAllowOverflow = false
         }
-        val lineNode = block.getModelNode()!!.parentModelNode()
+        val lineNode = block.modelNode()!!.parentModelNode()
         val newLineY = block.y() + block.getHeight()
         this.checkY(newLineY)
         val leftOffset = this.fetchLeftOffset(newLineY)
@@ -1642,7 +1642,7 @@ class RBlockViewport(
                 renderable.layout(availWidth, availHeight, this.sizeOnly)
             }
         }
-        val floatInfo = RFloatInfo(renderable.getModelNode(), renderable, leftFloat)
+        val floatInfo = RFloatInfo(renderable.modelNode(), renderable, leftFloat)
 
         // TODO: WHy is this required? Could RFloatInfo be removed completely?
         this.currentLine!!.simplyAdd(floatInfo)
@@ -1902,7 +1902,7 @@ class RBlockViewport(
                         val selectedG =
                             if (isReplacedElement) (if (robj.isFixed) gIn else g) else (if (robj.isFixed) gInUnClipped else gUnClipped)
 
-                        if (getModelNode() is HTMLDocument) {
+                        if (modelNode() is HTMLDocument) {
                             var htmlRenderable = RenderUtils.findHtmlRenderable(this)
                             if (htmlRenderable is PositionedRenderable) {
                                 htmlRenderable = htmlRenderable.renderable
@@ -1965,7 +1965,7 @@ class RBlockViewport(
     }
 
     override fun toString(): String {
-        return "RBlockViewport[node=" + this.modelNode + "]"
+        return "RBlockViewport[node=" + this.modelNode() + "]"
     }
 
     private fun scheduleFloat(floatInfo: RFloatInfo) {
@@ -2107,7 +2107,7 @@ class RBlockViewport(
         val isFloatLimit = this.isFloatLimit()
 
         var placementPending = true
-        if (getPosition((modelNode as HTMLElementImpl?)!!) != RenderState.POSITION_STATIC) {
+        if (getPosition((modelNode() as HTMLElementImpl?)!!) != RenderState.POSITION_STATIC) {
             addFloat(element, boxX, boxY)
             placementPending = false
         }
@@ -2154,7 +2154,7 @@ class RBlockViewport(
                 // be a list item, for example.
                 return java.lang.Boolean.TRUE
             }
-            val node = this.modelNode
+            val node = this.modelNode()
             if (node !is HTMLElementImpl) {
                 // Can only be a document here.
                 return java.lang.Boolean.TRUE
@@ -2478,7 +2478,7 @@ class RBlockViewport(
             renderable!!.height
         )
 
-        if (ef.pendingPlacement && getPosition((modelNode as HTMLElementImpl?)!!) != RenderState.POSITION_STATIC) {
+        if (ef.pendingPlacement && getPosition((modelNode() as HTMLElementImpl?)!!) != RenderState.POSITION_STATIC) {
             // System.out.println("Adding float as renderable to " + this);
             addFloat(renderable!!, newX, newY)
             ef.pendingPlacement = false
@@ -3042,7 +3042,7 @@ class RBlockViewport(
             block: RBlock,
             insetChecker: Function<HtmlInsets?, Boolean?>
         ): Boolean {
-            val mn = block.getModelNode()!!
+            val mn = block.modelNode()!!
             val rs: RenderState = mn.renderState()!!
             val isDisplayBlock = rs.display == RenderState.DISPLAY_BLOCK
             val isPosStaticOrRelative =
@@ -3066,7 +3066,7 @@ class RBlockViewport(
             block: RBlock,
             insetChecker: Function<HtmlInsets?, Boolean?>
         ): Boolean {
-            val mn = block.getModelNode()!!
+            val mn = block.modelNode()!!
             val rs: RenderState = mn.renderState()!!
             return isCollapsibleBlock(block, insetChecker) && isOverflowVisibleOrNone(rs)
         }
@@ -3213,7 +3213,7 @@ class RBlockViewport(
             var containingBlock = containingBlock
             while (true) {
                 if (containingBlock is Renderable) {
-                    val node = (containingBlock as Renderable).modelNode
+                    val node = (containingBlock as Renderable).modelNode()
                     if (node is HTMLElementImpl) {
                         val position: Int = getPosition(node)
                         // if (position != RenderState.POSITION_STATIC || (element instanceof HTMLHtmlElement)) {

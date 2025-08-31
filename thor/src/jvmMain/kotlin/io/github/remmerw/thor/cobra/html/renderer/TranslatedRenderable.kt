@@ -26,8 +26,8 @@ class TranslatedRenderable(translatedChild: BoundableRenderable) :
         return translatedChild.isFixed
     }
 
-    override fun getModelNode(): ModelNode? {
-        return translatedChild.getModelNode()
+    override fun modelNode(): ModelNode? {
+        return translatedChild.modelNode()
     }
 
 

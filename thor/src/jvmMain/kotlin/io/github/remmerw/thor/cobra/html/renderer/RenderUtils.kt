@@ -7,7 +7,7 @@ object RenderUtils {
         val rs = root.renderables
         if (rs != null) {
             rs.forEach { r ->
-                if (r?.modelNode is HTMLHtmlElement) {
+                if (r?.modelNode() is HTMLHtmlElement) {
                     return r
                 }
             }

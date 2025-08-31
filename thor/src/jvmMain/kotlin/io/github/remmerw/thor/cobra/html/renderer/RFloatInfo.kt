@@ -24,7 +24,7 @@ import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
 import java.awt.Graphics
 
 internal class RFloatInfo(
-    override var modelNode: ModelNode?,
+    var modelNode: ModelNode?,
     element: RElement?,
     leftFloat: Boolean
 ) : Renderable {
@@ -37,7 +37,7 @@ internal class RFloatInfo(
         this.isLeftFloat = leftFloat
     }
 
-    fun getModelNode(): ModelNode? {
+    override fun modelNode(): ModelNode? {
         return this.modelNode
     }
 

@@ -94,7 +94,7 @@ open class RUIControl(
     }
 
     override fun paintShifted(g: Graphics) {
-        val rs = this.modelNode!!.renderState()
+        val rs = this.modelNode()!!.renderState()
         if ((rs != null) && (rs.visibility != RenderState.VISIBILITY_VISIBLE)) {
             // Just don't paint it.
             return
@@ -114,7 +114,7 @@ open class RUIControl(
     }
 
     override fun onMouseClick(event: MouseEvent?, x: Int, y: Int): Boolean {
-        val me = this.modelNode
+        val me = this.modelNode()
         if (me != null) {
             return HtmlController.Companion.instance.onMouseClick(me, event, x, y)
         } else {
@@ -123,7 +123,7 @@ open class RUIControl(
     }
 
     override fun onDoubleClick(event: MouseEvent?, x: Int, y: Int): Boolean {
-        val me = this.modelNode
+        val me = this.modelNode()
         if (me != null) {
             return HtmlController.Companion.instance.onDoubleClick(me, event, x, y)
         } else {
@@ -135,7 +135,7 @@ open class RUIControl(
         get() = TODO("Not yet implemented")
 
     override fun onMousePressed(event: MouseEvent?, x: Int, y: Int): Boolean {
-        val me = this.modelNode
+        val me = this.modelNode()
         if (me != null) {
             return HtmlController.Companion.instance.onMouseDown(me, event, x, y)
         } else {
@@ -144,7 +144,7 @@ open class RUIControl(
     }
 
     override fun onMouseReleased(event: MouseEvent?, x: Int, y: Int): Boolean {
-        val me = this.modelNode
+        val me = this.modelNode()
         if (me != null) {
             return HtmlController.Companion.instance.onMouseUp(me, event, x, y)
         } else {
@@ -153,7 +153,7 @@ open class RUIControl(
     }
 
     override fun onMouseDisarmed(event: MouseEvent?): Boolean {
-        val me = this.modelNode
+        val me = this.modelNode()
         if (me != null) {
             return HtmlController.Companion.instance.onMouseDisarmed(me, event)
         } else {
@@ -264,7 +264,7 @@ open class RUIControl(
 
     override fun doLayout(availWidth: Int, availHeight: Int, sizeOnly: Boolean) {
         val cachedLayout = this.cachedLayout
-        val rs = this.modelNode!!.renderState()
+        val rs = this.modelNode()!!.renderState()
         val whitespace = if (rs == null) RenderState.WS_NORMAL else rs.whiteSpace
         val font = if (rs == null) null else rs.font
         val layoutKey = LayoutKey(availWidth, availHeight, whitespace, font)
@@ -284,7 +284,7 @@ open class RUIControl(
             val widget = this.widget
             widget.reset(availWidth, availHeight)
 
-            val renderState = this.modelNode!!.renderState()
+            val renderState = this.modelNode()!!.renderState()
             var paddingInsets = this.paddingInsets
             if (paddingInsets == null) {
                 paddingInsets = RBlockViewport.Companion.ZERO_INSETS
@@ -395,7 +395,7 @@ open class RUIControl(
         val dw = this@RUIControl.declaredWidth
         val dh = this@RUIControl.declaredHeight
         if ((dw == -1) || (dh == -1)) {
-            this.frameContext.delayedRelayout(this.modelNode as NodeImpl?)
+            this.frameContext.delayedRelayout(this.modelNode() as NodeImpl?)
         } else {
             this@RUIControl.repaint()
         }
@@ -412,7 +412,7 @@ open class RUIControl(
 
     val foregroundColor: Color?
         get() {
-            val rs = this.modelNode!!.renderState()
+            val rs = this.modelNode()!!.renderState()
             return if (rs == null) null else rs.color
         }
 

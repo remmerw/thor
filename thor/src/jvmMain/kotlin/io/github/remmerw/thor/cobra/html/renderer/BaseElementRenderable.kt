@@ -129,7 +129,7 @@ abstract class BaseElementRenderable(
     }
 
     public override fun invalidateLayoutLocal() {
-        val rs = this.modelNode?.renderState()
+        val rs = this.modelNode()?.renderState()
         if (rs != null) {
             rs.invalidate()
         }
@@ -157,7 +157,7 @@ abstract class BaseElementRenderable(
         renderState: RenderState?, baseValue: Int,
         propertyGetter: Function<CSS2Properties?, String?>, ignorePercentage: Boolean
     ): Int? {
-        val rootNode: Any? = this.modelNode
+        val rootNode: Any? = this.modelNode()
         if (rootNode is HTMLElementImpl) {
             val props: CSS2Properties = rootNode.getCurrentStyle()
             val valueText = propertyGetter.apply(props)
@@ -176,7 +176,7 @@ abstract class BaseElementRenderable(
     private val isParentHeightDeclared: Boolean
         get() {
             val parentNode =
-                getModelNode()?.parentModelNode()
+                modelNode()?.parentModelNode()
             if (parentNode is HTMLElementImpl) {
                 val props: CSS2Properties = parentNode.getCurrentStyle()
                 val decHeight = props.height
@@ -188,7 +188,7 @@ abstract class BaseElementRenderable(
     private val isParentWidthDeclared: Boolean
         get() {
             val parentNode =
-                getModelNode()?.parentModelNode()
+                modelNode()?.parentModelNode()
             if (parentNode is HTMLElementImpl) {
                 val props: CSS2Properties = parentNode.getCurrentStyle()
                 val decWidth = props.width
@@ -236,7 +236,7 @@ abstract class BaseElementRenderable(
     fun hasDeclaredWidth(): Boolean {
         val dw = this.declaredWidth
         if (dw === INVALID_SIZE) {
-            val rootNode: Any? = this.modelNode
+            val rootNode: Any? = this.modelNode()
             if (rootNode is HTMLElementImpl) {
                 val props: CSS2Properties = rootNode.getCurrentStyle()
                 return !Strings.isBlank(props.width) || !Strings.isBlank(props.maxWidth)
@@ -247,7 +247,7 @@ abstract class BaseElementRenderable(
     }
 
     private fun getDeclaredWidthImpl(renderState: RenderState?, availWidth: Int): Int {
-        val rootNode: Any? = this.modelNode
+        val rootNode: Any? = this.modelNode()
         if (rootNode is HTMLElementImpl) {
             val props: CSS2Properties = rootNode.getCurrentStyle()
             val widthText = props.width
@@ -272,7 +272,7 @@ abstract class BaseElementRenderable(
     }
 
     protected fun getDeclaredHeightImpl(renderState: RenderState?, availHeight: Int): Int {
-        val rootNode: Any? = this.modelNode
+        val rootNode: Any? = this.modelNode()
         if (rootNode is HTMLElementImpl) {
             val props: CSS2Properties = rootNode.getCurrentStyle()
             val heightText = props.height
@@ -425,7 +425,7 @@ abstract class BaseElementRenderable(
         // and availHeight, so it doesn't need to be redone on
         // every resize.
         // Note: Overridden by tables and lists.
-        val rootNode = this.modelNode
+        val rootNode = this.modelNode()
         val rootElement: HTMLElementImpl?
         val isRootBlock: Boolean
         if (rootNode is HTMLDocumentImpl) {
@@ -547,7 +547,7 @@ abstract class BaseElementRenderable(
                     } catch (err: NumberFormatException) {
                         logger.log(
                             Level.WARNING,
-                            "Unable to parse z-index [" + zIndex + "] in element " + this.modelNode + ".",
+                            "Unable to parse z-index [" + zIndex + "] in element " + this.modelNode() + ".",
                             err
                         )
                         this.zIndex = 0
@@ -566,7 +566,7 @@ abstract class BaseElementRenderable(
 
     // TODO: Move to RBlock and make private
     protected fun applyAutoStyles(availWidth: Int, availHeight: Int): Dimension? {
-        val rootNode: Any? = this.modelNode
+        val rootNode: Any? = this.modelNode()
         val rootElement: HTMLElementImpl?
         if (rootNode is HTMLDocumentImpl) {
             // Need to get BODY tag, for bgcolor, etc.
@@ -696,7 +696,7 @@ abstract class BaseElementRenderable(
         var totalHeight = startHeight
         var startX = 0
         var startY = 0
-        val node = this.modelNode!!
+        val node = this.modelNode()!!
         val rs = node.renderState()
         val marginInsets = this.marginInsets
         if (marginInsets != null) {
@@ -1071,7 +1071,7 @@ abstract class BaseElementRenderable(
             }
         }
         if (this.isMarginBoundary) {
-            val rs = this.modelNode?.renderState()
+            val rs = this.modelNode()?.renderState()
             if (rs != null) {
                 val fm = rs.fontMetrics
                 val fontHeight = fm!!.height
@@ -1085,7 +1085,7 @@ abstract class BaseElementRenderable(
 
     protected open val isMarginBoundary: Boolean
         get() = ((this.overflowY != RenderState.OVERFLOW_VISIBLE) && (this.overflowX != RenderState.OVERFLOW_NONE))
-                || (this.modelNode is HTMLDocumentImpl)
+                || (this.modelNode() is HTMLDocumentImpl)
 
     override fun collapsibleMarginTop(): Int {
         var cm: Int
@@ -1101,7 +1101,7 @@ abstract class BaseElementRenderable(
             }
         }
         if (this.isMarginBoundary) {
-            val rs = this.modelNode!!.renderState()
+            val rs = this.modelNode()!!.renderState()
             if (rs != null) {
                 val fm = rs.fontMetrics!!
                 val fontHeight = fm.height
@@ -1235,7 +1235,7 @@ abstract class BaseElementRenderable(
 
         // TODO Use parent height
         setupRelativePosition(
-            getModelNode()!!.renderState()!!,
+            modelNode()!!.renderState()!!,
             container.innerMostWidth(),
             container.innerMostHeight()
         )
@@ -1247,7 +1247,7 @@ abstract class BaseElementRenderable(
             return false
         }
 
-        val node = this.modelNode!!
+        val node = this.modelNode()!!
         val rs = node.renderState()
         val binfo = if (rs == null) null else rs.backgroundInfo
         if (binfo != null && binfo.backgroundImage != null) {
