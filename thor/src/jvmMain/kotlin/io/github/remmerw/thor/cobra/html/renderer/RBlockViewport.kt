@@ -2685,7 +2685,7 @@ class RBlockViewport(
             if (ho == null) {
                 c = BrokenComponent()
             } else {
-                c = ho.component!!
+                c = ho.component()!!
             }
             val uiControl: UIControl = UIControlWrapper(ho!!, c)
             val ruiControl = RUIControl(

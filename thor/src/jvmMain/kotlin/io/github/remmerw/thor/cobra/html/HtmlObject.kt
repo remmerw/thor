@@ -7,7 +7,7 @@ import java.awt.Component
  * functionality.
  */
 interface HtmlObject {
-    val component: Component?
+    fun component(): Component?
 
     fun suspend()
 
