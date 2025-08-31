@@ -16,8 +16,8 @@ import java.net.MalformedURLException
 
 class HTMLIFrameElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLIFrameElement,
     FrameNode {
-    @Volatile
-    var browserFrame: BrowserFrame? = null
+
+    private var browserFrame: BrowserFrame? = null
     private var jobCreated = false
     private var onload: Function? = null
 

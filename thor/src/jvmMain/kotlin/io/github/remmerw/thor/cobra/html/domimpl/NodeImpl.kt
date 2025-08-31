@@ -1055,7 +1055,7 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
         get() {
             val doc: Any? = this.document
             if (doc is HTMLDocumentImpl) {
-                return doc.getUserAgentContext()
+                return doc.userAgentContext()
             } else {
                 return null
             }
@@ -1065,7 +1065,7 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
         get() {
             val doc: Any? = this.document
             if (doc is HTMLDocumentImpl) {
-                return doc.getHtmlRendererContext()
+                return doc.htmlRendererContext()
             } else {
                 return null
             }
@@ -1092,16 +1092,15 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
             return URL(cleanSpec)
         }
     }
-
-    open var documentURL: URL? = null
-        get() {
-            val doc: Any? = this.document
-            if (doc is HTMLDocumentImpl) {
-                return doc.getDocumentURL()
-            } else {
-                return null
-            }
+    open fun getDocumentURL(): URL? {
+        val doc: Any? = this.document
+        if (doc is HTMLDocumentImpl) {
+            return doc.getDocumentURL()
+        } else {
+            return null
         }
+    }
+
 
 
     override fun getDocumentItem(name: String?): Any? {
@@ -1109,13 +1108,7 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
         return if (document == null) null else document.getUserData(name)
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.xamjwg.html.renderer.RenderableContext#setDocumentItem(java.lang.String
-     * , java.lang.Object)
-     */
+
     override fun setDocumentItem(name: String?, value: Any?) {
         val document = this.document
         if (document == null) {
@@ -1124,13 +1117,7 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
         document.setUserData(name, value, null)
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.xamjwg.html.renderer.RenderableContext#isEqualOrDescendentOf(org.xamjwg
-     * .html.renderer.RenderableContext)
-     */
+
     override fun isEqualOrDescendantOf(otherContext: ModelNode?): kotlin.Boolean {
         if (otherContext === this) {
             return true

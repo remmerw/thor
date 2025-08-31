@@ -33,8 +33,8 @@ import java.net.MalformedURLException
 import kotlin.concurrent.Volatile
 
 class HTMLFrameElementImpl(name: String) : HTMLElementImpl(name), HTMLFrameElement, FrameNode {
-    @Volatile
-    var browserFrame: BrowserFrame? = null
+
+    private var browserFrame: BrowserFrame? = null
     private var noResize = false
 
 
@@ -58,15 +58,10 @@ class HTMLFrameElementImpl(name: String) : HTMLElementImpl(name), HTMLFrameEleme
         }
     }
 
-    override fun getBrowserFrame(): BrowserFrame {
+    override fun getBrowserFrame(): BrowserFrame? {
         return this.browserFrame!!
     }
-
     override fun setBrowserFrame(frame: BrowserFrame?) {
-        this.browserFrame = frame
-    }
-
-    fun setBrowserFrame(frame: BrowserFrame) {
         this.browserFrame = frame
         loadURL()
     }

@@ -31,7 +31,7 @@ import java.util.logging.Level
 
 class HTMLInputElementImpl(name: String) : HTMLBaseInputElement(name), HTMLInputElement {
     private var defaultChecked = false
-    override fun getDefaultValue(): String? {
+    override fun getDefaultValue(): String {
         TODO("Not yet implemented")
     }
 
@@ -84,7 +84,7 @@ class HTMLInputElementImpl(name: String) : HTMLBaseInputElement(name), HTMLInput
     }
 
     override fun getChecked(): Boolean {
-        val ic = this.inputContext
+        val ic = this.getInputContext()
         if (ic == null) {
             return this.getAttributeAsBoolean("checked")
         } else {
@@ -93,7 +93,7 @@ class HTMLInputElementImpl(name: String) : HTMLBaseInputElement(name), HTMLInput
     }
 
     override fun setChecked(checked: Boolean) {
-        val ic = this.inputContext
+        val ic = this.getInputContext()
         if (ic != null) {
             ic.checked = (checked)
         }
@@ -108,12 +108,12 @@ class HTMLInputElementImpl(name: String) : HTMLBaseInputElement(name), HTMLInput
     }
 
     override fun getMaxLength(): Int {
-        val ic = this.inputContext
+        val ic = this.getInputContext()
         return if (ic == null) 0 else ic.maxLength
     }
 
     override fun setMaxLength(maxLength: Int) {
-        val ic = this.inputContext
+        val ic = this.getInputContext()
         if (ic != null) {
             ic.maxLength = (maxLength)
         }
@@ -147,13 +147,13 @@ class HTMLInputElementImpl(name: String) : HTMLBaseInputElement(name), HTMLInput
   }
   }*/
     override fun getSize(): String {
-        val ic = this.inputContext
+        val ic = this.getInputContext()
         val size = if (ic == null) 0 else ic.controlSize
         return size.toString()
     }
 
     override fun setSize(size: String) {
-        val ic = this.inputContext
+        val ic = this.getInputContext()
         if (ic != null) {
             ic.controlSize = (size.toInt())
         }
@@ -204,7 +204,7 @@ class HTMLInputElementImpl(name: String) : HTMLBaseInputElement(name), HTMLInput
     }
 
     override fun click() {
-        val ic = this.inputContext
+        val ic = this.getInputContext()
         if (ic != null) {
             ic.click()
         }
@@ -241,7 +241,7 @@ class HTMLInputElementImpl(name: String) : HTMLBaseInputElement(name), HTMLInput
         }
 
     override fun resetInput() {
-        val ic = this.inputContext
+        val ic = this.getInputContext()
         if (ic != null) {
             ic.resetInput()
         }

@@ -109,6 +109,7 @@ import java.util.function.Consumer
 import java.util.logging.Level
 import kotlin.concurrent.Volatile
 
+
 /**
  * Implementation of the W3C `HTMLDocument` interface.
  */
@@ -123,7 +124,7 @@ class HTMLDocumentImpl(
     val layoutBlocked: AtomicBoolean = AtomicBoolean(true)
     val styleSheetManager: StyleSheetManager = StyleSheetManager()
     private val factory: ElementFactory
-
+    private var documentURL: URL? = null
     @JvmField
     val window: Window
     private val elementsById: MutableMap<String, Element?> = mutableMapOf()
@@ -227,16 +228,15 @@ class HTMLDocumentImpl(
         window.setDocument(this)
     }
 
+    override fun getDocumentURL(): URL? {
+        return documentURL
+    }
+
     val documentHost: String?
         get() {
-            val docUrl = this.documentURL
+            val docUrl = this.getDocumentURL()
             return if (docUrl == null) null else docUrl.host
         }
-
-    fun getDocumentURL(): URL? {
-        // TODO: Security considerations?
-        return this.documentURL
-    }
 
     /**
      * Caller should synchronize on document.
@@ -865,11 +865,11 @@ class HTMLDocumentImpl(
         )
     }
 
-    fun getHtmlRendererContext(): HtmlRendererContext {
+    fun htmlRendererContext(): HtmlRendererContext {
         return this.rcontext!!
     }
 
-    fun getUserAgentContext(): UserAgentContext {
+    fun userAgentContext(): UserAgentContext {
         return this.context
     }
 
@@ -1140,7 +1140,7 @@ class HTMLDocumentImpl(
      * @param imageListener
      */
     fun loadImage(relativeUri: String, imageListener: ImageListener) {
-        val rcontext = this.getHtmlRendererContext()
+        val rcontext = this.htmlRendererContext()
         if ((rcontext == null) || !rcontext.isImageLoadingEnabled()) {
             // Ignore image loading when there's no renderer context.
             // Consider Cobra users who are only using the parser.

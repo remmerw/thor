@@ -115,7 +115,7 @@ class Location internal constructor(private val window: Window) : ScriptableDele
         // TODO: This is not really reload.
         val document = this.window.documentNode
         if (document is HTMLDocumentImpl) {
-            val rcontext = document.getHtmlRendererContext()
+            val rcontext = document.htmlRendererContext()
             if (rcontext != null) {
                 rcontext.reload()
             } else {

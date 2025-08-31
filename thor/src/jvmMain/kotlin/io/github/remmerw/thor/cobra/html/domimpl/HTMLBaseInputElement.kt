@@ -33,7 +33,7 @@ import java.io.File
 
 abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) {
     private val imageListeners = ArrayList<ImageListener>()
-    protected var inputContext: InputContext? = null
+    private var inputContext: InputContext? = null
     protected var deferredValue: String? = null
     protected var deferredChecked: Boolean? = null
     protected var deferredReadonly: Boolean? = null
@@ -42,6 +42,11 @@ abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) 
         get() = this.getEventFunction(field, "onload")
     private var imageResponse: ImageResponse? = null
     private var imageSrc: String? = null
+
+
+    fun  getInputContext() : InputContext?{
+        return inputContext
+    }
 
     open fun setInputContext(ic: InputContext) {
         var dv: String? = null

@@ -78,7 +78,7 @@ open class HTMLAbstractUIElement(name: String) : HTMLElementImpl(name) {
                     checkNotNull(doc) { "Element does not belong to a document." }
                     val window = (doc as HTMLDocumentImpl).window
                     val ctx = Executor.createContext(
-                        this.documentURL,
+                        this.getDocumentURL(),
                         uac,
                         window.contextFactory
                     )

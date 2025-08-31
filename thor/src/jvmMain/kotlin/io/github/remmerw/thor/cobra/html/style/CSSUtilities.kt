@@ -105,7 +105,7 @@ object CSSUtilities {
         ownerNode: Node?, href: String, doc: HTMLDocumentImpl, baseUri: String,
         considerDoubleSlashComments: Boolean
     ): StyleSheet? {
-        val bcontext = doc.getUserAgentContext()
+        val bcontext = doc.userAgentContext()
         val request = bcontext.createHttpRequest()
         val baseURL = URL(baseUri)
         val cssURL = Urls.createURL(baseURL, href)
@@ -177,7 +177,7 @@ object CSSUtilities {
                 CSSParserFactory.SourceType.INLINE,
                 element,
                 inlinePriority,
-                element.documentURL
+                element.getDocumentURL()
             )
         } catch (e: IOException) {
             logger.log(Level.SEVERE, "Unable to parse CSS. CSS=[" + style + "].", e)

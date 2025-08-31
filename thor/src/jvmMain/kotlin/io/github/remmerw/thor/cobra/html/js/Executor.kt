@@ -94,13 +94,13 @@ object Executor {
         val uaContext = element.userAgentContext
         if (uaContext!!.isRequestPermitted(
                 UserAgentContext.Request(
-                    element.documentURL,
+                    element.getDocumentURL(),
                     RequestKind.JavaScript
                 )
             )
         ) {
             val ctx = createContext(
-                element.documentURL,
+                element.getDocumentURL(),
                 element.userAgentContext!!,
                 contextFactory
             )

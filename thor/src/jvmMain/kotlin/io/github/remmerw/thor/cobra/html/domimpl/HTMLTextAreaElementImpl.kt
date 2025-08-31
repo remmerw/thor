@@ -64,7 +64,7 @@ class HTMLTextAreaElementImpl : HTMLBaseInputElement, HTMLTextAreaElement {
      * @see org.w3c.dom.html2.HTMLTextAreaElement#getCols()
      */
     override fun getCols(): Int {
-        val ic = this.inputContext
+        val ic =this.getInputContext()
         return if (ic == null) 0 else ic.cols
     }
 
@@ -74,7 +74,7 @@ class HTMLTextAreaElementImpl : HTMLBaseInputElement, HTMLTextAreaElement {
      * @see org.w3c.dom.html2.HTMLTextAreaElement#setCols(int)
      */
     override fun setCols(cols: Int) {
-        val ic = this.inputContext
+        val ic = this.getInputContext()
         if (ic != null) {
             ic.cols = (cols)
         }
@@ -110,7 +110,7 @@ class HTMLTextAreaElementImpl : HTMLBaseInputElement, HTMLTextAreaElement {
      * @see org.w3c.dom.html2.HTMLTextAreaElement#getRows()
      */
     override fun getRows(): Int {
-        val ic = this.inputContext
+        val ic = this.getInputContext()
         return if (ic == null) 0 else ic.rows
     }
 
@@ -120,7 +120,7 @@ class HTMLTextAreaElementImpl : HTMLBaseInputElement, HTMLTextAreaElement {
      * @see org.w3c.dom.html2.HTMLTextAreaElement#setRows(int)
      */
     override fun setRows(rows: Int) {
-        val ic = this.inputContext
+        val ic = this.getInputContext()
         if (ic != null) {
             ic.rows = (rows)
         }

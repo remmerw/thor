@@ -708,7 +708,7 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
             return
         }
         val parser = HtmlParser(
-            document.getUserAgentContext(),
+            document.userAgentContext(),
             document,
             null,
             null,

@@ -176,7 +176,7 @@ class HTMLScriptElementImpl(name: String) : HTMLElementImpl(name), HTMLScriptEle
                             override fun run() {
                                 // final Context ctx = Executor.createContext(HTMLScriptElementImpl.this.getDocumentURL(), bcontext);
                                 val ctx = Executor.createContext(
-                                    this@HTMLScriptElementImpl.documentURL,
+                                    this@HTMLScriptElementImpl.getDocumentURL(),
                                     bcontext,
                                     window.contextFactory
                                 )

@@ -569,7 +569,8 @@ class Window // TODO: Probably need to create a new Window instance
                 } catch (err: ClassCastException) {
                     throw IllegalStateException("Cannot perform operation with documents of type " + d.javaClass.name + ".")
                 }
-                return XMLHttpRequest(userAgentContext, hd.documentURL!!, ws, this@Window)
+                return XMLHttpRequest(userAgentContext,
+                    hd.getDocumentURL()!!, ws, this@Window)
             }
         }
         defineInstantiator(ws, "XMLHttpRequest", XMLHTTPREQUEST_WRAPPER!!, xi)

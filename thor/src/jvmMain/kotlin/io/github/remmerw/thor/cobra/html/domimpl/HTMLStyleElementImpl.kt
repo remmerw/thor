@@ -146,7 +146,7 @@ class HTMLStyleElementImpl(name: String) : HTMLElementImpl(name), HTMLStyleEleme
                 this,
                 baseURI!!,
                 processedText,
-                doc.getUserAgentContext()
+                doc.userAgentContext()
             )
             return JStyleSheetWrapper(
                 jSheet,

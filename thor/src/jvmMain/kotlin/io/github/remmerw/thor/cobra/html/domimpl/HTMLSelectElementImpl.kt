@@ -80,7 +80,7 @@ open class HTMLSelectElementImpl(name: String) : HTMLBaseInputElement(name), HTM
     }
 
     override fun getSelectedIndex(): Int {
-        val ic = this.inputContext
+        val ic = this.getInputContext()
         if (ic != null) {
             return ic.selectedIndex
         } else {
@@ -110,7 +110,7 @@ open class HTMLSelectElementImpl(name: String) : HTMLBaseInputElement(name), HTM
     }
 
     override fun getSize(): Int {
-        val ic = this.inputContext
+        val ic = this.getInputContext()
         if (ic != null) {
             return ic.visibleSize
         } else {
@@ -119,7 +119,7 @@ open class HTMLSelectElementImpl(name: String) : HTMLBaseInputElement(name), HTM
     }
 
     override fun setSize(size: Int) {
-        val ic = this.inputContext
+        val ic = this.getInputContext()
         if (ic != null) {
             ic.visibleSize = (size)
         }
@@ -146,7 +146,7 @@ open class HTMLSelectElementImpl(name: String) : HTMLBaseInputElement(name), HTM
     }
 
     fun setSelectedIndexImpl(selectedIndex: Int) {
-        val ic = this.inputContext
+        val ic =this.getInputContext()
         if (ic != null) {
             ic.selectedIndex = (selectedIndex)
         } else {
@@ -156,7 +156,7 @@ open class HTMLSelectElementImpl(name: String) : HTMLBaseInputElement(name), HTM
 
     protected fun getFormInputs(): Array<FormInput>? {
         // Needs to be overriden for forms to submit.
-        val ic = this.inputContext
+        val ic = this.getInputContext()
         var values = if (ic == null) null else ic.values
         if (values == null) {
             val value = this.value
@@ -177,7 +177,7 @@ open class HTMLSelectElementImpl(name: String) : HTMLBaseInputElement(name), HTM
     }
 
     override fun resetInput() {
-        val ic = this.inputContext
+        val ic = this.getInputContext()
         if (ic != null) {
             ic.resetInput()
         }
