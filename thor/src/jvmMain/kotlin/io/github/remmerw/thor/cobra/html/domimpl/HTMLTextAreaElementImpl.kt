@@ -40,7 +40,7 @@ class HTMLTextAreaElementImpl : HTMLBaseInputElement, HTMLTextAreaElement {
 
     override fun getCols(): Int {
         val ic = this.getInputContext()
-        return if (ic == null) 0 else ic.cols
+        return if (ic == null) 0 else ic.getCols()
     }
 
     /*
@@ -51,20 +51,20 @@ class HTMLTextAreaElementImpl : HTMLBaseInputElement, HTMLTextAreaElement {
     override fun setCols(cols: Int) {
         val ic = this.getInputContext()
         if (ic != null) {
-            ic.cols = (cols)
+            ic.setCols(cols)
         }
     }
 
     override fun getRows(): Int {
         val ic = this.getInputContext()
-        return if (ic == null) 0 else ic.rows
+        return if (ic == null) 0 else ic.getRows()
     }
 
 
     override fun setRows(rows: Int) {
         val ic = this.getInputContext()
         if (ic != null) {
-            ic.rows = (rows)
+            ic.setRows(rows)
         }
     }
 

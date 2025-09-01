@@ -33,7 +33,9 @@ abstract class BaseInputControl(modelNode: HTMLBaseInputElement?) : BaseControl(
     InputContext {
 
     protected var size: Int = -1
-
+    private var name: String? = null
+    private var cols:Int = 0
+    private var rows:Int = 0
     init {
         this.isOpaque = false
     }
@@ -48,6 +50,14 @@ abstract class BaseInputControl(modelNode: HTMLBaseInputElement?) : BaseControl(
                 // ignore
             }
         }
+    }
+
+
+    override fun name(value:String?){
+        name = value
+    }
+    override fun name(): String? {
+        return name
     }
 
     override fun vAlign(): VerticalAlign? {
@@ -94,21 +104,13 @@ abstract class BaseInputControl(modelNode: HTMLBaseInputElement?) : BaseControl(
         set(checked) {
         }
 
-    override var disabled: Boolean
-        /*
-             * (non-Javadoc)
-             *
-             * @see org.xamjwg.html.domimpl.InputContext#getDisabled()
-             */
-        get() = !this.isEnabled
-        /*
-             * (non-Javadoc)
-             *
-             * @see org.xamjwg.html.domimpl.InputContext#setDisabled(boolean)
-             */
-        set(disabled) {
-            this.setEnabled(!disabled)
-        }
+    override fun setDisabled(disabled: Boolean) {
+        this.setEnabled(!disabled)
+    }
+    override fun isDisabled(): Boolean{
+        return !this.isEnabled
+    }
+
 
     override var maxLength: Int
         /*
@@ -187,36 +189,21 @@ abstract class BaseInputControl(modelNode: HTMLBaseInputElement?) : BaseControl(
             this.invalidate()
         }
 
-    override var cols: Int
-        /*
-             * (non-Javadoc)
-             *
-             * @see org.xamjwg.html.domimpl.InputContext#getCols()
-             */
-        get() = 0
-        /*
-             * (non-Javadoc)
-             *
-             * @see org.xamjwg.html.domimpl.InputContext#setCols(int)
-             */
-        set(cols) {
-        }
+    override fun getCols(): Int{
+        return cols
+    }
 
-    override var rows: Int
-        /*
-             * (non-Javadoc)
-             *
-             * @see org.xamjwg.html.domimpl.InputContext#getRows()
-             */
-        get() = 0
-        /*
-             * (non-Javadoc)
-             *
-             * @see org.xamjwg.html.domimpl.InputContext#setRows(int)
-             */
-        set(rows) {
-        }
+    override fun getRows(): Int{
+        return rows
+    }
 
+    override fun setCols(value:Int){
+         cols = value
+    }
+
+    override fun setRows(value:Int){
+         rows = value
+    }
 
     open fun paintSelection(
         g: Graphics?,
@@ -234,12 +221,7 @@ abstract class BaseInputControl(modelNode: HTMLBaseInputElement?) : BaseControl(
             // For selects
         }
 
-    override var name: String?
-        get() =// For selects
-            null
-        set(value) {
-            // For selects
-        }
+
 
     override var selectedIndex: Int
         get() =// For selects

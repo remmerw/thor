@@ -63,13 +63,13 @@ abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) 
             ic.value = (dv)
         }
         if (defDisabled != null) {
-            ic.disabled = (defDisabled)
+            ic.setDisabled (defDisabled)
         }
         if (defReadonly != null) {
-            ic.disabled = (defReadonly)
+            ic.setDisabled(defReadonly)
         }
         if (defChecked != null) {
-            ic.disabled = (defChecked)
+            ic.setDisabled (defChecked)
         }
     }
 
@@ -151,14 +151,14 @@ abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) 
             val db = this.deferredDisabled
             return db != null && db
         } else {
-            return ic.disabled
+            return ic.isDisabled()
         }
     }
 
     fun setDisabled(disabled: Boolean) {
         val ic = this.inputContext
         if (ic != null) {
-            ic.disabled = (disabled)
+            ic.setDisabled(disabled)
         } else {
             this.deferredDisabled = disabled
         }

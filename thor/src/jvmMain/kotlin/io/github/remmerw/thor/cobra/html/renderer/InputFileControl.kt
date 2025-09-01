@@ -68,7 +68,7 @@ class InputFileControl(modelNode: HTMLBaseInputElement?) : BaseInputControl(mode
             // nop - security
         }
 
-    fun setDisabled(disabled: Boolean) {
+    override fun setDisabled(disabled: Boolean) {
         this.browseButton.isEnabled = !disabled
     }
 

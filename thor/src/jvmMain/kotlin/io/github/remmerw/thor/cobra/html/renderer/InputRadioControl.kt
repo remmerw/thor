@@ -92,14 +92,8 @@ internal class InputRadioControl(modelNode: HTMLBaseInputElement?) : BaseInputCo
             this.widget.setSelected(checked)
         }
 
-
-    /*
-    * (non-Javadoc)
-    *
-    * @see org.xamjwg.html.domimpl.InputContext#setDisabled(boolean)
-    */
-    fun setDisabled(disabled: Boolean) {
-        super.disabled = disabled
+    override fun setDisabled(disabled: Boolean) {
+        super.setDisabled(disabled)
         this.widget.isEnabled = !disabled
     }
 

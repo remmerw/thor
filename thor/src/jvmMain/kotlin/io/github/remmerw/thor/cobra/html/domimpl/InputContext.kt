@@ -28,11 +28,14 @@ import java.io.File
 interface InputContext {
     var checked: Boolean
 
-    var disabled: Boolean
+    fun isDisabled(): Boolean
+    fun setDisabled(disabled: Boolean)
 
     var maxLength: Int
 
-    var name: String?
+    fun name(): String?
+
+    fun name(value:String?)
 
     var readOnly: Boolean
 
@@ -52,9 +55,13 @@ interface InputContext {
 
     fun click()
 
-    var rows: Int
+    fun getRows(): Int
 
-    var cols: Int
+    fun getCols(): Int
+
+    fun setRows(value:Int)
+
+    fun setCols(value:Int)
 
     var selectedIndex: Int
 

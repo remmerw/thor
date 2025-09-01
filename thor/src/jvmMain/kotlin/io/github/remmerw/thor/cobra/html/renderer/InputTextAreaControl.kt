@@ -27,8 +27,6 @@ import io.github.remmerw.thor.cobra.html.domimpl.ElementImpl
 import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement
 import io.github.remmerw.thor.cobra.util.Strings
 import io.github.remmerw.thor.cobra.util.gui.WrapperLayout
-import java.awt.Color
-import java.awt.Component
 import java.awt.Dimension
 import javax.swing.JScrollPane
 import javax.swing.JTextArea
@@ -78,51 +76,34 @@ internal class InputTextAreaControl(modelNode: HTMLBaseInputElement?) :
         return JTextArea()
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.renderer.BaseInputControl#getCols()
-     */
-    fun getCols(): Int {
-        return this.cols
+
+    override fun getCols(): Int {
+        return this.getCols()
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.renderer.BaseInputControl#setCols(int)
-     */
-    fun setCols(cols: Int) {
-        if (cols != this.cols) {
-            this.cols = cols
+
+    override fun setCols(value: Int) {
+        if (value != this.getCols()) {
+            this.setCols(value)
             this.invalidate()
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.renderer.BaseInputControl#getRows()
-     */
-    fun getRows(): Int {
-        return this.rows
+
+    override fun getRows(): Int {
+        return this.getRows()
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.renderer.BaseInputControl#setRows(int)
-     */
-    fun setRows(rows: Int) {
-        if (rows != this.rows) {
-            this.rows = rows
+    override fun setRows(value: Int) {
+        if (value != this.getRows()) {
+            this.setRows(value)
             this.invalidate()
         }
     }
 
     override fun getPreferredSize(): Dimension {
         val pw: Int
-        val cols = this.cols
+        val cols = this.getCols()
         if (cols == -1) {
             pw = 100
         } else {
@@ -132,7 +113,7 @@ internal class InputTextAreaControl(modelNode: HTMLBaseInputElement?) :
             pw = insets.left + insets.right + (fm.charWidth('*') * cols)
         }
         val ph: Int
-        val rows = this.rows
+        val rows = this.getRows()
         if (rows == -1) {
             ph = 100
         } else {

@@ -107,7 +107,7 @@ internal class RAnonTableCell(
         return 1
     }
 
-    override fun setRowSpan(rowSpan: Int) {
+    override fun setRowSpan(cs: Int) {
         throw IllegalStateException()
     }
 

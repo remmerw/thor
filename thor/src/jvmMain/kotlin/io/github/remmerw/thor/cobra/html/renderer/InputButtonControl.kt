@@ -98,8 +98,8 @@ internal class InputButtonControl(modelNode: HTMLBaseInputElement?) : BaseInputC
             this.widget.setText(value)
         }
 
-    fun setDisabled(disabled: Boolean) {
-        super.disabled = disabled
+    override fun setDisabled(disabled: Boolean) {
+        super.setDisabled(disabled)
         this.widget.isEnabled = !disabled
     }
 

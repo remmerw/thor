@@ -188,8 +188,8 @@ class PositionedRenderable(
                 if (htmlRenderable is RBlock) {
                     val htmlOffset = Point(0, 0) // TODO htmlRenderable.bodyLayout.getOrigin()
                     val htmlInsets = htmlRenderable.getInsetsMarginBorder(
-                        htmlRenderable.hasHScrollBar,
-                        htmlRenderable.hasVScrollBar
+                        htmlRenderable.hasHScrollBar(),
+                        htmlRenderable.hasVScrollBar()
                     )
 
                     return Point(

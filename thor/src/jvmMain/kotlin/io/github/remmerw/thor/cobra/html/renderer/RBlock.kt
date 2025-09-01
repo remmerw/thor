@@ -73,10 +73,17 @@ open class RBlock(
     // protected final Map<LayoutKey, LayoutValue> cachedLayout = new Hashtable<>(5);
     protected var startSelection: RenderableSpot? = null
     protected var endSelection: RenderableSpot? = null
-    protected var vScrollBar: JScrollBar? = null
-    protected var hScrollBar: JScrollBar? = null
-    var hasHScrollBar: Boolean = false
-    var hasVScrollBar: Boolean = false
+    private var vScrollBar: JScrollBar? = null
+    private var hScrollBar: JScrollBar? = null
+    private var hasHScrollBar: Boolean = false
+
+    fun hasHScrollBar(): Boolean {
+        return hasVScrollBar
+    }
+    private var hasVScrollBar: Boolean = false
+    fun hasVScrollBar(): Boolean {
+        return hasVScrollBar
+    }
 
     // Validation-dependent variables...
     // private Dimension layoutSize = null;
@@ -1260,39 +1267,6 @@ open class RBlock(
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.xamjwg.html.renderer.BoundableRenderable#onMousePressed(java.awt.event
-     * .MouseEvent, int, int)
-     */
-    /*
-  public boolean onMousePressed(final MouseEvent event, final int x, final int y) {
-    final RBlockViewport bodyLayout = this.bodyLayout;
-    if (bodyLayout != null) {
-      final int newX = x - bodyLayout.x;
-      final int newY = y - bodyLayout.y;
-      if (bodyLayout.contains(newX, newY)) {
-        this.armedRenderable = bodyLayout;
-        if (!bodyLayout.onMousePressed(event, newX, newY)) {
-          return false;
-        }
-      } else {
-        this.armedRenderable = null;
-      }
-    } else {
-      this.armedRenderable = null;
-    }
-    if (!HtmlController.getInstance().onMouseDown(this.modelNode, event, x, y)) {
-      return false;
-    }
-    if (this.backgroundColor != null) {
-      return false;
-    }
-    return true;
-  }
-  */
     /**
      * Changes scroll bar state to match viewport origin.
      */

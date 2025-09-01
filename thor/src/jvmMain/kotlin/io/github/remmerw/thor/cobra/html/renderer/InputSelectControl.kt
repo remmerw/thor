@@ -329,7 +329,7 @@ internal class InputSelectControl(modelNode: HTMLBaseInputElement?) : BaseInputC
     }
 
     companion object {
-        private const val serialVersionUID = 286101283473109265L
+
         private const val STATE_NONE = 0
         private const val STATE_COMBO = 1
         private const val STATE_LIST = 2

@@ -128,7 +128,7 @@ internal class RListItem(
             val prevColor = g.color
             g.color = rs.getColor()
             try {
-                val insets = this.getInsets(this.hasHScrollBar, this.hasVScrollBar)
+                val insets = this.getInsets(this.hasHScrollBar(), this.hasVScrollBar())
                 val paddingInsets = this.paddingInsets
                 val baselineOffset = 0 // TODO layout.getFirstBaselineOffset()
                 val bulletRight: Int =

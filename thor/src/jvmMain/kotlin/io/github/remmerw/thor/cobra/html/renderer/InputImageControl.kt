@@ -36,7 +36,7 @@ import javax.swing.SwingUtilities
 class InputImageControl(modelNode: HTMLBaseInputElement) : BaseInputControl(modelNode) {
     // private JButton button;
     private var mouseBeingPressed = false
-    var preferredSize: Dimension? = null
+    private var preferredSize: Dimension? = null
 
 
 
