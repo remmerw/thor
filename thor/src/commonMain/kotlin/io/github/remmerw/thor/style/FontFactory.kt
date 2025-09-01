@@ -1,26 +1,7 @@
 package io.github.remmerw.thor.style
 
-import io.github.remmerw.thor.core.Strings
-import java.awt.Font
-import java.awt.FontFormatException
-import java.awt.GraphicsEnvironment
-import java.awt.font.TextAttribute
-import java.io.IOException
-import java.io.InputStream
-import java.util.Locale
-import java.util.StringTokenizer
-import java.util.logging.Level
-import java.util.logging.Logger
-import javax.swing.text.StyleContext
-
-/**
- * Note: Undocumented class?
- */
-
-/**
- * @author J. H. S.
- */
 class FontFactory private constructor() {
+    /** TODO
     private val fontFamilies: MutableSet<String?> = HashSet<String?>(40)
     private val fontMap: MutableMap<FontKey?, Font?> = HashMap<FontKey?, Font?>(50)
     private val registeredFonts: MutableMap<String?, Font?> = HashMap<String?, Font?>(0)
@@ -277,5 +258,5 @@ class FontFactory private constructor() {
             // return FontManager.getCompositeFontUIResource(new Font(name, style,
             // size));
         }
-    }
+    }*/
 }

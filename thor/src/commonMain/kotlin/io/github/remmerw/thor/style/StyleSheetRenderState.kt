@@ -6,7 +6,6 @@ import io.github.remmerw.thor.dom.HTMLDocumentImpl
 import io.github.remmerw.thor.dom.HTMLElementImpl
 import org.w3c.dom.css.CSS2Properties
 import org.w3c.dom.html.HTMLElement
-import java.awt.Font
 import java.util.Locale
 import java.util.Optional
 import java.util.StringTokenizer
@@ -223,7 +222,7 @@ open class StyleSheetRenderState : RenderState {
             }
         } else {
             if (prs != null) {
-                fontSize = (prs.getFont()?.getSize())?.toFloat()
+                fontSize = (prs.getFont()?.fontSize)?.toFloat()
             } else {
                 fontSize = HtmlValues.DEFAULT_FONT_SIZE_BOX
             }
@@ -243,8 +242,6 @@ open class StyleSheetRenderState : RenderState {
         if (newFontWeight != null) {
             fontWeight = newFontWeight
         }
-        val document = this.document
-        val locales = if (document == null) null else document.locales
 
         var superscript: Int? = null
         if (isSuper) {
@@ -252,13 +249,12 @@ open class StyleSheetRenderState : RenderState {
         } else if (isSub) {
             superscript = (-1)
         }
-        f = FONT_FACTORY.getFont(
+        f = Font(
             fontFamily,
             fontStyle,
             fontVariant,
             fontWeight,
             fontSize!!,
-            locales,
             superscript
         )
         this.iFont = f
@@ -975,11 +971,11 @@ open class StyleSheetRenderState : RenderState {
     }
 
     override fun getFontXHeight(): Double {
-        // TODO: Cache this
+        // TODO:  (looks shit here)
 
         val font = getFont()!!
 
-        return 0.8 * font.size2D
+        return 0.8 * font.fontSize
 
     }
 
@@ -1000,14 +996,14 @@ open class StyleSheetRenderState : RenderState {
         @JvmStatic
         protected val INVALID_BORDER_INFO: BorderInfo = BorderInfo()
         protected val INVALID_COLOR: Color = Color(100, 0, 100)
-        private val FONT_FACTORY: FontFactory = FontFactory.instance
+
 
         // Default font needs to be something that displays in all languages.
         // Serif, SansSerif, Monospaced.
         private const val DEFAULT_FONT_FAMILY = "SansSerif"
-        private val DEFAULT_FONT: Font? = FONT_FACTORY.getFont(
-            DEFAULT_FONT_FAMILY, null, null, null, HtmlValues.DEFAULT_FONT_SIZE, null,
-            null
+        private val DEFAULT_FONT: Font? = Font(
+            DEFAULT_FONT_FAMILY, null, null, null,
+            HtmlValues.DEFAULT_FONT_SIZE, null
         )
 
         private fun applyBackgroundRepeat(binfo: BackgroundInfo, backgroundRepeatText: String) {

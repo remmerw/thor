@@ -1,30 +1,8 @@
-/*
- GNU LESSER GENERAL PUBLIC LICENSE
- Copyright (C) 2006 The Lobo Project
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
-
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Lesser General Public License for more details.
-
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
- Contact info: lobochief@users.sourceforge.net
- */
 package io.github.remmerw.thor.style
 
 import androidx.compose.ui.graphics.Color
 import io.github.remmerw.thor.core.Urls
 import org.w3c.dom.css.CSS2Properties
-import java.awt.GraphicsEnvironment
-import java.awt.Toolkit
 import java.net.MalformedURLException
 import java.net.URL
 import java.util.Locale
@@ -366,7 +344,7 @@ object HtmlValues {
             } catch (nfe: NumberFormatException) {
                 return DEFAULT_FONT_SIZE
             }
-            return Math.round(font!!.getSize() * value).toInt().toFloat()
+            return Math.round(font!!.fontSize * value).toInt().toFloat()
         } else if (specTL.endsWith("px") || specTL.endsWith("pt") || specTL.endsWith("cm") || specTL.endsWith(
                 "pc"
             ) || specTL.endsWith("cm")
@@ -385,7 +363,7 @@ object HtmlValues {
             try {
                 val valued = value.toDouble()
                 val parentFontSize =
-                    if (parentRenderState == null) 14.0 else parentRenderState.getFont()!!.getSize()
+                    if (parentRenderState == null) 14.0 else parentRenderState.getFont()!!.fontSize
                         .toDouble()
                 return ((parentFontSize * valued) / 100.0).toFloat()
             } catch (nfe: NumberFormatException) {
@@ -408,12 +386,12 @@ object HtmlValues {
         } else if ("larger" == specTL) {
             val parentFontSize =
                 if (parentRenderState == null) DEFAULT_FONT_SIZE_INT else parentRenderState.getFont()!!
-                    .getSize()
+                    .fontSize.toInt()
             return parentFontSize * 1.2f
         } else if ("smaller" == specTL) {
             val parentFontSize =
                 if (parentRenderState == null) DEFAULT_FONT_SIZE_INT else parentRenderState.getFont()!!
-                    .getSize()
+                    .fontSize.toInt()
             return parentFontSize / 1.2f
         } else {
             return getPixelSize(spec, parentRenderState, DEFAULT_FONT_SIZE_INT).toFloat()
@@ -457,7 +435,7 @@ object HtmlValues {
             try {
                 val `val` = valText.toDouble()
                 // Get fontSize in points (1/72 of an inch).
-                val fontSizePt = f!!.size2D
+                val fontSizePt = f!!.fontSize
                 /* Formula: fontSize in CSS pixels = (fontSizePt / 72.0) * 96.0;
                  *          fontSize in device pixels = (font size in css pixels * dpi) / 96.0
                  *                                    = (fontSizePt / 72.0) * dpi
@@ -544,15 +522,17 @@ object HtmlValues {
 
     private val dpi: Int
         get() {
-            if (GraphicsEnvironment.isHeadless()) {
+            //if (GraphicsEnvironment.isHeadless()) {
                 // TODO: Why is this 72? The CSS native resolution seems to be 96, so we could use that instead.
                 return 72
-            } else {
+            //} else {
+            /** todo
                 val screenResolution =
                     Toolkit.getDefaultToolkit().screenResolution
                 // TODO: Hack: converting to a multiple of 16. See GH-185
                 return (screenResolution + 15) and -0x10
-            }
+            */
+            //}
         }
 
     fun scaleToDevicePixels(cssPixels: Double): Int {

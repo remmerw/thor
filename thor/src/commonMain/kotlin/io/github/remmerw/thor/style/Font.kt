@@ -4,7 +4,7 @@ import java.util.Locale
 
 class Font(
     fontFamily: String?, fontStyle: String?, fontVariant: String?, fontWeight: String?,
-    val fontSize: Float, val locales: MutableSet<Locale>?, val superscript: Int?
+    val fontSize: Float,  val superscript: Int?
 ) {
     val fontFamily: String?
     val fontStyle: String?
@@ -42,7 +42,7 @@ class Font(
         // so we can do instance comparisons.
         return (this.fontSize == ors.fontSize) && (this.fontFamily === ors.fontFamily) && (this.fontStyle === ors.fontStyle)
                 && (this.fontWeight === ors.fontWeight) && (this.fontVariant === ors.fontVariant) && (this.superscript === ors.superscript)
-                && this.locales == ors.locales
+
     }
 
     override fun hashCode(): Int {
