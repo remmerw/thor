@@ -6,7 +6,6 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.ksp)
     alias(libs.plugins.vanniktech.mavenPublish)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
@@ -39,16 +38,6 @@ kotlin {
                 implementation(libs.kotlin.stdlib)
                 implementation(libs.kotlinx.io.core)
 
-                implementation(libs.androidx.sqlite.bundled)
-                implementation(libs.androidx.room.runtime)
-
-                implementation(libs.androidx.datastore.preferences.core)
-                implementation(libs.androidx.datastore.preferences)
-
-                implementation(libs.dagr)
-
-                api(libs.idun)
-                api(libs.borr)
 
                 implementation(libs.sac)
                 implementation(libs.jstyleparser)
@@ -58,7 +47,6 @@ kotlin {
                 implementation(compose.foundation)
                 implementation(compose.material3)
                 implementation(compose.ui)
-                //implementation(compose.components.resources)
                 implementation(compose.materialIconsExtended)
             }
         }
@@ -103,16 +91,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
-}
-
-
-
-dependencies {
-    add("kspAndroid", libs.androidx.room.compiler)
-    //add("kspIosX64", libs.androidx.room.compiler)
-    //add("kspIosSimulatorArm64", libs.androidx.room.compiler)
-    //add("kspIosArm64", libs.androidx.room.compiler)
-    add("kspJvm", libs.androidx.room.compiler)
 }
 
 
