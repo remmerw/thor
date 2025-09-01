@@ -254,9 +254,6 @@ internal class InputSelectControl(modelNode: HTMLBaseInputElement?) : BaseInputC
         this.resetItemList()
     }
 
-    override var name: String?
-        get() = TODO("Not yet implemented")
-        set(value) {}
 
     override var value: String? = null
         get() {

@@ -50,7 +50,6 @@ import io.github.remmerw.thor.cobra.html.style.CSSNorm
 import io.github.remmerw.thor.cobra.html.style.RenderState
 import io.github.remmerw.thor.cobra.html.style.StyleElements
 import io.github.remmerw.thor.cobra.html.style.StyleSheetRenderState
-import io.github.remmerw.thor.cobra.ua.ImageResponse
 import io.github.remmerw.thor.cobra.ua.NetworkRequest
 import io.github.remmerw.thor.cobra.ua.NetworkRequestEvent
 import io.github.remmerw.thor.cobra.ua.UserAgentContext
@@ -131,8 +130,8 @@ class HTMLDocumentImpl(
     private val elementsById: MutableMap<String, Element?> = mutableMapOf()
     private val elementsByName: MutableMap<String?, Element?> = HashMap<String?, Element?>(0)
     private val documentNotificationListeners = ArrayList<DocumentNotificationListener>(1)
-    private val imageInfos: MutableMap<String?, ImageInfo?> = HashMap<String?, ImageInfo?>(4)
-    private val BLANK_IMAGE_EVENT = ImageEvent(this, ImageResponse())
+
+
     private val onloadHandlers: MutableList<Function?> = ArrayList<Function?>()
     private val registeredJobs = AtomicInteger(0)
     private val layoutBlockingJobs = AtomicInteger(0)
@@ -1136,96 +1135,22 @@ class HTMLDocumentImpl(
      * @param relativeUri
      * @param imageListener
      */
-    fun loadImage(relativeUri: String, imageListener: ImageListener) {
+    fun loadImage(relativeUri: String) {
         val rcontext = this.htmlRendererContext()
         if ((rcontext == null) || !rcontext.isImageLoadingEnabled()) {
             // Ignore image loading when there's no renderer context.
             // Consider Cobra users who are only using the parser.
-            imageListener.imageLoaded(BLANK_IMAGE_EVENT)
+
             return
         }
         try {
             val url = this.getFullURL(relativeUri)
             val urlText = url.toExternalForm()
-            val map = this.imageInfos
-            var event: ImageEvent? = null
-            synchronized(map) {
-                val info = map.get(urlText)
-                if (info != null) {
-                    if (info.loaded) {
-                        // TODO: This can't really happen because ImageInfo
-                        // is removed right after image is loaded.
-                        event = info.imageEvent
-                    } else {
-                        info.addListener(imageListener)
-                    }
-                } else {
-                    val uac = rcontext.userAgentContext()
-                    val httpRequest = uac.createHttpRequest()
-                    val newInfo = ImageInfo()
-                    map.put(urlText, newInfo)
-                    newInfo.addListener(imageListener)
-                    httpRequest?.addNetworkRequestListener({ netEvent: NetworkRequestEvent? ->
-                        if (httpRequest.readyState == NetworkRequest.STATE_COMPLETE) {
-                            val imageResponse = httpRequest.responseImage
-                            val newEvent = ImageEvent(this@HTMLDocumentImpl, imageResponse)
-                            val listeners: Array<ImageListener?>?
-                            synchronized(map) {
-                                newInfo.imageEvent = newEvent
-                                newInfo.loaded = true
-                                listeners = newInfo.getListeners()
-                                // Must remove from map in the locked block
-                                // that got the listeners. Otherwise a new
-                                // listener might miss the event??
-                                map.remove(urlText)
-                            }
-                            if (listeners != null) {
-                                val llength = listeners.size
-                                for (i in 0..<llength) {
-                                    // Call holding no locks
-                                    listeners[i]!!.imageLoaded(newEvent)
-                                }
-                            }
-                        } else if (httpRequest.readyState == NetworkRequest.STATE_ABORTED) {
-                            val listeners: Array<ImageListener?>?
-                            synchronized(map) {
-                                newInfo.loaded = true
-                                listeners = newInfo.getListeners()
-                                // Must remove from map in the locked block
-                                // that got the listeners. Otherwise a new
-                                // listener might miss the event??
-                                map.remove(urlText)
-                            }
-                            if (listeners != null) {
-                                val llength = listeners.size
-                                for (i in 0..<llength) {
-                                    // Call holding no locks
-                                    listeners[i]!!.imageAborted()
-                                }
-                            }
-                        }
-                    })
 
-                    SecurityUtil.doPrivileged<Any?>(PrivilegedAction {
-                        try {
-                            httpRequest?.open("GET", url)
-                            httpRequest?.send(
-                                null,
-                                UserAgentContext.Request(url, RequestKind.Image)
-                            )
-                        } catch (thrown: IOException) {
-                            logger.log(Level.WARNING, "loadImage()", thrown)
-                        }
-                        null
-                    })
-                }
-            }
-            if (event != null) {
-                // Call holding no locks.
-                imageListener.imageLoaded(event)
-            }
+
+
         } catch (mfe: MalformedURLException) {
-            imageListener.imageLoaded(BLANK_IMAGE_EVENT)
+
         }
     }
 
@@ -1469,22 +1394,6 @@ class HTMLDocumentImpl(
     fun hasFocus(): Boolean {
         // TODO: Plug
         return true
-    }
-
-    private class ImageInfo {
-        private val listeners = ArrayList<ImageListener?>(1)
-
-        // Access to this class is synchronized on imageInfos.
-        var imageEvent: ImageEvent? = null
-        var loaded: Boolean = false
-
-        fun addListener(listener: ImageListener?) {
-            this.listeners.add(listener)
-        }
-
-        fun getListeners(): Array<ImageListener?> {
-            return this.listeners.toArray<ImageListener?>(ImageListener.Companion.EMPTY_ARRAY)
-        }
     }
 
     /**

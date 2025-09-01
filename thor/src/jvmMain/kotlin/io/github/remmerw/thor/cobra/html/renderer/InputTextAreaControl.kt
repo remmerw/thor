@@ -37,8 +37,6 @@ import javax.swing.text.JTextComponent
 internal class InputTextAreaControl(modelNode: HTMLBaseInputElement?) :
     BaseInputControl(modelNode) {
     private val widget: JTextComponent
-    override var cols = -1
-    override var rows = -1
 
     init {
         this.layout = WrapperLayout.instance
@@ -146,9 +144,7 @@ internal class InputTextAreaControl(modelNode: HTMLBaseInputElement?) :
         return Dimension(pw, ph)
     }
 
-    override var name: String?
-        get() = TODO("Not yet implemented")
-        set(value) {}
+
 
     override var readOnly: Boolean
         /*

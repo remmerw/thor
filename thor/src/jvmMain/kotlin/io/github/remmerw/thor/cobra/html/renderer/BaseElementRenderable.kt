@@ -27,7 +27,6 @@ import io.github.remmerw.thor.cobra.html.style.BorderInfo
 import io.github.remmerw.thor.cobra.html.style.HtmlInsets
 import io.github.remmerw.thor.cobra.html.style.HtmlValues
 import io.github.remmerw.thor.cobra.html.style.RenderState
-import io.github.remmerw.thor.cobra.ua.ImageResponse
 import io.github.remmerw.thor.cobra.ua.NetworkRequest
 import io.github.remmerw.thor.cobra.ua.NetworkRequestEvent
 import io.github.remmerw.thor.cobra.ua.UserAgentContext
@@ -81,9 +80,9 @@ abstract class BaseElementRenderable(
     protected var zIndex: Int = 0
     private var borderTopColor: Color? = null
     private var borderLeftColor: Color? = null
-    protected var borderBottomColor: Color? = null
-    protected var borderRightColor: Color? = null
-    protected var borderInsets: Insets? = null
+    private var borderBottomColor: Color? = null
+    private var borderRightColor: Color? = null
+    private var borderInsets: Insets? = null
     protected var marginInsets: Insets? = null
     protected var paddingInsets: Insets? = null
     protected var borderInfo: BorderInfo? = null
@@ -620,34 +619,7 @@ abstract class BaseElementRenderable(
         if (ctx != null) {
             val request = ctx.createHttpRequest()
             request?.addNetworkRequestListener { event: NetworkRequestEvent? ->
-                val readyState = request.readyState
-                if (readyState == NetworkRequest.STATE_COMPLETE) {
-                    val status = request.status
-                    if ((status == 200) || (status == 0)) {
-                        val imgResp = request.responseImage
-                        if (imgResp.state == ImageResponse.State.loaded) {
-                            checkNotNull(imgResp.img)
-                            val img: Image = imgResp.img
-                            this@BaseElementRenderable.backgroundImage = img
-                            backgroundImageError = false
-                            // Cause observer to be called
-                            val w = img.getWidth(this@BaseElementRenderable)
-                            val h = img.getHeight(this@BaseElementRenderable)
-                            // Maybe image already done...
-                            if ((w != -1) && (h != -1)) {
-                                SwingUtilities.invokeLater(Runnable {
-                                    this@BaseElementRenderable.repaint()
-                                })
-                            }
-                        } else {
-                            backgroundImageError = true
-                        }
-                    } else {
-                        backgroundImageError = true
-                    }
-                } else if (readyState == NetworkRequest.STATE_ABORTED) {
-                    backgroundImageError = true
-                }
+
             }
 
             SecurityUtil.doPrivileged<Any?>(PrivilegedAction {

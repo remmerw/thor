@@ -59,7 +59,7 @@ class VirtualCell(cell: RAbstractCell, isTopLeft: Boolean) {
         get() {
             // TODO: Does not consider cellpadding and border
             val cell = this.actualCell
-            val heightText = cell.heightText
+            val heightText = cell.getHeightText()
             var length: HtmlLength?
             try {
                 length = if (heightText == null) null else HtmlLength(
@@ -73,7 +73,7 @@ class VirtualCell(cell: RAbstractCell, isTopLeft: Boolean) {
                 length = null
             }
             if (length != null) {
-                length.divideBy(cell.rowSpan)
+                length.divideBy(cell.getRowSpan())
             }
             return length
         }
@@ -81,7 +81,7 @@ class VirtualCell(cell: RAbstractCell, isTopLeft: Boolean) {
     val widthLength: HtmlLength?
         get() {
             val cell = this.actualCell
-            val widthText = cell.widthText
+            val widthText = cell.getWidthText()
             var length: HtmlLength?
             try {
                 length = if (widthText == null) null else HtmlLength(
@@ -95,30 +95,8 @@ class VirtualCell(cell: RAbstractCell, isTopLeft: Boolean) {
                 length = null
             }
             if (length != null) {
-                length.divideBy(cell.colSpan)
+                length.divideBy(cell.getColSpan())
             }
             return length
-        } // public Dimension layoutMinWidth() {
-    //
-    // ActualCell cell = this.actualCell;
-    //
-    // Dimension ad = cell.layoutMinWidth();
-    //
-    // int colspan = cell.getColSpan();
-    //
-    // int rowspan = cell.getRowSpan();
-    //
-    // if(colspan == 1 && rowspan == 1) {
-    //
-    // return ad;
-    //
-    // }
-    //
-    // else {
-    //
-    // return new Dimension(ad.width / colspan, ad.height / rowspan);
-    //
-    // }
-    //
-    // }
+        }
 }

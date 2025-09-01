@@ -36,15 +36,6 @@ internal abstract class BaseInputTextControl(modelNode: HTMLBaseInputElement?) :
     BaseInputControl(modelNode) {
     protected val widget: JTextComponent
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#getMaxLength()
-     *//*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#setMaxLength(int)
-     */
     override var maxLength: Int = -1
 
     init {

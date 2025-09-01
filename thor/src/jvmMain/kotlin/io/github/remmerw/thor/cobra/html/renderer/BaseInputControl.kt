@@ -217,13 +217,7 @@ abstract class BaseInputControl(modelNode: HTMLBaseInputElement?) : BaseControl(
         set(rows) {
         }
 
-    /*
-    * (non-Javadoc)
-    *
-    * @see org.xamjwg.html.renderer.UIControl#paintSelection(java.awt.Graphics,
-    * boolean, org.xamjwg.html.renderer.RenderablePoint,
-    * org.xamjwg.html.renderer.RenderablePoint)
-    */
+
     open fun paintSelection(
         g: Graphics?,
         inSelection: Boolean,
@@ -236,6 +230,13 @@ abstract class BaseInputControl(modelNode: HTMLBaseInputElement?) : BaseControl(
     var multiple: Boolean
         get() =// For selects
             false
+        set(value) {
+            // For selects
+        }
+
+    override var name: String?
+        get() =// For selects
+            null
         set(value) {
             // For selects
         }

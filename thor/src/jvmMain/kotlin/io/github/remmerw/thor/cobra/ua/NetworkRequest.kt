@@ -59,10 +59,7 @@ interface NetworkRequest {
      */
     val responseXML: Document?
 
-    /**
-     * Gets the request response as an AWT image, if that's possible.
-     */
-    val responseImage: ImageResponse
+
 
     /**
      * Gets the request response bytes.

@@ -25,10 +25,7 @@ package io.github.remmerw.thor.cobra.html.renderer
 
 import cz.vutbr.web.css.CSSProperty.VerticalAlign
 import io.github.remmerw.thor.cobra.html.domimpl.HTMLImageElementImpl
-import io.github.remmerw.thor.cobra.html.domimpl.ImageEvent
-import io.github.remmerw.thor.cobra.html.domimpl.ImageListener
 import io.github.remmerw.thor.cobra.html.style.HtmlValues
-import io.github.remmerw.thor.cobra.ua.ImageResponse
 import java.awt.Color
 import java.awt.Component
 import java.awt.Dimension
@@ -41,9 +38,8 @@ import javax.swing.SwingUtilities
 import kotlin.concurrent.Volatile
 
 
-class ImgControl(modelNode: HTMLImageElementImpl) : BaseControl(modelNode), ImageListener {
-    @Volatile
-    private var imageResponse = ImageResponse()
+class ImgControl(modelNode: HTMLImageElementImpl) : BaseControl(modelNode) {
+
 
     // private final UserAgentContext browserContext;
     private val lastSrc: String? = null
@@ -51,44 +47,10 @@ class ImgControl(modelNode: HTMLImageElementImpl) : BaseControl(modelNode), Imag
     private var declaredWidth = 0
     private var declaredHeight = 0
 
-    init {
-        // this.browserContext = pcontext;
-        modelNode.addImageListener(this)
-    }
 
     override fun paintComponent(g: Graphics) {
         super.paintComponent(g)
-        val imageResponse = this.imageResponse
-        if (imageResponse.isDecoded) {
-            checkNotNull(imageResponse.img)
-            val image: Image = imageResponse.img
-            val size = this.size
-            val insets = this.insets
-            val g2 = g as Graphics2D
-            val width = size.width - insets.left - insets.right
-            val height = size.height - insets.top - insets.bottom
 
-            val imgWidth = image.getWidth(this)
-            val imgHeight = image.getHeight(this)
-            if (width < imgWidth || height < imgHeight) {
-                // down-sampling needs better handling
-                val scaledImg = getScaledInstance(
-                    image,
-                    width,
-                    height,
-                    RenderingHints.VALUE_INTERPOLATION_BICUBIC
-                )
-                g.drawImage(scaledImg, insets.left, insets.top, width, height, this)
-            } else {
-                g2.setRenderingHint(
-                    RenderingHints.KEY_INTERPOLATION,
-                    RenderingHints.VALUE_INTERPOLATION_BICUBIC
-                )
-                g.drawImage(image, insets.left, insets.top, width, height, this)
-            }
-        } else {
-            // TODO: show alt text
-        }
     }
 
     override fun reset(availWidth: Int, availHeight: Int) {
@@ -124,40 +86,7 @@ class ImgControl(modelNode: HTMLImageElementImpl) : BaseControl(modelNode), Imag
     fun createPreferredSize(dw: Int, dh: Int): Dimension {
         var dw = dw
         var dh = dh
-        val imageResponseLocal = this.imageResponse
-        if (!imageResponseLocal.isDecoded) {
-            return Dimension(if (dw == -1) 0 else dw, if (dh == -1) 0 else dh)
-        }
 
-        checkNotNull(imageResponseLocal.img)
-        val img: Image = imageResponseLocal.img
-
-        if (dw == -1) {
-            if (dh != -1) {
-                val iw = HtmlValues.scaleToDevicePixels(img.getWidth(this).toDouble())
-                val ih = HtmlValues.scaleToDevicePixels(img.getHeight(this).toDouble())
-                if (ih == 0) {
-                    dw = iw
-                } else {
-                    dw = (dh * iw) / ih
-                }
-            } else {
-                dw = HtmlValues.scaleToDevicePixels(img.getWidth(this).toDouble())
-            }
-        }
-        if (dh == -1) {
-            if (dw != -1) {
-                val iw = HtmlValues.scaleToDevicePixels(img.getWidth(this).toDouble())
-                val ih = HtmlValues.scaleToDevicePixels(img.getHeight(this).toDouble())
-                if (iw == 0) {
-                    dh = if (ih == -1) 0 else ih
-                } else {
-                    dh = (dw * ih) / iw
-                }
-            } else {
-                dh = HtmlValues.scaleToDevicePixels(img.getHeight(this).toDouble())
-            }
-        }
         return Dimension(dw, dh)
     }
 
@@ -219,22 +148,6 @@ class ImgControl(modelNode: HTMLImageElementImpl) : BaseControl(modelNode), Imag
         return inSelection
     }
 
-    override fun imageLoaded(event: ImageEvent) {
-        // Implementation of ImageListener. Invoked in a request thread most likely.
-        val imageResponseLocal = event.imageResponse
-        this.imageResponse = imageResponseLocal
-        if (imageResponseLocal.isDecoded) {
-            checkNotNull(imageResponseLocal.img)
-            val image: Image = imageResponseLocal.img
-            val width = image.getWidth(this)
-            val height = image.getHeight(this)
-            this.imageUpdate(image, width, height)
-        }
-    }
-
-    override fun imageAborted() {
-        // do nothing
-    }
 
     override fun toString(): String {
         return "ImgControl[src=" + this.lastSrc + "]"
@@ -290,7 +203,7 @@ class ImgControl(modelNode: HTMLImageElementImpl) : BaseControl(modelNode), Imag
     }
 
     fun isReadyToPaint(): Boolean {
-        return imageResponse.isReadyToPaint
+        return true
     }
 
     companion object

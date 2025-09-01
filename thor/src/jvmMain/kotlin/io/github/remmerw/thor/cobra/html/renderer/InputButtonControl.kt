@@ -76,18 +76,11 @@ internal class InputButtonControl(modelNode: HTMLBaseInputElement?) : BaseInputC
 
 
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.InputContext#click()
-     */
     override fun click() {
         this.widget.doClick()
     }
 
-    override var name: String?
-        get() = TODO("Not yet implemented")
-        set(value) {}
+
 
     override var value: String?
         /*

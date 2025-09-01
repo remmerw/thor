@@ -72,9 +72,6 @@ internal class InputCheckboxControl(modelNode: HTMLBaseInputElement?) :
         set(checked) {
             this.widget.setSelected(checked)
         }
-    override var name: String?
-        get() = TODO("Not yet implemented")
-        set(value) {}
 
     /*
     * (non-Javadoc)

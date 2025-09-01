@@ -274,7 +274,7 @@ open class RUIControl(
             if (paddingInsets == null) {
                 paddingInsets = RBlockViewport.Companion.ZERO_INSETS
             }
-            var borderInsets = this.borderInsets
+            var borderInsets = this.getBorderInsets()
             if (borderInsets == null) {
                 borderInsets = RBlockViewport.Companion.ZERO_INSETS
             }

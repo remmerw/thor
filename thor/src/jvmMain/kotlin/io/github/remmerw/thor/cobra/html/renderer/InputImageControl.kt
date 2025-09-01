@@ -22,10 +22,7 @@ package io.github.remmerw.thor.cobra.html.renderer
 
 import cz.vutbr.web.css.CSSProperty.VerticalAlign
 import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement
-import io.github.remmerw.thor.cobra.html.domimpl.ImageEvent
-import io.github.remmerw.thor.cobra.html.domimpl.ImageListener
 import io.github.remmerw.thor.cobra.html.style.HtmlValues
-import io.github.remmerw.thor.cobra.ua.ImageResponse
 import io.github.remmerw.thor.cobra.util.gui.WrapperLayout
 import java.awt.Color
 import java.awt.Component
@@ -36,8 +33,7 @@ import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import javax.swing.SwingUtilities
 
-class InputImageControl(modelNode: HTMLBaseInputElement) : BaseInputControl(modelNode),
-    ImageListener {
+class InputImageControl(modelNode: HTMLBaseInputElement) : BaseInputControl(modelNode) {
     // private JButton button;
     private var mouseBeingPressed = false
     var preferredSize: Dimension? = null
@@ -46,7 +42,7 @@ class InputImageControl(modelNode: HTMLBaseInputElement) : BaseInputControl(mode
 
     private var declaredWidth = 0
     private var declaredHeight = 0
-    private var imageResponse: ImageResponse? = null
+
 
     init {
         this.layout = WrapperLayout.instance
@@ -55,7 +51,7 @@ class InputImageControl(modelNode: HTMLBaseInputElement) : BaseInputControl(mode
         // button.setMargin(RBlockViewport.ZERO_INSETS);
         // button.setBorder(null);
         // this.add(button);
-        modelNode.addImageListener(this)
+
         this.addMouseListener(object : MouseAdapter() {
             override fun mousePressed(e: MouseEvent?) {
                 mouseBeingPressed = true
@@ -94,19 +90,7 @@ class InputImageControl(modelNode: HTMLBaseInputElement) : BaseInputControl(mode
         val size = this.size()
         val insets = this.insets
         synchronized(this) {}
-        val imageResponse = this.imageResponse!!
-        if (imageResponse.state == ImageResponse.State.loaded) {
-            g.drawImage(
-                imageResponse.img,
-                insets.left,
-                insets.top,
-                size.width - insets.left - insets.right,
-                size.height - insets.top - insets.bottom,
-                this
-            )
-        } else {
-            // TODO: alt
-        }
+
         if (this.mouseBeingPressed) {
             val over = Color(255, 100, 100, 64)
             val oldColor = g.color
@@ -127,20 +111,7 @@ class InputImageControl(modelNode: HTMLBaseInputElement) : BaseInputControl(mode
     fun createPreferredSize(dw: Int, dh: Int): Dimension {
         var dw = dw
         var dh = dh
-        val imgResponse = this.imageResponse!!
-        if (!imgResponse.isDecoded) {
-            return Dimension(if (dw == -1) 0 else dw, if (dh == -1) 0 else dh)
-        }
 
-        checkNotNull(imgResponse.img)
-        val img: Image = imgResponse.img
-
-        if (dw == -1) {
-            dw = HtmlValues.scaleToDevicePixels(img.getWidth(this).toDouble())
-        }
-        if (dh == -1) {
-            dh = HtmlValues.scaleToDevicePixels(img.getHeight(this).toDouble())
-        }
         return Dimension(dw, dh)
     }
 
@@ -202,47 +173,18 @@ class InputImageControl(modelNode: HTMLBaseInputElement) : BaseInputControl(mode
         return inSelection
     }
 
-    override fun imageLoaded(event: ImageEvent) {
-        // Implementation of ImageListener. Invoked in a request thread most likely.
-        val imageResponseLocal = event.imageResponse
-        // ImageIcon imageIcon = new ImageIcon(image);
-        // this.button.setIcon(imageIcon);
-        this.imageResponse = imageResponseLocal
-        if (imageResponseLocal.isDecoded) {
-            checkNotNull(imageResponseLocal.img)
-            val image = imageResponseLocal.img
-            val width = image.getWidth(this)
-            val height = image.getHeight(this)
-            this.imageUpdate(image, width, height)
-        }
-    }
-
-    override fun imageAborted() {
-        // do nothing
-    }
-
-    override var name: String?
-        get() = TODO("Not yet implemented")
-        set(value) {}
     override var value: String?
         get() = TODO("Not yet implemented")
         set(value) {}
+
 
     override fun resetInput() {
         // NOP
     }
 
     fun isReadyToPaint(): Boolean {
-        return imageResponse!!.isReadyToPaint
-    } // private static class LocalButton extends JButton {
-    // public void revalidate() {
-    // // ignore
-    // }
-    //
-    // public void repaint() {
-    // // ignore
-    // }
-    // }
+        return true
+    }
 
 
 }

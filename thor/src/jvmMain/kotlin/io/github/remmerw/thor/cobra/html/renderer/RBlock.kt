@@ -890,7 +890,7 @@ open class RBlock(
         if (paddingInsets == null) {
             paddingInsets = RBlockViewport.Companion.ZERO_INSETS
         }
-        var borderInsets: Insets? = this.borderInsets
+        var borderInsets: Insets? = this.getBorderInsets()
         if (borderInsets == null) {
             borderInsets = RBlockViewport.Companion.ZERO_INSETS
         }

@@ -26,13 +26,12 @@ package io.github.remmerw.thor.cobra.html.domimpl
 import io.github.remmerw.thor.cobra.html.FormInput
 import io.github.remmerw.thor.cobra.html.js.Event
 import io.github.remmerw.thor.cobra.html.js.NotGetterSetter
-import io.github.remmerw.thor.cobra.ua.ImageResponse
 import org.mozilla.javascript.Function
 import org.w3c.dom.html.HTMLFormElement
 import java.io.File
 
 abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) {
-    private val imageListeners = ArrayList<ImageListener>()
+
     private var inputContext: InputContext? = null
     protected var deferredValue: String? = null
     protected var deferredChecked: Boolean? = null
@@ -40,7 +39,7 @@ abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) 
     protected var deferredDisabled: Boolean? = null
     var onload: Function? = null
         get() = this.getEventFunction(field, "onload")
-    private var imageResponse: ImageResponse? = null
+
     private var imageSrc: String? = null
 
 
@@ -296,40 +295,12 @@ abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) 
     private fun loadImage(src: String?) {
         val document = this.document as HTMLDocumentImpl?
         if (document != null) {
-            synchronized(this.imageListeners) {
-                this.imageSrc = src
-                this.imageResponse = null
-            }
+            
             if (src != null) {
                 //document.loadImage(src, HTMLBaseInputElement.LocalImageListener(src))
             }
         }
     }
-
-
-    fun addImageListener(listener: ImageListener) {
-        val l = this.imageListeners
-        val currentImageResponse: ImageResponse?
-        synchronized(l) {
-            currentImageResponse = this.imageResponse
-            l.add(listener)
-        }
-        if (currentImageResponse!!.state != ImageResponse.State.loading) {
-            // Call listener right away if there's already an
-            // image; holding no locks.
-            listener.imageLoaded(ImageEvent(this, currentImageResponse))
-            // Should not call onload handler here. That's taken
-            // care of otherwise.
-        }
-    }
-
-    fun removeImageListener(listener: ImageListener) {
-        val l = this.imageListeners
-        synchronized(l) {
-            l.remove(listener)
-        }
-    }
-
     open fun resetInput() {
         val ic = this.inputContext
         if (ic != null) {
@@ -337,33 +308,6 @@ abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) 
         }
     }
 
-    private fun dispatchEvent(expectedImgSrc: String, event: ImageEvent) {
-        val l = this.imageListeners
-        val listenerArray: Array<ImageListener?>?
-        synchronized(l) {
-            if (expectedImgSrc != this.imageSrc) {
-                return
-            }
-            this.imageResponse = event.imageResponse
-            // Get array of listeners while holding lock.
-            listenerArray = l.toArray<ImageListener?>(ImageListener.Companion.EMPTY_ARRAY)
-        }
-        val llength = listenerArray!!.size
-        for (i in 0..<llength) {
-            // Inform listener, holding no lock.
-            listenerArray[i]!!.imageLoaded(event)
-        }
-
-        // TODO: With this change, setOnLoad method should add a listener with dispatch mechanism. Best implemented in a parent class.
-        dispatchEvent(Event("load", this))
-
-        /*
-    final Function onload = this.getOnload();
-    if (onload != null) {
-      // TODO: onload event object?
-      Executor.executeFunction(HTMLBaseInputElement.this, onload, null);
-    }*/
-    }
 
     @NotGetterSetter
     fun setCustomValidity(message: String?) {
@@ -371,13 +315,4 @@ abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) 
         println("TODO: HTMLBaseInputElement.setCustomValidity() " + message)
     }
 
-    inner class LocalImageListener(private val expectedImgSrc: String) : ImageListener {
-        override fun imageLoaded(event: ImageEvent) {
-            dispatchEvent(this.expectedImgSrc, event)
-        }
-
-        override fun imageAborted() {
-            // Do nothing
-        }
-    }
 }

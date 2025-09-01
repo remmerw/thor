@@ -26,36 +26,33 @@ abstract class RAbstractCell(
         cellSpacingY: Int
     )
 
-    abstract val widthText: String?
+    abstract fun getWidthText(): String?
 
-    abstract val heightText: String?
+    abstract fun getHeightText(): String?
 
-    abstract var rowSpan: Int
+    abstract fun getRowSpan(): Int
 
-    abstract val colSpan: Int
+    abstract fun getColSpan(): Int
 
     abstract fun doCellLayout(
         width: Int, height: Int, expandWidth: Boolean, expandHeight: Boolean,
         sizeOnly: Boolean
     ): Dimension?
 
-    abstract val renderState: RenderState
+    abstract fun getRenderState(): RenderState
 
-    val virtualColumn: Int
-        /**
-         * @return Returns the virtualColumn.
-         */
-        get() {
+    fun virtualColumn(): Int
+        {
             val vc = this.topLeftVirtualCell
             return if (vc == null) 0 else vc.column
         }
 
-    val virtualRow: Int
-        /**
-         * @return Returns the virtualRow.
-         */
-        get() {
+    fun virtualRow(): Int {
             val vc = this.topLeftVirtualCell
             return if (vc == null) 0 else vc.row
         }
+
+    abstract fun setColSpan(cs: Int)
+    abstract fun setRowSpan(cs: Int)
+
 }

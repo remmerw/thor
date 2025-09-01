@@ -10,7 +10,7 @@ import org.w3c.dom.events.EventListener
 import java.util.IdentityHashMap
 import java.util.LinkedList
 
-class EventTargetManager(private val window: Window) {
+class EventTargetManager() {
     private val nodeOnEventListeners: MutableMap<NodeImpl?, MutableMap<String?, MutableList<EventListener?>?>?> =
         IdentityHashMap<NodeImpl?, MutableMap<String?, MutableList<EventListener?>?>?>()
 

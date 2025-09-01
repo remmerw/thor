@@ -45,9 +45,7 @@ class InputFileControl(modelNode: HTMLBaseInputElement?) : BaseInputControl(mode
                 this.textField.setText(file.absolutePath)
             }
         }
-    override var name: String?
-        get() = TODO("Not yet implemented")
-        set(value) {}
+
 
     init {
         this.layout = BoxLayout(this, BoxLayout.X_AXIS)

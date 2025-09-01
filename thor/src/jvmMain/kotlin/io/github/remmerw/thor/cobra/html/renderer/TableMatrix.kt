@@ -37,8 +37,6 @@ import java.awt.Color
 import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.Insets
-import java.awt.Point
-import java.awt.Rectangle
 import java.awt.event.MouseEvent
 import kotlin.math.max
 
@@ -354,11 +352,11 @@ class TableMatrix(
                     val vc = row.get(c)
                     if ((vc != null) && vc.isTopLeft) {
                         val ac = vc.actualCell
-                        var colspan = ac.colSpan
+                        var colspan = ac.getColSpan()
                         if (colspan < 1) {
                             colspan = 1
                         }
-                        var rowspan = ac.rowSpan
+                        var rowspan = ac.getRowSpan()
                         if (rowspan < 1) {
                             rowspan = 1
                         }
@@ -367,7 +365,7 @@ class TableMatrix(
                         val targetRows = r + rowspan
                         if (numRows < targetRows) {
                             rowspan = numRows - r
-                            ac.rowSpan = (rowspan)
+                            ac.setRowSpan(rowspan)
                         }
 
                         numRows = rows.size
@@ -477,7 +475,7 @@ class TableMatrix(
                 }
                 if (vc != null) {
                     val ac = vc.actualCell
-                    if (ac.colSpan == 1) {
+                    if (ac.getColSpan() == 1) {
                         val vcWidthLength = vc.widthLength
                         if ((vcWidthLength != null) && vcWidthLength.isPreferredOver(bestWidthLength)) {
                             bestWidthLength = vcWidthLength
@@ -497,7 +495,7 @@ class TableMatrix(
                     }
                     if (vc != null) {
                         val ac = vc.actualCell
-                        if (ac.colSpan > 1) {
+                        if (ac.getColSpan() > 1) {
                             val vcWidthLength = vc.widthLength
                             if ((vcWidthLength != null) && vcWidthLength.isPreferredOver(
                                     bestWidthLength
@@ -603,12 +601,12 @@ class TableMatrix(
             }
             val ac = if (vc == null) null else vc.actualCell
             if (ac != null) {
-                if (ac.virtualRow == rowIndx) {
+                if (ac.virtualRow() == rowIndx) {
                     // Only process actual cells with a row
                     // beginning at the current row being processed.
-                    val colSpan = ac.colSpan
+                    val colSpan = ac.getColSpan()
                     if (colSpan > 1) {
-                        val firstCol = ac.virtualColumn
+                        val firstCol = ac.virtualColumn()
                         val cellExtras = (colSpan - 1) * (cellSpacingX + (2 * hasBorder))
                         var vcActualWidth = cellExtras
                         for (x in 0..<colSpan) {
@@ -629,7 +627,7 @@ class TableMatrix(
                         if (newTentativeCellWidth > colSize.layoutSize) {
                             colSize.layoutSize = newTentativeCellWidth
                         }
-                        val rowSpan = ac.rowSpan
+                        val rowSpan = ac.getRowSpan()
                         val vch =
                             (size.height - ((rowSpan - 1) * (this.cellSpacingY + (2 * hasBorder)))) / rowSpan
                         for (y in 0..<rowSpan) {
@@ -653,7 +651,7 @@ class TableMatrix(
                             colSize.fullLayoutSize = cellFullLayoutWidth
                         }
 
-                        val rowSpan = ac.rowSpan
+                        val rowSpan = ac.getRowSpan()
                         val vch =
                             (size.height - ((rowSpan - 1) * (this.cellSpacingY + (2 * hasBorder)))) / rowSpan
                         for (y in 0..<rowSpan) {
@@ -855,8 +853,8 @@ class TableMatrix(
         }
 
         for (cell in this.ALL_CELLS) {
-            val col = cell.virtualColumn
-            val colSpan = cell.colSpan
+            val col = cell.virtualColumn()
+            val colSpan = cell.getColSpan()
             val cellsTotalWidth: Int
             var cellsUsedWidth: Int
             var widthDeclared = false
@@ -929,8 +927,8 @@ class TableMatrix(
 
             // Set minimum heights
             val actualCellHeight = size.height
-            val row = cell.virtualRow
-            val rowSpan = cell.rowSpan
+            val row = cell.virtualRow()
+            val rowSpan = cell.getRowSpan()
             if (rowSpan > 1) {
                 val vch =
                     (actualCellHeight - ((rowSpan - 1) * (cellSpacingY + (2 * hasBorder)))) / rowSpan
@@ -1185,8 +1183,8 @@ class TableMatrix(
         val colSizes = this.columnSizes
         val rowSizes = this.rowSizes
         for (cell in this.ALL_CELLS) {
-            val col = cell.virtualColumn
-            val colSpan = cell.colSpan
+            val col = cell.virtualColumn()
+            val colSpan = cell.getColSpan()
             var totalCellWidth: Int
             if (colSpan > 1) {
                 totalCellWidth = (colSpan - 1) * (cellSpacing + (2 * hasBorder))
@@ -1196,8 +1194,8 @@ class TableMatrix(
             } else {
                 totalCellWidth = colSizes[col].actualSize
             }
-            val row = cell.virtualRow
-            val rowSpan = cell.rowSpan
+            val row = cell.virtualRow()
+            val rowSpan = cell.getRowSpan()
             var totalCellHeight: Int
             if (rowSpan > 1) {
                 totalCellHeight = (rowSpan - 1) * (cellSpacing + (2 * hasBorder))
@@ -1695,18 +1693,18 @@ class TableMatrix(
 
         val cellBorderRightMost: Int
             get() = getCSSInsets(
-                this.leftMostCell!!.actualCell.renderState
+                this.leftMostCell!!.actualCell.getRenderState()
             )!!.right
 
         val cellBorderLeftMost: Int
             get() = getCSSInsets(
-                this.leftMostCell!!.actualCell.renderState
+                this.leftMostCell!!.actualCell.getRenderState()
             )!!.left
 
         fun add(cell: VirtualCell?) {
             if (cell != null) {
                 val ac = cell.actualCell
-                val rs = ac.renderState
+                val rs = ac.getRenderState()
                 val binfo = rs.getBorderInfo()
                 if (binfo != null) {
                     val bi = binfo.insets

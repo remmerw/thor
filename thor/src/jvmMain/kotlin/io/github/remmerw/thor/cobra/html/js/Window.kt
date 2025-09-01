@@ -1,26 +1,4 @@
-/*
-    GNU LESSER GENERAL PUBLIC LICENSE
-    Copyright (C) 2006 The Lobo Project
 
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-    Contact info: lobochief@users.sourceforge.net
- */
-/*
- * Created on Nov 12, 2005
- */
 package io.github.remmerw.thor.cobra.html.js
 
 import io.github.remmerw.thor.cobra.html.HtmlRendererContext
@@ -84,10 +62,10 @@ class Window // TODO: Probably need to create a new Window instance
 // for every document. Sharing of Window state between
 // different documents is not correct.
     (val htmlRendererContext: HtmlRendererContext?, val userAgentContext: UserAgentContext) :
-    ScriptableDelegate, AbstractView, EventTarget {
+    ScriptableDelegate, AbstractView {
     private val windowContextFactory = MyContextFactory()
-    val eventTargetManager: EventTargetManager = EventTargetManager(this)
-    var scriptable: Scriptable? = null
+    val eventTargetManager: EventTargetManager = EventTargetManager()
+    private var scriptable: Scriptable? = null
 
     override fun scriptable(): Scriptable? {
         return scriptable
@@ -134,15 +112,7 @@ class Window // TODO: Probably need to create a new Window instance
         private set
     private var taskMap: MutableMap<Int?, TaskWrapper?>? = null
 
-    // private Timer getTask(Long timeoutID) {
-    // synchronized(this) {
-    // Map taskMap = this.taskMap;
-    // if(taskMap != null) {
-    // return (Timer) taskMap.get(timeoutID);
-    // }
-    // }
-    // return null;
-    // }
+
     @Volatile
     var documentNode: Document? = null
         private set
@@ -897,27 +867,6 @@ class Window // TODO: Probably need to create a new Window instance
         }
     }
 
-    /*
-    var onload: Function?
-        get() {
-            val doc = this.documentNode
-            if (doc is HTMLDocumentImpl) {
-                return doc.onloadHandler
-            } else {
-                return null
-            }
-        }
-        set(onload) {
-            // Note that body.onload overrides
-            // window.onload.
-            /*
-            final Document doc = this.document;
-            if (doc instanceof HTMLDocumentImpl) {
-              ((HTMLDocumentImpl) doc).setWindowOnloadHandler(onload);
-            }*/
-            onWindowLoadHandler = onload
-        }*/
-
     fun namedItem(name: String?): Node? {
         // Bug 1928758: Element IDs are named objects in context.
         val doc = this.documentNode
@@ -928,25 +877,6 @@ class Window // TODO: Probably need to create a new Window instance
         return node
     }
 
-    @JvmOverloads
-    fun addEventListener(
-        type: String?,
-        listener: org.mozilla.javascript.Function?,
-        useCapture: Boolean = false
-    ) {
-        if (useCapture) {
-            throw UnsupportedOperationException()
-        }
-        /*
-    // TODO: Should this delegate completely to document
-    if ("load".equals(type)) {
-      document.addLoadHandler(listener);
-    } else {
-      document.addEventListener(type, listener);
-    }*/
-        println("window Added listener for: " + type)
-        eventTargetManager.addEventListener(this.documentNode as NodeImpl?, type, listener)
-    }
 
     fun removeEventListener(
         type: String?,
@@ -965,13 +895,6 @@ class Window // TODO: Probably need to create a new Window instance
         )
     }
 
-    @Throws(EventException::class)
-    override fun dispatchEvent(evt: Event): Boolean {
-        // TODO
-        println("TODO: window dispatch event")
-        eventTargetManager.dispatchEvent(this.documentNode as NodeImpl?, evt)
-        return false
-    }
 
 
     fun domContentLoaded(domContentLoadedEvent: Event) {
@@ -1012,34 +935,6 @@ class Window // TODO: Probably need to create a new Window instance
     val node: Class<Node>
         get() = Node::class.java
 
-    fun addEventListener(type: String?, listener: EventListener?) {
-        addEventListener(type, listener, false)
-    }
-
-    override fun addEventListener(type: String?, listener: EventListener?, useCapture: Boolean) {
-        if (useCapture) {
-            throw UnsupportedOperationException()
-        }
-        // TODO Auto-generated method stub
-        // throw new UnsupportedOperationException();
-        eventTargetManager.addEventListener(
-            this.documentNode as NodeImpl?,
-            type,
-            listener,
-            useCapture
-        )
-    }
-
-    override fun removeEventListener(type: String?, listener: EventListener?, useCapture: Boolean) {
-        // TODO Auto-generated method stub
-        throw UnsupportedOperationException()
-    }
-
-    @Throws(EventException::class)
-    override fun dispatchEvent(evt: Event?): Boolean {
-        // TODO Auto-generated method stub
-        throw UnsupportedOperationException()
-    }
 
     private fun shutdown() {
         // TODO: Add the sync below, when/if the scheduleLock is added

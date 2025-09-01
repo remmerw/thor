@@ -30,10 +30,7 @@ import io.github.remmerw.thor.cobra.html.renderer.TableMatrix.ColSizeInfo
 import io.github.remmerw.thor.cobra.html.renderer.TableMatrix.RowSizeInfo
 import io.github.remmerw.thor.cobra.html.style.RenderState
 import io.github.remmerw.thor.cobra.ua.UserAgentContext
-import java.awt.Color
 import java.awt.Dimension
-import java.awt.Point
-import java.awt.Rectangle
 
 internal open class RTableCell(
     element: HTMLElementImpl, pcontext: UserAgentContext?, rcontext: HtmlRendererContext?,
@@ -41,7 +38,7 @@ internal open class RTableCell(
     tableAsContainer: RenderableContainer?
 ) : RAbstractCell(element, 0, pcontext, rcontext, frameContext, tableAsContainer) {
     private val cellElement: HTMLElementImpl
-    override var colSpan = -1
+
     override fun setCellBounds(
         colSizes: List<ColSizeInfo>,
         rowSizes: List<RowSizeInfo>,
@@ -52,17 +49,12 @@ internal open class RTableCell(
         TODO("Not yet implemented")
     }
 
-    override val widthText: String?
-        get() = TODO("Not yet implemented")
-    override val heightText: String?
-        get() = TODO("Not yet implemented")
-    override var rowSpan = -1
-
     /**
      * @param element
      */
     init {
         this.cellElement = element
+        this.setRowSpan(-1)
     }
 
     override fun doCellLayout(
@@ -72,8 +64,7 @@ internal open class RTableCell(
         return this.doCellLayout(width, height, expandWidth, expandHeight, sizeOnly, true)
     }
 
-    override val renderState: RenderState
-        get() = TODO("Not yet implemented")
+
 
     /**
      * @param width    The width available, including insets.
@@ -111,51 +102,45 @@ internal open class RTableCell(
         return null
     }
 
-    fun getColSpan(): Int {
-        var cs = this.colSpan
+    override fun getColSpan(): Int {
+        var cs = this.getColSpan()
         if (cs == -1) {
             cs = getColSpan(this.cellElement)
             if (cs < 1) {
                 cs = 1
             }
-            this.colSpan = cs
+            this.setColSpan(cs)
         }
         return cs
     }
 
-    fun getRowSpan(): Int {
-        var rs = this.rowSpan
+    override fun getRowSpan(): Int {
+        var rs = this.getRowSpan()
         if (rs == -1) {
             rs = getRowSpan(this.cellElement)
             if (rs < 1) {
                 rs = 1
             }
-            this.rowSpan = rs
+            this.setRowSpan(rs)
         }
         return rs
     }
 
-    fun setRowSpan(rowSpan: Int) {
-        this.rowSpan = rowSpan
+    override fun setRowSpan(rowSpan: Int) {
+        this.setRowSpan(rowSpan)
     }
 
-    fun getHeightText(): String? {
+    override fun getHeightText(): String? {
         return this.cellElement.getCurrentStyle().height
         // return this.cellElement.getHeight();
     }
 
-    fun getWidthText(): String? {
+    override fun getWidthText(): String? {
         return this.cellElement.getCurrentStyle().width
         // return this.cellElement.getWidth();
     }
 
-    // public Dimension layoutMinWidth() {
-    //
-    // return this.panel.layoutMinWidth();
-    //
-    // }
-    //
-    //
+
     fun setCellBounds(
         colSizes: Array<ColSizeInfo>,
         rowSizes: Array<RowSizeInfo>,
@@ -163,8 +148,8 @@ internal open class RTableCell(
         cellSpacingX: Int,
         cellSpacingY: Int
     ) {
-        val vcol = this.virtualColumn
-        val vrow = this.virtualRow
+        val vcol = this.virtualColumn()
+        val vrow = this.virtualRow()
         val colSize = colSizes[vcol]
         val rowSize = rowSizes[vrow]
         val x = colSize.offsetX + rowSize.offsetX
@@ -204,8 +189,12 @@ internal open class RTableCell(
         return true
     }
 
-    fun getRenderState(): RenderState {
+    override fun getRenderState(): RenderState {
         return cellElement.getRenderState()
+    }
+
+    override fun setColSpan(cs: Int) {
+        TODO("Not yet implemented")
     }
 
 

@@ -47,11 +47,4 @@ internal open class InputTextControl(modelNode: HTMLBaseInputElement?) :
         return JTextField()
     }
 
-    override var name: String?
-        get() = TODO("Not yet implemented")
-        set(value) {}
-
-    companion object {
-        private const val serialVersionUID = 5851737733843879185L
-    }
 }

@@ -30,10 +30,7 @@ import io.github.remmerw.thor.cobra.html.renderer.TableMatrix.ColSizeInfo
 import io.github.remmerw.thor.cobra.html.renderer.TableMatrix.RowSizeInfo
 import io.github.remmerw.thor.cobra.html.style.RenderState
 import io.github.remmerw.thor.cobra.ua.UserAgentContext
-import java.awt.Color
 import java.awt.Dimension
-import java.awt.Point
-import java.awt.Rectangle
 
 internal class RAnonTableCell(
     private val cellNode: NodeImpl, pcontext: UserAgentContext?, rcontext: HtmlRendererContext?,
@@ -50,15 +47,7 @@ internal class RAnonTableCell(
         TODO("Not yet implemented")
     }
 
-    override val widthText: String?
-        get() = TODO("Not yet implemented")
-    override val heightText: String?
-        get() = TODO("Not yet implemented")
-    override var rowSpan: Int
-        get() = TODO("Not yet implemented")
-        set(value) {}
-    override val colSpan: Int
-        get() = TODO("Not yet implemented")
+
 
     override fun doCellLayout(
         width: Int, height: Int, expandWidth: Boolean, expandHeight: Boolean,
@@ -67,8 +56,7 @@ internal class RAnonTableCell(
         return this.doCellLayout(width, height, expandWidth, expandHeight, sizeOnly, true)
     }
 
-    override val renderState: RenderState
-        get() = TODO("Not yet implemented")
+
 
     /**
      * @param width    The width available, including insets.
@@ -111,23 +99,23 @@ internal class RAnonTableCell(
     }
 
 
-    fun getColSpan(): Int {
+    override fun getColSpan(): Int {
         return 1
     }
 
-    fun getRowSpan(): Int {
+    override fun getRowSpan(): Int {
         return 1
     }
 
-    fun setRowSpan(rowSpan: Int) {
+    override fun setRowSpan(rowSpan: Int) {
         throw IllegalStateException()
     }
 
-    fun getHeightText(): String? {
+    override fun getHeightText(): String? {
         return null
     }
 
-    fun getWidthText(): String? {
+    override fun getWidthText(): String? {
         return null
     }
 
@@ -136,8 +124,8 @@ internal class RAnonTableCell(
         cellSpacingX: Int,
         cellSpacingY: Int
     ) {
-        val vcol = this.virtualColumn
-        val vrow = this.virtualRow
+        val vcol = this.virtualColumn()
+        val vrow = this.virtualRow()
         val colSize = colSizes[vcol]
         val rowSize = rowSizes[vrow]
         val x = colSize.offsetX + rowSize.offsetX
@@ -177,11 +165,13 @@ internal class RAnonTableCell(
         return true
     }
 
-    fun getRenderState(): RenderState {
+    override fun getRenderState(): RenderState {
         return cellNode.getRenderState()
     }
 
-
+    override fun setColSpan(cs: Int) {
+        TODO("Not yet implemented")
+    }
 
 
     override fun vAlign(): CSSProperty.VerticalAlign? {
