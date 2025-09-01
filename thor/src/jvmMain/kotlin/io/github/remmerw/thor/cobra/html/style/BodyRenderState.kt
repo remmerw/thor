@@ -20,7 +20,7 @@
  */
 package io.github.remmerw.thor.cobra.html.style
 
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
+import io.github.remmerw.thor.cobra.html.dom.HTMLElementImpl
 import io.github.remmerw.thor.cobra.util.gui.ColorFactory
 
 class BodyRenderState  // Note: BODY behaves like an inline element, but the root

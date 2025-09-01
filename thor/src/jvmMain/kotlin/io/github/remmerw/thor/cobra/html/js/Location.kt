@@ -1,6 +1,6 @@
 package io.github.remmerw.thor.cobra.html.js
 
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLDocumentImpl
+import io.github.remmerw.thor.cobra.html.dom.HTMLDocumentImpl
 import org.mozilla.javascript.Scriptable
 import java.net.MalformedURLException
 import java.net.URL

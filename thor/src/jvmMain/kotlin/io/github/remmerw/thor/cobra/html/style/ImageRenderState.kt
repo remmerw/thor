@@ -20,7 +20,7 @@
  */
 package io.github.remmerw.thor.cobra.html.style
 
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
+import io.github.remmerw.thor.cobra.html.dom.HTMLElementImpl
 import java.awt.Color
 
 class ImageRenderState(prevRenderState: RenderState?, element: HTMLElementImpl) :

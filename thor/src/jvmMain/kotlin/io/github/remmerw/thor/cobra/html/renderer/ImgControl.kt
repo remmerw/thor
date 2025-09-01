@@ -24,18 +24,13 @@
 package io.github.remmerw.thor.cobra.html.renderer
 
 import cz.vutbr.web.css.CSSProperty.VerticalAlign
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLImageElementImpl
-import io.github.remmerw.thor.cobra.html.style.HtmlValues
-import java.awt.Color
-import java.awt.Component
+import io.github.remmerw.thor.cobra.html.dom.HTMLImageElementImpl
 import java.awt.Dimension
 import java.awt.Graphics
-import java.awt.Graphics2D
 import java.awt.Image
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import javax.swing.SwingUtilities
-import kotlin.concurrent.Volatile
 
 
 class ImgControl(modelNode: HTMLImageElementImpl) : BaseControl(modelNode) {

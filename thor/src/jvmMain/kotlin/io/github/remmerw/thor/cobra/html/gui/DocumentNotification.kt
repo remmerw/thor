@@ -1,6 +1,6 @@
 package io.github.remmerw.thor.cobra.html.gui
 
-import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
+import io.github.remmerw.thor.cobra.html.dom.NodeImpl
 
 class DocumentNotification(val type: Int, val node: NodeImpl?) {
     override fun toString(): String {

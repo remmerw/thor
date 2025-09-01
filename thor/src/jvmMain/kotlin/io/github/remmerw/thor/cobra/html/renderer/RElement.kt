@@ -1,7 +1,7 @@
 package io.github.remmerw.thor.cobra.html.renderer
 
 import cz.vutbr.web.css.CSSProperty.VerticalAlign
-import io.github.remmerw.thor.cobra.html.domimpl.UINode
+import io.github.remmerw.thor.cobra.html.dom.UINode
 
 interface RElement : RCollection, UINode {
 

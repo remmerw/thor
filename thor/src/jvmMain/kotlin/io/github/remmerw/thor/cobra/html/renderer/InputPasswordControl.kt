@@ -23,7 +23,7 @@
  */
 package io.github.remmerw.thor.cobra.html.renderer
 
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement
+import io.github.remmerw.thor.cobra.html.dom.HTMLBaseInputElement
 import javax.swing.JPasswordField
 import javax.swing.text.JTextComponent
 

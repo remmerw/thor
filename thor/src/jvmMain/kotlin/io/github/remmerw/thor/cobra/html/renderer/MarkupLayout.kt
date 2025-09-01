@@ -23,7 +23,7 @@
  */
 package io.github.remmerw.thor.cobra.html.renderer
 
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
+import io.github.remmerw.thor.cobra.html.dom.HTMLElementImpl
 
 internal interface MarkupLayout {
     fun layoutMarkup(bodyLayout: RBlockViewport, markupElement: HTMLElementImpl)

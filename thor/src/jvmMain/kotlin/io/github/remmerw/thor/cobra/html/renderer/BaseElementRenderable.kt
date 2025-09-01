@@ -19,15 +19,14 @@
  */
 package io.github.remmerw.thor.cobra.html.renderer
 
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLDocumentImpl
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
+import io.github.remmerw.thor.cobra.html.dom.HTMLDocumentImpl
+import io.github.remmerw.thor.cobra.html.dom.HTMLElementImpl
+import io.github.remmerw.thor.cobra.html.dom.ModelNode
 import io.github.remmerw.thor.cobra.html.style.BackgroundInfo
 import io.github.remmerw.thor.cobra.html.style.BorderInfo
 import io.github.remmerw.thor.cobra.html.style.HtmlInsets
 import io.github.remmerw.thor.cobra.html.style.HtmlValues
 import io.github.remmerw.thor.cobra.html.style.RenderState
-import io.github.remmerw.thor.cobra.ua.NetworkRequest
 import io.github.remmerw.thor.cobra.ua.NetworkRequestEvent
 import io.github.remmerw.thor.cobra.ua.UserAgentContext
 import io.github.remmerw.thor.cobra.ua.UserAgentContext.RequestKind

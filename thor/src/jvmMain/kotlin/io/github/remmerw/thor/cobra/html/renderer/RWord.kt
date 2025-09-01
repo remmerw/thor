@@ -23,7 +23,7 @@
  */
 package io.github.remmerw.thor.cobra.html.renderer
 
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
+import io.github.remmerw.thor.cobra.html.dom.ModelNode
 import io.github.remmerw.thor.cobra.html.style.RenderState
 import java.awt.FontMetrics
 import java.awt.Graphics

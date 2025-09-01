@@ -21,8 +21,8 @@
 package io.github.remmerw.thor.cobra.html.renderer
 
 import io.github.remmerw.thor.cobra.html.HtmlRendererContext
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
-import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
+import io.github.remmerw.thor.cobra.html.dom.HTMLElementImpl
+import io.github.remmerw.thor.cobra.html.dom.NodeImpl
 import io.github.remmerw.thor.cobra.html.style.ListStyle
 import io.github.remmerw.thor.cobra.html.style.RenderState
 import io.github.remmerw.thor.cobra.ua.UserAgentContext

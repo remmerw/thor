@@ -1,8 +1,8 @@
 package io.github.remmerw.thor.cobra.html.style
 
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLTableCellElementImpl
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLTableRowElementImpl
+import io.github.remmerw.thor.cobra.html.dom.HTMLElementImpl
+import io.github.remmerw.thor.cobra.html.dom.HTMLTableCellElementImpl
+import io.github.remmerw.thor.cobra.html.dom.HTMLTableRowElementImpl
 import io.github.remmerw.thor.cobra.util.gui.ColorFactory
 import org.w3c.dom.css.CSS2Properties
 import org.w3c.dom.html.HTMLElement

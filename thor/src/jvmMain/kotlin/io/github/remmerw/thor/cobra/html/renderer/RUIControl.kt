@@ -24,17 +24,14 @@
 package io.github.remmerw.thor.cobra.html.renderer
 
 import cz.vutbr.web.css.CSSProperty.VerticalAlign
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
-import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
-import io.github.remmerw.thor.cobra.html.domimpl.UINode
+import io.github.remmerw.thor.cobra.html.dom.ModelNode
+import io.github.remmerw.thor.cobra.html.dom.NodeImpl
+import io.github.remmerw.thor.cobra.html.dom.UINode
 import io.github.remmerw.thor.cobra.html.style.RenderState
 import io.github.remmerw.thor.cobra.ua.UserAgentContext
 import java.awt.Color
-import java.awt.Dimension
 import java.awt.Font
 import java.awt.Graphics
-import java.awt.Point
-import java.awt.Rectangle
 import java.awt.event.MouseEvent
 
 /**

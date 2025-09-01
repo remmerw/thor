@@ -22,11 +22,11 @@ package io.github.remmerw.thor.cobra.html.renderer
 
 import cz.vutbr.web.css.CSSProperty
 import io.github.remmerw.thor.cobra.html.HtmlRendererContext
-import io.github.remmerw.thor.cobra.html.domimpl.AnonymousNodeImpl
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
-import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
-import io.github.remmerw.thor.cobra.html.domimpl.TextImpl
+import io.github.remmerw.thor.cobra.html.dom.AnonymousNodeImpl
+import io.github.remmerw.thor.cobra.html.dom.HTMLElementImpl
+import io.github.remmerw.thor.cobra.html.dom.ModelNode
+import io.github.remmerw.thor.cobra.html.dom.NodeImpl
+import io.github.remmerw.thor.cobra.html.dom.TextImpl
 import io.github.remmerw.thor.cobra.html.style.HtmlInsets
 import io.github.remmerw.thor.cobra.html.style.HtmlLength
 import io.github.remmerw.thor.cobra.html.style.HtmlValues

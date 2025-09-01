@@ -23,11 +23,8 @@
  */
 package io.github.remmerw.thor.cobra.html.renderer
 
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement
+import io.github.remmerw.thor.cobra.html.dom.HTMLBaseInputElement
 import io.github.remmerw.thor.cobra.util.gui.WrapperLayout
-import java.awt.Color
-import java.awt.Component
-import java.awt.Dimension
 import javax.swing.ButtonGroup
 import javax.swing.JRadioButton
 

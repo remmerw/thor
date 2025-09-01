@@ -24,15 +24,15 @@ package io.github.remmerw.thor.cobra.html.renderer
 
 import io.github.remmerw.thor.cobra.html.HtmlObject
 import io.github.remmerw.thor.cobra.html.HtmlRendererContext
-import io.github.remmerw.thor.cobra.html.domimpl.DocumentFragmentImpl
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLCanvasElementImpl
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLIFrameElementImpl
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLImageElementImpl
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLTableElementImpl
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
-import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
+import io.github.remmerw.thor.cobra.html.dom.DocumentFragmentImpl
+import io.github.remmerw.thor.cobra.html.dom.HTMLBaseInputElement
+import io.github.remmerw.thor.cobra.html.dom.HTMLCanvasElementImpl
+import io.github.remmerw.thor.cobra.html.dom.HTMLElementImpl
+import io.github.remmerw.thor.cobra.html.dom.HTMLIFrameElementImpl
+import io.github.remmerw.thor.cobra.html.dom.HTMLImageElementImpl
+import io.github.remmerw.thor.cobra.html.dom.HTMLTableElementImpl
+import io.github.remmerw.thor.cobra.html.dom.ModelNode
+import io.github.remmerw.thor.cobra.html.dom.NodeImpl
 import io.github.remmerw.thor.cobra.html.style.HtmlInsets
 import io.github.remmerw.thor.cobra.html.style.JStyleProperties
 import io.github.remmerw.thor.cobra.html.style.RenderState
@@ -42,9 +42,7 @@ import io.github.remmerw.thor.cobra.util.CollectionUtilities
 import org.w3c.dom.Node
 import org.w3c.dom.html.HTMLDocument
 import org.w3c.dom.html.HTMLHtmlElement
-import java.awt.Color
 import java.awt.Component
-import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.Insets
 import java.awt.Point

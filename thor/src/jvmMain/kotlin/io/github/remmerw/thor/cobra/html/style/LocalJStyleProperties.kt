@@ -3,7 +3,7 @@ package io.github.remmerw.thor.cobra.html.style
 import cz.vutbr.web.css.NodeData
 import cz.vutbr.web.css.StyleSheet
 import cz.vutbr.web.domassign.DirectAnalyzer
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
+import io.github.remmerw.thor.cobra.html.dom.HTMLElementImpl
 import org.w3c.dom.DOMException
 import org.w3c.dom.Element
 import java.util.Locale

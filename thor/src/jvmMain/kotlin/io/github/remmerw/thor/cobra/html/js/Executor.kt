@@ -20,10 +20,8 @@
  */
 package io.github.remmerw.thor.cobra.html.js
 
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLDocumentImpl
-import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
+import io.github.remmerw.thor.cobra.html.dom.NodeImpl
 import io.github.remmerw.thor.cobra.ua.UserAgentContext
-import io.github.remmerw.thor.cobra.ua.UserAgentContext.RequestKind
 import org.mozilla.javascript.Context
 import org.mozilla.javascript.ContextFactory
 import org.mozilla.javascript.Function

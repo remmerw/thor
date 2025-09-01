@@ -1,12 +1,9 @@
 package io.github.remmerw.thor.cobra.html.renderer
 
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLSelectElementImpl
+import io.github.remmerw.thor.cobra.html.dom.HTMLBaseInputElement
+import io.github.remmerw.thor.cobra.html.dom.HTMLSelectElementImpl
 import io.github.remmerw.thor.cobra.util.gui.WrapperLayout
 import org.w3c.dom.html.HTMLOptionElement
-import java.awt.Color
-import java.awt.Component
-import java.awt.Dimension
 import java.awt.event.ItemEvent
 import java.awt.event.ItemListener
 import java.util.LinkedList

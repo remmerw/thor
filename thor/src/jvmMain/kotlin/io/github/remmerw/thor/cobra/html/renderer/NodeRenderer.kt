@@ -23,7 +23,7 @@
  */
 package io.github.remmerw.thor.cobra.html.renderer
 
-import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
+import io.github.remmerw.thor.cobra.html.dom.NodeImpl
 
 interface NodeRenderer {
     fun setRootNode(node: NodeImpl?)

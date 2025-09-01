@@ -20,9 +20,7 @@
  */
 package io.github.remmerw.thor.cobra.html.renderer
 
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement
-import java.awt.Color
-import java.awt.Component
+import io.github.remmerw.thor.cobra.html.dom.HTMLBaseInputElement
 import java.awt.Dimension
 import java.awt.event.ActionEvent
 import java.io.File

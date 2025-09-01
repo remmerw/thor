@@ -20,13 +20,8 @@
  */
 package io.github.remmerw.thor.cobra.html.style
 
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLDocumentImpl
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
-import java.awt.Color
-import java.awt.Cursor
-import java.awt.Font
-import java.awt.FontMetrics
-import java.util.Optional
+import io.github.remmerw.thor.cobra.html.dom.HTMLDocumentImpl
+import io.github.remmerw.thor.cobra.html.dom.HTMLElementImpl
 
 /**
  * Render state for elements that are displayed as blocks by default.

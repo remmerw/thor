@@ -23,8 +23,8 @@
  */
 package io.github.remmerw.thor.cobra.html.renderer
 
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
+import io.github.remmerw.thor.cobra.html.dom.HTMLBaseInputElement
+import io.github.remmerw.thor.cobra.html.dom.HTMLElementImpl
 import io.github.remmerw.thor.cobra.util.gui.WrapperLayout
 import java.awt.Dimension
 import javax.swing.text.AttributeSet

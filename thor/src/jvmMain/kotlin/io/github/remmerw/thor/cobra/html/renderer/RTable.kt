@@ -25,17 +25,14 @@ package io.github.remmerw.thor.cobra.html.renderer
 
 import cz.vutbr.web.css.CSSProperty
 import io.github.remmerw.thor.cobra.html.HtmlRendererContext
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
+import io.github.remmerw.thor.cobra.html.dom.HTMLElementImpl
+import io.github.remmerw.thor.cobra.html.dom.ModelNode
 import io.github.remmerw.thor.cobra.html.style.RenderState
 import io.github.remmerw.thor.cobra.html.style.RenderThreadState
 import io.github.remmerw.thor.cobra.ua.UserAgentContext
 import java.awt.Color
-import java.awt.Dimension
 import java.awt.Font
 import java.awt.Graphics
-import java.awt.Point
-import java.awt.Rectangle
 import java.awt.event.MouseEvent
 import java.util.Collections
 import java.util.LinkedList

@@ -1,6 +1,6 @@
 package io.github.remmerw.thor.cobra.html.renderer
 
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
+import io.github.remmerw.thor.cobra.html.dom.ModelNode
 import io.github.remmerw.thor.cobra.util.CollectionUtilities
 import io.github.remmerw.thor.cobra.util.Threads
 import java.awt.Dimension

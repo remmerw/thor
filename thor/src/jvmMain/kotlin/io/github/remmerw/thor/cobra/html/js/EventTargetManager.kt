@@ -1,6 +1,6 @@
 package io.github.remmerw.thor.cobra.html.js
 
-import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
+import io.github.remmerw.thor.cobra.html.dom.NodeImpl
 import org.mozilla.javascript.Function
 import org.w3c.dom.Document
 import org.w3c.dom.Element

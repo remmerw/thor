@@ -23,9 +23,7 @@
  */
 package io.github.remmerw.thor.cobra.html.renderer
 
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
-import java.awt.Color
-import java.awt.Component
+import io.github.remmerw.thor.cobra.html.dom.HTMLElementImpl
 import java.awt.Dimension
 import java.awt.Graphics
 

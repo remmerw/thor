@@ -24,7 +24,7 @@
 package io.github.remmerw.thor.cobra.html.renderer
 
 import cz.vutbr.web.css.CSSProperty.VerticalAlign
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
+import io.github.remmerw.thor.cobra.html.dom.ModelNode
 import io.github.remmerw.thor.cobra.html.style.RenderState
 import java.awt.Color
 import java.awt.Graphics

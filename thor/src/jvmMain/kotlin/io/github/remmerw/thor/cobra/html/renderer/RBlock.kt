@@ -25,8 +25,8 @@ package io.github.remmerw.thor.cobra.html.renderer
 
 import cz.vutbr.web.css.CSSProperty
 import io.github.remmerw.thor.cobra.html.HtmlRendererContext
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
-import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
+import io.github.remmerw.thor.cobra.html.dom.ModelNode
+import io.github.remmerw.thor.cobra.html.dom.NodeImpl
 import io.github.remmerw.thor.cobra.html.style.BlockRenderState
 import io.github.remmerw.thor.cobra.html.style.RenderState
 import io.github.remmerw.thor.cobra.html.style.RenderThreadState
@@ -35,7 +35,6 @@ import io.github.remmerw.thor.cobra.util.CollectionUtilities
 import org.w3c.dom.html.HTMLHtmlElement
 import java.awt.Adjustable
 import java.awt.Color
-import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.Insets
 import java.awt.Point

@@ -25,7 +25,7 @@ package io.github.remmerw.thor.cobra.html.renderer
 
 import cz.vutbr.web.css.CSSProperty
 import io.github.remmerw.thor.cobra.html.HtmlRendererContext
-import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
+import io.github.remmerw.thor.cobra.html.dom.NodeImpl
 import io.github.remmerw.thor.cobra.html.renderer.TableMatrix.ColSizeInfo
 import io.github.remmerw.thor.cobra.html.renderer.TableMatrix.RowSizeInfo
 import io.github.remmerw.thor.cobra.html.style.RenderState

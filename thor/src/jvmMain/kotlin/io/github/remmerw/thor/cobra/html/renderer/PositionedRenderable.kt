@@ -20,7 +20,7 @@
  */
 package io.github.remmerw.thor.cobra.html.renderer
 
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
+import io.github.remmerw.thor.cobra.html.dom.ModelNode
 import io.github.remmerw.thor.cobra.html.style.RenderState
 import org.w3c.dom.html.HTMLDocument
 import org.w3c.dom.html.HTMLHtmlElement

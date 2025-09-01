@@ -1,7 +1,7 @@
 package io.github.remmerw.thor.cobra.html.style
 
 import cz.vutbr.web.css.StyleSheet
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
+import io.github.remmerw.thor.cobra.html.dom.HTMLElementImpl
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.w3c.dom.Node

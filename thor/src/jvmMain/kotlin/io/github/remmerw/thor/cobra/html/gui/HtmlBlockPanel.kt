@@ -24,11 +24,11 @@
 package io.github.remmerw.thor.cobra.html.gui
 
 import io.github.remmerw.thor.cobra.html.HtmlRendererContext
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLDocumentImpl
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
-import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
-import io.github.remmerw.thor.cobra.html.domimpl.UINode
+import io.github.remmerw.thor.cobra.html.dom.HTMLDocumentImpl
+import io.github.remmerw.thor.cobra.html.dom.HTMLElementImpl
+import io.github.remmerw.thor.cobra.html.dom.ModelNode
+import io.github.remmerw.thor.cobra.html.dom.NodeImpl
+import io.github.remmerw.thor.cobra.html.dom.UINode
 import io.github.remmerw.thor.cobra.html.renderer.BoundableRenderable
 import io.github.remmerw.thor.cobra.html.renderer.DelayedPair
 import io.github.remmerw.thor.cobra.html.renderer.FrameContext

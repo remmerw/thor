@@ -1,12 +1,11 @@
 package io.github.remmerw.thor.cobra.html.gui
 
 import io.github.remmerw.thor.cobra.html.HtmlRendererContext
-import io.github.remmerw.thor.cobra.html.domimpl.DocumentNotificationListener
-import io.github.remmerw.thor.cobra.html.domimpl.ElementImpl
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLDocumentImpl
-import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
-import io.github.remmerw.thor.cobra.html.parser.DocumentBuilderImpl
-import io.github.remmerw.thor.cobra.html.parser.InputSourceImpl
+import io.github.remmerw.thor.cobra.html.dom.DocumentNotificationListener
+import io.github.remmerw.thor.cobra.html.dom.ElementImpl
+import io.github.remmerw.thor.cobra.html.dom.HTMLDocumentImpl
+import io.github.remmerw.thor.cobra.html.dom.NodeImpl
+import io.github.remmerw.thor.cobra.html.parser.DocumentModelBuilder
 import io.github.remmerw.thor.cobra.html.renderer.BoundableRenderable
 import io.github.remmerw.thor.cobra.html.renderer.FrameContext
 import io.github.remmerw.thor.cobra.html.renderer.NodeRenderer
@@ -20,14 +19,11 @@ import org.w3c.dom.Document
 import org.w3c.dom.Node
 import org.w3c.dom.Text
 import org.w3c.dom.html.HTMLFrameSetElement
-import org.xml.sax.SAXException
 import java.awt.Color
 import java.awt.Cursor
 import java.awt.Rectangle
 import java.awt.event.ActionEvent
 import java.awt.event.ActionListener
-import java.io.IOException
-import java.io.StringReader
 import java.util.EventListener
 import java.util.EventObject
 import java.util.concurrent.Future
@@ -311,11 +307,11 @@ class HtmlPanel : JComponent(), FrameContext, DefferedLayoutSupport {
      * in the GUI dispatch thread for this reason.
      *
      * @param node     This should normally be a Document instance obtained with
-     * [DocumentBuilderImpl].
+     * [DocumentModelBuilder].
      *
      *
      * @param rcontext A renderer context.
-     * @see DocumentBuilderImpl.parse
+     * @see DocumentModelBuilder.parse
      * @see org.cobraparser.html.test.SimpleHtmlRendererContext
      */
     fun setDocument(node: Document?, rcontext: HtmlRendererContext) {

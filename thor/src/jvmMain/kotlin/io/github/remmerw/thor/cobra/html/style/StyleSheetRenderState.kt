@@ -24,8 +24,8 @@
 package io.github.remmerw.thor.cobra.html.style
 
 import cz.vutbr.web.css.CSSProperty.VerticalAlign
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLDocumentImpl
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
+import io.github.remmerw.thor.cobra.html.dom.HTMLDocumentImpl
+import io.github.remmerw.thor.cobra.html.dom.HTMLElementImpl
 import io.github.remmerw.thor.cobra.html.renderer.LineBreak
 import io.github.remmerw.thor.cobra.util.gui.ColorFactory
 import io.github.remmerw.thor.cobra.util.gui.FontFactory

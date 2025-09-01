@@ -24,9 +24,9 @@
 package io.github.remmerw.thor.cobra.html.gui
 
 import io.github.remmerw.thor.cobra.html.HtmlRendererContext
-import io.github.remmerw.thor.cobra.html.domimpl.FrameNode
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
-import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
+import io.github.remmerw.thor.cobra.html.dom.FrameNode
+import io.github.remmerw.thor.cobra.html.dom.HTMLElementImpl
+import io.github.remmerw.thor.cobra.html.dom.NodeImpl
 import io.github.remmerw.thor.cobra.html.renderer.NodeRenderer
 import io.github.remmerw.thor.cobra.html.style.HtmlLength
 import io.github.remmerw.thor.cobra.util.gui.WrapperLayout

@@ -23,8 +23,8 @@
  */
 package io.github.remmerw.thor.cobra.html.parser
 
-import io.github.remmerw.thor.cobra.html.domimpl.DocumentTypeImpl
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLDocumentImpl
+import io.github.remmerw.thor.cobra.html.dom.DocumentTypeImpl
+import io.github.remmerw.thor.cobra.html.dom.HTMLDocumentImpl
 import io.github.remmerw.thor.cobra.html.io.WritableLineReader
 import io.github.remmerw.thor.cobra.ua.UserAgentContext
 import io.github.remmerw.thor.cobra.util.ArrayUtilities
@@ -65,7 +65,7 @@ import kotlin.math.min
 /**
  * The `HtmlParser` class is an HTML DOM parser. This parser provides
  * the functionality for the standard DOM parser implementation
- * [DocumentBuilderImpl]. This parser class
+ * [DocumentModelBuilder]. This parser class
  * may be used directly when a different DOM implementation is preferred.
  */
 class HtmlParser {

@@ -20,8 +20,8 @@
  */
 package io.github.remmerw.thor.cobra.html.style
 
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLTableElementImpl
+import io.github.remmerw.thor.cobra.html.dom.HTMLElementImpl
+import io.github.remmerw.thor.cobra.html.dom.HTMLTableElementImpl
 import io.github.remmerw.thor.cobra.util.gui.ColorFactory
 import java.net.MalformedURLException
 

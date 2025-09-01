@@ -1,8 +1,7 @@
 package io.github.remmerw.thor.cobra
 
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
-import io.github.remmerw.thor.cobra.html.parser.DocumentBuilderImpl
+import io.github.remmerw.thor.cobra.html.dom.HTMLElementImpl
+import io.github.remmerw.thor.cobra.html.parser.DocumentModelBuilder
 import io.github.remmerw.thor.cobra.html.parser.InputSourceImpl
 import io.github.remmerw.thor.cobra.ua.UserAgentContext
 import org.w3c.dom.Element
@@ -96,7 +95,7 @@ class Render(var url: String) {
             requireNotNull(inputStream)
 
             val context: UserAgentContext = SimpleUserAgentContext()
-            val dbi = DocumentBuilderImpl(context)
+            val dbi = DocumentModelBuilder(context)
             val document = dbi.parse(
                 InputSourceImpl(
                     inputStream, url,

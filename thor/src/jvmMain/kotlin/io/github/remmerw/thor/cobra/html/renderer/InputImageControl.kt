@@ -21,11 +21,10 @@
 package io.github.remmerw.thor.cobra.html.renderer
 
 import cz.vutbr.web.css.CSSProperty.VerticalAlign
-import io.github.remmerw.thor.cobra.html.domimpl.HTMLBaseInputElement
+import io.github.remmerw.thor.cobra.html.dom.HTMLBaseInputElement
 import io.github.remmerw.thor.cobra.html.style.HtmlValues
 import io.github.remmerw.thor.cobra.util.gui.WrapperLayout
 import java.awt.Color
-import java.awt.Component
 import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.Image

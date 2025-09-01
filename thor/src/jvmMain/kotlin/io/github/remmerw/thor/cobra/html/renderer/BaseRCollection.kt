@@ -1,6 +1,6 @@
 package io.github.remmerw.thor.cobra.html.renderer
 
-import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
+import io.github.remmerw.thor.cobra.html.dom.ModelNode
 import java.awt.Graphics
 import java.awt.Point
 import java.awt.Rectangle
