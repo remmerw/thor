@@ -131,16 +131,9 @@ class DocumentBuilderImpl : DocumentBuilder {
             logger.warning("parse(): InputSource has no SystemId (URI); document item URLs will not be resolvable.")
         }
         val wis: WritableLineReader?
-        val reader = inputSource.characterStream
-        if (reader != null) {
-            wis = WritableLineReader(reader)
-        } else {
-            val inputStream = inputSource.byteStream
-            if (inputStream != null) {
-                wis = WritableLineReader(InputStreamReader(inputStream, charset))
-            } else require(uri == null) { "The input source didn't have a character stream, nor an inputstream!" }
-            throw IllegalArgumentException("The InputSource must have either a reader, an input stream or a URI.")
-        }
+        val inputStream = inputSource.byteStream!!
+        wis = WritableLineReader(InputStreamReader(inputStream, charset))
+
         val document = HTMLDocumentImpl(this.context, this.renderer, 
             wis, uri!!, contentType)
         return document

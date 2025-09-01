@@ -12,8 +12,8 @@ open class HTMLSelectElementImpl(name: String) : HTMLBaseInputElement(name), HTM
 
     private var options: HTMLCollection? = null
     private var deferredSelectedIndex = -1
-    var onchange: Function? = null
-        get() = this.getEventFunction(field, "onchange")
+
+
 
     @Throws(DOMException::class)
     override fun add(element: HTMLElement, before: HTMLElement?) {

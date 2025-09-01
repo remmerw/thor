@@ -23,8 +23,6 @@
  */
 package io.github.remmerw.thor.cobra.html.domimpl
 
-import io.github.remmerw.thor.cobra.js.JavaScript
-import io.github.remmerw.thor.cobra.js.ScriptableDelegate
 import io.github.remmerw.thor.cobra.util.Objects
 import org.mozilla.javascript.Scriptable
 import org.w3c.dom.Element
@@ -32,7 +30,7 @@ import org.w3c.dom.Node
 import org.w3c.dom.NodeList
 
 // TODO: This needs to be live (dynamic) not a static store of nodes.
-class NodeListImpl(collection: MutableCollection<Node>) : ScriptableDelegate, NodeList {
+class NodeListImpl(collection: MutableCollection<Node>) :  NodeList {
     // Note: class must be public for reflection to work.
     private val nodeList: ArrayList<Node> = ArrayList<Node>(collection)
 
@@ -42,7 +40,7 @@ class NodeListImpl(collection: MutableCollection<Node>) : ScriptableDelegate, No
 
     var scriptable: Scriptable? = null
 
-    override fun scriptable(): Scriptable? {
+     fun scriptable(): Scriptable? {
         return scriptable
     }
 
@@ -54,15 +52,6 @@ class NodeListImpl(collection: MutableCollection<Node>) : ScriptableDelegate, No
         }
     }
 
-    // TODO: This needs to be handled in a general fashion. GH #123
-    fun hasOwnProperty(obj: Any?): Boolean {
-        if (Objects.isAssignableOrBox(obj, Integer.TYPE)) {
-            val i = JavaScript.instance.getJavaObject(obj, Integer.TYPE) as Int
-            return i < length
-        } else {
-            return false
-        }
-    }
 
     /* Described here: http://www.w3.org/TR/dom/#dom-htmlcollection-nameditem. This actually needs to be in a separate class that implements HTMLCollection */
     fun namedItem(key: String): Node? {

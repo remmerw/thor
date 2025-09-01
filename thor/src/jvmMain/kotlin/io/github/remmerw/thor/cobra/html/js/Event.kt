@@ -20,7 +20,6 @@
  */
 package io.github.remmerw.thor.cobra.html.js
 
-import io.github.remmerw.thor.cobra.js.ScriptableDelegate
 import org.mozilla.javascript.Scriptable
 import org.w3c.dom.Node
 import org.w3c.dom.events.Event
@@ -30,10 +29,10 @@ import java.awt.event.InputEvent
 import java.awt.event.KeyEvent
 import java.awt.event.MouseEvent
 
-class Event : ScriptableDelegate, Event {
+class Event : Event {
     var scriptable: Scriptable? = null
 
-    override fun scriptable(): Scriptable? {
+     fun scriptable(): Scriptable? {
         return scriptable
     }
     private val inputEvent: InputEvent?

@@ -37,12 +37,10 @@ import java.util.Locale
 
 class HTMLFormElementImpl : HTMLAbstractUIElement, HTMLFormElement {
     private var elements: HTMLCollection? = null
-    var onsubmit: Function? = null
-        get() = this.getEventFunction(field, "onsubmit")
+
 
     constructor(name: String) : super(name)
 
-    constructor() : super("FORM")
 
     fun namedItem(name: String): Any? {
         try {
@@ -164,34 +162,6 @@ class HTMLFormElementImpl : HTMLAbstractUIElement, HTMLFormElement {
      * submit button parameter.
      */
     fun submit(extraFormInputs: Array<FormInput>?) {
-        val onsubmit = this.onsubmit
-        if (onsubmit != null) {
-            // TODO: onsubmit event object?
-            // dispatchEvent(new Event("submit", this));
-            val window = (document as HTMLDocumentImpl).window
-            window.addJSTask(
-                JSSupplierTask<Boolean?>(
-                    0,
-                    {
-                        Executor.executeFunction(
-                            this,
-                            onsubmit,
-                            null,
-                            window.contextFactory
-                        )
-                    },
-                    { result: Boolean? ->
-                        if (result == true) {
-                            submitFormImpl(extraFormInputs)
-                        }
-                    })
-            )
-        } else {
-            submitFormImpl(extraFormInputs)
-        }
-    }
-
-    private fun submitFormImpl(extraFormInputs: Array<FormInput>?) {
         val context = this.htmlRendererContext
         if (context != null) {
             val formInputs = ArrayList<FormInput?>()
@@ -224,6 +194,7 @@ class HTMLFormElementImpl : HTMLAbstractUIElement, HTMLFormElement {
             }
         }
     }
+
 
     override fun reset() {
         this.visit(object : NodeVisitor {

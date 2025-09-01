@@ -22,7 +22,6 @@ package io.github.remmerw.thor.cobra.html.js
 
 import io.github.remmerw.thor.cobra.html.domimpl.HTMLDocumentImpl
 import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
-import io.github.remmerw.thor.cobra.js.JavaScript
 import io.github.remmerw.thor.cobra.ua.UserAgentContext
 import io.github.remmerw.thor.cobra.ua.UserAgentContext.RequestKind
 import org.mozilla.javascript.Context
@@ -88,52 +87,7 @@ object Executor {
         element: NodeImpl, thisObject: Any?, f: Function, event: Any?,
         contextFactory: ContextFactory
     ): Boolean {
-        val doc = element.ownerDocument
-        checkNotNull(doc) { "Element does not belong to a document." }
-
-        val uaContext = element.userAgentContext
-        if (uaContext!!.isRequestPermitted(
-                UserAgentContext.Request(
-                    element.getDocumentURL(),
-                    RequestKind.JavaScript
-                )
-            )
-        ) {
-            val ctx = createContext(
-                element.getDocumentURL(),
-                element.userAgentContext!!,
-                contextFactory
-            )
-            // ctx.setGenerateObserverCount(true);
-            try {
-                val scope = (doc as HTMLDocumentImpl).window.getWindowScope()
-                checkNotNull(scope) { "Scriptable (scope) instance is null" }
-                val js = JavaScript.instance
-                val thisScope = js.getJavascriptObject(thisObject, scope) as Scriptable?
-                try {
-                    // final Scriptable eventScriptable = (Scriptable) js.getJavascriptObject(event, thisScope);
-                    val eventScriptable = js.getJavascriptObject(event, thisScope)
-                    scope.put("event", thisScope, eventScriptable)
-                    // ScriptableObject.defineProperty(thisScope, "event",
-                    // eventScriptable,
-                    // ScriptableObject.READONLY);
-                    val result = f.call(ctx, thisScope, thisScope, arrayOf<Any?>(eventScriptable))
-                    if (result !is Boolean) {
-                        return true
-                    }
-                    return result
-                } catch (thrown: Exception) {
-                    logJSException(thrown)
-                    return true
-                }
-            } finally {
-                Context.exit()
-            }
-        } else {
-            // TODO: Should this be true? I am copying the return from the exception clause above.
-            println("Rejected request to execute script")
-            return true
-        }
+      return false
     }
 
     fun logJSException(err: Throwable?) {

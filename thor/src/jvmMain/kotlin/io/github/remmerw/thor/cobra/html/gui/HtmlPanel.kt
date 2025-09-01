@@ -405,30 +405,7 @@ class HtmlPanel : JComponent(), FrameContext, DefferedLayoutSupport {
         }
     }
 
-    /**
-     * Renders HTML given as a string.
-     *
-     * @param htmlSource The HTML source code.
-     * @param uri        A base URI used to resolve item URIs.
-     * @param rcontext   The [HtmlRendererContext] instance.
-     * @see org.cobraparser.html.test.SimpleHtmlRendererContext
-     *
-     * @see .setDocument
-     */
-    fun setHtml(htmlSource: String, uri: String?, rcontext: HtmlRendererContext) {
-        try {
-            val builder = DocumentBuilderImpl(rcontext.userAgentContext(), rcontext)
-            StringReader(htmlSource).use { reader ->
-                val `is` = InputSourceImpl(reader, uri)
-                val document = builder.parse(`is`)
-                this.setDocument(document, rcontext)
-            }
-        } catch (ioe: IOException) {
-            throw IllegalStateException("Unexpected condition.", ioe)
-        } catch (se: SAXException) {
-            throw IllegalStateException("Unexpected condition.", se)
-        }
-    }
+
 
     private fun resetIfFrameSet(): Boolean {
         val nodeImpl = this.rootNode

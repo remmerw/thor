@@ -10,7 +10,6 @@ import io.github.remmerw.thor.cobra.html.js.Event
 import io.github.remmerw.thor.cobra.html.parser.HtmlParser
 import io.github.remmerw.thor.cobra.html.style.RenderState
 import io.github.remmerw.thor.cobra.html.style.StyleSheetRenderState
-import io.github.remmerw.thor.cobra.js.ScriptableDelegate
 import io.github.remmerw.thor.cobra.ua.UserAgentContext
 import io.github.remmerw.thor.cobra.util.Strings
 import io.github.remmerw.thor.cobra.util.Urls
@@ -53,8 +52,7 @@ import kotlin.plus
 import kotlin.run
 import kotlin.synchronized
 
-// TODO: Implement org.w3c.dom.events.EventTarget ?
-abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
+abstract class NodeImpl : Node, ModelNode {
 
     private var scriptable: Scriptable? = null
     private var renderState: RenderState? = null
@@ -73,7 +71,7 @@ abstract class NodeImpl : ScriptableDelegate, Node, ModelNode {
         return parentModelNode
     }
 
-    override fun scriptable(): Scriptable? {
+     fun scriptable(): Scriptable? {
         return scriptable
     }
 

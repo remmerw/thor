@@ -37,8 +37,6 @@ abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) 
     protected var deferredChecked: Boolean? = null
     protected var deferredReadonly: Boolean? = null
     protected var deferredDisabled: Boolean? = null
-    var onload: Function? = null
-        get() = this.getEventFunction(field, "onload")
 
     private var imageSrc: String? = null
 

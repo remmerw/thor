@@ -311,7 +311,7 @@ class HTMLLinkElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLLinkE
                 this.styleSheet = this.emptyStyleSheet
                 doc.styleSheetManager.invalidateStyles()
                 //TODO need to think how to schedule this. refer issue #69
-                doc.addJob(Runnable { this.processLinkHelper(false) }, true)
+
             } else {
                 processLink()
             }

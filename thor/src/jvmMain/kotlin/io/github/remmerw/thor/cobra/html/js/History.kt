@@ -20,13 +20,12 @@
  */
 package io.github.remmerw.thor.cobra.html.js
 
-import io.github.remmerw.thor.cobra.js.ScriptableDelegate
 import org.mozilla.javascript.Scriptable
 
-class History internal constructor(private val window: Window) : ScriptableDelegate {
+class History internal constructor(private val window: Window)  {
     var scriptable: Scriptable? = null
 
-    override fun scriptable(): Scriptable? {
+     fun scriptable(): Scriptable? {
         return scriptable
     }
     val current: String?

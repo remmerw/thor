@@ -1156,13 +1156,13 @@ class HtmlBlockPanel(
             val block = this.rblock
             if (block != null) {
                 val doc = block.modelNode() as HTMLDocumentImpl
-                return (!doc.window.hasPendingTasks()) && block.isReadyToPaint()
+                return  block.isReadyToPaint()
             }
             return false
         }
 
     companion object {
-        private const val serialVersionUID = 7851587340938903001L
+
         private val logger: Logger = Logger.getLogger(HtmlBlockPanel::class.java.name)
         private val loggableInfo: Boolean = logger.isLoggable(Level.INFO)
 

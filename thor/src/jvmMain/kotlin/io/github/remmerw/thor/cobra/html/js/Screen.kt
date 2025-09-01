@@ -1,16 +1,15 @@
 package io.github.remmerw.thor.cobra.html.js
 
-import io.github.remmerw.thor.cobra.js.ScriptableDelegate
 import org.mozilla.javascript.Scriptable
 import java.awt.GraphicsDevice
 import java.awt.GraphicsEnvironment
 
-class Screen internal constructor() : ScriptableDelegate {
+class Screen internal constructor()  {
     private val graphicsEnvironment: GraphicsEnvironment?
     private val graphicsDevice: GraphicsDevice?
     var scriptable: Scriptable? = null
 
-    override fun scriptable(): Scriptable? {
+     fun scriptable(): Scriptable? {
         return scriptable
     }
     /**

@@ -20,15 +20,13 @@
  */
 package io.github.remmerw.thor.cobra.html.js
 
-import io.github.remmerw.thor.cobra.js.ScriptableDelegate
 import io.github.remmerw.thor.cobra.ua.UserAgentContext
 import org.mozilla.javascript.Scriptable
 
-class Navigator internal constructor(private val context: UserAgentContext) :
-    ScriptableDelegate {
+class Navigator internal constructor(private val context: UserAgentContext) {
     var scriptable: Scriptable? = null
 
-    override fun scriptable(): Scriptable? {
+     fun scriptable(): Scriptable? {
         return scriptable
     }
     var mimeTypes: MimeTypesCollection? = null

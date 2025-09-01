@@ -23,8 +23,6 @@
  */
 package io.github.remmerw.thor.cobra.html.domimpl
 
-import io.github.remmerw.thor.cobra.js.JavaScript
-import io.github.remmerw.thor.cobra.js.ScriptableDelegate
 import io.github.remmerw.thor.cobra.util.Nodes
 import io.github.remmerw.thor.cobra.util.Objects
 import org.mozilla.javascript.Scriptable
@@ -37,10 +35,10 @@ open class DescendantHTMLCollection @JvmOverloads constructor(
     private val nodeFilter: NodeFilter?,
     private val treeLock: Any,
     private val nestIntoMatchingNodes: Boolean = true
-) : ScriptableDelegate, HTMLCollection {
+) :HTMLCollection {
     private val scriptable: Scriptable? = null
 
-    override fun scriptable(): Scriptable? {
+    fun scriptable(): Scriptable? {
         return scriptable
     }
 
@@ -120,23 +118,7 @@ open class DescendantHTMLCollection @JvmOverloads constructor(
         return item(0)
     }
 
-    // TODO: This needs to be handled in a general fashion. GH #123
-    fun hasOwnProperty(obj: Any?): Boolean {
-        if (Objects.isAssignableOrBox(obj, Integer.TYPE)) {
-            val i = JavaScript.instance.getJavaObject(obj, Integer.TYPE) as Int
-            return i < length
-        } else if (Objects.isAssignableOrBox(obj, String::class.java)) {
-            // This seems to be related to GH #67
-            val s = JavaScript.instance.getJavaObject(obj, String::class.java) as String
-            try {
-                return s.toInt() < length
-            } catch (nfe: NumberFormatException) {
-                return false
-            }
-        } else {
-            return false
-        }
-    }
+   
 
     override fun namedItem(name: String?): Node? {
         synchronized(this.treeLock) {

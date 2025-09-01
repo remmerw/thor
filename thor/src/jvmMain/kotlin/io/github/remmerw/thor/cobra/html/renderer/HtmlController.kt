@@ -75,15 +75,7 @@ internal class HtmlController {
 
             // System.out.println("Ui element: " + uiElement.getId());
             // uiElement.dispatchEvent(jsEvent);
-            val f = node.onclick
-            /* TODO: This is the original code which would return immediately if f returned false. */
-            if (f != null) {
-                // Changing argument to uiElement instead of event
-                if (!executeFunction(node, f, jsEvent, getWindowFactory(node))) {
-                    // if (!Executor.executeFunction(uiElement, f, uiElement, getWindowFactory(uiElement))) {
-                    return false
-                }
-            }
+
 
             /*
       // Alternate JS Task version:
@@ -179,13 +171,7 @@ internal class HtmlController {
             logger.info("onContextMenu(): node=" + node + ",class=" + node.javaClass.name)
         }
         if (node is HTMLAbstractUIElement) {
-            val f = node.oncontextmenu
-            if (f != null) {
-                val jsEvent = Event("contextmenu", node, event, x, y)
-                if (!executeFunction(node, f, jsEvent, getWindowFactory(node))) {
-                    return false
-                }
-            }
+
             val rcontext = node.htmlRendererContext
             if (rcontext != null) {
                 // Needs to be done after Javascript, so the script
@@ -214,11 +200,7 @@ internal class HtmlController {
                 }
                 if (node is HTMLAbstractUIElement) {
                     node.setMouseOver(true)
-                    val f = node.onmouseover
-                    if (f != null) {
-                        val jsEvent = Event("mouseover", node, event, x, y)
-                        executeFunction(node, f, jsEvent, getWindowFactory(node))
-                    }
+
                     val rcontext = node.htmlRendererContext
                     if (rcontext != null) {
                         rcontext.onMouseOver(node, event)
@@ -240,11 +222,7 @@ internal class HtmlController {
                 }
                 if (node is HTMLAbstractUIElement) {
                     node.setMouseOver(false)
-                    val f = node.onmouseout
-                    if (f != null) {
-                        val jsEvent = Event("mouseout", node, event, x, y)
-                        executeFunction(node, f, jsEvent, getWindowFactory(node))
-                    }
+
                     val rcontext = node.htmlRendererContext
                     if (rcontext != null) {
                         rcontext.onMouseOut(node, event)
@@ -265,13 +243,7 @@ internal class HtmlController {
             logger.info("onDoubleClick(): node=" + node + ",class=" + node.javaClass.name)
         }
         if (node is HTMLAbstractUIElement) {
-            val f = node.ondblclick
-            if (f != null) {
-                val jsEvent = Event("dblclick", node, event, x, y)
-                if (!executeFunction(node, f, jsEvent, getWindowFactory(node))) {
-                    return false
-                }
-            }
+
             val rcontext = node.htmlRendererContext
             if (rcontext != null) {
                 if (!rcontext.onDoubleClick(node, event)) {
@@ -307,11 +279,7 @@ internal class HtmlController {
     fun onMouseDown(node: ModelNode, event: MouseEvent?, x: Int, y: Int): Boolean {
         var pass = true
         if (node is HTMLAbstractUIElement) {
-            val f = node.onmousedown
-            if (f != null) {
-                val jsEvent = Event("mousedown", node, event, x, y)
-                pass = executeFunction(node, f, jsEvent, getWindowFactory(node))
-            }
+
         }
         if (node is HTMLLinkElementImpl) {
             node.getCurrentStyle().overlayColor = ("#9090FF80")
@@ -333,11 +301,7 @@ internal class HtmlController {
     fun onMouseUp(node: ModelNode, event: MouseEvent?, x: Int, y: Int): Boolean {
         var pass = true
         if (node is HTMLAbstractUIElement) {
-            val f = node.onmouseup
-            if (f != null) {
-                val jsEvent = Event("mouseup", node, event, x, y)
-                pass = executeFunction(node, f, jsEvent, getWindowFactory(node))
-            }
+
         }
         if (node is HTMLLinkElementImpl) {
             node.getCurrentStyle().overlayColor = (null)
@@ -361,13 +325,7 @@ internal class HtmlController {
      */
     fun onPressed(node: ModelNode?, event: InputEvent?, x: Int, y: Int): Boolean {
         if (node is HTMLAbstractUIElement) {
-            val f = node.onclick
-            if (f != null) {
-                val jsEvent = Event("click", node, event, x, y)
-                if (!executeFunction(node, f, jsEvent, getWindowFactory(node))) {
-                    return false
-                }
-            }
+           
         }
         if (node is HTMLInputElementImpl) {
             if (node.isSubmitInput) {
@@ -401,13 +359,7 @@ internal class HtmlController {
 
     fun onChange(node: ModelNode?): Boolean {
         if (node is HTMLSelectElementImpl) {
-            val f = node.onchange
-            if (f != null) {
-                val jsEvent = Event("change", node)
-                if (!executeFunction(node, f, jsEvent, getWindowFactory(node))) {
-                    return false
-                }
-            }
+
         }
         // No propagate
         return false

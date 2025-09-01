@@ -44,16 +44,11 @@ import io.github.remmerw.thor.cobra.html.js.Event
 import io.github.remmerw.thor.cobra.html.js.EventTargetManager
 import io.github.remmerw.thor.cobra.html.js.Location
 import io.github.remmerw.thor.cobra.html.js.Window
-import io.github.remmerw.thor.cobra.html.js.Window.JSRunnableTask
 import io.github.remmerw.thor.cobra.html.parser.HtmlParser
 import io.github.remmerw.thor.cobra.html.style.CSSNorm
 import io.github.remmerw.thor.cobra.html.style.RenderState
-import io.github.remmerw.thor.cobra.html.style.StyleElements
 import io.github.remmerw.thor.cobra.html.style.StyleSheetRenderState
-import io.github.remmerw.thor.cobra.ua.NetworkRequest
-import io.github.remmerw.thor.cobra.ua.NetworkRequestEvent
 import io.github.remmerw.thor.cobra.ua.UserAgentContext
-import io.github.remmerw.thor.cobra.ua.UserAgentContext.RequestKind
 import io.github.remmerw.thor.cobra.util.SecurityUtil
 import io.github.remmerw.thor.cobra.util.Urls
 import io.github.remmerw.thor.cobra.util.io.EmptyReader
@@ -99,12 +94,10 @@ import java.io.StringReader
 import java.net.MalformedURLException
 import java.net.URL
 import java.security.PrivilegedAction
-import java.util.LinkedList
 import java.util.Locale
 import java.util.concurrent.Semaphore
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
-import java.util.function.Consumer
 import java.util.logging.Level
 import kotlin.concurrent.Volatile
 
@@ -187,7 +180,6 @@ class HTMLDocumentImpl(
 
 
     var onloadHandler: Function? = null
-    private var jobs: MutableList<Runnable?> = LinkedList<Runnable?>()
     private var oldPendingTaskId = -1
     private var classifiedRules: Analyzer.Holder? = null
 
@@ -1219,65 +1211,9 @@ class HTMLDocumentImpl(
         }
     }
 
-    fun addJob(job: Runnable?, layoutBlocker: Boolean) {
-        addJob(job, layoutBlocker, 1)
-    }
 
-    fun addJob(job: Runnable?, layoutBlocker: Boolean, incr: Int) {
-        synchronized(jobs) {
-            registeredJobs.addAndGet(incr)
-            if (layoutBlocker) {
-                layoutBlockingJobs.addAndGet(incr)
-            }
 
-            jobs.add(job)
 
-            // Added into synch block because of the JS Uniq task change. (old Id should be protected from parallel mod)
-            if (modificationsOver.get()) {
-                // TODO: temp hack. Not sure if spawning an entirely new thread is right. But it helps with a deadlock in
-                // test_script_iframe_load (test number 3)
-                // new Thread() {
-                // public void run() {
-                // runAllPending();
-                // };
-                // }.start();
-
-                // TODO: temp hack 2. This seems more legitimate than hack #1.
-                /*
-        window.addJSTask(new JSRunnableTask(0, "todo: quick check to run all pending jobs", () -> {
-            runAllPending();
-        }));
-        */
-
-                // TODO: temp hack 3. This seems more legitimate than hack #1 and optimisation over #2.
-
-                oldPendingTaskId = window.addJSUniqueTask(
-                    oldPendingTaskId, JSRunnableTask(
-                        0, "todo: quick check to run all pending jobs",
-                        Runnable {
-                            runAllPending()
-                        })
-                )
-                // runAllPending();
-            }
-        }
-    }
-
-    private fun runAllPending() {
-        var done = false
-        while (!done && !stopRequested.get()) {
-            val jobsCopy: MutableList<Runnable?>
-            synchronized(jobs) {
-                jobsCopy = jobs
-                jobs = LinkedList<Runnable?>()
-            }
-            jobsCopy.forEach(Consumer { j: Runnable? -> j!!.run() })
-            synchronized(jobs) {
-                done = jobs.size == 0
-            }
-        }
-        doneAllJobs.release()
-    }
 
     private fun updateStyleRules() {
         synchronized(treeLock) {
@@ -1338,33 +1274,6 @@ class HTMLDocumentImpl(
                 window.jobsFinished()
             }
         }
-    }
-
-    fun finishModifications() {
-        StyleElements.normalizeHTMLTree(this)
-        // TODO: Not sure if this should be run in new thread. But this blocks the UI sometimes when it is in the same thread, and a network request hangs.
-        //       There is a race condition here, when iframes are involved.
-        //       The thread creation can probably be removed as part of GH #140
-        Thread(Runnable {
-            modificationsStarted.set(true)
-            runAllPending()
-            modificationsOver.set(true)
-        }).start()
-
-        // This is to trigger a check in the no external resource case.
-        // On second thoughts, this may not be required. The window load event need only be fired if there is a script
-        // On third thoughs, this also affects frame that embed iframes
-        markJobsFinished(0, false)
-
-        /* Nodes.forEachNode(document, node -> {
-      if (node instanceof NodeImpl) {
-        final NodeImpl element = (NodeImpl) node;
-        Object oldData = element.getUserData(org.cobraparser.html.parser.HtmlParser.MODIFYING_KEY);
-        if (oldData == null || !oldData.equals(Boolean.FALSE)) {
-          element.setUserData(org.cobraparser.html.parser.HtmlParser.MODIFYING_KEY, Boolean.FALSE, null);
-        }
-      }
-    });*/
     }
 
     override fun addEventListener(type: String?, listener: EventListener?, useCapture: Boolean) {

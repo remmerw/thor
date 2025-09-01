@@ -90,6 +90,7 @@ class Render(var url: String) {
         try {
             val connection = urlObj.openConnection()
             val inputStream = connection.getInputStream()
+            requireNotNull(inputStream)
 
             val context: UserAgentContext = SimpleUserAgentContext()
             val dbi = DocumentBuilderImpl(context)
@@ -104,6 +105,7 @@ class Render(var url: String) {
             val ex = document.documentElement
             doTree(ex)
         } catch (e: Exception) {
+            e.printStackTrace()
             println("parsePage(" + url + "):  " + e)
             return false
         }

@@ -23,16 +23,15 @@
  */
 package io.github.remmerw.thor.cobra.html.domimpl
 
-import io.github.remmerw.thor.cobra.js.ScriptableDelegate
 import org.mozilla.javascript.Scriptable
 import org.w3c.dom.Node
 import org.w3c.dom.html.HTMLCollection
 
-class ChildHTMLCollection(private val rootNode: NodeImpl) : ScriptableDelegate, HTMLCollection {
+class ChildHTMLCollection(private val rootNode: NodeImpl) : HTMLCollection {
 
     var scriptable: Scriptable? = null
 
-    override fun scriptable(): Scriptable? {
+    fun scriptable(): Scriptable? {
         return scriptable
     }
 

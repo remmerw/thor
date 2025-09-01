@@ -1,8 +1,6 @@
 package io.github.remmerw.thor.cobra.html.js
 
 import io.github.remmerw.thor.cobra.html.js.Window.JSRunnableTask
-import io.github.remmerw.thor.cobra.js.JavaScript
-import io.github.remmerw.thor.cobra.js.ScriptableDelegate
 import io.github.remmerw.thor.cobra.ua.NetworkRequest
 import io.github.remmerw.thor.cobra.ua.NetworkRequestEvent
 import io.github.remmerw.thor.cobra.ua.NetworkRequestListener
@@ -28,10 +26,10 @@ class XMLHttpRequest(
     private val codeSource: URL,
     private val scope: Scriptable?, // TODO: This is a quick hack
     private val window: Window
-) : ScriptableDelegate {
+)  {
     var scriptable: Scriptable? = null
 
-    override fun scriptable(): Scriptable? {
+     fun scriptable(): Scriptable? {
         return scriptable
     }
     private val request: NetworkRequest = pcontext.createHttpRequest()!!
@@ -163,60 +161,7 @@ class XMLHttpRequest(
     }
 
     private fun executeReadyStateChange() {
-        // Not called in GUI thread to ensure consistency of readyState.
-        try {
-            val f = this@XMLHttpRequest.onreadystatechange
-            if (f != null) {
-                window.addJSTask(
-                    JSRunnableTask(
-                        0,
-                        "xhr ready state changed: " + request.readyState,
-                        Runnable {
-                            val ctx = Executor.createContext(
-                                this.codeSource,
-                                this.pcontext,
-                                window.contextFactory
-                            )
-                            try {
-                                val newScope = JavaScript.instance.getJavascriptObject(
-                                    this@XMLHttpRequest,
-                                    this.scope
-                                ) as Scriptable?
-                                f.call(ctx, newScope, newScope, arrayOfNulls<Any>(0))
-                            } finally {
-                                Context.exit()
-                            }
-                        })
-                )
-            }
-        } catch (err: Exception) {
-            logger.log(Level.WARNING, "Error processing ready state change.", err)
-            Executor.logJSException(err)
-        }
 
-        if (request.readyState == NetworkRequest.STATE_COMPLETE) {
-            try {
-                val f = this.onLoad
-                if (f != null) {
-                    window.addJSTaskUnchecked(JSRunnableTask(0, "xhr on load : ", Runnable {
-                        val ctx = Executor.createContext(
-                            this.codeSource,
-                            this.pcontext,
-                            window.contextFactory
-                        )
-                        try {
-                            val newScope = JavaScript.instance
-                                .getJavascriptObject(this@XMLHttpRequest, this.scope) as Scriptable?
-                            f.call(ctx, newScope, newScope, arrayOfNulls<Any>(0))
-                        } finally {
-                            Context.exit()
-                        }
-                    }))
-                }
-            } catch (err: Exception) {
-                logger.log(Level.WARNING, "Error processing ready state change.", err)
-            }
-        }
     }
 
     // As per: http://www.w3.org/TR/XMLHttpRequest2/#the-setrequestheader-method

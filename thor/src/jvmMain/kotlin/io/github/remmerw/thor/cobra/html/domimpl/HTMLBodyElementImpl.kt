@@ -130,10 +130,7 @@ class HTMLBodyElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLBodyE
     override fun handleAttributeChanged(name: String, oldValue: String?, newValue: String?) {
         super.handleAttributeChanged(name, oldValue, newValue)
         if ("onload" == name) {
-            val onload = this.getEventFunction(null, name)
-            if (onload != null) {
-                this.onload = onload
-            }
+
         }
     }
 }

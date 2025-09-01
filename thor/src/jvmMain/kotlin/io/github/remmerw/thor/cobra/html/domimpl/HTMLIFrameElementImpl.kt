@@ -21,25 +21,7 @@ class HTMLIFrameElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLIFr
     private var jobCreated = false
     private var onload: Function? = null
 
-    private fun createJob() {
-        synchronized(this) {
-            val src = this.getAttribute("src")
-            if (src != null) {
-                if (!jobCreated) {
-                    (document as HTMLDocumentImpl).addJob(Runnable { loadURLIntoFrame(src) }, false)
-                    jobCreated = true
-                } else {
-                    (document as HTMLDocumentImpl).addJob(
-                        Runnable { loadURLIntoFrame(src) },
-                        false,
-                        0
-                    )
-                }
-            } else {
-                markJobDone(0, isAttachedToDocument)
-            }
-        }
-    }
+
 
     private fun markJobDone(jobs: Int, loaded: Boolean) {
         synchronized(this) {
@@ -71,7 +53,7 @@ class HTMLIFrameElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLIFr
 
     override fun setBrowserFrame(frame: BrowserFrame?) {
         this.browserFrame = frame
-        createJob()
+
     }
 
     override fun getAlign(): String? {
@@ -195,7 +177,7 @@ class HTMLIFrameElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLIFr
     override fun handleAttributeChanged(name: String, oldValue: String?, newValue: String?) {
         super.handleAttributeChanged(name, oldValue, newValue)
         if ("src" == name) {
-            createJob()
+            // todo
         }
     }
 
@@ -203,14 +185,12 @@ class HTMLIFrameElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLIFr
         super.handleDocumentAttachmentChanged()
         if (isAttachedToDocument) {
             if (hasAttribute("onload")) {
-                setOnload(getEventFunction(null, "onload"))
+
             }
         }
     }
 
-    fun getOnload(): Function? {
-        return this.getEventFunction(this.onload, "onload")
-    }
+
 
     fun setOnload(onload: Function?) {
         this.onload = onload

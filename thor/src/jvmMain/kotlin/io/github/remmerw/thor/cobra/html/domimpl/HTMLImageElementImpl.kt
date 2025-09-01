@@ -16,9 +16,6 @@ import kotlin.synchronized
 
 class HTMLImageElementImpl : HTMLAbstractUIElement, HTMLImageElement {
 
-    var onload: Function? = null
-        get() = this.getEventFunction(field, "onload")
-  
     private var imageSrc: String? = null
 
     constructor(name: String) : super(name)
@@ -163,7 +160,7 @@ class HTMLImageElementImpl : HTMLAbstractUIElement, HTMLImageElement {
     override fun handleAttributeChanged(name: String, oldValue: String?, newValue: String?) {
         super.handleAttributeChanged(name, oldValue, newValue)
         if ("src" == name) {
-            (document as HTMLDocumentImpl).addJob(Runnable { loadImage(src) }, false)
+           // todo
         }
     }
 
@@ -181,7 +178,7 @@ class HTMLImageElementImpl : HTMLAbstractUIElement, HTMLImageElement {
 
     override fun setUserData(key: String, data: Any?, handler: UserDataHandler?): Any? {
         if (HtmlParser.MODIFYING_KEY == key && (data != Boolean.TRUE)) {
-            (document as HTMLDocumentImpl).addJob({ loadImage(src) }, false)
+            // todo
             // this.loadImage(getSrc());
         }
         return super.setUserData(key, data, handler)

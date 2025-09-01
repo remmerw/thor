@@ -23,7 +23,6 @@
  */
 package io.github.remmerw.thor.cobra.html.domimpl
 
-import io.github.remmerw.thor.cobra.js.ScriptableDelegate
 import org.mozilla.javascript.Scriptable
 import org.w3c.dom.Node
 import org.w3c.dom.NodeList
@@ -33,11 +32,11 @@ internal class FilteredNodeListImpl(
     private val filter: NodeFilter,
     private val sourceNodeList: MutableCollection<Node?>,
     private val lock: Any
-) : ScriptableDelegate, NodeList {
+) :  NodeList {
 
     var scriptable: Scriptable? = null
 
-    override fun scriptable(): Scriptable? {
+     fun scriptable(): Scriptable? {
         return scriptable
     }
 

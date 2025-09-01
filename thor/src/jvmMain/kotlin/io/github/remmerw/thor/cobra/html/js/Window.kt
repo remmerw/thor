@@ -14,12 +14,6 @@ import io.github.remmerw.thor.cobra.html.domimpl.HTMLScriptElementImpl
 import io.github.remmerw.thor.cobra.html.domimpl.HTMLSelectElementImpl
 import io.github.remmerw.thor.cobra.html.domimpl.NodeImpl
 import io.github.remmerw.thor.cobra.html.domimpl.TextImpl
-import io.github.remmerw.thor.cobra.js.JavaClassWrapper
-import io.github.remmerw.thor.cobra.js.JavaClassWrapperFactory
-import io.github.remmerw.thor.cobra.js.JavaInstantiator
-import io.github.remmerw.thor.cobra.js.JavaObjectWrapper
-import io.github.remmerw.thor.cobra.js.JavaScript
-import io.github.remmerw.thor.cobra.js.ScriptableDelegate
 import io.github.remmerw.thor.cobra.ua.UserAgentContext
 import io.github.remmerw.thor.cobra.ua.UserAgentContext.RequestKind
 import io.github.remmerw.thor.cobra.util.ID
@@ -62,16 +56,16 @@ class Window // TODO: Probably need to create a new Window instance
 // for every document. Sharing of Window state between
 // different documents is not correct.
     (val htmlRendererContext: HtmlRendererContext?, val userAgentContext: UserAgentContext) :
-    ScriptableDelegate, AbstractView {
+    AbstractView {
     private val windowContextFactory = MyContextFactory()
     val eventTargetManager: EventTargetManager = EventTargetManager()
     private var scriptable: Scriptable? = null
 
-    override fun scriptable(): Scriptable? {
+     fun scriptable(): Scriptable? {
         return scriptable
     }
     // TODO: Move job scheduling logic into Window class
-    private val jobsOver = AtomicBoolean(false)
+
     var navigator: Navigator? = null
         get() {
             synchronized(this) {
@@ -117,8 +111,6 @@ class Window // TODO: Probably need to create a new Window instance
     var documentNode: Document? = null
         private set
 
-    @Volatile
-    private var jsScheduler: JSScheduler? = JSScheduler(this)
     private var windowScope: Scriptable? = null
     var length: Int = 0
         /**
@@ -158,8 +150,7 @@ class Window // TODO: Probably need to create a new Window instance
             if (this.documentNode is HTMLDocumentImpl) {
                 (this.documentNode as HTMLDocumentImpl).stopEverything()
             }
-            jsScheduler!!.stopAndWindUp(true)
-            jsScheduler = JSScheduler(this)
+
             eventTargetManager.reset()
             this.onWindowLoadHandler = null
 
@@ -191,37 +182,7 @@ class Window // TODO: Probably need to create a new Window instance
 
     fun setDocument(document: Document) {
         synchronized(this) {
-            val prevDocument = this.documentNode
-            if (prevDocument !== document) {
-                val onunload = this.onunload
-                if (onunload != null) {
-                    val oldDoc = prevDocument as HTMLDocumentImpl
-                    Executor.executeFunction(
-                        this.getWindowScope(),
-                        onunload,
-                        oldDoc.getDocumentURL(),
-                        this.userAgentContext,
-                        windowContextFactory
-                    )
-                    this.onunload = null
-                }
-
-                // TODO: Should clearing of the state be done when window "unloads"?
-                if (prevDocument != null) {
-                    // Only clearing when the previous document was not null
-                    // because state might have been set on the window before
-                    // the very first document is added.
-                    this.clearState()
-                }
-                // this.forgetAllTasks();
-                this.initWindowScope(document)
-
-                jobsOver.set(false)
-                jsScheduler!!.start()
-
-                this.documentNode = document
-                // eventTargetManager.setNode(document);
-            }
+            this.documentNode = document
         }
     }
 
@@ -235,32 +196,7 @@ class Window // TODO: Probably need to create a new Window instance
         }
 
     fun addJSTask(task: JSTask) {
-        /*
-      final URL urlContext = new URL(rcontext.getCurrentURL());
-      if (document != null) {
-        final URL urlDoc = document.getDocumentURL();
-        if (!urlDoc.equals(urlContext)) {
-          throw new RuntimeException(String.format("doc url(%s) is different from context url (%s)", urlDoc, urlContext));
-        }
-      }*/
-        val urlContext = this.currURL
-        if (urlContext != null) {
-            if (userAgentContext.isRequestPermitted(
-                    UserAgentContext.Request(
-                        urlContext,
-                        RequestKind.JavaScript
-                    )
-                )
-            ) {
-                // System.out.println("Adding task: " + task);
-                synchronized(this) {
-                    jsScheduler!!.addJSTask(task)
-                }
-            }
-        } else {
-            // TODO: This happens when the URL is not accepted by okhttp
-            println("Not adding task because url context is null")
-        }
+        println(task.toString())
     }
 
     // TODO: Also look at GH #149
@@ -274,19 +210,15 @@ class Window // TODO: Probably need to create a new Window instance
     //       4. XHR handler. Logic similar to timer task.
 
     fun addJSTaskUnchecked(task: JSTask) {
-        // System.out.println("Adding task: " + task);
-        synchronized(this) {
-            jsScheduler!!.addJSTask(task)
-        }
+        println("Adding task: " + task);
+
     }
 
 
     fun addJSUniqueTask(oldId: Int, task: JSTask): Int {
         println("Adding unique task: " + task)
 
-        synchronized(this) {
-            return jsScheduler!!.addUniqueJSTask(oldId, task)
-        }
+        return -1
     }
 
     private fun putAndStartTask(timeoutID: Int?, timer: Timer, retained: Any?) {
@@ -526,93 +458,8 @@ class Window // TODO: Probably need to create a new Window instance
     val contextFactory: ContextFactory
         get() = windowContextFactory
 
-    private fun initWindowScope(doc: Document) {
-        // Special Javascript class: XMLHttpRequest
-        val ws = this.getWindowScope()
-        val xi: JavaInstantiator = object : JavaInstantiator {
-            override fun newInstance(args: Array<Any>): Any {
-                val d = doc
-                checkNotNull(d) { "Cannot perform operation when document is unset." }
-                val hd: HTMLDocumentImpl?
-                try {
-                    hd = d as HTMLDocumentImpl
-                } catch (err: ClassCastException) {
-                    throw IllegalStateException("Cannot perform operation with documents of type " + d.javaClass.name + ".")
-                }
-                return XMLHttpRequest(userAgentContext,
-                    hd.getDocumentURL()!!, ws, this@Window)
-            }
-        }
-        defineInstantiator(ws, "XMLHttpRequest", XMLHTTPREQUEST_WRAPPER!!, xi)
 
-        val pi: JavaInstantiator = object : JavaInstantiator {
-            override fun newInstance(args: Array<Any>): Any {
-                return CanvasPath2D()
-            }
-        }
-        defineInstantiator(ws, "Path2D", PATH2D_WRAPPER!!, pi)
 
-        val ei: JavaInstantiator = object : JavaInstantiator {
-            override fun newInstance(args: Array<Any>): Any {
-                if (args.size > 0) {
-                    return Event(args[0].toString(), doc)
-                }
-                throw ScriptRuntime.constructError("TypeError", "An event name must be provided")
-            }
-        }
-        defineInstantiator(ws, "Event", EVENT_WRAPPER!!, ei)
-
-        // We can use a single shared instance since it is dummy for now
-        ScriptableObject.putProperty(ws, "localStorage", STORAGE)
-        ScriptableObject.putProperty(ws, "sessionStorage", STORAGE)
-
-        // ScriptableObject.defineClass(ws, org.mozilla.javascript.ast.Comment.class);
-        defineElementClass(ws, doc, "Comment", "comment", CommentImpl::class.java)
-
-        // HTML element classes
-        defineElementClass(ws, doc, "Image", "img", HTMLImageElementImpl::class.java)
-        defineElementClass(ws, doc, "Script", "script", HTMLScriptElementImpl::class.java)
-        defineElementClass(ws, doc, "IFrame", "iframe", HTMLIFrameElementImpl::class.java)
-        defineElementClass(ws, doc, "Option", "option", HTMLOptionElementImpl::class.java)
-        defineElementClass(ws, doc, "Select", "select", HTMLSelectElementImpl::class.java)
-
-        // TODO: Add all similar elements
-        defineElementClass(ws, doc, "HTMLDivElement", "div", HTMLDivElementImpl::class.java)
-
-        defineInstantiator(
-            ws, "Text", JavaClassWrapperFactory.instance!!.getClassWrapper(
-                TextImpl::class.java
-            ), object : JavaInstantiator {
-                override fun newInstance(args: Array<Any>): Any {
-                    val data: String? =
-                        if (args.size > 0 && args[0] != null) args[0].toString() else ""
-                    return documentNode!!.createTextNode(data)
-                }
-            })
-    }
-
-    fun getWindowScope(): Scriptable {
-        synchronized(this) {
-            var ws = this.windowScope
-            if (ws != null) {
-                return ws
-            }
-            // Context.enter() OK in this particular case.
-            // final Context ctx = Context.enter();
-            val ctx = windowContextFactory.enterContext()
-            try {
-                // Window scope needs to be top-most scope.
-                ws = JavaScript.instance.getJavascriptObject(this, null) as Scriptable?
-                ws = ctx.initSafeStandardObjects(ws as ScriptableObject?)
-                val consoleJSObj = JavaScript.instance.getJavascriptObject(Console(), ws)
-                ScriptableObject.putProperty(ws, "console", consoleJSObj)
-                this.windowScope = ws
-                return ws
-            } finally {
-                Context.exit()
-            }
-        }
-    }
 
     fun open(
         relativeUrl: String,
@@ -924,7 +771,6 @@ class Window // TODO: Probably need to create a new Window instance
             // Executor.executeFunction(document, handler, windowLoadEvent);
         }
 
-        jobsOver.set(true)
     }
 
     @get:PropertyName("Element")
@@ -936,22 +782,9 @@ class Window // TODO: Probably need to create a new Window instance
         get() = Node::class.java
 
 
-    private fun shutdown() {
-        // TODO: Add the sync below, when/if the scheduleLock is added
-        // synchronized (scheduleLock) {
-        forgetAllTasks()
-
-        if (jsScheduler != null) {
-            jsScheduler!!.stopAndWindUp(false)
-            jsScheduler = null
-        }
-        // }
-    }
 
 
-    fun hasPendingTasks(): Boolean {
-        return (!jobsOver.get()) || jsScheduler!!.hasPendingTasks()
-    }
+
 
     // private Function windowLoadListeners;
     abstract class JSTask(protected val priority: Int, protected val description: String?) :
@@ -1187,19 +1020,8 @@ class Window // TODO: Probably need to create a new Window instance
                 checkNotNull(window.document) { "Cannot perform operation when document is unset." }
                 val function = this.functionRef.get()
                 checkNotNull(function) { "Cannot perform operation. Function is no longer available." }
-                window.addJSTaskUnchecked(
-                    JSRunnableTask(
-                        0,
-                        "timer task for id: " + timeIDInt + ", oneshot: " + removeTask,
-                        Runnable {
-                            Executor.executeFunction(
-                                window.getWindowScope(), function,
-                                window.currURL,
-                                window.userAgentContext,
-                                window.windowContextFactory
-                            )
-                        })
-                )
+
+
                 // Executor.executeFunction(window.getWindowScope(), function, doc.getDocumentURL(), window.getUserAgentContext(), window.windowFactory);
             } catch (err: Exception) {
                 logger.log(Level.WARNING, "actionPerformed()", err)
@@ -1288,12 +1110,7 @@ class Window // TODO: Probably need to create a new Window instance
         }
 
         override fun observeInstructionCount(cx: Context?, instructionCount: Int) {
-            val jsSchedulerLocal = jsScheduler
-            if (jsSchedulerLocal != null) {
-                if (jsSchedulerLocal.isWindowClosing) {
-                    throw java.lang.Exception()
-                }
-            }
+
         }
 
         override fun hasFeature(cx: Context?, featureIndex: Int): Boolean {
@@ -1311,17 +1128,7 @@ class Window // TODO: Probably need to create a new Window instance
         private val CONTEXT_WINDOWS: MutableMap<HtmlRendererContext?, WeakReference<Window?>?> =
             WeakHashMap<HtmlRendererContext?, WeakReference<Window?>?>()
 
-        // private static final JavaClassWrapper IMAGE_WRAPPER =
-        // JavaClassWrapperFactory.getInstance().getClassWrapper(Image.class);
-        private val XMLHTTPREQUEST_WRAPPER: JavaClassWrapper? =
-            JavaClassWrapperFactory.instance!!
-                .getClassWrapper(XMLHttpRequest::class.java)
 
-        private val PATH2D_WRAPPER: JavaClassWrapper? = JavaClassWrapperFactory.instance!!
-            .getClassWrapper(CanvasPath2D::class.java)
-
-        private val EVENT_WRAPPER: JavaClassWrapper? = JavaClassWrapperFactory.instance!!
-            .getClassWrapper(io.github.remmerw.thor.cobra.html.js.Event::class.java)
         private const val JS_SCHED_POLL_INTERVAL_MILLIS = 100
         private val JS_SCHED_JOIN_INTERVAL_MILLIS: Int = JS_SCHED_POLL_INTERVAL_MILLIS * 2
 
@@ -1335,38 +1142,6 @@ class Window // TODO: Probably need to create a new Window instance
             }
         }
 
-        private fun defineInstantiator(
-            ws: Scriptable,
-            name: String?,
-            wrapper: JavaClassWrapper,
-            ji: JavaInstantiator
-        ) {
-            val constructor = JavaObjectWrapper.getConstructor(name, wrapper, ws, ji)
-            ScriptableObject.defineProperty(ws, name, constructor, ScriptableObject.READONLY)
-        }
-
-        private fun defineElementClass(
-            scope: Scriptable, document: Document, jsClassName: String?,
-            elementName: String?,
-            javaClass: Class<*>?
-        ) {
-            val ji: JavaInstantiator = object : JavaInstantiator {
-                override fun newInstance(args: Array<Any>): Any {
-                    val d = document
-                    checkNotNull(d) { "Document not set in current context." }
-                    return d.createElement(elementName)
-                }
-            }
-            val classWrapper = JavaClassWrapperFactory.instance!!.getClassWrapper(javaClass!!)
-            val constructorFunction =
-                JavaObjectWrapper.getConstructor(jsClassName, classWrapper, scope, ji)
-            ScriptableObject.defineProperty(
-                scope,
-                jsClassName,
-                constructorFunction,
-                ScriptableObject.READONLY
-            )
-        }
 
 
         fun getWindow(rcontext: HtmlRendererContext?): Window? {
