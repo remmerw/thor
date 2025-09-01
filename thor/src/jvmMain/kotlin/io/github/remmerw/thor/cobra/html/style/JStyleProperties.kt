@@ -636,6 +636,11 @@ abstract class JStyleProperties(
         return nodeData.getAsString(propertyName, true)
     }
 
+    override fun toString(): String {
+        return "JStyleProperties " + color + " " + background + " " + width
+    }
+
+
     companion object {
         // TODO
         // temp hack to support border thin/medium/thick

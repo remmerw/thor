@@ -42,11 +42,11 @@ class SimpleUserAgentContext : UserAgentContext {
     }
 
     override fun isExternalCSSEnabled(): Boolean {
-        return false
+        return true
     }
 
     override fun isInternalCSSEnabled(): Boolean {
-        return false
+        return true
     }
 
     override fun getPlatform(): String {

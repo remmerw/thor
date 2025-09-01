@@ -42,7 +42,7 @@ import org.w3c.dom.events.EventTarget
 import java.util.LinkedList
 import java.util.Locale
 
-abstract class ElementImpl(private val name: String) : NodeImpl(), Element, EventTarget {
+abstract class ElementImpl(private val name: String) : NodeImpl(), Element {
     protected var attributes: MutableMap<String, String>? = null
 
 
@@ -507,22 +507,7 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), Element, Even
             return count
         }
 
-    override fun addEventListener(type: String?, listener: EventListener?, useCapture: Boolean) {
-        // TODO Auto-generated method stub
-        println("TODO: addEventListener() in ElementImpl")
-    }
 
-    override fun removeEventListener(type: String?, listener: EventListener?, useCapture: Boolean) {
-        // TODO Auto-generated method stub
-        println("TODO: removeEventListener() in ElementImpl")
-    }
-
-    @Throws(EventException::class)
-    override fun dispatchEvent(evt: Event?): Boolean {
-        // TODO Auto-generated method stub
-        println("TODO: dispatchEvent() in ElementImpl")
-        return false
-    }
 
     companion object {
         protected fun isTagName(node: Node, name: String?): Boolean {

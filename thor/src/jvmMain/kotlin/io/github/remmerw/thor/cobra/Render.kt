@@ -1,10 +1,13 @@
 package io.github.remmerw.thor.cobra
 
+import io.github.remmerw.thor.cobra.html.domimpl.HTMLElementImpl
+import io.github.remmerw.thor.cobra.html.domimpl.ModelNode
 import io.github.remmerw.thor.cobra.html.parser.DocumentBuilderImpl
 import io.github.remmerw.thor.cobra.html.parser.InputSourceImpl
 import io.github.remmerw.thor.cobra.ua.UserAgentContext
 import org.w3c.dom.Element
 import org.w3c.dom.Node
+import org.w3c.dom.html.HTMLElement
 import java.net.URI
 import java.net.URL
 import java.util.logging.Level
@@ -120,7 +123,7 @@ class Render(var url: String) {
      * are tags contained inside the parent tag.
      */
     fun doTree(node: Node?) {
-        if (node is Element) {
+        if (node is HTMLElement) {
             // Visit tag.
 
             doElement(node)
@@ -142,6 +145,10 @@ class Render(var url: String) {
      */
     fun doElement(element: Element) {
         println("<" + element.tagName + ">")
+
+        if(element is HTMLElementImpl){
+            println(element.getCurrentStyle().toString())
+        }
     }
 
     /**
