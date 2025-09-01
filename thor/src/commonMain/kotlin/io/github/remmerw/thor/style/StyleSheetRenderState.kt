@@ -1,11 +1,11 @@
 package io.github.remmerw.thor.style
 
+import androidx.compose.ui.graphics.Color
 import cz.vutbr.web.css.CSSProperty.VerticalAlign
 import io.github.remmerw.thor.dom.HTMLDocumentImpl
 import io.github.remmerw.thor.dom.HTMLElementImpl
 import org.w3c.dom.css.CSS2Properties
 import org.w3c.dom.html.HTMLElement
-import java.awt.Color
 import java.awt.Font
 import java.util.Locale
 import java.util.Optional
@@ -282,7 +282,7 @@ open class StyleSheetRenderState : RenderState {
 
     override fun getBackgroundColor(): Color? {
         val c = this.iBackgroundColor
-        if (c !== INVALID_COLOR) {
+        if (c != INVALID_COLOR) {
             return c
         }
         val localColor: Color?
@@ -294,7 +294,7 @@ open class StyleSheetRenderState : RenderState {
 
     override fun getTextBackgroundColor(): Color? {
         val c = this.iTextBackgroundColor
-        if (c !== INVALID_COLOR) {
+        if (c != INVALID_COLOR) {
             return c
         }
         val localColor: Color?
@@ -311,7 +311,7 @@ open class StyleSheetRenderState : RenderState {
 
     override fun getOverlayColor(): Color? {
         var c = this.iOverlayColor
-        if (c !== INVALID_COLOR) {
+        if (c != INVALID_COLOR) {
             return c
         }
         val props = this.cssProperties()

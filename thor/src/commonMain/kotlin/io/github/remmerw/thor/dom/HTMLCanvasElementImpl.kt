@@ -1,46 +1,10 @@
-/*
-    GNU LESSER GENERAL PUBLIC LICENSE
-    Copyright (C) 2015 Uproot Labs India Pvt Ltd
 
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
- */
 package io.github.remmerw.thor.dom
 
-import io.github.remmerw.thor.style.ColorFactory
 import org.w3c.dom.html.HTMLElement
-import java.awt.AlphaComposite
-import java.awt.BasicStroke
-import java.awt.Color
-import java.awt.Graphics
-import java.awt.Graphics2D
-import java.awt.LinearGradientPaint
-import java.awt.Paint
-import java.awt.RenderingHints
-import java.awt.Shape
-import java.awt.geom.AffineTransform
-import java.awt.geom.Rectangle2D
-import java.awt.image.BufferedImage
-import java.io.ByteArrayOutputStream
-import java.io.IOException
-import java.util.Base64
-import java.util.Locale
-import java.util.Stack
-import javax.imageio.ImageIO
 
 class HTMLCanvasElementImpl : HTMLAbstractUIElement("CANVAS"), HTMLElement {
+    /** TODO
     private val canvasContext = CanvasContext()
     var width: Int = 0
         private set
@@ -647,8 +611,6 @@ class HTMLCanvasElementImpl : HTMLAbstractUIElement("CANVAS"), HTMLElement {
             return (a.toInt() shl 24) or ((b.toInt() and 0xff) shl 16) or ((c.toInt() and 0xff) shl 8) or (d.toInt() and 0xff)
         }
 
-        private fun parseColor(color: String): Color? {
-            return ColorFactory.instance?.getColor(color)
-        }
     }
+    */
 }

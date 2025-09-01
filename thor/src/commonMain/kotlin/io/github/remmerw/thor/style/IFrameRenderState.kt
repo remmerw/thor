@@ -20,8 +20,8 @@
  */
 package io.github.remmerw.thor.style
 
+import androidx.compose.ui.graphics.Color
 import io.github.remmerw.thor.dom.HTMLElementImpl
-import java.awt.Color
 import java.util.Locale
 
 class IFrameRenderState(prevRenderState: RenderState?, element: HTMLElementImpl) :
@@ -119,16 +119,16 @@ class IFrameRenderState(prevRenderState: RenderState?, element: HTMLElementImpl)
                 borderInsets.topType = borderInsets.leftType
                 binfo.insets = borderInsets
                 if (binfo.topColor == null) {
-                    binfo.topColor = Color.DARK_GRAY
+                    binfo.topColor = Color.DarkGray
                 }
                 if (binfo.leftColor == null) {
-                    binfo.leftColor = Color.DARK_GRAY
+                    binfo.leftColor = Color.DarkGray
                 }
                 if (binfo.rightColor == null) {
-                    binfo.rightColor = Color.LIGHT_GRAY
+                    binfo.rightColor = Color.LightGray
                 }
                 if (binfo.bottomColor == null) {
-                    binfo.bottomColor = Color.LIGHT_GRAY
+                    binfo.bottomColor = Color.LightGray
                 }
                 if (value != 0) {
                     binfo.bottomStyle = HtmlValues.BORDER_STYLE_SOLID

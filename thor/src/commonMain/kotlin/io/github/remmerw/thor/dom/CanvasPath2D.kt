@@ -19,15 +19,9 @@
  */
 package io.github.remmerw.thor.dom
 
-import java.awt.Shape
-import java.awt.geom.AffineTransform
-import java.awt.geom.Arc2D
-import java.awt.geom.Line2D
-import java.awt.geom.NoninvertibleTransformException
-import java.awt.geom.Path2D
-import java.awt.geom.Point2D
 
 class CanvasPath2D {
+    /* TODO
     var path2D: Path2D = Path2D.Double()
     private var needNewSubpath = true
     private var currPoint: Point2D? = null
@@ -284,5 +278,5 @@ class CanvasPath2D {
             }
             return value
         }
-    }
+    }*/
 }

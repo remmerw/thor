@@ -20,8 +20,8 @@
  */
 package io.github.remmerw.thor.style
 
+import androidx.compose.ui.graphics.Color
 import io.github.remmerw.thor.dom.HTMLElementImpl
-import java.awt.Color
 
 class ImageRenderState(prevRenderState: RenderState?, element: HTMLElementImpl) :
     StyleSheetRenderState(prevRenderState, element) {
@@ -121,16 +121,16 @@ class ImageRenderState(prevRenderState: RenderState?, element: HTMLElementImpl) 
                     borderInsets.topType = borderInsets.leftType
                     binfo.insets = borderInsets
                     if (binfo.topColor == null) {
-                        binfo.topColor = Color.BLACK
+                        binfo.topColor = Color.Black
                     }
                     if (binfo.leftColor == null) {
-                        binfo.leftColor = Color.BLACK
+                        binfo.leftColor = Color.Black
                     }
                     if (binfo.rightColor == null) {
-                        binfo.rightColor = Color.BLACK
+                        binfo.rightColor = Color.Black
                     }
                     if (binfo.bottomColor == null) {
-                        binfo.bottomColor = Color.BLACK
+                        binfo.bottomColor = Color.Black
                     }
                     if (value != 0) {
                         binfo.bottomStyle = HtmlValues.BORDER_STYLE_SOLID

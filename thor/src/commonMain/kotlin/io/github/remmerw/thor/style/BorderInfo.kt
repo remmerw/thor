@@ -20,7 +20,8 @@
  */
 package io.github.remmerw.thor.style
 
-import java.awt.Color
+import androidx.compose.ui.graphics.Color
+
 
 class BorderInfo {
     var topStyle: Int = 0

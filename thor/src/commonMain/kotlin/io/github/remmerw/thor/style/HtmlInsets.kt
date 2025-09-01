@@ -20,7 +20,6 @@
  */
 package io.github.remmerw.thor.style
 
-import java.awt.Insets
 
 class HtmlInsets {
     var top: Int = 0

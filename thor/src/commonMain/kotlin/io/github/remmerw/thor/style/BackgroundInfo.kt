@@ -1,6 +1,6 @@
 package io.github.remmerw.thor.style
 
-import java.awt.Color
+import androidx.compose.ui.graphics.Color
 import java.net.URL
 
 class BackgroundInfo {

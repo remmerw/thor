@@ -1,7 +1,7 @@
 package io.github.remmerw.thor.dom
 
+import io.github.remmerw.thor.style.Insets
 import org.w3c.dom.Document
-import java.awt.Insets
 import java.net.URL
 
 interface BrowserFrame {

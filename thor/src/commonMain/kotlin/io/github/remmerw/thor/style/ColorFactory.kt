@@ -1,6 +1,6 @@
 package io.github.remmerw.thor.style
 
-import java.awt.Color
+import androidx.compose.ui.graphics.Color
 import java.util.Locale
 import java.util.StringTokenizer
 import java.util.logging.Level
@@ -287,7 +287,7 @@ class ColorFactory private constructor() {
                     if (logger.isLoggable(Level.INFO)) {
                         logger.warning("getColor(): Color spec [" + normalSpec + "] unknown.")
                     }
-                    return Color.RED
+                    return Color.Red
                 }
                 colorMap.put(normalSpec, color)
             }

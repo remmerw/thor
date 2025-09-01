@@ -1,7 +1,7 @@
 package io.github.remmerw.thor.style
 
+import androidx.compose.ui.graphics.Color
 import cz.vutbr.web.css.CSSProperty.VerticalAlign
-import java.awt.Color
 import java.awt.Font
 import java.util.Optional
 

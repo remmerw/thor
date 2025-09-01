@@ -20,11 +20,10 @@
  */
 package io.github.remmerw.thor.style
 
+import androidx.compose.ui.graphics.Color
 import io.github.remmerw.thor.core.Urls
 import org.w3c.dom.css.CSS2Properties
-import java.awt.Color
 import java.awt.GraphicsEnvironment
-import java.awt.Insets
 import java.awt.Toolkit
 import java.net.MalformedURLException
 import java.net.URL
