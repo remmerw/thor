@@ -8,6 +8,8 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.ksp)
     alias(libs.plugins.vanniktech.mavenPublish)
+    alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.composeCompiler)
 }
 
 group = "io.github.remmerw"
@@ -50,6 +52,14 @@ kotlin {
 
                 implementation(libs.sac)
                 implementation(libs.jstyleparser)
+
+                implementation(libs.lifecycle)
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.material3)
+                implementation(compose.ui)
+                implementation(compose.components.resources)
+                implementation(compose.materialIconsExtended)
             }
         }
 
