@@ -1,26 +1,3 @@
-/*
-    GNU LESSER GENERAL PUBLIC LICENSE
-    Copyright (C) 2006 The Lobo Project
-
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-    Contact info: lobochief@users.sourceforge.net
- */
-/*
- * Created on Apr 16, 2005
- */
 package io.github.remmerw.thor.style
 
 import cz.vutbr.web.css.CSSProperty.VerticalAlign
@@ -29,10 +6,7 @@ import io.github.remmerw.thor.dom.HTMLElementImpl
 import org.w3c.dom.css.CSS2Properties
 import org.w3c.dom.html.HTMLElement
 import java.awt.Color
-import java.awt.Cursor
 import java.awt.Font
-import java.awt.FontMetrics
-import java.awt.Toolkit
 import java.util.Locale
 import java.util.Optional
 import java.util.StringTokenizer
@@ -71,9 +45,9 @@ open class StyleSheetRenderState : RenderState {
         this.borderInfo = borderInfo
     }
 
-    private var iWordInfoMap: MutableMap<String?, WordInfo?>? = null
+
     private var iFont: Font? = null
-    private var iFontMetrics: FontMetrics? = null
+
     private var iColor: Color? = null
     private var iBackgroundColor: Color? = INVALID_COLOR
     private var iTextBackgroundColor: Color? = INVALID_COLOR
@@ -178,12 +152,9 @@ open class StyleSheetRenderState : RenderState {
     }
 
     override fun invalidate() {
-        val map = this.iWordInfoMap
-        if (map != null) {
-            map.clear()
-        }
+
         this.iFont = null
-        this.iFontMetrics = null
+
         this.iColor = null
         this.iTextDecoration = -1
         this.iBlankWidth = -1
@@ -412,20 +383,10 @@ open class StyleSheetRenderState : RenderState {
         return tt
     }
 
-    override fun getFontMetrics(): FontMetrics {
-        var fm = this.iFontMetrics
-        if (fm == null) {
-            // TODO getFontMetrics deprecated. How to get text width?
-            fm = Toolkit.getDefaultToolkit().getFontMetrics(this.getFont())
-            this.iFontMetrics = fm
-        }
-        return fm
-    }
-
     override fun getBlankWidth(): Int {
         var bw = this.iBlankWidth
         if (bw == -1) {
-            bw = this.getFontMetrics().charWidth(' ')
+            bw = 16
             this.iBlankWidth = bw
         }
         return bw
@@ -439,30 +400,6 @@ open class StyleSheetRenderState : RenderState {
 
     override fun setHighlight(highlight: Boolean) {
         this.iHighlight = highlight
-    }
-
-
-    override fun getWordInfo(word: String): WordInfo {
-        // Expected to be called only in the GUI (rendering) thread.
-        // No synchronization necessary.
-        var map = this.iWordInfoMap
-        if (map == null) {
-            map = HashMap<String?, WordInfo?>(1)
-            this.iWordInfoMap = map
-        }
-        var wi = map.get(word)
-        if (wi != null) {
-            return wi
-        }
-        wi = WordInfo()
-        val fm = this.getFontMetrics()
-        wi.fontMetrics = fm
-        wi.ascentPlusLeading = fm.ascent + fm.leading
-        wi.descent = fm.descent
-        wi.height = fm.height
-        wi.width = fm.stringWidth(word)
-        map.put(word, wi)
-        return wi
     }
 
 
@@ -1012,22 +949,7 @@ open class StyleSheetRenderState : RenderState {
                 return prevCursorOpt
             } else {
                 val cursorTL = cursor.lowercase(Locale.getDefault())
-                // TODO: Handle more cursor types, defined here:
-                if ("default" == cursorTL) {
-                    return Optional.of<Cursor?>(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR))
-                } else if ("pointer" == cursorTL) {
-                    return Optional.of<Cursor?>(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR))
-                } else if ("crosshair" == cursorTL) {
-                    return Optional.of<Cursor?>(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR))
-                } else if ("move" == cursorTL) {
-                    return Optional.of<Cursor?>(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR))
-                } else if ("text" == cursorTL) {
-                    return Optional.of<Cursor?>(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR))
-                } else if ("wait" == cursorTL) {
-                    return Optional.of<Cursor?>(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR))
-                } else {
-                    return prevCursorOpt
-                }
+                return Optional.of(Cursor(cursorTL))
             }
         }
     }
@@ -1054,15 +976,11 @@ open class StyleSheetRenderState : RenderState {
 
     override fun getFontXHeight(): Double {
         // TODO: Cache this
-        val fm = getFontMetrics()
-        val font = fm.getFont()
-        if (font.family.contains("Ahem")) {
-            // This kludge is for https://github.com/UprootLabs/gngr/issues/195
-            return 0.8 * font.size2D
-        } else {
-            val glyphVector = font.createGlyphVector(fm.fontRenderContext, "xuwz")
-            return glyphVector.visualBounds.height
-        }
+
+        val font = getFont()!!
+
+        return 0.8 * font.size2D
+
     }
 
     // TODO: This should return a more abstract type that can represent values like length and percentage

@@ -22,9 +22,7 @@ package io.github.remmerw.thor.style
 
 import cz.vutbr.web.css.CSSProperty.VerticalAlign
 import java.awt.Color
-import java.awt.Cursor
 import java.awt.Font
-import java.awt.FontMetrics
 import java.util.Optional
 
 abstract class RenderStateDelegator(protected val delegate: RenderState) : RenderState {
@@ -52,10 +50,6 @@ abstract class RenderStateDelegator(protected val delegate: RenderState) : Rende
         return delegate.getFontBase()
     }
 
-    override fun getFontMetrics(): FontMetrics? {
-        return delegate.getFontMetrics()
-    }
-
     override fun getOverlayColor(): Color? {
         return delegate.getOverlayColor()
     }
@@ -74,11 +68,6 @@ abstract class RenderStateDelegator(protected val delegate: RenderState) : Rende
 
     override fun getTextTransform(): Int {
         return delegate.getTextTransform()
-    }
-
-
-    override fun getWordInfo(word: String): WordInfo {
-        return delegate.getWordInfo(word)
     }
 
 

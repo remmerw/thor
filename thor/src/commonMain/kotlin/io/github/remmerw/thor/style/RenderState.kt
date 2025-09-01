@@ -2,9 +2,7 @@ package io.github.remmerw.thor.style
 
 import cz.vutbr.web.css.CSSProperty.VerticalAlign
 import java.awt.Color
-import java.awt.Cursor
 import java.awt.Font
-import java.awt.FontMetrics
 import java.util.Optional
 
 interface RenderState {
@@ -22,8 +20,6 @@ interface RenderState {
 
     fun getFontBase(): Int
 
-    fun getWordInfo(word: String): WordInfo
-
     fun getColor(): Color?
 
     fun getBackgroundColor(): Color?
@@ -37,8 +33,6 @@ interface RenderState {
     fun getTextTransform(): Int
 
     fun getTextDecorationMask(): Int
-
-    fun getFontMetrics(): FontMetrics?
 
     fun getFontXHeight(): Double
 
