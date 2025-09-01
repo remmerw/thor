@@ -48,7 +48,6 @@ kotlin {
                 api(libs.idun)
                 api(libs.borr)
 
-                implementation(libs.rhino)
                 implementation(libs.sac)
                 implementation(libs.jstyleparser)
             }

@@ -23,7 +23,6 @@
  */
 package io.github.remmerw.thor.dom
 
-import org.mozilla.javascript.Scriptable
 import org.w3c.dom.Element
 import org.w3c.dom.Node
 import org.w3c.dom.NodeList
@@ -35,12 +34,6 @@ class NodeListImpl(collection: MutableCollection<Node>) : NodeList {
 
     override fun getLength(): Int {
         return this.nodeList.size
-    }
-
-    var scriptable: Scriptable? = null
-
-    fun scriptable(): Scriptable? {
-        return scriptable
     }
 
     override fun item(index: Int): Node? {

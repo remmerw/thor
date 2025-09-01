@@ -49,7 +49,6 @@ import io.github.remmerw.thor.style.CSSNorm
 import io.github.remmerw.thor.style.RenderState
 import io.github.remmerw.thor.style.StyleSheetRenderState
 import io.github.remmerw.thor.ua.UserAgentContext
-import org.mozilla.javascript.Function
 import org.w3c.dom.Attr
 import org.w3c.dom.CDATASection
 import org.w3c.dom.Comment
@@ -117,7 +116,6 @@ class HTMLDocumentImpl(
     private val documentNotificationListeners = ArrayList<DocumentNotificationListener>(1)
 
 
-    private val onloadHandlers: MutableList<Function?> = ArrayList<Function?>()
     private val registeredJobs = AtomicInteger(0)
     private val layoutBlockingJobs = AtomicInteger(0)
     private val doneAllJobs = Semaphore(0)
@@ -171,7 +169,6 @@ class HTMLDocumentImpl(
     private var body: HTMLElement? = null
 
 
-    var onloadHandler: Function? = null
     private var oldPendingTaskId = -1
     private var classifiedRules: Analyzer.Holder? = null
 
@@ -1128,20 +1125,6 @@ class HTMLDocumentImpl(
         return super.setUserData(key, data, handler)
     }
 
-    private fun dispatchLoadEvent() {
-        val onloadHandler = this.onloadHandler
-        if (onloadHandler != null) {
-            // TODO: onload event object?
-            throw UnsupportedOperationException()
-            // TODO: Use the event dispatcher
-            // Executor.executeFunction(this, onloadHandler, null);
-        }
-
-        // final Event loadEvent = new Event("load", getBody()); // TODO: What should be the target for this event?
-        // dispatchEventToHandlers(loadEvent, onloadHandlers);
-
-    }
-
 
     override fun createSimilarNode(): Node {
         return HTMLDocumentImpl(
@@ -1151,33 +1134,6 @@ class HTMLDocumentImpl(
             this.documentURI,
             this.contentType
         )
-    }
-
-
-    fun addLoadHandler(handler: Function?) {
-        onloadHandlers.add(handler)
-    }
-
-
-    fun removeLoadHandler(handler: Function?) {
-        onloadHandlers.remove(handler)
-    }
-
-
-    fun stopEverything() {
-        check(!stopRequested.get()) { "Stop requested twice!" }
-        stopRequested.set(true)
-        if (modificationsStarted.get()) {
-            var done = false
-            while (!done) {
-                try {
-                    doneAllJobs.acquire()
-                    done = true
-                } catch (e: InterruptedException) {
-                    e.printStackTrace()
-                }
-            }
-        }
     }
 
 
@@ -1219,27 +1175,6 @@ class HTMLDocumentImpl(
         }
     }
 
-    fun markJobsFinished(numJobs: Int, layoutBlocker: Boolean) {
-        val curr = registeredJobs.addAndGet(-numJobs)
-        val layoutBlockers =
-            if (layoutBlocker) layoutBlockingJobs.addAndGet(-numJobs) else layoutBlockingJobs.get()
-        if (layoutBlocked.get()) {
-            if (layoutBlockers == 0) {
-                layoutBlocked.set(false)
-                allInvalidated()
-            }
-        }
-        check(curr >= 0) { "More jobs over than registered!" }
-        if (curr == 0) {
-            if (!stopRequested.get() && !loadOver.get()) {
-                loadOver.set(true)
-                dispatchLoadEvent()
-                // System.out.println("In " + baseURI);
-                // System.out.println("  calling window.jobsFinished()");
-                rcontext!!.jobsFinished()
-            }
-        }
-    }
 
     override fun addEventListener(type: String?, listener: EventListener?, useCapture: Boolean) {
         // TODO Auto-generated method stub

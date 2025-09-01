@@ -159,17 +159,6 @@ class HTMLImageElementImpl : HTMLAbstractUIElement, HTMLImageElement {
         }
     }
 
-    private fun loadImage(src: String?) {
-        val document = this.document as HTMLDocumentImpl?
-        if (document != null) {
-
-            if (src != null) {
-                document.loadImage(src)
-            } else {
-                document.markJobsFinished(1, false)
-            }
-        }
-    }
 
     override fun setUserData(key: String, data: Any?, handler: UserDataHandler?): Any? {
         if (HtmlParser.MODIFYING_KEY == key && (data != Boolean.TRUE)) {

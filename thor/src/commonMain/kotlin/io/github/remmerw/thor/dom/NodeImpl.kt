@@ -11,8 +11,6 @@ import io.github.remmerw.thor.parser.HtmlParser
 import io.github.remmerw.thor.style.RenderState
 import io.github.remmerw.thor.style.StyleSheetRenderState
 import io.github.remmerw.thor.ua.UserAgentContext
-import org.mozilla.javascript.Function
-import org.mozilla.javascript.Scriptable
 import org.w3c.dom.Attr
 import org.w3c.dom.Comment
 import org.w3c.dom.DOMException
@@ -52,7 +50,6 @@ import kotlin.synchronized
 
 abstract class NodeImpl : Node, ModelNode {
 
-    private var scriptable: Scriptable? = null
     private var renderState: RenderState? = null
     private val parentModelNode: ModelNode? = null
     private val nodeName: String? = null
@@ -67,10 +64,6 @@ abstract class NodeImpl : Node, ModelNode {
 
     override fun parentModelNode(): ModelNode? {
         return parentModelNode
-    }
-
-    fun scriptable(): Scriptable? {
-        return scriptable
     }
 
     var uINode: UINode? = null
@@ -1396,25 +1389,6 @@ abstract class NodeImpl : Node, ModelNode {
 
         if (!this.notificationsSuspended) {
             this.informStructureInvalid()
-        }
-    }
-
-    @JvmOverloads
-    fun addEventListener(type: String?, listener: Function?, useCapture: kotlin.Boolean = false) {
-        // TODO
-        println("node by name: " + nodeName + " adding Event listener of type: " + type)
-        // System.out.println("  txt content: " + getInnerText());
-
-    }
-
-
-    fun querySelector(query: String?): Element? {
-        // TODO: Optimize: Avoid getting all matches. Only first match is sufficient.
-        val matchingElements = querySelectorAll(query)
-        if (matchingElements.length > 0) {
-            return matchingElements.item(0) as Element?
-        } else {
-            return null
         }
     }
 

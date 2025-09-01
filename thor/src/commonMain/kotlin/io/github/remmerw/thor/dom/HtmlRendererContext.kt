@@ -4,8 +4,6 @@ import io.github.remmerw.thor.ua.UserAgentContext
 import org.w3c.dom.html.HTMLCollection
 import org.w3c.dom.html.HTMLElement
 import org.w3c.dom.html.HTMLLinkElement
-import java.awt.Cursor
-import java.awt.event.MouseEvent
 import java.net.URL
 import java.util.Optional
 
@@ -95,61 +93,6 @@ interface HtmlRendererContext {
      */
     fun getHtmlObject(element: HTMLElement?): HtmlObject?
 
-    /**
-     * This method is called when a visual element is middle-clicked.
-     *
-     * @param element The narrowest element enclosing the mouse location.
-     * @param event   The mouse event.
-     * @return The method should return true to continue propagating the event, or
-     * false to stop propagating it.
-     */
-    fun onMiddleClick(element: HTMLElement?, event: MouseEvent?): Boolean
-
-    /**
-     * This method is called when a visual element is right-clicked.
-     *
-     * @param element The narrowest element enclosing the mouse location.
-     * @param event   The mouse event.
-     * @return The method should return true to continue propagating the event, or
-     * false to stop propagating it.
-     */
-    fun onContextMenu(element: HTMLElement?, event: MouseEvent?): Boolean
-
-    /**
-     * This method is called when there's a mouse click on an element.
-     *
-     * @param element The narrowest element enclosing the mouse location.
-     * @param event   The mouse event.
-     * @return The method should return true to continue propagating the event, or
-     * false to stop propagating it.
-     */
-    fun onMouseClick(element: HTMLElement?, event: MouseEvent?): Boolean
-
-    /**
-     * This method is called when there's a mouse double-click on an element.
-     *
-     * @param element The narrowest element enclosing the mouse location.
-     * @param event   The mouse event.
-     * @return The method should return true to continue propagating the event, or
-     * false to stop propagating it.
-     */
-    fun onDoubleClick(element: HTMLElement?, event: MouseEvent?): Boolean
-
-    /**
-     * This method is called when the mouse first hovers over an element.
-     *
-     * @param element The element that the mouse has just entered.
-     * @param event   The mouse event.
-     */
-    fun onMouseOver(element: HTMLElement?, event: MouseEvent?)
-
-    /**
-     * This method is called when the mouse no longer hovers a given element.
-     *
-     * @param element The element that the mouse has just exited.
-     * @param event   The mouse event.
-     */
-    fun onMouseOut(element: HTMLElement?, event: MouseEvent?)
 
     /**
      * This method should return true if and only if image loading needs to be
@@ -353,7 +296,6 @@ interface HtmlRendererContext {
      */
     fun goToHistoryURL(url: String?)
 
-    fun setCursor(cursorOpt: Optional<Cursor>)
 
     fun jobsFinished()
 

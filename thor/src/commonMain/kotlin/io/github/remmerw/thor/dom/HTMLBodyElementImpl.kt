@@ -25,7 +25,6 @@ package io.github.remmerw.thor.dom
 
 import io.github.remmerw.thor.style.BodyRenderState
 import io.github.remmerw.thor.style.RenderState
-import org.mozilla.javascript.Function
 import org.w3c.dom.Document
 import org.w3c.dom.html.HTMLBodyElement
 import org.w3c.dom.html.HTMLDocument
@@ -97,36 +96,7 @@ class HTMLBodyElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLBodyE
         return BodyRenderState(prevRenderState, this)
     }
 
-    var onload: Function?
-        get() {
-            val document: Any? = this.document
-            if (document is HTMLDocumentImpl) {
-                return document.onloadHandler
-            } else {
-                return null
-            }
-        }
-        set(onload) {
-            val document: Any? = this.document
-            if (document is HTMLDocumentImpl) {
-                // Note that body.onload overrides
-                // Window.onload.
-                document.onloadHandler = (onload)
-            }
-        }
 
-    /*
-  @Override
-  protected void assignAttributeField(final String normalName, final String value) {
-    if ("onload".equals(normalName)) {
-      final Function onload = this.getEventFunction(null, normalName);
-      if (onload != null) {
-        this.setOnload(onload);
-      }
-    } else {
-      super.assignAttributeField(normalName, value);
-    }
-  }*/
     override fun handleAttributeChanged(name: String, oldValue: String?, newValue: String?) {
         super.handleAttributeChanged(name, oldValue, newValue)
         if ("onload" == name) {

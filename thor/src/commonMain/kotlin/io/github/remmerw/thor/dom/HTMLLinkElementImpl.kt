@@ -260,39 +260,37 @@ class HTMLLinkElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLLinkE
 
     private fun processLink() {
         val doc = this.ownerDocument as HTMLDocumentImpl
-        try {
-            val uacontext = this.userAgentContext
-            if (uacontext!!.isExternalCSSEnabled()) {
-                try {
-                    val href = this.getHref()
-                    val jSheet = CSSUtilities.jParse(
-                        this, href, doc,
-                        doc.baseURI!!, false
+
+        val uacontext = this.userAgentContext
+        if (uacontext!!.isExternalCSSEnabled()) {
+            try {
+                val href = this.getHref()
+                val jSheet = CSSUtilities.jParse(
+                    this, href, doc,
+                    doc.baseURI!!, false
+                )
+                if (this.styleSheet != null) {
+                    this.styleSheet!!.jStyleSheet = jSheet
+                } else {
+                    val styleSheet = JStyleSheetWrapper(
+                        jSheet, this.media, href, this.type, this.title,
+                        this, doc.styleSheetManager.bridge
                     )
-                    if (this.styleSheet != null) {
-                        this.styleSheet!!.jStyleSheet = jSheet
-                    } else {
-                        val styleSheet = JStyleSheetWrapper(
-                            jSheet, this.media, href, this.type, this.title,
-                            this, doc.styleSheetManager.bridge
-                        )
-                        this.styleSheet = styleSheet
-                    }
-                    this.styleSheet!!.setDisabled(this.isAltStyleSheet or this.disabled)
-                    doc.styleSheetManager.invalidateStyles()
-                } catch (mfe: MalformedURLException) {
-                    this.detachStyleSheet()
-                    this.warn(
-                        ("Will not parse CSS. URI=[" + this.getHref() + "] with BaseURI=[" + doc.getBaseURI()
-                                + "] does not appear to be a valid URI.")
-                    )
-                } catch (err: Exception) {
-                    this.warn("Unable to parse CSS. URI=[" + this.getHref() + "].", err)
+                    this.styleSheet = styleSheet
                 }
+                this.styleSheet!!.setDisabled(this.isAltStyleSheet or this.disabled)
+                doc.styleSheetManager.invalidateStyles()
+            } catch (mfe: MalformedURLException) {
+                this.detachStyleSheet()
+                this.warn(
+                    ("Will not parse CSS. URI=[" + this.getHref() + "] with BaseURI=[" + doc.getBaseURI()
+                            + "] does not appear to be a valid URI.")
+                )
+            } catch (err: Exception) {
+                this.warn("Unable to parse CSS. URI=[" + this.getHref() + "].", err)
             }
-        } finally {
-            doc.markJobsFinished(1, true)
         }
+
     }
 
     private fun deferredProcess() {
@@ -316,9 +314,7 @@ class HTMLLinkElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLLinkE
             }
         } else {
             this.detachStyleSheet()
-            if (!defer) {
-                doc.markJobsFinished(1, true)
-            }
+
         }
     }
 

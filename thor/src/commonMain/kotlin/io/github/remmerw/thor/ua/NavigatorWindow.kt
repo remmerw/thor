@@ -22,74 +22,12 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package io.github.remmerw.thor.ua
 
-import java.awt.Component
-import java.awt.Window
-import javax.swing.JMenu
 
 /**
  * This interface represents a navigator window.
  */
 interface NavigatorWindow {
-    /**
-     * Adds a top-level menu to the window.
-     *
-     * @param menuId A globally unique ID for the menu.
-     * @param menu   A JMenu instance.
-     * @see .getMenu
-     */
-    fun addMenu(menuId: String?, menu: JMenu?)
 
-    /**
-     * Gets a menu previously added, typically by another extension with higher
-     * priority.
-     *
-     * @param menuId The unique ID of the menu. The convention in Lobo is to use
-     * "lobo." followed by the name of the menu in lower case, with any
-     * spaces converted to dots. For example, the ID of the File menu
-     * should be "lobo.file". The ID of the Page Services menu should be
-     * "lobo.page.services".
-     * @return A JMenu instance.
-     */
-    fun getMenu(menuId: String?): JMenu?
-
-    /**
-     * Adds a "tool bar" component to the window. The preferred height of the tool
-     * bar is used, whereas its width will be set roughly to the width of the
-     * window.
-     *
-     * @param toolBar A AWT or Swing lightweight.
-     */
-    fun addToolBar(toolBar: Component?)
-
-    /**
-     * Adds a component to the shared tool bar. The preferred width of the
-     * component is used, whereas its height will be set roughly to the height of
-     * the shared tool bar.
-     *
-     * @param toolBarComponent
-     * @see .createGlueComponent
-     */
-    fun addSharedToolBarComponent(toolBarComponent: Component?)
-
-    /**
-     * Adds a component to the status bar. The preferred width of the component is
-     * used, whereas its height will be set roughly to the height of the status
-     * bar.
-     *
-     * @param statusBarComponent
-     * @see .createGlueComponent
-     */
-    fun addStatusBarComponent(statusBarComponent: Component?)
-
-    /**
-     * Adds a component to the address bar. The preferred width of the component
-     * is used, whereas its height will be set roughly to the height of the status
-     * bar.
-     *
-     * @param addressBarComponent
-     * @see .createGlueComponent
-     */
-    fun addAddressBarComponent(addressBarComponent: Component?)
 
     /**
      * Adds a listener of window events.
@@ -111,25 +49,6 @@ interface NavigatorWindow {
      */
     val topFrame: NavigatorFrame?
 
-    /**
-     * Creates a component wrapper that expands to fill its parent's available
-     * space. It only works if the parent uses a Swing `BoxLayout`.
-     * Examples of components that are wrapped this way are the address combo box
-     * and the status message component.
-     *
-     * @param wrappedComponent The component that is wrapped by the glue box.
-     * @param usingMaxSize     Whether the adjacent components have a maximum size that the
-     * container should try to use. If this argument is
-     * `false`, it is assumed that the adjacent components can
-     * be shrunk to their minimum sizes.
-     */
-    fun createGlueComponent(wrappedComponent: Component?, usingMaxSize: Boolean): Component?
-
-    /**
-     * Creates a gap component that should be placed between toolbar, address bar
-     * or status bar components.
-     */
-    fun createGap(): Component?
 
     /**
      * Closes the window.
@@ -177,10 +96,5 @@ interface NavigatorWindow {
 
     val currentNavigationEntry: NavigationEntry?
 
-    /**
-     * Gets the `java.awt.Frame` instance associated with this
-     * `NavigatorWindow`. In most cases this method will return an
-     * instance of `javax.swing.JFrame`.
-     */
-    val awtWindow: Window?
+
 }

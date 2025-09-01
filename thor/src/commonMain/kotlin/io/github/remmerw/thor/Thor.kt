@@ -153,7 +153,6 @@ abstract class Thor {
 expect fun initializeThor(context: Context)
 
 
-
 private fun deleteRecursively(path: Path, deleteDirectory: Boolean, mustExist: Boolean = false) {
     val isDirectory = SystemFileSystem.metadataOrNull(path)?.isDirectory ?: false
     if (isDirectory) {

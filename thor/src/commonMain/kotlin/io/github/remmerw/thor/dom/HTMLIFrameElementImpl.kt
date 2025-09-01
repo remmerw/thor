@@ -4,7 +4,6 @@ import io.github.remmerw.thor.style.IFrameRenderState
 import io.github.remmerw.thor.style.RenderState
 import io.github.remmerw.thor.ua.UserAgentContext
 import io.github.remmerw.thor.ua.UserAgentContext.RequestKind
-import org.mozilla.javascript.Function
 import org.w3c.dom.Document
 import org.w3c.dom.html.HTMLIFrameElement
 import java.net.MalformedURLException
@@ -14,7 +13,6 @@ class HTMLIFrameElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLIFr
 
     private var browserFrame: BrowserFrame? = null
     private var jobCreated = false
-    private var onload: Function? = null
 
 
     private fun markJobDone(jobs: Int, loaded: Boolean) {
@@ -155,10 +153,6 @@ class HTMLIFrameElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLIFr
         }
     }
 
-
-    fun setOnload(onload: Function?) {
-        this.onload = onload
-    }
 
     private fun loadURLIntoFrame(value: String?) {
         val frame = this.getBrowserFrame()

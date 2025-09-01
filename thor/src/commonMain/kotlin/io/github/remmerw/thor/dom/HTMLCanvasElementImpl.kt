@@ -20,7 +20,6 @@
 package io.github.remmerw.thor.dom
 
 import io.github.remmerw.thor.style.ColorFactory
-import org.mozilla.javascript.typedarrays.NativeUint8ClampedArray
 import org.w3c.dom.html.HTMLElement
 import java.awt.AlphaComposite
 import java.awt.BasicStroke
@@ -40,7 +39,6 @@ import java.util.Base64
 import java.util.Locale
 import java.util.Stack
 import javax.imageio.ImageIO
-import kotlin.math.min
 
 class HTMLCanvasElementImpl : HTMLAbstractUIElement("CANVAS"), HTMLElement {
     private val canvasContext = CanvasContext()
@@ -170,7 +168,7 @@ class HTMLCanvasElementImpl : HTMLAbstractUIElement("CANVAS"), HTMLElement {
         return canvasContext
     }
 
-    class ImageData(val width: Int, val height: Int, val data: NativeUint8ClampedArray?)
+    class ImageData(val width: Int, val height: Int)
 
     inner class CanvasContext {
         private val drawingStateStack: Stack<CanvasState> = Stack<CanvasState>()
@@ -533,78 +531,6 @@ class HTMLCanvasElementImpl : HTMLAbstractUIElement("CANVAS"), HTMLElement {
             )
         }
 
-        fun createImageData(width: Int, height: Int): ImageData {
-            val data = NativeUint8ClampedArray(width * height * 4)
-            return ImageData(width, height, data)
-        }
-
-        fun createImageData(imgdata: ImageData): ImageData {
-            val width = imgdata.width
-            val height = imgdata.height
-            val data = NativeUint8ClampedArray(width * height * 4)
-            return ImageData(width, height, data)
-        }
-
-        fun getImageData(x: Int, y: Int, width: Int, height: Int): ImageData {
-            val argbArray = IntArray(width * height)
-            image!!.getRGB(x, y, width, height, argbArray, 0, width)
-            val clampedBuffer = NativeUint8ClampedArray(width * height * 4)
-            val clampedByteBuffer = clampedBuffer.buffer.getBuffer()
-            var i = 0
-            var j = 0
-            while (i < argbArray.size) {
-                val argb = argbArray[i]
-                clampedByteBuffer[j] = ((argb shr 16) and 0xff).toByte()
-                clampedByteBuffer[j + 1] = ((argb shr 8) and 0xff).toByte()
-                clampedByteBuffer[j + 2] = ((argb) and 0xff).toByte()
-                clampedByteBuffer[j + 3] = ((argb shr 24) and 0xff).toByte()
-                i++
-                j += 4
-            }
-            return ImageData(width, height, clampedBuffer)
-        }
-
-        @JvmOverloads
-        fun putImageData(
-            imgData: ImageData,
-            x: Int,
-            y: Int,
-            width: Int = imgData.width,
-            height: Int = imgData.height
-        ) {
-            println(
-                "putImageData(imgData, x, y, width, height)" + arrayOf<Any>(
-                    x,
-                    y,
-                    width,
-                    height
-                ).contentToString()
-            )
-            if (x >= 0 && y >= 0) {
-                val dataBytes = imgData.data!!.buffer.getBuffer()
-                val argbArray = IntArray(imgData.width * imgData.height)
-                var i = 0
-                var j = 0
-                while (i < argbArray.size) {
-                    argbArray[i] = packBytes2Int(
-                        dataBytes[j + 3], dataBytes[j],
-                        dataBytes[j + 1], dataBytes[j + 2]
-                    )
-                    i++
-                    j += 4
-                }
-                image!!.setRGB(
-                    x,
-                    y,
-                    min(width, imgData.width),
-                    min(height, imgData.height),
-                    argbArray,
-                    0,
-                    imgData.width
-                )
-                repaint()
-            }
-        }
 
         @Synchronized
         fun invalidate() {

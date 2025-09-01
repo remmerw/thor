@@ -1,13 +1,11 @@
 package io.github.remmerw.thor.dom
 
-import java.awt.Component
 
 /**
  * This interface should be implemented to provide OBJECT, EMBED or APPLET
  * functionality.
  */
 interface HtmlObject {
-    fun component(): Component?
 
     fun suspend()
 

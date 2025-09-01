@@ -24,7 +24,6 @@
 package io.github.remmerw.thor.dom
 
 import io.github.remmerw.thor.parser.Nodes
-import org.mozilla.javascript.Scriptable
 import org.w3c.dom.Node
 import org.w3c.dom.html.HTMLCollection
 import java.lang.ref.WeakReference
@@ -35,11 +34,7 @@ open class DescendantHTMLCollection @JvmOverloads constructor(
     private val treeLock: Any,
     private val nestIntoMatchingNodes: Boolean = true
 ) : HTMLCollection {
-    private val scriptable: Scriptable? = null
 
-    fun scriptable(): Scriptable? {
-        return scriptable
-    }
 
     private var itemsByName: MutableMap<String?, ElementImpl?>? = null
     private var itemsByIndex: MutableList<NodeImpl?>? = null

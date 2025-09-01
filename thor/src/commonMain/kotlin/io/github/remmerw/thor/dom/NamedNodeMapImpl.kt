@@ -23,7 +23,6 @@
  */
 package io.github.remmerw.thor.dom
 
-import org.mozilla.javascript.Scriptable
 import org.w3c.dom.Attr
 import org.w3c.dom.DOMException
 import org.w3c.dom.Element
@@ -35,12 +34,6 @@ class NamedNodeMapImpl(owner: Element?, attribs: MutableMap<String, String>) :
     // Note: class must be public for reflection to work.
     private val attributes: MutableMap<String, Node> = HashMap()
     private val attributeList = ArrayList<Node>()
-
-    var scriptable: Scriptable? = null
-
-    fun scriptable(): Scriptable? {
-        return scriptable
-    }
 
     init {
         attribs.forEach { (name: String, value: String?) ->

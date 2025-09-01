@@ -1,13 +1,9 @@
 package io.github.remmerw.thor.dom
 
-import org.mozilla.javascript.Function
-
 /**
  * Implements common functionality of most elements.
  */
 open class HTMLAbstractUIElement(name: String) : HTMLElementImpl(name) {
-
-    private var functionByAttribute: MutableMap<String?, Function?>? = null
 
     open fun focus() {
         val node = this.uINode
@@ -24,15 +20,4 @@ open class HTMLAbstractUIElement(name: String) : HTMLElementImpl(name) {
     }
 
 
-    override fun handleAttributeChanged(name: String, oldValue: String?, newValue: String?) {
-        super.handleAttributeChanged(name, oldValue, newValue)
-        if (name.startsWith("on")) {
-            synchronized(this) {
-                val fba = this.functionByAttribute
-                if (fba != null) {
-                    fba.remove(name)
-                }
-            }
-        }
-    }
 }

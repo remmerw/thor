@@ -35,7 +35,7 @@ import java.util.logging.Logger
 import kotlin.math.max
 
 object HtmlValues {
-    val SYSTEM_FONTS: MutableMap<String, FontInfo> = HashMap<String, FontInfo>()
+    val SYSTEM_FONTS: MutableMap<String, FontInfo> = HashMap()
     const val DEFAULT_FONT_SIZE: Float = 16.0f
     val DEFAULT_FONT_SIZE_INT: Int = DEFAULT_FONT_SIZE.toInt()
 

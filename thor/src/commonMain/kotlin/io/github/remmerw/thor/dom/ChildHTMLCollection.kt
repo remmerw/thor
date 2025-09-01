@@ -23,17 +23,11 @@
  */
 package io.github.remmerw.thor.dom
 
-import org.mozilla.javascript.Scriptable
 import org.w3c.dom.Node
 import org.w3c.dom.html.HTMLCollection
 
 class ChildHTMLCollection(private val rootNode: NodeImpl) : HTMLCollection {
 
-    var scriptable: Scriptable? = null
-
-    fun scriptable(): Scriptable? {
-        return scriptable
-    }
 
     override fun getLength(): Int {
         return this.rootNode.getChildCount()

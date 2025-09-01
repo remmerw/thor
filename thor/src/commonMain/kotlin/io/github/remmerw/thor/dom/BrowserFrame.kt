@@ -1,16 +1,11 @@
 package io.github.remmerw.thor.dom
 
 import org.w3c.dom.Document
-import java.awt.Component
 import java.awt.Insets
 import java.net.URL
 
 interface BrowserFrame {
-    /**
-     * Gets the component that renders the frame. This can be a
-     * [HtmlPanel].
-     */
-    fun component(): Component?
+
 
     /**
      * Loads a URL in the frame.
