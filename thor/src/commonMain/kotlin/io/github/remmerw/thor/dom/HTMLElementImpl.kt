@@ -31,7 +31,7 @@ import cz.vutbr.web.css.TermList
 import cz.vutbr.web.csskit.MatchConditionOnElements
 import cz.vutbr.web.domassign.Analyzer.OrderedRule
 import cz.vutbr.web.domassign.AnalyzerUtil
-import io.github.remmerw.thor.Strings
+import io.github.remmerw.thor.core.Strings
 import io.github.remmerw.thor.parser.HtmlParser
 import io.github.remmerw.thor.style.CSS2PropertiesContext
 import io.github.remmerw.thor.style.CSSUtilities

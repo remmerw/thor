@@ -23,7 +23,7 @@
  */
 package io.github.remmerw.thor.dom
 
-import io.github.remmerw.thor.Strings
+import io.github.remmerw.thor.core.Strings
 import io.github.remmerw.thor.parser.HtmlParser
 import org.w3c.dom.Attr
 import org.w3c.dom.Comment

@@ -20,7 +20,6 @@
  */
 package io.github.remmerw.thor.style
 
-import io.github.remmerw.thor.ColorFactory
 import io.github.remmerw.thor.dom.HTMLElementImpl
 
 class BodyRenderState  // Note: BODY behaves like an inline element, but the root

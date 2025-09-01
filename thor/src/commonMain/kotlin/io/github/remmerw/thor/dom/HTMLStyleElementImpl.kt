@@ -23,8 +23,8 @@
  */
 package io.github.remmerw.thor.dom
 
-import io.github.remmerw.thor.style.CSSUtilities
 import io.github.remmerw.thor.css.JStyleSheetWrapper
+import io.github.remmerw.thor.style.CSSUtilities
 import org.w3c.dom.DOMException
 import org.w3c.dom.Node.TEXT_NODE
 import org.w3c.dom.Text

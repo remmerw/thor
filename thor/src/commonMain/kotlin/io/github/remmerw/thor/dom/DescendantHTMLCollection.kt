@@ -23,7 +23,7 @@
  */
 package io.github.remmerw.thor.dom
 
-import io.github.remmerw.thor.Nodes
+import io.github.remmerw.thor.parser.Nodes
 import org.mozilla.javascript.Scriptable
 import org.w3c.dom.Node
 import org.w3c.dom.html.HTMLCollection

@@ -28,8 +28,8 @@ import cz.vutbr.web.css.RuleFactory
 import cz.vutbr.web.css.StyleSheet
 import cz.vutbr.web.csskit.RuleFactoryImpl
 import cz.vutbr.web.csskit.antlr4.CSSParserFactory
-import io.github.remmerw.thor.Strings
-import io.github.remmerw.thor.Urls
+import io.github.remmerw.thor.core.Strings
+import io.github.remmerw.thor.core.Urls
 import io.github.remmerw.thor.dom.HTMLDocumentImpl
 import io.github.remmerw.thor.dom.HTMLElementImpl
 import io.github.remmerw.thor.ua.UserAgentContext

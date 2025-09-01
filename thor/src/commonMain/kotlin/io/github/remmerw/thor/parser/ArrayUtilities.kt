@@ -1,4 +1,4 @@
-package io.github.remmerw.thor
+package io.github.remmerw.thor.parser
 
 object ArrayUtilities {
 

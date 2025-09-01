@@ -23,8 +23,6 @@
  */
 package io.github.remmerw.thor.parser
 
-import io.github.remmerw.thor.ArrayUtilities
-import io.github.remmerw.thor.Nodes
 import io.github.remmerw.thor.dom.DocumentTypeImpl
 import io.github.remmerw.thor.dom.HTMLDocumentImpl
 import io.github.remmerw.thor.ua.UserAgentContext

@@ -3,7 +3,7 @@ package io.github.remmerw.thor.style
 import cz.vutbr.web.css.CSSProperty
 import cz.vutbr.web.css.NodeData
 import cz.vutbr.web.csskit.TermURIImpl
-import io.github.remmerw.thor.Urls
+import io.github.remmerw.thor.core.Urls
 import org.mozilla.javascript.Scriptable
 import org.w3c.dom.css.CSS2Properties
 import java.net.MalformedURLException

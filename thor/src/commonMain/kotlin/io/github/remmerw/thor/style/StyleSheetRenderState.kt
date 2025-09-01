@@ -24,8 +24,6 @@
 package io.github.remmerw.thor.style
 
 import cz.vutbr.web.css.CSSProperty.VerticalAlign
-import io.github.remmerw.thor.ColorFactory
-import io.github.remmerw.thor.FontFactory
 import io.github.remmerw.thor.dom.HTMLDocumentImpl
 import io.github.remmerw.thor.dom.HTMLElementImpl
 import org.w3c.dom.css.CSS2Properties

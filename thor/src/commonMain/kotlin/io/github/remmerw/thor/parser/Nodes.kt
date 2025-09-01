@@ -1,4 +1,4 @@
-package io.github.remmerw.thor
+package io.github.remmerw.thor.parser
 
 import org.w3c.dom.Element
 import org.w3c.dom.Node

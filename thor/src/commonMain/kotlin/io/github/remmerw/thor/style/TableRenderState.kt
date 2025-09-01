@@ -20,7 +20,6 @@
  */
 package io.github.remmerw.thor.style
 
-import io.github.remmerw.thor.ColorFactory
 import io.github.remmerw.thor.dom.HTMLElementImpl
 import io.github.remmerw.thor.dom.HTMLTableElementImpl
 import java.net.MalformedURLException

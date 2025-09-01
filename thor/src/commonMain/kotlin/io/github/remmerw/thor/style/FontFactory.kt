@@ -1,5 +1,6 @@
-package io.github.remmerw.thor
+package io.github.remmerw.thor.style
 
+import io.github.remmerw.thor.core.Strings
 import java.awt.Font
 import java.awt.FontFormatException
 import java.awt.GraphicsEnvironment

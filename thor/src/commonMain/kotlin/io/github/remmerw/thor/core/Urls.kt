@@ -1,5 +1,6 @@
-package io.github.remmerw.thor
+package io.github.remmerw.thor.core
 
+import io.github.remmerw.thor.style.NameValuePair
 import java.net.MalformedURLException
 import java.net.URL
 import java.net.URLConnection

@@ -20,9 +20,9 @@
  */
 package io.github.remmerw.thor.dom
 
-import io.github.remmerw.thor.style.CSSUtilities
-import io.github.remmerw.thor.Urls
+import io.github.remmerw.thor.core.Urls
 import io.github.remmerw.thor.css.JStyleSheetWrapper
+import io.github.remmerw.thor.style.CSSUtilities
 import org.w3c.dom.css.CSSStyleSheet
 import org.w3c.dom.html.HTMLLinkElement
 import org.w3c.dom.stylesheets.LinkStyle
@@ -171,7 +171,7 @@ class HTMLLinkElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLLinkE
         } else if (href.startsWith("javascript:")) {
             val script = href.substring(11)
             // evalInScope adds the JS task
-           println(script)
+            println(script)
         } else {
             val urlOpt = this.absoluteURL
             if (urlOpt.isPresent) {

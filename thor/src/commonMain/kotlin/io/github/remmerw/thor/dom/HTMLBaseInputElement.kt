@@ -304,7 +304,6 @@ abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) 
     }
 
 
-
     fun setCustomValidity(message: String?) {
         // TODO Implement
         println("TODO: HTMLBaseInputElement.setCustomValidity() " + message)

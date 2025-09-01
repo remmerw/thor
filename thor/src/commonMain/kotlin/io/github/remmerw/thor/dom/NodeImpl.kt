@@ -5,8 +5,8 @@ import cz.vutbr.web.css.CSSFactory
 import cz.vutbr.web.css.CombinedSelector
 import cz.vutbr.web.css.RuleSet
 import cz.vutbr.web.css.Selector
-import io.github.remmerw.thor.Strings
-import io.github.remmerw.thor.Urls
+import io.github.remmerw.thor.core.Strings
+import io.github.remmerw.thor.core.Urls
 import io.github.remmerw.thor.parser.HtmlParser
 import io.github.remmerw.thor.style.RenderState
 import io.github.remmerw.thor.style.StyleSheetRenderState
@@ -1406,7 +1406,6 @@ abstract class NodeImpl : Node, ModelNode {
         // System.out.println("  txt content: " + getInnerText());
 
     }
-
 
 
     fun querySelector(query: String?): Element? {

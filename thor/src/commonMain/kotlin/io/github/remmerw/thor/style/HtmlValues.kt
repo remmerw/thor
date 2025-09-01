@@ -20,8 +20,7 @@
  */
 package io.github.remmerw.thor.style
 
-import io.github.remmerw.thor.ColorFactory
-import io.github.remmerw.thor.Urls
+import io.github.remmerw.thor.core.Urls
 import org.w3c.dom.css.CSS2Properties
 import java.awt.Color
 import java.awt.GraphicsEnvironment

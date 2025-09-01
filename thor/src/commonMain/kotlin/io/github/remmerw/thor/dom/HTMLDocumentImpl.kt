@@ -31,12 +31,7 @@ import cz.vutbr.web.csskit.ElementMatcherSafeStd
 import cz.vutbr.web.csskit.antlr4.CSSParserFactory
 import cz.vutbr.web.domassign.Analyzer
 import cz.vutbr.web.domassign.AnalyzerUtil
-import io.github.remmerw.thor.parser.HtmlParser
-import io.github.remmerw.thor.style.CSSNorm
-import io.github.remmerw.thor.style.RenderState
-import io.github.remmerw.thor.style.StyleSheetRenderState
-import io.github.remmerw.thor.Urls
-import io.github.remmerw.thor.parser.EmptyReader
+import io.github.remmerw.thor.core.Urls
 import io.github.remmerw.thor.css.JStyleSheetWrapper
 import io.github.remmerw.thor.css.JStyleSheetWrapper.Companion.getStyleSheets
 import io.github.remmerw.thor.css.StyleSheetBridge
@@ -47,7 +42,12 @@ import io.github.remmerw.thor.dom.NodeFilter.FormFilter
 import io.github.remmerw.thor.dom.NodeFilter.FrameFilter
 import io.github.remmerw.thor.dom.NodeFilter.LinkFilter
 import io.github.remmerw.thor.dom.NodeFilter.TagNameFilter
+import io.github.remmerw.thor.parser.EmptyReader
+import io.github.remmerw.thor.parser.HtmlParser
 import io.github.remmerw.thor.parser.WritableLineReader
+import io.github.remmerw.thor.style.CSSNorm
+import io.github.remmerw.thor.style.RenderState
+import io.github.remmerw.thor.style.StyleSheetRenderState
 import io.github.remmerw.thor.ua.UserAgentContext
 import org.mozilla.javascript.Function
 import org.w3c.dom.Attr
@@ -87,7 +87,6 @@ import java.io.Reader
 import java.io.StringReader
 import java.net.MalformedURLException
 import java.net.URL
-import java.security.PrivilegedAction
 import java.util.Locale
 import java.util.concurrent.Semaphore
 import java.util.concurrent.atomic.AtomicBoolean
@@ -111,7 +110,6 @@ class HTMLDocumentImpl(
     val styleSheetManager: StyleSheetManager = StyleSheetManager()
     private val factory: ElementFactory
     private var documentURL: URL? = null
-
 
 
     private val elementsById: MutableMap<String, Element?> = mutableMapOf()
@@ -372,7 +370,7 @@ class HTMLDocumentImpl(
 
         // TODO: Security: Review rationale.
 
-        return  context.getCookie(documentURL)
+        return context.getCookie(documentURL)
     }
 
     @Throws(DOMException::class)
@@ -857,7 +855,6 @@ class HTMLDocumentImpl(
     }
 
 
-
     override fun getURL(): String? {
         return this.documentURI
     }
@@ -1144,7 +1141,6 @@ class HTMLDocumentImpl(
         // dispatchEventToHandlers(loadEvent, onloadHandlers);
 
     }
-
 
 
     override fun createSimilarNode(): Node {

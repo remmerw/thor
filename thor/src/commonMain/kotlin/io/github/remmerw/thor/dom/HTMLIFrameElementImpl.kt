@@ -67,7 +67,6 @@ class HTMLIFrameElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLIFr
     }
 
 
-
     override fun getFrameBorder(): String? {
         return this.getAttribute("frameborder")
     }

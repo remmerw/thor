@@ -1,4 +1,4 @@
-package io.github.remmerw.thor
+package io.github.remmerw.thor.core
 
 import java.io.UnsupportedEncodingException
 import java.nio.charset.StandardCharsets

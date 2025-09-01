@@ -19,7 +19,7 @@
  */
 package io.github.remmerw.thor.dom
 
-import io.github.remmerw.thor.ColorFactory
+import io.github.remmerw.thor.style.ColorFactory
 import org.mozilla.javascript.typedarrays.NativeUint8ClampedArray
 import org.w3c.dom.html.HTMLElement
 import java.awt.AlphaComposite

@@ -23,7 +23,7 @@
  */
 package io.github.remmerw.thor.dom
 
-import io.github.remmerw.thor.Strings
+import io.github.remmerw.thor.core.Strings
 import org.w3c.dom.DOMException
 import org.w3c.dom.Node
 import org.w3c.dom.Node.TEXT_NODE

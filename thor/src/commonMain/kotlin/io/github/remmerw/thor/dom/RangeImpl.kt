@@ -83,7 +83,7 @@ class RangeImpl(doc: Document?) : Range {
     @Throws(RangeException::class, DOMException::class)
     override fun setStartBefore(refNode: Node?) {
         // TODO Auto-generated method stub
-       TODO()
+        TODO()
     }
 
     @Throws(RangeException::class, DOMException::class)
@@ -95,7 +95,7 @@ class RangeImpl(doc: Document?) : Range {
     @Throws(RangeException::class, DOMException::class)
     override fun setEndBefore(refNode: Node?) {
         // TODO Auto-generated method stub
-       TODO()
+        TODO()
     }
 
     @Throws(RangeException::class, DOMException::class)
