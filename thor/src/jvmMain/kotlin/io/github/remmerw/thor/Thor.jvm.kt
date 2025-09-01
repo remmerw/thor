@@ -94,9 +94,3 @@ fun createBookmarks(): Bookmarks {
     return bookmarksDatabaseBuilder(bookmarksBuilder())
 }
 
-
-actual fun render() {
-    val url = "http://www.benjysbrain.com/"
-    val p = Render(url)
-    p.parsePage()
-}

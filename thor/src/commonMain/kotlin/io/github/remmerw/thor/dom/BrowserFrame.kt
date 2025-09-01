@@ -5,11 +5,6 @@ import java.awt.Component
 import java.awt.Insets
 import java.net.URL
 
-/**
- * The `BrowserFrame` interface represents a browser frame. A simple
- * implementation of this interface is provided in
- * [org.cobraparser.html.test.SimpleBrowserFrame].
- */
 interface BrowserFrame {
     /**
      * Gets the component that renders the frame. This can be a

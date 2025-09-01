@@ -152,7 +152,6 @@ abstract class Thor {
 
 expect fun initializeThor(context: Context)
 
-expect fun render()
 
 
 private fun deleteRecursively(path: Path, deleteDirectory: Boolean, mustExist: Boolean = false) {

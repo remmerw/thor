@@ -8,7 +8,8 @@ class RenderTest {
     @Test
     fun renderTest(): Unit = runBlocking(Dispatchers.IO) {
 
-        render()
-
+        val url = "http://www.benjysbrain.com/"
+        val p = Render(url)
+        p.parsePage()
     }
 }

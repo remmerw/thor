@@ -479,8 +479,8 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), Element {
     val lastElementChild: Element?
         get() {
             val nl = this.nodeList!!
-            val N = nl.size
-            for (i in N - 1 downTo 0) {
+            val size = nl.size
+            for (i in size - 1 downTo 0) {
                 val n = nl.get(i)
                 if (n is Element) {
                     return n

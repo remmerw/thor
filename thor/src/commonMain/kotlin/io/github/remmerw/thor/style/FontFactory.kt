@@ -107,11 +107,11 @@ class FontFactory private constructor() {
     }
 
     private fun createFont(key: FontKey): Font? {
-        val font = createFont_Impl(key)
+        val font = createFontIntern(key)
         return superscriptFont(font, key.superscript)
     }
 
-    private fun createFont_Impl(key: FontKey): Font {
+    private fun createFontIntern(key: FontKey): Font {
         val fontNames = key.fontFamily
         var matchingFace: String? = null
         val fontFamilies = this.fontFamilies
