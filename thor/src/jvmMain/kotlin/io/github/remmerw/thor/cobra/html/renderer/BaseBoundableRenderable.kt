@@ -27,6 +27,13 @@ abstract class BaseBoundableRenderable(
     var isValid: Boolean = true
         protected set
 
+    override fun horizontalScrollBarHeight(): Int {
+        return 0
+    }
+
+    override fun verticalScrollBarHeight(): Int {
+        return 0
+    }
 
     private var delegator: BoundableRenderable? = null
 
@@ -410,6 +417,7 @@ abstract class BaseBoundableRenderable(
     override fun isDelegated(): Boolean {
         return delegator != null
     }
+
 
     override fun onMiddleClick(event: MouseEvent?, x: Int, y: Int): Boolean {
         val me = this.modelNode

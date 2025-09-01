@@ -185,9 +185,6 @@ internal open class RTableCell(
         this.setBounds(x, y, width, height)
     }
 
-    fun isMarginBoundary(): Boolean {
-        return true
-    }
 
     override fun getRenderState(): RenderState {
         return cellElement.getRenderState()

@@ -161,9 +161,6 @@ internal class RAnonTableCell(
         this.setBounds(x, y, width, height)
     }
 
-    fun isMarginBoundary(): Boolean {
-        return true
-    }
 
     override fun getRenderState(): RenderState {
         return cellNode.getRenderState()

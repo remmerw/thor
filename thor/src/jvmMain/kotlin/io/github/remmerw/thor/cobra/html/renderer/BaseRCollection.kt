@@ -40,25 +40,7 @@ abstract class BaseRCollection(container: RenderableContainer?, modelNode: Model
                     r.updateWidgetBounds(guiX + or.x, guiY + or.y)
                 }
 
-                /*
-        int ox = guiX;
-        int oy = guiY;
-        Renderable r = rn;
-        if (rn instanceof PositionedRenderable) {
-          final PositionedRenderable pr = (PositionedRenderable) rn;
-          final Point pro = pr.getOffset();
-          ox += pro.x;
-          oy += pro.y;
-          r = pr.renderable;
-        }
-        if (r instanceof RCollection) {
-          // RUIControl is a RCollection too.
-          final RCollection rc = (RCollection) r;
-          final Point or = rc.getOriginRelativeTo(this);
-          // rc.updateWidgetBounds(guiX + rc.getX(), guiY + rc.getY());
-          rc.updateWidgetBounds(ox + or.x, oy + or.y);
-        }
-        */
+
             }
         }
     }

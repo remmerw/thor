@@ -145,9 +145,8 @@ interface BoundableRenderable : Renderable {
 
     fun isDelegated(): Boolean
 
-    val horizontalScrollBarHeight: Int
-        get() = 0
+    fun horizontalScrollBarHeight(): Int
 
-    val verticalScrollBarHeight: Int
-        get() = 0
+    fun verticalScrollBarHeight(): Int
+
 }
