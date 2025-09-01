@@ -6,7 +6,6 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import io.github.remmerw.idun.Idun
 import io.github.remmerw.idun.newIdun
-import io.github.remmerw.thor.cobra.Render
 import io.github.remmerw.thor.core.Bookmarks
 import io.github.remmerw.thor.core.Tasks
 import kotlinx.io.files.Path
