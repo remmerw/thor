@@ -66,7 +66,6 @@ interface RendererContext {
     )
 
 
-
     /**
      * This method should return true if and only if image loading needs to be
      * enabled.
