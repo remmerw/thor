@@ -16,15 +16,16 @@ import io.github.remmerw.thor.dom.HTMLAnchorElementModel
 import io.github.remmerw.thor.dom.HTMLFormElementModel
 import io.github.remmerw.thor.dom.HTMLImageElementModel
 import io.github.remmerw.thor.dom.HTMLLinkElementModel
-import io.github.remmerw.thor.model.RendererContext
 import io.github.remmerw.thor.dom.NodeModel
 import io.github.remmerw.thor.model.DefaultRendererContext
+import io.github.remmerw.thor.model.RendererContext
 import io.github.remmerw.thor.model.Utils
 
 
 @Composable
-fun HtmlViewer(documentModel: DocumentModel,
-               rendererContext: RendererContext = DefaultRendererContext()
+fun HtmlViewer(
+    documentModel: DocumentModel,
+    rendererContext: RendererContext = DefaultRendererContext()
 ) {
     val nodeModels = remember { documentModel.nodes() }
 
@@ -57,8 +58,10 @@ fun HtmlViewer(documentModel: DocumentModel,
 }
 
 @Composable
-fun Nodes(nodeModel: NodeModel,
-          rendererContext: RendererContext) {
+fun Nodes(
+    nodeModel: NodeModel,
+    rendererContext: RendererContext
+) {
 
     val nodeModels = remember { nodeModel.nodes() }
 
@@ -98,6 +101,7 @@ fun Nodes(nodeModel: NodeModel,
                 "LINK" -> {
                     Link(nodeModel as HTMLLinkElementModel, rendererContext)
                 }
+
                 "A", "ANCHOR" -> {
                     A(nodeModel as HTMLAnchorElementModel, rendererContext)
                 }
@@ -141,39 +145,47 @@ fun Nodes(nodeModel: NodeModel,
 }
 
 @Composable
-fun Html(nodeModel: NodeModel,
-         rendererContext: RendererContext) {
+fun Html(
+    nodeModel: NodeModel,
+    rendererContext: RendererContext
+) {
     Text(nodeModel.nodeName)
     Nodes(nodeModel, rendererContext)
 }
 
 
 @Composable
-fun Dummy(nodeModel: NodeModel,
-          rendererContext: RendererContext) {
+fun Dummy(
+    nodeModel: NodeModel,
+    rendererContext: RendererContext
+) {
     Text(nodeModel.nodeName)
     Nodes(nodeModel, rendererContext)
 }
 
 
 @Composable
-fun Font(nodeModel: NodeModel,
-         rendererContext: RendererContext) {
+fun Font(
+    nodeModel: NodeModel,
+    rendererContext: RendererContext
+) {
     Text(nodeModel.nodeName)
     Nodes(nodeModel, rendererContext)
 }
 
 
 @Composable
-fun Img(nodeModel: HTMLImageElementModel,
-        rendererContext: RendererContext) {
+fun Img(
+    nodeModel: HTMLImageElementModel,
+    rendererContext: RendererContext
+) {
     Text(nodeModel.nodeName)
 
     val src = remember { nodeModel.src!! }
 
     val url = nodeModel.getFullURL(src)
 
-    if(rendererContext.isImageLoadingEnabled()) {
+    if (rendererContext.isImageLoadingEnabled()) {
         AsyncImage(
             model = url.toExternalForm(),
             contentDescription = null,
@@ -188,30 +200,38 @@ fun Img(nodeModel: HTMLImageElementModel,
 }
 
 @Composable
-fun Ul(nodeModel: NodeModel,
-       rendererContext: RendererContext) {
+fun Ul(
+    nodeModel: NodeModel,
+    rendererContext: RendererContext
+) {
     Text(nodeModel.nodeName)
     Nodes(nodeModel, rendererContext)
 }
 
 
 @Composable
-fun Blockquote(nodeModel: NodeModel,
-               rendererContext: RendererContext) {
+fun Blockquote(
+    nodeModel: NodeModel,
+    rendererContext: RendererContext
+) {
     Text(nodeModel.nodeName)
     Nodes(nodeModel, rendererContext)
 }
 
 @Composable
-fun Li(nodeModel: NodeModel,
-       rendererContext: RendererContext) {
+fun Li(
+    nodeModel: NodeModel,
+    rendererContext: RendererContext
+) {
     Text(nodeModel.nodeName)
     Nodes(nodeModel, rendererContext)
 }
 
 @Composable
-fun Form(nodeModel: HTMLFormElementModel,
-         rendererContext: RendererContext) {
+fun Form(
+    nodeModel: HTMLFormElementModel,
+    rendererContext: RendererContext
+) {
     Text(nodeModel.nodeName)
 
     Utils.submit(nodeModel, rendererContext)
@@ -220,31 +240,39 @@ fun Form(nodeModel: HTMLFormElementModel,
 }
 
 @Composable
-fun Body(nodeModel: NodeModel,
-         rendererContext: RendererContext) {
+fun Body(
+    nodeModel: NodeModel,
+    rendererContext: RendererContext
+) {
     Text(nodeModel.nodeName)
     Nodes(nodeModel, rendererContext)
 }
 
 
 @Composable
-fun Center(nodeModel: NodeModel,
-           rendererContext: RendererContext) {
+fun Center(
+    nodeModel: NodeModel,
+    rendererContext: RendererContext
+) {
     Text(nodeModel.nodeName)
     Nodes(nodeModel, rendererContext)
 }
 
 @Composable
-fun Table(nodeModel: NodeModel,
-          rendererContext: RendererContext) {
+fun Table(
+    nodeModel: NodeModel,
+    rendererContext: RendererContext
+) {
     Text(nodeModel.nodeName)
     Nodes(nodeModel, rendererContext)
 }
 
 
 @Composable
-fun Link(nodeModel: HTMLLinkElementModel,
-      rendererContext: RendererContext) {
+fun Link(
+    nodeModel: HTMLLinkElementModel,
+    rendererContext: RendererContext
+) {
     Text(nodeModel.nodeName)
     Nodes(nodeModel, rendererContext)
 
@@ -252,8 +280,10 @@ fun Link(nodeModel: HTMLLinkElementModel,
 }
 
 @Composable
-fun A(nodeModel: HTMLAnchorElementModel,
-      rendererContext: RendererContext) {
+fun A(
+    nodeModel: HTMLAnchorElementModel,
+    rendererContext: RendererContext
+) {
     Text(nodeModel.nodeName)
     Nodes(nodeModel, rendererContext)
 
@@ -264,37 +294,47 @@ fun A(nodeModel: HTMLAnchorElementModel,
 
 
 @Composable
-fun Tr(nodeModel: NodeModel,
-       rendererContext: RendererContext) {
+fun Tr(
+    nodeModel: NodeModel,
+    rendererContext: RendererContext
+) {
     Text(nodeModel.nodeName)
     Nodes(nodeModel, rendererContext)
 }
 
 
 @Composable
-fun Td(nodeModel: NodeModel,
-       rendererContext: RendererContext) {
+fun Td(
+    nodeModel: NodeModel,
+    rendererContext: RendererContext
+) {
     Text(nodeModel.nodeName)
     Nodes(nodeModel, rendererContext)
 }
 
 @Composable
-fun Div(nodeModel: NodeModel,
-        rendererContext: RendererContext) {
+fun Div(
+    nodeModel: NodeModel,
+    rendererContext: RendererContext
+) {
     Text(nodeModel.nodeName)
     Nodes(nodeModel, rendererContext)
 }
 
 @Composable
-fun Big(nodeModel: NodeModel,
-        rendererContext: RendererContext) {
+fun Big(
+    nodeModel: NodeModel,
+    rendererContext: RendererContext
+) {
     Text(nodeModel.nodeName)
     Nodes(nodeModel, rendererContext)
 }
 
 @Composable
-fun Br(nodeModel: NodeModel,
-       rendererContext: RendererContext) {
+fun Br(
+    nodeModel: NodeModel,
+    rendererContext: RendererContext
+) {
     Text(nodeModel.nodeName)
     Nodes(nodeModel, rendererContext)
 }

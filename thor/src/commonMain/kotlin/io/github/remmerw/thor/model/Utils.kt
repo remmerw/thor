@@ -1,24 +1,16 @@
 package io.github.remmerw.thor.model
 
-import io.github.remmerw.thor.core.Strings
 import io.github.remmerw.thor.dom.FormInput
 import io.github.remmerw.thor.dom.HTMLAnchorElementModel
-import io.github.remmerw.thor.dom.HTMLDocumentImpl
 import io.github.remmerw.thor.dom.HTMLElementModel
 import io.github.remmerw.thor.dom.HTMLFormElementModel
 import io.github.remmerw.thor.dom.HTMLLinkElementModel
 import io.github.remmerw.thor.dom.NodeVisitor
-import io.github.remmerw.thor.parser.HtmlParser
 import org.w3c.dom.Node
-import org.xml.sax.SAXException
-import java.io.IOException
-import java.io.StringReader
 import java.net.MalformedURLException
 import java.net.URL
 
 object Utils {
-
-
 
 
     /**

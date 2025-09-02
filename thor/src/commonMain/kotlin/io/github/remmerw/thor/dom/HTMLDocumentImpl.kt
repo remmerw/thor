@@ -32,9 +32,9 @@ import cz.vutbr.web.csskit.antlr4.CSSParserFactory
 import cz.vutbr.web.domassign.Analyzer
 import cz.vutbr.web.domassign.AnalyzerUtil
 import io.github.remmerw.thor.core.Urls
+import io.github.remmerw.thor.css.StyleSheetBridge
 import io.github.remmerw.thor.css.StyleSheetWrapper
 import io.github.remmerw.thor.css.StyleSheetWrapper.Companion.getStyleSheets
-import io.github.remmerw.thor.css.StyleSheetBridge
 import io.github.remmerw.thor.dom.NodeFilter.AnchorFilter
 import io.github.remmerw.thor.dom.NodeFilter.AppletFilter
 import io.github.remmerw.thor.dom.NodeFilter.ElementNameFilter
@@ -47,7 +47,6 @@ import io.github.remmerw.thor.parser.WritableLineReader
 import io.github.remmerw.thor.style.CSSNorm
 import io.github.remmerw.thor.style.RenderState
 import io.github.remmerw.thor.style.StyleSheetRenderState
-import io.github.remmerw.thor.ua.UserAgentContext
 import org.w3c.dom.Attr
 import org.w3c.dom.CDATASection
 import org.w3c.dom.Comment
@@ -90,7 +89,6 @@ import kotlin.concurrent.Volatile
  * Implementation of the W3C `HTMLDocument` interface.
  */
 class HTMLDocumentImpl(
-    private val context: UserAgentContext,
     private var reader: WritableLineReader? = null,
     private var documentURI: String? = null,
     private val contentType: String? = null
@@ -319,9 +317,9 @@ class HTMLDocumentImpl(
         // Note that this Document instance cannot be created
         // with an arbitrary URL.
 
-        // TODO: Security: Review rationale.
+        // cookies not supported
 
-        return context.getCookie(documentURL)
+        return null
     }
 
     @Throws(DOMException::class)
@@ -333,7 +331,7 @@ class HTMLDocumentImpl(
         // Note that this Document instance cannot be created
         // with an arbitrary URL.
 
-        context.setCookie(documentURL, cookie)
+        // cookies not supported
 
     }
 
@@ -384,7 +382,7 @@ class HTMLDocumentImpl(
                 val systemId = this.documentURI
                 val publicId = systemId
                 val parser = HtmlParser(
-                    this.context, this, errorHandler, publicId, systemId,
+                    this, errorHandler, publicId, systemId,
                     this.isXML, true
                 )
                 parser.parse(reader)
@@ -459,7 +457,6 @@ class HTMLDocumentImpl(
         val systemId = this.documentURI
         val publicId = systemId
         val parser = HtmlParser(
-            this.context,
             this,
             errorHandler,
             publicId,
@@ -735,7 +732,7 @@ class HTMLDocumentImpl(
     override fun getImplementation(): DOMImplementation {
         synchronized(this) {
             if (this.domImplementation == null) {
-                this.domImplementation = DOMImplementationImpl(this.context)
+                this.domImplementation = DOMImplementationImpl()
             }
             return this.domImplementation!!
         }
@@ -785,10 +782,6 @@ class HTMLDocumentImpl(
         )
     }
 
-
-    fun userAgentContext(): UserAgentContext {
-        return this.context
-    }
 
     @Throws(MalformedURLException::class)
     override fun getFullURL(uri: String): URL {
@@ -1051,7 +1044,6 @@ class HTMLDocumentImpl(
 
     override fun createSimilarNode(): Node {
         return HTMLDocumentImpl(
-            this.context,
             this.reader,
             this.documentURI,
             this.contentType

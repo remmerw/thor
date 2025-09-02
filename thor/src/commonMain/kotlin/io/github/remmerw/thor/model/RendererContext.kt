@@ -1,7 +1,6 @@
 package io.github.remmerw.thor.model
 
 import io.github.remmerw.thor.dom.FormInput
-import io.github.remmerw.thor.ua.UserAgentContext
 import org.w3c.dom.html.HTMLCollection
 import org.w3c.dom.html.HTMLElement
 import org.w3c.dom.html.HTMLLinkElement
@@ -66,11 +65,6 @@ interface RendererContext {
         formInputs: Array<FormInput>
     )
 
-    /**
-     * Gets the user agent context.
-     */
-
-    fun userAgentContext(): UserAgentContext
 
 
     /**

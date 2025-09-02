@@ -16,12 +16,6 @@ import java.net.URL
 interface UserAgentContext {
     fun isRequestPermitted(request: Request?): Boolean
 
-    /**
-     * Creates an instance of [org.cobraparser.html.HttpRequest] which can
-     * be used by the renderer to load images, scripts, external style sheets, and
-     * implement the Javascript XMLHttpRequest class (AJAX).
-     */
-    fun createHttpRequest(): NetworkRequest?
 
     /**
      * Gets browser "code" name.
@@ -68,11 +62,6 @@ interface UserAgentContext {
      */
     fun isExternalCSSEnabled(): Boolean
 
-    /**
-     * Returns a boolean value indicating whether STYLE tags should be processed.
-     * TODO: Remove
-     */
-    fun isInternalCSSEnabled(): Boolean
 
     /**
      * Gets the name of the user's operating system.

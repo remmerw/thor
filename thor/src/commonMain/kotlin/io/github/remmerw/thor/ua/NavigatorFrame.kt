@@ -262,12 +262,6 @@ interface NavigatorFrame {
      */
     val sourceCode: String?
 
-    /**
-     * Creates a [NetworkRequest] object that can be used to load data over
-     * HTTP and other network protocols.
-     */
-    fun createNetworkRequest(): NetworkRequest?
-
 
     /**
      * Resizes the browser window.

@@ -22,7 +22,6 @@ package io.github.remmerw.thor.dom
 
 import io.github.remmerw.thor.core.Urls
 import io.github.remmerw.thor.css.StyleSheetWrapper
-import io.github.remmerw.thor.style.CSSUtilities
 import org.w3c.dom.css.CSSStyleSheet
 import org.w3c.dom.html.HTMLAnchorElement
 import org.w3c.dom.stylesheets.LinkStyle
@@ -254,82 +253,11 @@ class HTMLAnchorElementModel(name: String) : HTMLAbstractUIElement(name), HTMLAn
             )))
         }
 
-    private fun processLink() {
-        val doc = this.ownerDocument as HTMLDocumentImpl
-
-        val uacontext = this.userAgentContext
-        if (uacontext!!.isExternalCSSEnabled()) {
-            try {
-                val href = this.getHref()
-                val jSheet = CSSUtilities.jParse(
-                    this, href, doc,
-                    doc.baseURI!!, false
-                )
-                if (this.styleSheet != null) {
-                    this.styleSheet!!.styleSheet = jSheet
-                } else {
-                    val styleSheet = StyleSheetWrapper( // todo getMedia
-                        jSheet, this.getMedia(), href, this.type, this.title,
-                        this, doc.styleSheetManager.bridge
-                    )
-                    this.styleSheet = styleSheet
-                }
-                this.styleSheet!!.setDisabled(this.isAltStyleSheet)
-                doc.styleSheetManager.invalidateStyles()
-            } catch (mfe: MalformedURLException) {
-                this.detachStyleSheet()
-                this.warn(
-                    ("Will not parse CSS. URI=[" + this.getHref() + "] with BaseURI=[" + doc.getBaseURI()
-                            + "] does not appear to be a valid URI.")
-                )
-            } catch (err: Exception) {
-                this.warn("Unable to parse CSS. URI=[" + this.getHref() + "].", err)
-            }
-        }
-
-    }
-
-    private fun deferredProcess() {
-        processLinkHelper(true)
-    }
-
-    private fun processLinkHelper(defer: Boolean) {
-        // according to firefox, whenever the URL is not well formed, the style sheet has to be null
-        // and in all other cases an empty style sheet has to be set till the link resource can be fetched
-        // and processed. But however the style sheet is not in ready state till it is processed. This is
-        // indicated by setting the jStyleSheet of the JStyleSheetWrapper to null.
-        val doc = this.ownerDocument as HTMLDocumentImpl
-        if (isAttachedToDocument && this.isWellFormedURL && this.isAllowedRel && this.isAllowedType) {
-            if (defer) {
-                this.styleSheet = this.emptyStyleSheet
-                doc.styleSheetManager.invalidateStyles()
-                //TODO need to think how to schedule this. refer issue #69
-
-            } else {
-                processLink()
-            }
-        } else {
-            this.detachStyleSheet()
-
-        }
-    }
-
-    private val emptyStyleSheet: StyleSheetWrapper
-        get() {
-            val doc = this.ownerDocument as HTMLDocumentImpl
-            return StyleSheetWrapper( // todo getMedia()
-                null, this.getMedia(), this.getHref(), this.type, this.title, this,
-                doc.styleSheetManager.bridge
-            )
-        }
 
     override fun getSheet(): CSSStyleSheet? {
         return this.styleSheet
     }
 
-    override fun handleDocumentAttachmentChanged() {
-        deferredProcess()
-    }
 
     override fun handleAttributeChanged(name: String, oldValue: String?, newValue: String?) {
         super.handleAttributeChanged(name, oldValue, newValue)
@@ -344,8 +272,7 @@ class HTMLAnchorElementModel(name: String) : HTMLAbstractUIElement(name), HTMLAn
         if (isSameRel(name, oldValue) || isSameHref(name, oldValue)) {
         } else if ("rel" == name || "href" == name || "type" == name || "media" == name) {
 
-            this.detachStyleSheet()
-            this.processLinkHelper(true)
+
         }
     }
 }

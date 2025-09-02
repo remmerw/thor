@@ -33,7 +33,8 @@ import org.w3c.dom.html.HTMLStyleElement
 import org.w3c.dom.stylesheets.LinkStyle
 import java.util.Locale
 
-class HTMLStyleElementModel(name: String) : HTMLElementModel(name), HTMLStyleElement, LinkStyle {
+open class HTMLStyleElementModel(name: String) : HTMLElementModel(name), HTMLStyleElement,
+    LinkStyle {
     private var styleSheet: StyleSheetWrapper? = null
     private var disabled = false
 
@@ -101,7 +102,7 @@ class HTMLStyleElementModel(name: String) : HTMLElementModel(name), HTMLStyleEle
     private val isAllowedType: Boolean
         get() {
             val type = this.type
-            return ((type == null) || (type.trim { it <= ' ' }.length == 0) || (type.equals(
+            return ((type == null) || (type.trim { it <= ' ' }.isEmpty()) || (type.equals(
                 "text/css",
                 ignoreCase = true
             )))
@@ -115,14 +116,11 @@ class HTMLStyleElementModel(name: String) : HTMLElementModel(name), HTMLStyleEle
        we need not check for the media type here, jStyle parser should take care of this.
        */
             if (this.isAllowedType) {
-                val uacontext = this.userAgentContext
-                if (uacontext!!.isInternalCSSEnabled()) {
-                    val doc = this.ownerDocument as HTMLDocumentImpl
-                    val newStyleSheet = processStyleHelper()
-                    newStyleSheet.setDisabled(this.disabled)
-                    this.styleSheet = newStyleSheet
-                    doc.styleSheetManager.invalidateStyles()
-                }
+                val doc = this.ownerDocument as HTMLDocumentImpl
+                val newStyleSheet = processStyleHelper()
+                newStyleSheet.setDisabled(this.disabled)
+                this.styleSheet = newStyleSheet
+                doc.styleSheetManager.invalidateStyles()
             } else {
                 this.detachStyleSheet()
             }
@@ -138,11 +136,9 @@ class HTMLStyleElementModel(name: String) : HTMLElementModel(name), HTMLStyleEle
             val processedText = CSSUtilities.preProcessCss(text)
             val baseURI = doc.getBaseURI()
             // TODO if the new StyleSheet contains any @import rules, then we should queue them for further processing. GH #137
-            val jSheet = CSSUtilities.jParseStyleSheet(
-                this,
+            val jSheet = CSSUtilities.parseStyleSheet(
                 baseURI!!,
-                processedText,
-                doc.userAgentContext()
+                processedText
             )
             return StyleSheetWrapper(
                 jSheet,

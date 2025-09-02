@@ -12,7 +12,6 @@ import io.github.remmerw.thor.core.Urls
 import io.github.remmerw.thor.parser.HtmlParser
 import io.github.remmerw.thor.style.RenderState
 import io.github.remmerw.thor.style.StyleSheetRenderState
-import io.github.remmerw.thor.ua.UserAgentContext
 import org.w3c.dom.Attr
 import org.w3c.dom.DOMException
 import org.w3c.dom.Document
@@ -956,16 +955,6 @@ abstract class NodeImpl : NodeModel, Node, ModelNode {
     override fun toString(): String {
         return this.nodeName
     }
-
-    open val userAgentContext: UserAgentContext?
-        get() {
-            val doc: Any? = this.document
-            if (doc is HTMLDocumentImpl) {
-                return doc.userAgentContext()
-            } else {
-                return null
-            }
-        }
 
 
     fun setParentImpl(parent: Node?) {

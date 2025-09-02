@@ -2,7 +2,6 @@ package io.github.remmerw.thor.dom
 
 import io.github.remmerw.thor.core.Urls
 import io.github.remmerw.thor.css.StyleSheetWrapper
-import io.github.remmerw.thor.style.CSSUtilities
 import org.w3c.dom.css.CSSStyleSheet
 import org.w3c.dom.html.HTMLLinkElement
 import org.w3c.dom.stylesheets.LinkStyle
@@ -171,98 +170,9 @@ class HTMLLinkElementModel(name: String) : HTMLAbstractUIElement(name), HTMLLink
             )))
         }
 
-    private fun processLink() {
-        val doc = this.ownerDocument as HTMLDocumentImpl
-
-        val uacontext = this.userAgentContext
-        if (uacontext!!.isExternalCSSEnabled()) {
-            try {
-                val href = this.getHref()
-                val jSheet = CSSUtilities.jParse(
-                    this, href, doc,
-                    doc.baseURI!!, false
-                )
-                if (this.styleSheet != null) {
-                    this.styleSheet!!.styleSheet = jSheet
-                } else {
-                    val styleSheet = StyleSheetWrapper(
-                        jSheet, this.media, href, this.type, this.title,
-                        this, doc.styleSheetManager.bridge
-                    )
-                    this.styleSheet = styleSheet
-                }
-                this.styleSheet!!.setDisabled(this.isAltStyleSheet or this.disabled)
-                doc.styleSheetManager.invalidateStyles()
-            } catch (mfe: MalformedURLException) {
-                this.detachStyleSheet()
-                this.warn(
-                    ("Will not parse CSS. URI=[" + this.getHref() + "] with BaseURI=[" + doc.getBaseURI()
-                            + "] does not appear to be a valid URI.")
-                )
-            } catch (err: Exception) {
-                this.warn("Unable to parse CSS. URI=[" + this.getHref() + "].", err)
-            }
-        }
-
-    }
-
-    private fun deferredProcess() {
-        processLinkHelper(true)
-    }
-
-    private fun processLinkHelper(defer: Boolean) {
-        // according to firefox, whenever the URL is not well formed, the style sheet has to be null
-        // and in all other cases an empty style sheet has to be set till the link resource can be fetched
-        // and processed. But however the style sheet is not in ready state till it is processed. This is
-        // indicated by setting the jStyleSheet of the JStyleSheetWrapper to null.
-        val doc = this.ownerDocument as HTMLDocumentImpl
-        if (isAttachedToDocument && this.isWellFormedURL && this.isAllowedRel && this.isAllowedType) {
-            if (defer) {
-                this.styleSheet = this.emptyStyleSheet
-                doc.styleSheetManager.invalidateStyles()
-                //TODO need to think how to schedule this. refer issue #69
-
-            } else {
-                processLink()
-            }
-        } else {
-            this.detachStyleSheet()
-
-        }
-    }
-
-    private val emptyStyleSheet: StyleSheetWrapper
-        get() {
-            val doc = this.ownerDocument as HTMLDocumentImpl
-            return StyleSheetWrapper(
-                null, this.media, this.getHref(), this.type, this.title, this,
-                doc.styleSheetManager.bridge
-            )
-        }
-
     override fun getSheet(): CSSStyleSheet? {
         return this.styleSheet
     }
 
-    override fun handleDocumentAttachmentChanged() {
-        deferredProcess()
-    }
 
-    override fun handleAttributeChanged(name: String, oldValue: String?, newValue: String?) {
-        super.handleAttributeChanged(name, oldValue, newValue)
-
-        // TODO according to firefox's behavior whenever a valid attribute is
-        // changed on the element the disabled flag is set to false. Need to
-        // verify with the specs.
-        // TODO check for all the attributes associated with an link element
-        // according to firefox if the new value of rel/href is the same as the
-        // old one then, the nothing has to be done. In all other cases the link element
-        // has to be re-processed.
-        if (isSameRel(name, oldValue) || isSameHref(name, oldValue)) {
-        } else if ("rel" == name || "href" == name || "type" == name || "media" == name) {
-            this.disabled = false
-            this.detachStyleSheet()
-            this.processLinkHelper(true)
-        }
-    }
 }

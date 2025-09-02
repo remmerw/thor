@@ -25,7 +25,6 @@ package io.github.remmerw.thor.parser
 
 import io.github.remmerw.thor.dom.DocumentTypeImpl
 import io.github.remmerw.thor.dom.HTMLDocumentImpl
-import io.github.remmerw.thor.ua.UserAgentContext
 import org.w3c.dom.DOMException
 import org.w3c.dom.Document
 import org.w3c.dom.Element
@@ -67,7 +66,6 @@ import kotlin.math.min
  */
 class HtmlParser {
     private val document: Document
-    private val ucontext: UserAgentContext?
     private val errorHandler: ErrorHandler?
     private val isXML: kotlin.Boolean
     private var lastRootElement: Node? = null
@@ -77,6 +75,7 @@ class HtmlParser {
     private var normalLastTag: String? = null
     private var justReadTagBegin = false
     private var justReadTagEnd = false
+    private val isScriptingEnabled: kotlin.Boolean = false
 
     /**
      * Only set when readAttribute returns false.
@@ -98,7 +97,6 @@ class HtmlParser {
         publicId: String?,
         systemId: String?
     ) {
-        this.ucontext = null
         this.document = document
         this.errorHandler = errorHandler
         this.isXML = false
@@ -116,7 +114,6 @@ class HtmlParser {
      * @param isXML
      */
     constructor(
-        ucontext: UserAgentContext?,
         document: Document,
         errorHandler: ErrorHandler?,
         publicId: String?,
@@ -124,7 +121,6 @@ class HtmlParser {
         isXML: kotlin.Boolean,
         needRoot: kotlin.Boolean
     ) {
-        this.ucontext = ucontext
         this.document = document
         this.errorHandler = errorHandler
         this.isXML = isXML
@@ -134,11 +130,9 @@ class HtmlParser {
     /**
      * Constructs a `HtmlParser`.
      *
-     * @param ucontext The user agent context.
      * @param document A W3C Document instance.
      */
-    constructor(ucontext: UserAgentContext?, document: Document) {
-        this.ucontext = ucontext
+    constructor(document: Document) {
         this.document = document
         this.errorHandler = null
         this.isXML = false
@@ -446,8 +440,8 @@ class HtmlParser {
                                         try {
                                             val token: Int
                                             if ((einfo != null) && einfo.noScriptElement) {
-                                                val ucontext = this.ucontext
-                                                if ((ucontext == null) || ucontext.isScriptingEnabled()) {
+
+                                                if (isScriptingEnabled) {
                                                     token = this.parseForEndTag(
                                                         parent,
                                                         reader,

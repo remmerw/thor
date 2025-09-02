@@ -2,8 +2,6 @@ package io.github.remmerw.thor.parser
 
 import io.github.remmerw.thor.dom.DOMImplementationImpl
 import io.github.remmerw.thor.dom.HTMLDocumentImpl
-import io.github.remmerw.thor.model.RendererContext
-import io.github.remmerw.thor.ua.UserAgentContext
 import org.w3c.dom.DOMImplementation
 import org.w3c.dom.Document
 import org.xml.sax.EntityResolver
@@ -15,7 +13,7 @@ import java.io.InputStreamReader
 import java.util.logging.Logger
 import javax.xml.parsers.DocumentBuilder
 
-class DocumentModelBuilder(val context: UserAgentContext) : DocumentBuilder() {
+class DocumentModelBuilder() : DocumentBuilder() {
 
     var resolver: EntityResolver? = null
         private set
@@ -62,10 +60,7 @@ class DocumentModelBuilder(val context: UserAgentContext) : DocumentBuilder() {
         val inputStream = inputSource.byteStream!!
         wis = WritableLineReader(InputStreamReader(inputStream, charset))
 
-        val document = HTMLDocumentImpl(
-            this.context,
-            wis, uri!!, contentType
-        )
+        val document = HTMLDocumentImpl(wis, uri!!, contentType)
         return document
     }
 
@@ -83,20 +78,16 @@ class DocumentModelBuilder(val context: UserAgentContext) : DocumentBuilder() {
     }
 
     override fun newDocument(): Document {
-        return HTMLDocumentImpl(this.context)
+        return HTMLDocumentImpl()
     }
 
     override fun getDOMImplementation(): DOMImplementation {
         synchronized(this) {
             if (this.domImplementation == null) {
-                this.domImplementation = DOMImplementationImpl(this.context)
+                this.domImplementation = DOMImplementationImpl()
             }
             return this.domImplementation!!
         }
-    }
-
-    fun getErrorHandler(): ErrorHandler? {
-        return errorHandler
     }
 
     override fun setErrorHandler(eh: ErrorHandler?) {

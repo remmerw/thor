@@ -23,18 +23,12 @@
  */
 package io.github.remmerw.thor.dom
 
-import io.github.remmerw.thor.parser.HtmlParser
-import io.github.remmerw.thor.ua.UserAgentContext
-import org.unbescape.xml.XmlEscape
 import org.w3c.dom.DOMException
 import org.w3c.dom.DOMImplementation
 import org.w3c.dom.Document
 import org.w3c.dom.DocumentType
-import org.xml.sax.SAXException
-import java.io.ByteArrayInputStream
-import java.io.IOException
 
-class DOMImplementationImpl(private val context: UserAgentContext?) : DOMImplementation {
+class DOMImplementationImpl() : DOMImplementation {
     override fun hasFeature(feature: String?, version: String): Boolean {
         return "HTML" == feature && ("2.0".compareTo(version) <= 0)
     }
@@ -48,19 +42,13 @@ class DOMImplementationImpl(private val context: UserAgentContext?) : DOMImpleme
         return DocumentTypeImpl(qualifiedName, publicId, systemId)
     }
 
-    // TODO: Use default parameter values instead of replicating function. GH #126
-    @Throws(DOMException::class)
-    fun createDocument(namespaceURI: String?, qualifiedName: String?): Document {
-        return createDocument(namespaceURI, qualifiedName, null)
-    }
-
     @Throws(DOMException::class)
     override fun createDocument(
         namespaceURI: String?,
         qualifiedName: String?,
         doctype: DocumentType?
     ): Document {
-        return HTMLDocumentImpl(this.context!!)
+        return HTMLDocumentImpl()
     }
 
     override fun getFeature(feature: String?, version: String): Any? {
@@ -71,20 +59,5 @@ class DOMImplementationImpl(private val context: UserAgentContext?) : DOMImpleme
         }
     }
 
-    @Throws(DOMException::class)
-    fun createHTMLDocument(title: String?): Document {
-        // TODO: Should a new context / null context be used?
-        val doc = HTMLDocumentImpl(this.context!!)
-        val parser = HtmlParser(context, doc)
-        val escapedTitle = XmlEscape.escapeXml11(title)
-        val initString = "<html><head><title>" + escapedTitle + "</title><body></body></html>"
-        try {
-            parser.parse(ByteArrayInputStream(initString.toByteArray()))
-        } catch (e: IOException) {
-            throw RuntimeException("Couldn't create HTML Document", e)
-        } catch (e: SAXException) {
-            throw RuntimeException("Couldn't create HTML Document", e)
-        }
-        return doc
-    }
+
 }

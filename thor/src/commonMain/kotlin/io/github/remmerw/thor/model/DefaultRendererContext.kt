@@ -1,7 +1,6 @@
 package io.github.remmerw.thor.model
 
 import io.github.remmerw.thor.dom.FormInput
-import io.github.remmerw.thor.ua.UserAgentContext
 import org.w3c.dom.html.HTMLCollection
 import org.w3c.dom.html.HTMLElement
 import org.w3c.dom.html.HTMLLinkElement
@@ -40,9 +39,6 @@ class DefaultRendererContext : RendererContext {
         println("TODO submitForm $method")
     }
 
-    override fun userAgentContext(): UserAgentContext {
-        TODO("Not yet implemented")
-    }
 
     override fun isImageLoadingEnabled(): Boolean {
         return true
