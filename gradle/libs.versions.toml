@@ -6,17 +6,22 @@ kotlin = "2.2.10"
 sac = "1.3"
 compose-multiplatform = "1.8.2"
 lifecycle = "2.9.3"
+ui-test-junit4 = "1.9.0"
+xercesimpl = "2.12.2"
 
 
 [libraries]
 androidx-core = { module = "androidx.test:core", version.ref = "core" }
 androidx-runner = { module = "androidx.test:runner", version.ref = "core" }
+androidx-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "ui-test-junit4" }
+androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "ui-test-junit4" }
 jstyleparser = { module = "net.sf.cssbox:jstyleparser", version.ref = "jstyleparser" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlinx-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version = "0.8.0" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
 sac = { module = "org.w3c.css:sac", version.ref = "sac" }
 lifecycle = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
+xercesimpl = { module = "xerces:xercesImpl", version.ref = "xercesimpl" }
 
 
 [plugins]

@@ -39,8 +39,8 @@ kotlin {
                 implementation(libs.kotlinx.io.core)
 
 
-                // https://mvnrepository.com/artifact/xerces/xercesImpl
-                implementation("xerces:xercesImpl:2.12.2")
+
+                implementation(libs.xercesimpl)
                 implementation(libs.sac)
                 implementation(libs.jstyleparser)
 
@@ -50,12 +50,17 @@ kotlin {
                 implementation(compose.material3)
                 implementation(compose.ui)
                 implementation(compose.materialIconsExtended)
+
+
             }
         }
 
         commonTest {
             dependencies {
                 implementation(libs.kotlin.test)
+                implementation(libs.androidx.ui.test.junit4)
+                implementation(libs.androidx.ui.test.manifest)
+
             }
         }
 
@@ -75,6 +80,8 @@ kotlin {
             implementation(libs.kotlin.test)
             implementation(libs.androidx.runner)
             implementation(libs.androidx.core)
+
+
         }
 
 

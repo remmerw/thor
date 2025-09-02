@@ -1,5 +1,6 @@
 package io.github.remmerw.thor
 
+import io.github.remmerw.thor.dom.DocumentModel
 import io.github.remmerw.thor.dom.HTMLElementImpl
 import io.github.remmerw.thor.parser.DocumentModelBuilder
 import io.github.remmerw.thor.parser.InputSourceImpl
@@ -61,7 +62,7 @@ class Render(var url: String) {
      * recurse on the DOM and call doElement()/doTagEnd() for
      * each Element node.  Return false on error.
      */
-    fun parsePage(): Boolean {
+    fun parsePage(): DocumentModel {
         // From Lobo forum.  Disable all logging.
 
         Logger.getLogger("").level = Level.OFF
@@ -75,7 +76,7 @@ class Render(var url: String) {
             urlObj = URL(url)
         } catch (e: Exception) {
             println(e)
-            return false
+            throw e
         }
 
         val path = uri.path
@@ -102,18 +103,18 @@ class Render(var url: String) {
                     inputStream, url,
                     "ISO-8859-1"
                 )
-            )
+            ) !!
 
             // Do a recursive traversal on the top-level DOM node.
             val ex = document.documentElement
             doTree(ex)
+            return document as DocumentModel
         } catch (e: Exception) {
             e.printStackTrace()
             println("parsePage(" + url + "):  " + e)
-            return false
+            throw e
         }
 
-        return true
     }
 
     /**
