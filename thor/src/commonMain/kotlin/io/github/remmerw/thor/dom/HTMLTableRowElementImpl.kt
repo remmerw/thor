@@ -148,8 +148,8 @@ class HTMLTableRowElementImpl(name: String) : HTMLElementImpl(name), HTMLTableRo
                 this.appendChild(cellElement)
                 return cellElement
             }
-            val nl = this.nodeList
-            if (nl != null) {
+            val nl = this.nodes()
+            if (nl.isNotEmpty()) {
                 val size = nl.size
                 var trcount = 0
                 for (i in 0..<size) {
@@ -173,8 +173,8 @@ class HTMLTableRowElementImpl(name: String) : HTMLElementImpl(name), HTMLTableRo
     @Throws(DOMException::class)
     override fun deleteCell(index: Int) {
         synchronized(this.treeLock) {
-            val nl = this.nodeList
-            if (nl != null) {
+            val nl = this.nodes()
+            if (nl.isNotEmpty()) {
                 val size = nl.size
                 var trcount = 0
                 for (i in 0..<size) {

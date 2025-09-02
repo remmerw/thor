@@ -1,5 +1,7 @@
 package io.github.remmerw.thor.dom
 
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import cz.vutbr.web.css.CSSException
 import cz.vutbr.web.css.CSSFactory
 import cz.vutbr.web.css.CombinedSelector
@@ -48,7 +50,7 @@ import kotlin.plus
 import kotlin.run
 import kotlin.synchronized
 
-abstract class NodeImpl : Node, ModelNode {
+abstract class NodeImpl : NodeModel, Node, ModelNode {
 
     private var renderState: RenderState? = null
     private val parentModelNode: ModelNode? = null
@@ -66,8 +68,14 @@ abstract class NodeImpl : Node, ModelNode {
         return parentModelNode
     }
 
+
     var uINode: UINode? = null
-    protected var nodeList: ArrayList<Node>? = null
+
+    private var nodeList = mutableStateListOf<NodeModel>()
+
+    override fun nodes(): SnapshotStateList<NodeModel> {
+        return nodeList
+    }
 
     @Volatile
     protected var document: Document? = null
@@ -132,12 +140,9 @@ abstract class NodeImpl : Node, ModelNode {
                         "Trying to append an ancestor element."
                     )
                 }
-                var nl = this.nodeList
-                if (nl == null) {
-                    nl = java.util.ArrayList<Node>(3)
-                    this.nodeList = nl
-                }
-                nl.add(newChild)
+
+
+                this.nodeList.add(newChild as NodeModel)
                 if (newChild is NodeImpl) {
                     newChild.handleAddedToParent(this)
                 }
@@ -165,7 +170,7 @@ abstract class NodeImpl : Node, ModelNode {
                         node.handleDeletedFromParent()
                     }
                 }
-                this.nodeList = null
+                this.nodeList.clear()
             }
         }
 
@@ -173,29 +178,13 @@ abstract class NodeImpl : Node, ModelNode {
     }
 
     protected fun getNodeList(filter: NodeFilter): NodeList {
-        val collection: MutableCollection<Node> = ArrayList<Node>()
+        val collection: MutableCollection<Node> = ArrayList()
         synchronized(this.treeLock) {
             this.appendChildrenToCollectionImpl(filter, collection)
         }
         return NodeListImpl(collection)
     }
 
-    open fun getChildrenArray(): Array<NodeImpl?>? {
-        /*
-              * TODO: If this is not a w3c DOM method, we can return an Iterator instead of
-              * creating a new array But, it changes the semantics slightly (when
-              * modifications are needed during iteration). For those cases, we can retain
-              * this method.
-              */
-
-        val nl = this.nodeList
-        synchronized(this.treeLock) {
-            return if (nl == null) null else nl.toArray<NodeImpl?>(
-                EMPTY_ARRAY
-            )
-        }
-
-    }
 
     fun getChildCount(): Int {
         synchronized(this.treeLock) {
@@ -234,19 +223,15 @@ abstract class NodeImpl : Node, ModelNode {
         al: java.util.ArrayList<NodeImpl?>,
         nestIntoMatchingNodes: kotlin.Boolean
     ) {
-        val nl = this.nodeList
-        if (nl != null) {
-            val i: MutableIterator<Node?> = nl.iterator()
-            while (i.hasNext()) {
-                val n = i.next() as NodeImpl
-                if (filter.accept(n)) {
-                    al.add(n)
-                    if (nestIntoMatchingNodes) {
-                        n.extractDescendantsArrayImpl(filter, al, nestIntoMatchingNodes)
-                    }
-                } else if (n.nodeType == Node.ELEMENT_NODE) {
+        this.nodeList.forEach { node ->
+            val n = node as NodeImpl
+            if (filter.accept(n)) {
+                al.add(n)
+                if (nestIntoMatchingNodes) {
                     n.extractDescendantsArrayImpl(filter, al, nestIntoMatchingNodes)
                 }
+            } else if (n.nodeType == Node.ELEMENT_NODE) {
+                n.extractDescendantsArrayImpl(filter, al, nestIntoMatchingNodes)
             }
         }
     }
@@ -255,16 +240,12 @@ abstract class NodeImpl : Node, ModelNode {
         filter: NodeFilter,
         collection: MutableCollection<Node>
     ) {
-        val nl = this.nodeList
-        if (nl != null) {
-            val i: MutableIterator<Node?> = nl.iterator()
-            while (i.hasNext()) {
-                val node = i.next() as NodeImpl
-                if (filter.accept(node)) {
-                    collection.add(node)
-                }
-                node.appendChildrenToCollectionImpl(filter, collection)
+        nodeList.forEach { nodeModel ->
+            val node = nodeModel as NodeImpl
+            if (filter.accept(node)) {
+                collection.add(node)
             }
+            node.appendChildrenToCollectionImpl(filter, collection)
         }
     }
 
@@ -330,9 +311,8 @@ abstract class NodeImpl : Node, ModelNode {
 
     fun getChildAtIndex(index: Int): Node? {
         synchronized(this.treeLock) {
-            val nl = this.nodeList
             try {
-                return if (nl == null) null else nl.get(index)
+                return this.nodeList.get(index)
             } catch (iob: IndexOutOfBoundsException) {
                 this.warn("getChildAtIndex(): Bad index=" + index + " for node=" + this + ".")
                 return null
@@ -492,13 +472,13 @@ abstract class NodeImpl : Node, ModelNode {
             // From what I understand from https://developer.mozilla.org/en-US/docs/Web/API/Node.insertBefore
             // a null or undefined refChild will cause the new child to be appended at the end of the list
             // otherwise, this function will throw an exception if refChild is not found in the child list
-            val nl = if (refChild == null) this.nonEmptyNodeList else this.nodeList
+            val nl = this.nodeList
             val idx =
                 if (refChild == null) nl!!.size else (if (nl == null) -1 else nl.indexOf(refChild))
             if (idx == -1) {
                 throw DOMException(DOMException.NOT_FOUND_ERR, "refChild not found")
             }
-            nl!!.add(idx, newChild)
+            nl!!.add(idx, newChild as NodeModel)
             if (newChild is NodeImpl) {
                 newChild.handleAddedToParent(this)
             }
@@ -509,22 +489,12 @@ abstract class NodeImpl : Node, ModelNode {
         return newChild
     }
 
-    private val nonEmptyNodeList: ArrayList<Node>
-        // TODO: Use this wherever nodeList needs to be non empty
-        get() {
-            var nl = this.nodeList
-            if (nl == null) {
-                nl = java.util.ArrayList<Node>()
-                this.nodeList = nl
-            }
-            return nl
-        }
 
     @Throws(DOMException::class)
     protected fun insertAt(newChild: Node?, idx: Int): Node? {
         synchronized(this.treeLock) {
-            val nl = this.nonEmptyNodeList
-            nl.add(idx, newChild!!)
+
+            nodes().add(idx, newChild!! as NodeModel)
             if (newChild is NodeImpl) {
                 newChild.handleAddedToParent(this)
             }
@@ -556,7 +526,7 @@ abstract class NodeImpl : Node, ModelNode {
             if (idx == -1) {
                 throw DOMException(DOMException.NOT_FOUND_ERR, "oldChild not found")
             }
-            nl!!.set(idx, newChild!!)
+            nl!!.set(idx, newChild!! as NodeModel)
 
             if (newChild is NodeImpl) {
                 newChild.handleAddedToParent(this)
@@ -626,7 +596,7 @@ abstract class NodeImpl : Node, ModelNode {
     override fun getChildNodes(): NodeList {
         synchronized(this.treeLock) {
             val nl = this.nodeList
-            return NodeListImpl(if (nl == null) mutableListOf<Node>() else nl)
+            return NodeListImpl(nl.toMutableList())
         }
     }
 
@@ -827,12 +797,8 @@ abstract class NodeImpl : Node, ModelNode {
                 val t = TextImpl(textContent)
                 t.setOwnerDocument(this.document)
                 t.setParentImpl(this)
-                var nl = this.nodeList
-                if (nl == null) {
-                    nl = java.util.ArrayList<Node>()
-                    this.nodeList = nl
-                }
-                nl.add(t)
+
+                this.nodeList.add(t)
             }
         }
 
@@ -849,16 +815,14 @@ abstract class NodeImpl : Node, ModelNode {
 
     protected fun removeChildrenImpl(filter: NodeFilter) {
         val nl = this.nodeList
-        if (nl != null) {
-            val len = nl.size
-            var i = len
-            while (--i >= 0) {
-                val node: Node = nl.get(i)
-                if (filter.accept(node)) {
-                    val n: Node? = nl.removeAt(i)
-                    if (n is NodeImpl) {
-                        n.handleDeletedFromParent()
-                    }
+        val len = nl.size
+        var i = len
+        while (--i >= 0) {
+            val node: Node = nl.get(i)
+            if (filter.accept(node)) {
+                val n: Node? = nl.removeAt(i)
+                if (n is NodeImpl) {
+                    n.handleDeletedFromParent()
                 }
             }
         }
@@ -871,7 +835,7 @@ abstract class NodeImpl : Node, ModelNode {
             if (idx == -1) {
                 throw DOMException(DOMException.NOT_FOUND_ERR, "refChild not found")
             }
-            nl!!.add(idx + 1, newChild!!)
+            nl.add(idx + 1, newChild!! as NodeModel)
             if (newChild is NodeImpl) {
                 newChild.handleAddedToParent(this)
             }
@@ -889,7 +853,7 @@ abstract class NodeImpl : Node, ModelNode {
                 if (nl == null) {
                     throw DOMException(DOMException.NOT_FOUND_ERR, "Node not a child")
                 }
-                val idx = nl.indexOf(node)
+                val idx = nl.indexOf(node as NodeModel)
                 if (idx == -1) {
                     throw DOMException(DOMException.NOT_FOUND_ERR, "Node not a child")
                 }
@@ -913,11 +877,11 @@ abstract class NodeImpl : Node, ModelNode {
                         toDelete.add(child)
                     }
                 }
-                this.nodeList!!.removeAll(toDelete)
+                this.nodeList.removeAll(toDelete)
                 val textNode = TextImpl(textContent!!)
                 textNode.setOwnerDocument(this.document)
                 textNode.setParentImpl(this)
-                this.nodeList!!.add(firstIdx, textNode)
+                this.nodeList.add(firstIdx, textNode)
                 return textNode
             }
         } finally {
@@ -932,7 +896,7 @@ abstract class NodeImpl : Node, ModelNode {
                 if (nl == null) {
                     throw DOMException(DOMException.NOT_FOUND_ERR, "Node not a child")
                 }
-                val idx = nl.indexOf(node)
+                val idx = nl.indexOf(node as NodeModel)
                 if (idx == -1) {
                     throw DOMException(DOMException.NOT_FOUND_ERR, "Node not a child")
                 }
@@ -942,7 +906,7 @@ abstract class NodeImpl : Node, ModelNode {
                 run {
                     var adjIdx = idx
                     while (--adjIdx >= 0) {
-                        val child: Any? = this.nodeList!![adjIdx]
+                        val child: Any? = this.nodeList[adjIdx]
                         if (child is Text) {
                             firstIdx = adjIdx
                             toDelete.add(child)
@@ -1009,26 +973,23 @@ abstract class NodeImpl : Node, ModelNode {
     override fun normalize() {
         synchronized(this.treeLock) {
             val nl = this.nodeList
-            if (nl != null) {
-                var i = nl.iterator()
-                val textNodes: MutableList<Node> = LinkedList<Node>()
-                var prevText = false
-                while (i.hasNext()) {
-                    val child = i.next()
-                    if (child.nodeType == Node.TEXT_NODE) {
-                        if (!prevText) {
-                            prevText = true
-                            textNodes.add(child)
-                        }
-                    } else {
-                        prevText = false
+            nl.iterator()
+            val textNodes: MutableList<Node> = LinkedList<Node>()
+            var prevText = false
+            nodes().forEach { nodeModel ->
+                val child = nodeModel
+                if (child.nodeType == Node.TEXT_NODE) {
+                    if (!prevText) {
+                        prevText = true
+                        textNodes.add(child)
                     }
+                } else {
+                    prevText = false
                 }
-                i = textNodes.iterator()
-                while (i.hasNext()) {
-                    val text = i.next() as Text
-                    this.replaceAdjacentTextNodes(text)
-                }
+            }
+            nodes().forEach { nodeModel ->
+                val text = nodeModel as Text
+                this.replaceAdjacentTextNodes(text)
             }
         }
         this.postChildListChanged()
@@ -1398,22 +1359,21 @@ abstract class NodeImpl : Node, ModelNode {
         val numSelectors = selectors.size
         if (numSelectors > 0) {
             val firstSelector = selectors.get(0)
-            val childrenArray = this.getChildrenArray()
-            if (childrenArray != null) {
-                for (n in childrenArray) {
-                    if (n is ElementImpl) {
-                        if (firstSelector.matches(n)) {
-                            if (numSelectors > 1) {
-                                val tailSelectors = selectors.subList(1, numSelectors)
-                                matchingElements.addAll(n.getMatchingChildren(tailSelectors))
-                            } else {
-                                matchingElements.add(n)
-                            }
+
+            nodes().forEach { n ->
+                if (n is ElementImpl) {
+                    if (firstSelector.matches(n)) {
+                        if (numSelectors > 1) {
+                            val tailSelectors = selectors.subList(1, numSelectors)
+                            matchingElements.addAll(n.getMatchingChildren(tailSelectors))
+                        } else {
+                            matchingElements.add(n)
                         }
-                        matchingElements.addAll(n.getMatchingChildren(selectors))
                     }
+                    matchingElements.addAll(n.getMatchingChildren(selectors))
                 }
             }
+
         }
         return matchingElements
     }

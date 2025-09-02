@@ -35,20 +35,6 @@ class AnonymousNodeImpl(parentNode: Node?) : NodeImpl() {
         return ELEMENT_NODE
     }
 
-    /**
-     * Append child without informing the child of the new parent
-     */
-
-    fun appendChildSilently(c: NodeImpl) {
-        synchronized(this.treeLock) {
-            var nl = this.nodeList
-            if (nl == null) {
-                nl = ArrayList<Node>(3)
-                this.nodeList = nl
-            }
-            nl.add(c)
-        }
-    }
 
     override fun toString(): String {
         return "Anonymous child of " + nodeParent

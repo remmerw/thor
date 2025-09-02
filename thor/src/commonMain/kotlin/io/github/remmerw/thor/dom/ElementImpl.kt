@@ -117,23 +117,22 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), Element {
         val matchesAll = "*" == classNames
         val descendents: MutableList<Node> = LinkedList<Node>()
         synchronized(this.treeLock) {
-            val nl = this.nodeList
-            if (nl != null) {
-                val i = nl.iterator()
-                while (i.hasNext()) {
-                    val child = i.next()
-                    if (child is Element) {
-                        if (matchesAll || isTagName(child, classNames)) {
-                            descendents.add(child)
-                        }
-                        val sublist = child.getElementsByTagName(classNames)
-                        val length = sublist.length
-                        for (idx in 0..<length) {
-                            descendents.add(sublist.item(idx))
-                        }
+
+
+            this.nodes().forEach { nodeModel ->
+                val child = nodeModel
+                if (child is Element) {
+                    if (matchesAll || isTagName(child, classNames)) {
+                        descendents.add(child)
+                    }
+                    val sublist = child.getElementsByTagName(classNames)
+                    val length = sublist.length
+                    for (idx in 0..<length) {
+                        descendents.add(sublist.item(idx))
                     }
                 }
             }
+
         }
         return NodeListImpl(descendents)
     }
@@ -307,42 +306,39 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), Element {
      */
     protected fun getRawInnerText(includeComment: Boolean): String {
         synchronized(this.treeLock) {
-            val nl = this.nodeList
-            if (nl != null) {
-                val i = nl.iterator()
-                var sb: StringBuffer? = null
-                while (i.hasNext()) {
-                    val node: Any? = i.next()
-                    if (node is Text) {
-                        val txt = node.nodeValue
-                        if ("" != txt) {
-                            if (sb == null) {
-                                sb = StringBuffer()
-                            }
-                            sb.append(txt)
+
+
+            var sb: StringBuffer? = null
+            this.nodes().forEach { nodeModel ->
+                val node: Any? = nodeModel
+                if (node is Text) {
+                    val txt = node.nodeValue
+                    if ("" != txt) {
+                        if (sb == null) {
+                            sb = StringBuffer()
                         }
-                    } else if (node is ElementImpl) {
-                        val txt = node.getRawInnerText(includeComment)
-                        if ("" != txt) {
-                            if (sb == null) {
-                                sb = StringBuffer()
-                            }
-                            sb.append(txt)
+                        sb.append(txt)
+                    }
+                } else if (node is ElementImpl) {
+                    val txt = node.getRawInnerText(includeComment)
+                    if ("" != txt) {
+                        if (sb == null) {
+                            sb = StringBuffer()
                         }
-                    } else if (includeComment && (node is Comment)) {
-                        val txt = node.nodeValue
-                        if ("" != txt) {
-                            if (sb == null) {
-                                sb = StringBuffer()
-                            }
-                            sb.append(txt)
+                        sb.append(txt)
+                    }
+                } else if (includeComment && (node is Comment)) {
+                    val txt = node.nodeValue
+                    if ("" != txt) {
+                        if (sb == null) {
+                            sb = StringBuffer()
                         }
+                        sb.append(txt)
                     }
                 }
-                return if (sb == null) "" else sb.toString()
-            } else {
-                return ""
             }
+            return if (sb == null) "" else sb.toString()
+
         }
     }
 
@@ -466,10 +462,9 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), Element {
     val firstElementChild: Element?
         // TODO: GH #88 Need to implement these for Document and DocumentFragment as part of ParentNode API
         get() {
-            val nl = this.nodeList!!
-            for (n in nl) {
-                if (n is Element) {
-                    return n
+            this.nodes().forEach { nodeModel ->
+                if (nodeModel is Element) {
+                    return nodeModel
                 }
             }
 
@@ -478,7 +473,7 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), Element {
 
     val lastElementChild: Element?
         get() {
-            val nl = this.nodeList!!
+            val nl = this.nodes()
             val size = nl.size
             for (i in size - 1 downTo 0) {
                 val n = nl.get(i)
@@ -492,7 +487,7 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), Element {
 
     val childElementCount: Int
         get() {
-            val nl = this.nodeList!!
+            val nl = this.nodes()
             var count = 0
             for (n in nl) {
                 if (n is Element) {

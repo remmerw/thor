@@ -90,16 +90,14 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
             this.cachedRules = null
             this.cachedNodeData = null
             if (deep) {
-                val nl = this.nodeList
-                if (nl != null) {
-                    val i = nl.iterator()
-                    while (i.hasNext()) {
-                        val node: Any? = i.next()
-                        if (node is HTMLElementImpl) {
-                            node.forgetStyle(deep)
-                        }
+
+                this.nodes().forEach { nodeModel ->
+                    val node: Any? = nodeModel
+                    if (node is HTMLElementImpl) {
+                        node.forgetStyle(deep)
                     }
                 }
+
             }
         }
     }
@@ -350,19 +348,19 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
         ancestor: HTMLElementImpl?,
         hoverCondition: MatchCondition?
     ) {
-        val nodeList = this.nodeList
-        if (nodeList != null) {
-            val size = nodeList.size
-            for (i in 0..<size) {
-                val node: Any? = nodeList.get(i)
-                if (node is HTMLElementImpl) {
-                    val hasMatch = node.hasHoverStyle(ancestor, hoverCondition)
-                    if (hasMatch) {
-                        node.informLocalInvalid()
-                    }
-                    node.invalidateDescendantsForHoverImpl(ancestor, hoverCondition)
+        val nodeList = this.nodes()
+
+        val size = nodeList.size
+        for (i in 0..<size) {
+            val node: Any? = nodeList.get(i)
+            if (node is HTMLElementImpl) {
+                val hasMatch = node.hasHoverStyle(ancestor, hoverCondition)
+                if (hasMatch) {
+                    node.informLocalInvalid()
                 }
+                node.invalidateDescendantsForHoverImpl(ancestor, hoverCondition)
             }
+
         }
     }
 
@@ -438,14 +436,12 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
 
     private fun informInvalidRecursive() {
         super.informInvalid()
-        val nodeList = this.getChildrenArray()
-        if (nodeList != null) {
-            for (n in nodeList) {
-                if (n is HTMLElementImpl) {
-                    n.informInvalidRecursive()
-                }
+        this.nodes().forEach { nodeModel ->
+            if (nodeModel is HTMLElementImpl) {
+                nodeModel.informInvalidRecursive()
             }
         }
+
     }
 
     open fun getFormInputs(): Array<FormInput>? {
@@ -682,8 +678,8 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
                 }
             }
         }
-        val nl = this.nodeList
-        if ((nl == null) || (nl.size == 0)) {
+        val nl = this.nodes()
+        if (nl.isEmpty()) {
             buffer.append("/>")
             return
         }

@@ -30,7 +30,8 @@ class GeneratedElement(parent: HTMLElementImpl, val nodeData: NodeData?, val con
         }
     }
 
-    override fun getChildrenArray(): Array<NodeImpl?> {
+    // todo where was it invoked
+    fun getChildrenArray(): Array<NodeImpl?> {
         val nodeList = ArrayList<NodeImpl?>()
         for (c in content) {
             if (c is TermIdent) {

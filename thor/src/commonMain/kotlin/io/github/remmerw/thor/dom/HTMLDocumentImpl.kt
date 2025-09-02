@@ -100,7 +100,7 @@ class HTMLDocumentImpl(
     private var reader: WritableLineReader? = null,
     private var documentURI: String? = null,
     private val contentType: String? = null
-) : NodeImpl(), HTMLDocument, DocumentView, DocumentStyle {
+) : NodeImpl(), DocumentModel, HTMLDocument, DocumentView, DocumentStyle {
     @JvmField
     val layoutBlocked: AtomicBoolean = AtomicBoolean(true)
     val styleSheetManager: StyleSheetManager = StyleSheetManager()
@@ -542,16 +542,15 @@ class HTMLDocumentImpl(
 
     override fun getDocumentElement(): Element? {
         synchronized(this.treeLock) {
-            val nl = this.nodeList
-            if (nl != null) {
-                val i = nl.iterator()
-                while (i.hasNext()) {
-                    val node: Any? = i.next()
-                    if (node is Element) {
-                        return node
-                    }
+
+
+            this.nodes().forEach { nodeModel ->
+                val node: Any? = nodeModel
+                if (node is Element) {
+                    return node
                 }
             }
+
             return null
         }
     }
@@ -860,16 +859,14 @@ class HTMLDocumentImpl(
                 // this point.
                 this.forgetRenderState()
                 // TODO: this might be ineffcient.
-                val nl = this.nodeList
-                if (nl != null) {
-                    val i = nl.iterator()
-                    while (i.hasNext()) {
-                        val node: Any? = i.next()
-                        if (node is HTMLElementImpl) {
-                            node.forgetStyle(true)
-                        }
+
+                this.nodes().forEach { nodeModel ->
+                    val node: Any? = nodeModel
+                    if (node is HTMLElementImpl) {
+                        node.forgetStyle(true)
                     }
                 }
+
             }
         }
         this.allInvalidated()

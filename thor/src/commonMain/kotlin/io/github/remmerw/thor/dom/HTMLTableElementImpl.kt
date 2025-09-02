@@ -263,8 +263,8 @@ class HTMLTableElementImpl : HTMLAbstractUIElement, HTMLTableElement {
                 this.appendChild(rowElement)
                 return rowElement
             }
-            val nl = this.nodeList
-            if (nl != null) {
+            val nl = this.nodes()
+            if (nl.isNotEmpty()) {
                 val size = nl.size
                 var trcount = 0
                 for (i in 0..<size) {
@@ -288,8 +288,8 @@ class HTMLTableElementImpl : HTMLAbstractUIElement, HTMLTableElement {
     @Throws(DOMException::class)
     override fun deleteRow(index: Int) {
         synchronized(this.treeLock) {
-            val nl = this.nodeList
-            if (nl != null) {
+            val nl = this.nodes()
+            if (nl.isNotEmpty()) {
                 val size = nl.size
                 var trcount = 0
                 for (i in 0..<size) {
