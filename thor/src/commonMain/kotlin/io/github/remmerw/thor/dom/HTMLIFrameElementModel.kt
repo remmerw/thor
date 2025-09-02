@@ -8,26 +8,9 @@ import org.w3c.dom.Document
 import org.w3c.dom.html.HTMLIFrameElement
 import java.net.MalformedURLException
 
-class HTMLIFrameElementModel(name: String) : HTMLAbstractUIElement(name), HTMLIFrameElement,
-    FrameNode {
-
-    private var browserFrame: BrowserFrame? = null
-    private var jobCreated = false
+class HTMLIFrameElementModel(name: String) : HTMLAbstractUIElement(name), HTMLIFrameElement{
 
 
-    private fun markJobDone(jobs: Int, loaded: Boolean) {
-
-    }
-
-    override fun getBrowserFrame(): BrowserFrame? {
-        return browserFrame
-    }
-
-
-    override fun setBrowserFrame(frame: BrowserFrame?) {
-        this.browserFrame = frame
-
-    }
 
     override fun getAlign(): String? {
         return this.getAttribute("align")
@@ -35,33 +18,6 @@ class HTMLIFrameElementModel(name: String) : HTMLAbstractUIElement(name), HTMLIF
 
     override fun setAlign(align: String?) {
         this.setAttribute("align", align)
-    }
-
-    fun getContentDocument(): Document? {
-        // TODO: Domain-based security
-        val frame = this.getBrowserFrame()
-        if (frame == null) {
-            // Not loaded yet
-            return null
-        }
-
-        run {
-            // TODO: Remove this very ugly hack.
-            // This is required because the content document is sometimes not ready, even though the browser frame is.
-            // The browser frame is created by the layout thread, but the iframe is loaded in the window's JS Scheduler thread.
-            // See GH #140
-            var count = 10
-            while (count > 0 && frame.contentDocument() == null) {
-                try {
-                    Thread.sleep(100)
-                } catch (e: InterruptedException) {
-                    throw RuntimeException("Error while waiting for iframe document")
-                }
-                count--
-            }
-        }
-
-        return frame.contentDocument()
     }
 
 
@@ -137,6 +93,10 @@ class HTMLIFrameElementModel(name: String) : HTMLAbstractUIElement(name), HTMLIF
         this.setAttribute("width", width)
     }
 
+    fun getContentDocument(): Document? {
+        TODO("Not yet implemented")
+    }
+
     override fun handleAttributeChanged(name: String, oldValue: String?, newValue: String?) {
         super.handleAttributeChanged(name, oldValue, newValue)
         if ("src" == name) {
@@ -155,8 +115,7 @@ class HTMLIFrameElementModel(name: String) : HTMLAbstractUIElement(name), HTMLIF
 
 
     private fun loadURLIntoFrame(value: String?) {
-        val frame = this.getBrowserFrame()
-        if (frame != null) {
+
             try {
                 val fullURL = if (value == null) null else this.getFullURL(value)
                 if (fullURL != null) {
@@ -167,30 +126,25 @@ class HTMLIFrameElementModel(name: String) : HTMLAbstractUIElement(name), HTMLIF
                             )
                         )
                     ) {
-                        frame.htmlRendererContext()!!.setJobFinishedHandler(object : Runnable {
-                            override fun run() {
-                                println("Iframes window's job over!")
-                                markJobDone(1, true)
-                            }
-                        })
+
                         // frame.loadURL(fullURL);
                         // ^^ Using window.open is better because it fires the various events correctly.
                         //this.contentWindow!!.open(fullURL.toExternalForm(), "iframe", "", true)
                     } else {
                         println("Request not permitted: " + fullURL)
-                        markJobDone(1, false)
+
                     }
                 } else {
                     this.warn("Can't load URL: " + value)
                     // TODO: Plug: marking as load=true because we are not handling javascript URIs currently.
                     //       javascript URI is being used in some of the web-platform-tests.
-                    markJobDone(1, true)
+
                 }
             } catch (mfu: MalformedURLException) {
                 this.warn("loadURLIntoFrame(): Unable to navigate to src.", mfu)
-                markJobDone(1, false)
+
             }
-        }
+
     }
 
     override fun createRenderState(prevRenderState: RenderState?): RenderState {

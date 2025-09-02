@@ -696,27 +696,6 @@ open class HTMLElementModel(name: String) : ElementModel(name), HTMLElement, CSS
         return StyleSheetRenderState(prevRenderState, this)
     }
 
-    fun offsetTop(): Int {
-        // TODO: Sometimes this can be called while parsing, and
-        // browsers generally give the right answer.
-        val uiNode = this.uINode
-        return if (uiNode == null) 0 else uiNode.boundsRelativeToBlock()!!.y
-    }
-
-    fun offsetLeft(): Int {
-        val uiNode = this.uINode
-        return if (uiNode == null) 0 else uiNode.boundsRelativeToBlock()!!.x
-    }
-
-    fun offsetWidth(): Int {
-        val uiNode = this.uINode
-        return if (uiNode == null) 0 else uiNode.boundsRelativeToBlock()!!.width
-    }
-
-    fun offsetHeight(): Int {
-        val uiNode = this.uINode
-        return if (uiNode == null) 0 else uiNode.boundsRelativeToBlock()!!.height
-    }
 
     override fun documentBaseURI(): String? {
         val doc = this.document as HTMLDocumentImpl?

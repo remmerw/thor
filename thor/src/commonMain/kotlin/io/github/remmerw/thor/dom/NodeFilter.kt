@@ -74,11 +74,6 @@ interface NodeFilter {
         }
     }
 
-    // private class BodyFilter implements NodeFilter {
-    // public boolean accept(Node node) {
-    // return node instanceof org.w3c.dom.html2.HTMLBodyElement;
-    // }
-    // }
     class ElementNameFilter(private val name: String) : NodeFilter {
         override fun accept(node: Node): Boolean {
             // TODO: Case sensitive?

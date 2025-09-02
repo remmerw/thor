@@ -42,6 +42,7 @@ import io.github.remmerw.thor.dom.NodeFilter.FormFilter
 import io.github.remmerw.thor.dom.NodeFilter.FrameFilter
 import io.github.remmerw.thor.dom.NodeFilter.LinkFilter
 import io.github.remmerw.thor.dom.NodeFilter.TagNameFilter
+import io.github.remmerw.thor.model.RendererContext
 import io.github.remmerw.thor.parser.EmptyReader
 import io.github.remmerw.thor.parser.HtmlParser
 import io.github.remmerw.thor.parser.WritableLineReader
@@ -96,7 +97,7 @@ import kotlin.concurrent.Volatile
  */
 class HTMLDocumentImpl(
     private val context: UserAgentContext,
-    private val rcontext: HtmlRendererContext? = null,
+    private val rcontext: RendererContext? = null,
     private var reader: WritableLineReader? = null,
     private var documentURI: String? = null,
     private val contentType: String? = null
@@ -135,7 +136,6 @@ class HTMLDocumentImpl(
 
     @Volatile
     private var baseURI: String? = null
-    var defaultTarget: String? = null
     private var title: String? = null
     private var referrer: String? = null
     private var domain: String? = null
@@ -169,7 +169,7 @@ class HTMLDocumentImpl(
     private var oldPendingTaskId = -1
     private var classifiedRules: Analyzer.Holder? = null
 
-    constructor(rcontext: HtmlRendererContext) : this(
+    constructor(rcontext: RendererContext) : this(
         rcontext.userAgentContext(),
         rcontext,
         null,
@@ -417,7 +417,7 @@ class HTMLDocumentImpl(
             this.removeAllChildrenImpl()
             this.title = null
             this.setBaseURI(null)
-            this.defaultTarget = null
+
             this.styleSheetManager.invalidateStyles()
             reader = this.reader
         }
@@ -828,7 +828,7 @@ class HTMLDocumentImpl(
         )
     }
 
-    fun htmlRendererContext(): HtmlRendererContext {
+    fun htmlRendererContext(): RendererContext {
         return this.rcontext!!
     }
 

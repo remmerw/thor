@@ -42,9 +42,6 @@ interface ModelNode {
 
     fun isEqualOrDescendantOf(otherNode: ModelNode?): Boolean
 
-
-    fun parentModelNode(): ModelNode?
-
     fun renderState(): RenderState?
 
     /**
@@ -58,7 +55,5 @@ interface ModelNode {
 
     fun getDocumentItem(name: String?): Any?
 
-
-    fun nodeName(): String?
 
 }

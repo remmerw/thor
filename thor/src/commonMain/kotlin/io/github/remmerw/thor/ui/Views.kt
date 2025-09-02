@@ -13,11 +13,15 @@ import androidx.compose.ui.layout.ContentScale
 import coil3.compose.AsyncImage
 import io.github.remmerw.thor.dom.DocumentModel
 import io.github.remmerw.thor.dom.HTMLImageElementModel
+import io.github.remmerw.thor.model.RendererContext
 import io.github.remmerw.thor.dom.NodeModel
+import io.github.remmerw.thor.model.DefaultRendererContext
 
 
 @Composable
-fun HtmlViewer(documentModel: DocumentModel) {
+fun HtmlViewer(documentModel: DocumentModel,
+               rendererContext: RendererContext = DefaultRendererContext()
+) {
     val nodeModels = remember { documentModel.nodes() }
 
     Scaffold(
@@ -38,7 +42,7 @@ fun HtmlViewer(documentModel: DocumentModel) {
 
                     when (nodeModel.nodeName.uppercase()) {
                         "HTML" -> {
-                            Html(nodeModel)
+                            Html(nodeModel, rendererContext)
                         }
                     }
                 }
@@ -49,7 +53,8 @@ fun HtmlViewer(documentModel: DocumentModel) {
 }
 
 @Composable
-fun Nodes(nodeModel: NodeModel) {
+fun Nodes(nodeModel: NodeModel,
+          rendererContext: RendererContext) {
 
     val nodeModels = remember { nodeModel.nodes() }
 
@@ -59,254 +64,211 @@ fun Nodes(nodeModel: NodeModel) {
         nodeModels.forEach { nodeModel ->
             when (nodeModel.nodeName.uppercase()) {
                 "BODY" -> {
-                    Body(nodeModel)
+                    Body(nodeModel, rendererContext)
                 }
 
                 "TABLE" -> {
-                    Table(nodeModel)
+                    Table(nodeModel, rendererContext)
                 }
 
                 "FORM" -> {
-                    Form(nodeModel)
+                    Form(nodeModel, rendererContext)
                 }
 
                 "CENTER" -> {
-                    Center(nodeModel)
+                    Center(nodeModel, rendererContext)
                 }
 
                 "DIV" -> {
-                    Div(nodeModel)
+                    Div(nodeModel, rendererContext)
                 }
 
                 "Big" -> {
-                    Big(nodeModel)
+                    Big(nodeModel, rendererContext)
                 }
 
                 "FONT" -> {
-                    Font(nodeModel)
+                    Font(nodeModel, rendererContext)
                 }
 
                 "A" -> {
-                    A(nodeModel)
+                    A(nodeModel, rendererContext)
                 }
 
                 "LI" -> {
-                    Li(nodeModel)
+                    Li(nodeModel, rendererContext)
                 }
 
                 "BR" -> {
-                    Br(nodeModel)
+                    Br(nodeModel, rendererContext)
                 }
 
                 "UL" -> {
-                    Ul(nodeModel)
+                    Ul(nodeModel, rendererContext)
                 }
 
                 "TR" -> {
-                    Tr(nodeModel)
+                    Tr(nodeModel, rendererContext)
                 }
 
                 "TD" -> {
-                    Td(nodeModel)
+                    Td(nodeModel, rendererContext)
                 }
 
                 "IMG" -> {
-                    Img(nodeModel as HTMLImageElementModel)
+                    Img(nodeModel as HTMLImageElementModel, rendererContext)
                 }
 
                 "BLOCKQUOTE" -> {
-                    Blockquote(nodeModel)
+                    Blockquote(nodeModel, rendererContext)
                 }
 
                 else -> {
                     println(nodeModel.nodeName)
-                    Dummy(nodeModel)
+                    Dummy(nodeModel, rendererContext)
                 }
             }
         }
 
-        /*
-        Scaffold(
-            content = { padding ->
-                LazyColumn(modifier = Modifier.padding(padding)) {
-
-                    items(
-                        items = nodeModels,
-                        /*key = { element ->
-                        element.id()
-                    }*/
-                    ) { nodeModel ->
-
-                        when (nodeModel.nodeName.uppercase()) {
-                            "BODY" -> {
-                                Body(nodeModel)
-                            }
-
-                            "TABLE" -> {
-                                Table(nodeModel)
-                            }
-
-                            "FORM" -> {
-                                Form(nodeModel)
-                            }
-
-                            "CENTER" -> {
-                                Center(nodeModel)
-                            }
-
-                            "DIV" -> {
-                                Div(nodeModel)
-                            }
-
-                            "A" -> {
-                                A(nodeModel)
-                            }
-
-                            "BIG" -> {
-                                Big(nodeModel)
-                            }
-
-                            "LI" -> {
-                                Li(nodeModel)
-                            }
-
-                            "UL" -> {
-                                Ul(nodeModel)
-                            }
-
-                            "IMG" -> {
-                                Img(nodeModel as HTMLImageElementModel)
-                            }
-
-                            else -> {
-                                println(nodeModel.nodeName)
-                            }
-                        }
-                    }
-                }
-            }
-        )*/
     }
 }
 
 @Composable
-fun Html(nodeModel: NodeModel) {
+fun Html(nodeModel: NodeModel,
+         rendererContext: RendererContext) {
     Text(nodeModel.nodeName)
-    Nodes(nodeModel)
+    Nodes(nodeModel, rendererContext)
 }
 
 
 @Composable
-fun Dummy(nodeModel: NodeModel) {
+fun Dummy(nodeModel: NodeModel,
+          rendererContext: RendererContext) {
     Text(nodeModel.nodeName)
-    Nodes(nodeModel)
+    Nodes(nodeModel, rendererContext)
 }
 
 
 @Composable
-fun Font(nodeModel: NodeModel) {
+fun Font(nodeModel: NodeModel,
+         rendererContext: RendererContext) {
     Text(nodeModel.nodeName)
-    Nodes(nodeModel)
+    Nodes(nodeModel, rendererContext)
 }
 
 
 @Composable
-fun Img(nodeModel: HTMLImageElementModel) {
+fun Img(nodeModel: HTMLImageElementModel,
+        rendererContext: RendererContext) {
     Text(nodeModel.nodeName)
 
 
-    AsyncImage(
-        model = nodeModel.baseURI + nodeModel.src,
-        contentDescription = null,
-        contentScale = ContentScale.Crop,
-        modifier = Modifier
-            .fillMaxWidth()
-    )
-
-    Nodes(nodeModel)
+    if(rendererContext.isImageLoadingEnabled()) {
+        AsyncImage(
+            model = nodeModel.baseURI + nodeModel.src,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxWidth()
+        )
+    }
+    Nodes(nodeModel, rendererContext)
     println(nodeModel.baseURI)
     println(nodeModel.src)
 }
 
 @Composable
-fun Ul(nodeModel: NodeModel) {
+fun Ul(nodeModel: NodeModel,
+       rendererContext: RendererContext) {
     Text(nodeModel.nodeName)
-    Nodes(nodeModel)
+    Nodes(nodeModel, rendererContext)
 }
 
 
 @Composable
-fun Blockquote(nodeModel: NodeModel) {
+fun Blockquote(nodeModel: NodeModel,
+               rendererContext: RendererContext) {
     Text(nodeModel.nodeName)
-    Nodes(nodeModel)
+    Nodes(nodeModel, rendererContext)
 }
 
 @Composable
-fun Li(nodeModel: NodeModel) {
+fun Li(nodeModel: NodeModel,
+       rendererContext: RendererContext) {
     Text(nodeModel.nodeName)
-    Nodes(nodeModel)
+    Nodes(nodeModel, rendererContext)
 }
 
 @Composable
-fun Form(nodeModel: NodeModel) {
+fun Form(nodeModel: NodeModel,
+         rendererContext: RendererContext) {
     Text(nodeModel.nodeName)
-    Nodes(nodeModel)
+    Nodes(nodeModel, rendererContext)
 }
 
 @Composable
-fun Body(nodeModel: NodeModel) {
+fun Body(nodeModel: NodeModel,
+         rendererContext: RendererContext) {
     Text(nodeModel.nodeName)
-    Nodes(nodeModel)
-}
-
-
-@Composable
-fun Center(nodeModel: NodeModel) {
-    Text(nodeModel.nodeName)
-    Nodes(nodeModel)
-}
-
-@Composable
-fun Table(nodeModel: NodeModel) {
-    Text(nodeModel.nodeName)
-    Nodes(nodeModel)
+    Nodes(nodeModel, rendererContext)
 }
 
 
 @Composable
-fun A(nodeModel: NodeModel) {
+fun Center(nodeModel: NodeModel,
+           rendererContext: RendererContext) {
     Text(nodeModel.nodeName)
-    Nodes(nodeModel)
+    Nodes(nodeModel, rendererContext)
+}
+
+@Composable
+fun Table(nodeModel: NodeModel,
+          rendererContext: RendererContext) {
+    Text(nodeModel.nodeName)
+    Nodes(nodeModel, rendererContext)
 }
 
 
 @Composable
-fun Tr(nodeModel: NodeModel) {
+fun A(nodeModel: NodeModel,
+      rendererContext: RendererContext) {
     Text(nodeModel.nodeName)
-    Nodes(nodeModel)
+    Nodes(nodeModel, rendererContext)
 }
 
 
 @Composable
-fun Td(nodeModel: NodeModel) {
+fun Tr(nodeModel: NodeModel,
+       rendererContext: RendererContext) {
     Text(nodeModel.nodeName)
-    Nodes(nodeModel)
+    Nodes(nodeModel, rendererContext)
+}
+
+
+@Composable
+fun Td(nodeModel: NodeModel,
+       rendererContext: RendererContext) {
+    Text(nodeModel.nodeName)
+    Nodes(nodeModel, rendererContext)
 }
 
 @Composable
-fun Div(nodeModel: NodeModel) {
+fun Div(nodeModel: NodeModel,
+        rendererContext: RendererContext) {
     Text(nodeModel.nodeName)
-    Nodes(nodeModel)
+    Nodes(nodeModel, rendererContext)
 }
 
 @Composable
-fun Big(nodeModel: NodeModel) {
+fun Big(nodeModel: NodeModel,
+        rendererContext: RendererContext) {
     Text(nodeModel.nodeName)
-    Nodes(nodeModel)
+    Nodes(nodeModel, rendererContext)
 }
 
 @Composable
-fun Br(nodeModel: NodeModel) {
+fun Br(nodeModel: NodeModel,
+       rendererContext: RendererContext) {
     Text(nodeModel.nodeName)
-    Nodes(nodeModel)
+    Nodes(nodeModel, rendererContext)
 }

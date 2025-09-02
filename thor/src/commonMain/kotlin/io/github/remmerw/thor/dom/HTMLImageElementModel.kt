@@ -62,10 +62,8 @@ class HTMLImageElementModel : HTMLAbstractUIElement, HTMLImageElement {
         this.setAttribute("border", border)
     }
 
-    override fun getHeight(): String {
-        val r = this.uINode
-        val height = if (r == null) 0 else r.bounds()!!.height
-        return height.toString()
+    override fun getHeight(): String? {
+        return this.getAttribute("height")
     }
 
     override fun setHeight(height: String?) {
@@ -140,10 +138,8 @@ class HTMLImageElementModel : HTMLAbstractUIElement, HTMLImageElement {
         this.setAttribute("vspace", vspace)
     }
 
-    override fun getWidth(): String {
-        val r = this.uINode
-        val width = if (r == null) 0 else r.bounds()!!.width
-        return width.toString()
+    override fun getWidth(): String? {
+        return this.getAttribute("width")
     }
 
     override fun setWidth(width: String?) {

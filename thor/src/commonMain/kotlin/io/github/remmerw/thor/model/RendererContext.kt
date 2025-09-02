@@ -1,5 +1,6 @@
-package io.github.remmerw.thor.dom
+package io.github.remmerw.thor.model
 
+import io.github.remmerw.thor.dom.FormInput
 import io.github.remmerw.thor.ua.UserAgentContext
 import org.w3c.dom.html.HTMLCollection
 import org.w3c.dom.html.HTMLElement
@@ -22,7 +23,7 @@ import java.util.Optional
  *
  * @see HtmlPanel.setDocument
  */
-interface HtmlRendererContext {
+interface RendererContext {
     /**
      * Navigates to the location given. Implementations should retrieve the URL
      * content, parse it and render it.
@@ -58,7 +59,7 @@ interface HtmlRendererContext {
      * @param target     Same as the target attribute in the FORM tag, i.e. _blank, _top,
      * etc.
      * @param enctype    The encoding type.
-     * @param formInputs An array of [FormInput] instances.
+     * @param formInputs An array of [io.github.remmerw.thor.dom.FormInput] instances.
      */
     fun submitForm(
         method: String?,
@@ -69,29 +70,10 @@ interface HtmlRendererContext {
     )
 
     /**
-     * Creates a [BrowserFrame] instance.
-     */
-    fun createBrowserFrame(): BrowserFrame?
-
-    /**
      * Gets the user agent context.
      */
 
     fun userAgentContext(): UserAgentContext
-
-    /**
-     * Gets a `HtmlObject` instance that implements a OBJECT tag from
-     * HTML.
-     *
-     * @param element The DOM element for the object, which may either represent an
-     * OBJECT, EMBED or an APPLET tag.
-     * @return Implementations of this method must return `null` if
-     * they have any problems producing a `HtmlObject`
-     * instance. This is particularly true of OBJECT tags, where inner
-     * HTML of the tag must be rendered if the OBJECT content cannot be
-     * handled.
-     */
-    fun getHtmlObject(element: HTMLElement?): HtmlObject?
 
 
     /**
@@ -145,7 +127,7 @@ interface HtmlRendererContext {
      * @param windowFeatures The features of the new window (same as in Javascript open
      * method).
      * @param replace
-     * @return A new [HtmlRendererContext] instance.
+     * @return A new [RendererContext] instance.
      */
     @Deprecated("Use {@link #open(URL, String, String, boolean)} instead.")
     fun open(
@@ -153,7 +135,7 @@ interface HtmlRendererContext {
         windowName: String?,
         windowFeatures: String?,
         replace: Boolean
-    ): HtmlRendererContext?
+    ): RendererContext?
 
     /**
      * Opens a separate browser window and renders a URL.
@@ -163,14 +145,14 @@ interface HtmlRendererContext {
      * @param windowFeatures The features of the new window (same as in Javascript open
      * method).
      * @param replace
-     * @return A new [HtmlRendererContext] instance.
+     * @return A new [RendererContext] instance.
      */
     fun open(
         url: URL,
         windowName: String?,
         windowFeatures: String?,
         replace: Boolean
-    ): HtmlRendererContext?
+    ): RendererContext?
 
     /**
      * Shows a prompt dialog.
@@ -228,10 +210,10 @@ interface HtmlRendererContext {
     /**
      * Gets the parent of the frame/window in the current context.
      */
-    fun parent(): HtmlRendererContext?
+    fun parent(): RendererContext?
 
 
-    fun opener(): HtmlRendererContext?
+    fun opener(): RendererContext?
 
     /**
      * Gets the window status text.
@@ -246,7 +228,7 @@ interface HtmlRendererContext {
     /**
      * Gets the top-most browser frame/window.
      */
-    fun top(): HtmlRendererContext?
+    fun top(): RendererContext?
 
     /**
      * It should return true if the link provided has been visited.

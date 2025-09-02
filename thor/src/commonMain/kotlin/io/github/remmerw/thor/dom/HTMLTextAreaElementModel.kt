@@ -28,6 +28,14 @@ import org.w3c.dom.html.HTMLTextAreaElement
 class HTMLTextAreaElementModel : HTMLBaseInputElement, HTMLTextAreaElement {
     constructor(name: String) : super(name)
 
+    override fun blur() {
+        TODO("Not yet implemented")
+    }
+
+    override fun focus() {
+        TODO("Not yet implemented")
+    }
+
     override fun getFormInputs(): Array<FormInput>? {
         val name = this.name
         if (name == null) {

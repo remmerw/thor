@@ -39,6 +39,13 @@ class HTMLInputElementModel(name: String) : HTMLBaseInputElement(name), HTMLInpu
         this.defaultChecked = defaultChecked
     }
 
+    override fun blur() {
+        TODO("Not yet implemented")
+    }
+
+    override fun focus() {
+        TODO("Not yet implemented")
+    }
 
     override fun getChecked(): Boolean {
         val ic = this.getInputContext()

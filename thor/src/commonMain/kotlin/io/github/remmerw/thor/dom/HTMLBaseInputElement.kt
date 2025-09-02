@@ -34,8 +34,6 @@ abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) 
     protected var deferredReadonly: Boolean? = null
     protected var deferredDisabled: Boolean? = null
 
-    private var imageSrc: String? = null
-
 
     fun getInputContext(): InputContext? {
         return inputContext
@@ -246,20 +244,6 @@ abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) 
             return ic.fileValue
         } else {
             return null
-        }
-    }
-
-    override fun blur() {
-        val ic = this.inputContext
-        if (ic != null) {
-            ic.blur()
-        }
-    }
-
-    override fun focus() {
-        val ic = this.inputContext
-        if (ic != null) {
-            ic.focus()
         }
     }
 

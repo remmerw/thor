@@ -158,7 +158,7 @@ class HTMLFormElementModel : HTMLAbstractUIElement, HTMLFormElement {
      * submit button parameter.
      */
     fun submit(extraFormInputs: Array<FormInput>?) {
-        val context = this.htmlRendererContext
+        val context = this.rendererContext
         if (context != null) {
             val formInputs = ArrayList<FormInput?>()
             if (extraFormInputs != null) {

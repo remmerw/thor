@@ -2,7 +2,7 @@ package io.github.remmerw.thor.parser
 
 import io.github.remmerw.thor.dom.DOMImplementationImpl
 import io.github.remmerw.thor.dom.HTMLDocumentImpl
-import io.github.remmerw.thor.dom.HtmlRendererContext
+import io.github.remmerw.thor.model.RendererContext
 import io.github.remmerw.thor.ua.UserAgentContext
 import org.w3c.dom.DOMImplementation
 import org.w3c.dom.Document
@@ -17,7 +17,7 @@ import javax.xml.parsers.DocumentBuilder
 
 class DocumentModelBuilder : DocumentBuilder {
     private val context: UserAgentContext
-    private val renderer: HtmlRendererContext?
+    private val renderer: RendererContext?
     var resolver: EntityResolver? = null
         private set
     private var errorHandler: ErrorHandler? = null
@@ -47,7 +47,7 @@ class DocumentModelBuilder : DocumentBuilder {
      * which may be an instance of
      * [org.cobraparser.html.test.SimpleHtmlRendererContext].
      */
-    constructor(ucontext: UserAgentContext, rcontext: HtmlRendererContext?) {
+    constructor(ucontext: UserAgentContext, rcontext: RendererContext?) {
         this.renderer = rcontext
         this.context = ucontext
     }
@@ -60,7 +60,7 @@ class DocumentModelBuilder : DocumentBuilder {
      * which may be an instance of
      * [org.cobraparser.html.test.SimpleHtmlRendererContext].
      */
-    constructor(rcontext: HtmlRendererContext) {
+    constructor(rcontext: RendererContext) {
         this.renderer = rcontext
         this.context = rcontext.userAgentContext()
     }

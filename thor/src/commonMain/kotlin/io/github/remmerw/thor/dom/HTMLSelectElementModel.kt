@@ -11,6 +11,13 @@ open class HTMLSelectElementModel(name: String) : HTMLBaseInputElement(name), HT
     private var options: HTMLCollection? = null
     private var deferredSelectedIndex = -1
 
+    override fun blur() {
+        TODO("Not yet implemented")
+    }
+
+    override fun focus() {
+        TODO("Not yet implemented")
+    }
 
     @Throws(DOMException::class)
     override fun add(element: HTMLElement, before: HTMLElement?) {

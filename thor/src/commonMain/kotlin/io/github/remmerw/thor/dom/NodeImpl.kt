@@ -9,6 +9,7 @@ import cz.vutbr.web.css.RuleSet
 import cz.vutbr.web.css.Selector
 import io.github.remmerw.thor.core.Strings
 import io.github.remmerw.thor.core.Urls
+import io.github.remmerw.thor.model.RendererContext
 import io.github.remmerw.thor.parser.HtmlParser
 import io.github.remmerw.thor.style.RenderState
 import io.github.remmerw.thor.style.StyleSheetRenderState
@@ -53,23 +54,10 @@ import kotlin.synchronized
 abstract class NodeImpl : NodeModel, Node, ModelNode {
 
     private var renderState: RenderState? = null
-    private val parentModelNode: ModelNode? = null
-    private val nodeName: String? = null
-
-    override fun nodeName(): String? {
-        return nodeName
-    }
-
     override fun renderState(): RenderState? {
         return renderState
     }
 
-    override fun parentModelNode(): ModelNode? {
-        return parentModelNode
-    }
-
-
-    var uINode: UINode? = null
 
     private var nodeList = mutableStateListOf<NodeModel>()
 
@@ -108,22 +96,6 @@ abstract class NodeImpl : NodeModel, Node, ModelNode {
 
     var isAttachedToDocument: kotlin.Boolean = this is Document
 
-
-    /**
-     * Tries to get a UINode associated with the current node. Failing that, it
-     * tries ancestors recursively. This method will return the closest
-     * *block-level* renderer node, if any.
-     */
-
-    fun findUINode(): UINode? {
-        // Called in GUI thread always.
-        val uiNode: UINode? = this.uINode
-        if (uiNode != null) {
-            return uiNode
-        }
-        val parentNode = this.nodeParent as NodeImpl?
-        return parentNode?.findUINode()
-    }
 
     @Throws(DOMException::class)
     override fun appendChild(newChild: Node?): Node {
@@ -999,7 +971,7 @@ abstract class NodeImpl : NodeModel, Node, ModelNode {
             }
         }
 
-    open val htmlRendererContext: HtmlRendererContext?
+    open val rendererContext: RendererContext?
         get() {
             val doc: Any? = this.document
             if (doc is HTMLDocumentImpl) {

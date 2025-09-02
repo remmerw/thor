@@ -28,9 +28,8 @@ import org.w3c.dom.Document
 import org.w3c.dom.html.HTMLFrameElement
 import java.net.MalformedURLException
 
-class HTMLFrameElementModel(name: String) : HTMLElementModel(name), HTMLFrameElement, FrameNode {
+class HTMLFrameElementModel(name: String) : HTMLElementModel(name), HTMLFrameElement {
 
-    private var browserFrame: BrowserFrame? = null
     private var noResize = false
 
 
@@ -46,7 +45,7 @@ class HTMLFrameElementModel(name: String) : HTMLElementModel(name), HTMLFrameEle
                         )
                     )
                 ) {
-                    browserFrame!!.loadURL(fullURL)
+
                 }
             } catch (mfu: MalformedURLException) {
                 logger.warning("Frame URI=[" + src + "] is malformed.")
@@ -54,14 +53,6 @@ class HTMLFrameElementModel(name: String) : HTMLElementModel(name), HTMLFrameEle
         }
     }
 
-    override fun getBrowserFrame(): BrowserFrame? {
-        return this.browserFrame!!
-    }
-
-    override fun setBrowserFrame(frame: BrowserFrame?) {
-        this.browserFrame = frame
-        loadURL()
-    }
 
     override fun getFrameBorder(): String? {
         return this.getAttribute("frameBorder")
@@ -127,13 +118,8 @@ class HTMLFrameElementModel(name: String) : HTMLElementModel(name), HTMLFrameEle
         this.setAttribute("src", src)
     }
 
-    fun getContentDocument(): Document? {
-        val frame = this.browserFrame
-        if (frame == null) {
-            // Not loaded yet
-            return null
-        }
-        return frame.contentDocument()
+     fun getContentDocument(): Document? {
+        TODO("Not yet implemented")
     }
 
 

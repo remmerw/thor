@@ -38,7 +38,6 @@ class HTMLBaseElementModel(name: String) : HTMLElementModel(name) {
         val doc = this.document as HTMLDocumentImpl?
         if (doc != null) {
             doc.setBaseURI(this.getAttribute("href"))
-            doc.defaultTarget = (this.getAttribute("target"))
         }
     }
 }

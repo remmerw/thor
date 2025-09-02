@@ -95,12 +95,7 @@ class HTMLLinkElementModel(name: String) : HTMLAbstractUIElement(name), HTMLLink
     }
 
     override fun getTarget(): String? {
-        val target = this.getAttribute("target")
-        if (target != null) {
-            return target
-        }
-        val doc = this.document as HTMLDocumentImpl?
-        return if (doc == null) null else doc.defaultTarget
+        return this.getAttribute("target")
     }
 
     override fun setTarget(target: String?) {
@@ -175,7 +170,7 @@ class HTMLLinkElementModel(name: String) : HTMLAbstractUIElement(name), HTMLLink
         } else {
             val urlOpt = this.absoluteURL
             if (urlOpt.isPresent) {
-                val rcontext = this.htmlRendererContext
+                val rcontext = this.rendererContext
                 val target = this.getTarget()
                 rcontext?.linkClicked(this, urlOpt.get(), target)
                 return true
