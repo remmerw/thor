@@ -96,7 +96,7 @@ object CSSUtilities {
         stylesheetStr: String?,
         bcontext: UserAgentContext
     ): StyleSheet? {
-        return jParseCSS2(ownerNode, baseURI, stylesheetStr, bcontext)
+        return jParseCSS2(baseURI, stylesheetStr)
     }
 
     @Throws(MalformedURLException::class)
@@ -128,7 +128,7 @@ object CSSUtilities {
         val text = request.responseText
         if ((text != null) && "" != text) {
             val processedText = if (considerDoubleSlashComments) preProcessCss(text) else text
-            return jParseCSS2(ownerNode, cssURI, processedText, bcontext)
+            return jParseCSS2(cssURI, processedText)
         } else {
             return emptyStyleSheet
         }
@@ -141,16 +141,13 @@ object CSSUtilities {
             return css
         }
 
-    private fun jParseCSS2(
-        ownerNode: Node?, cssURI: String, processedText: String?,
-        bcontext: UserAgentContext
-    ): StyleSheet? {
+    private fun jParseCSS2(cssURI: String, processedText: String?): StyleSheet? {
         try {
             val base = URL(cssURI)
             CSSFactory.setAutoImportMedia(MediaSpec("screen"))
             return CSSParserFactory.getInstance().parse(
                 processedText,
-                SafeNetworkProcessor(bcontext),
+                SafeNetworkProcessor(),
                 "utf-8",
                 CSSParserFactory.SourceType.EMBEDDED,
                 base
@@ -171,8 +168,8 @@ object CSSUtilities {
         try {
             return CSSParserFactory.getInstance().parse(
                 style,
-                SafeNetworkProcessor(null),
-                null,
+                SafeNetworkProcessor(),
+                encoding,
                 CSSParserFactory.SourceType.INLINE,
                 element,
                 inlinePriority,
@@ -225,23 +222,11 @@ object CSSUtilities {
         return false
     }
 
-    class SafeNetworkProcessor(val bcontext: UserAgentContext?) : NetworkProcessor {
+    class SafeNetworkProcessor() : NetworkProcessor {
         @Throws(IOException::class)
         override fun fetch(url: URL): InputStream {
-            //return AccessController.doPrivileged((PrivilegedExceptionAction<InputStream>) () -> {
-
-            val request = bcontext?.createHttpRequest()
-            request?.open("GET", url, false)
-            request?.send(null, UserAgentContext.Request(url, RequestKind.CSS))
-            val responseBytes = request?.responseBytes
-            if (responseBytes == null) {
-                // This can happen when a request is denied by the request manager.
-                throw IOException("Empty response")
-            } else {
-                return ByteArrayInputStream(responseBytes)
-            }
-
-            // });
+            println("TODO SafeNetworkProcessor fetch " + url)
+            return ByteArrayInputStream(byteArrayOf())
         }
     }
 }

@@ -7,7 +7,7 @@ import org.w3c.dom.css.CSSRule.IMPORT_RULE
 import org.w3c.dom.css.CSSStyleSheet
 import org.w3c.dom.stylesheets.MediaList
 
-internal class CSSImportRuleImpl(rule: RuleBlock<*>?, containingStyleSheet: JStyleSheetWrapper?) :
+internal class CSSImportRuleImpl(rule: RuleBlock<*>?, containingStyleSheet: StyleSheetWrapper?) :
     AbstractCSSRule(containingStyleSheet), CSSImportRule {
     override fun getType(): Short {
         return IMPORT_RULE

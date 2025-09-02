@@ -31,8 +31,6 @@ import cz.vutbr.web.css.TermList
 import cz.vutbr.web.csskit.MatchConditionOnElements
 import cz.vutbr.web.domassign.Analyzer.OrderedRule
 import cz.vutbr.web.domassign.AnalyzerUtil
-import io.github.remmerw.thor.core.Strings
-import io.github.remmerw.thor.parser.HtmlParser
 import io.github.remmerw.thor.style.CSS2PropertiesContext
 import io.github.remmerw.thor.style.CSSUtilities
 import io.github.remmerw.thor.style.ComputedCssProperties
@@ -45,8 +43,6 @@ import org.w3c.css.sac.InputSource
 import org.w3c.dom.DOMException
 import org.w3c.dom.html.HTMLElement
 import org.w3c.dom.html.HTMLFormElement
-import org.xml.sax.SAXException
-import java.io.IOException
 import java.io.Reader
 import java.io.StringReader
 import java.util.Arrays
@@ -624,71 +620,6 @@ open class HTMLElementModel(name: String) : ElementModel(name), HTMLElement, CSS
         }
     }
 
-    fun setInnerHTML(newHtml: String) {
-        val document = this.document as HTMLDocumentImpl?
-        if (document == null) {
-            this.warn("setInnerHTML(): Element " + this + " does not belong to a document.")
-            return
-        }
-        val parser = HtmlParser(
-            document.userAgentContext(),
-            document,
-            null,
-            null,
-            null,
-            false,  /* TODO */
-            false
-        )
-        synchronized(this) {
-            removeAllChildrenImpl()
-        }
-        // Should not synchronize around parser probably.
-        try {
-            StringReader(newHtml).use { reader ->
-                parser.parse(reader, this)
-            }
-        } catch (e: IOException) {
-            this.warn("setInnerHTML(): Error setting inner HTML.", e)
-        } catch (e: SAXException) {
-            this.warn("setInnerHTML(): Error setting inner HTML.", e)
-        }
-    }
-
-    fun outerHTML(): String {
-        val buffer = StringBuffer()
-        synchronized(this) {
-            this.appendOuterHTMLImpl(buffer)
-        }
-        return buffer.toString()
-    }
-
-    fun appendOuterHTMLImpl(buffer: StringBuffer) {
-        val tagName = this.tagName
-        buffer.append('<')
-        buffer.append(tagName)
-        val attributes: MutableMap<String, String>? = this.attributes
-        if (attributes != null) {
-            attributes.forEach { (k: String?, v: String?) ->
-                if (v != null) {
-                    buffer.append(' ')
-                    buffer.append(k)
-                    buffer.append("=\"")
-                    buffer.append(Strings.strictHtmlEncode(v, true))
-                    buffer.append("\"")
-                }
-            }
-        }
-        val nl = this.nodes()
-        if (nl.isEmpty()) {
-            buffer.append("/>")
-            return
-        }
-        buffer.append('>')
-        this.appendInnerHTMLImpl(buffer)
-        buffer.append("</")
-        buffer.append(tagName)
-        buffer.append('>')
-    }
 
     override fun createRenderState(prevRenderState: RenderState?): RenderState {
         // Overrides NodeImpl method

@@ -18,5 +18,5 @@ interface StyleSheetBridge {
      * @return a list of style sheet associated with the document to which this
      * handler is attached.
      */
-    val docStyleSheets: MutableList<JStyleSheetWrapper>?
+    val docStyleSheets: MutableList<StyleSheetWrapper>?
 }

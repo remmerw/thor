@@ -32,8 +32,8 @@ import cz.vutbr.web.csskit.antlr4.CSSParserFactory
 import cz.vutbr.web.domassign.Analyzer
 import cz.vutbr.web.domassign.AnalyzerUtil
 import io.github.remmerw.thor.core.Urls
-import io.github.remmerw.thor.css.JStyleSheetWrapper
-import io.github.remmerw.thor.css.JStyleSheetWrapper.Companion.getStyleSheets
+import io.github.remmerw.thor.css.StyleSheetWrapper
+import io.github.remmerw.thor.css.StyleSheetWrapper.Companion.getStyleSheets
 import io.github.remmerw.thor.css.StyleSheetBridge
 import io.github.remmerw.thor.dom.NodeFilter.AnchorFilter
 import io.github.remmerw.thor.dom.NodeFilter.AppletFilter
@@ -132,7 +132,6 @@ class HTMLDocumentImpl(
 
     private var oldPendingTaskId = -1
     private var classifiedRules: Analyzer.Holder? = null
-
 
 
     init {
@@ -1042,7 +1041,6 @@ class HTMLDocumentImpl(
     }
 
 
-
     override fun setUserData(key: String, data: Any?, handler: UserDataHandler?): Any? {
         // if (org.cobraparser.html.parser.HtmlParser.MODIFYING_KEY.equals(key) && data == Boolean.FALSE) {
         // dispatchLoadEvent();
@@ -1137,7 +1135,7 @@ class HTMLDocumentImpl(
 
     inner class StyleSheetManager {
         @Volatile
-        private var styleSheets: MutableList<JStyleSheetWrapper>? = null
+        private var styleSheets: MutableList<StyleSheetWrapper>? = null
 
         @Volatile
         private var enabledJStyleSheets: MutableList<StyleSheet?>? = null
@@ -1160,19 +1158,19 @@ class HTMLDocumentImpl(
                 allInvalidated()
             }
 
-            override val docStyleSheets: MutableList<JStyleSheetWrapper>?
+            override val docStyleSheets: MutableList<StyleSheetWrapper>?
                 get() = TODO("Not yet implemented")
 
 
         }
 
-        private val docStyleSheetList: MutableList<JStyleSheetWrapper>
+        private val docStyleSheetList: MutableList<StyleSheetWrapper>
             get() {
                 synchronized(this) {
                     if (styleSheets == null) {
-                        styleSheets = ArrayList<JStyleSheetWrapper>()
-                        val docStyles: MutableList<JStyleSheetWrapper> =
-                            ArrayList<JStyleSheetWrapper>()
+                        styleSheets = ArrayList<StyleSheetWrapper>()
+                        val docStyles: MutableList<StyleSheetWrapper> =
+                            ArrayList<StyleSheetWrapper>()
                         synchronized(treeLock) {
                             scanElementStyleSheets(docStyles, this@HTMLDocumentImpl)
                         }
@@ -1183,9 +1181,9 @@ class HTMLDocumentImpl(
                 }
             }
 
-        private fun scanElementStyleSheets(styles: MutableList<JStyleSheetWrapper>, node: Node) {
+        private fun scanElementStyleSheets(styles: MutableList<StyleSheetWrapper>, node: Node) {
             if (node is LinkStyle) {
-                val sheet = node.sheet as JStyleSheetWrapper?
+                val sheet = node.sheet as StyleSheetWrapper?
                 if (sheet != null) {
                     styles.add(sheet)
                 }
@@ -1209,8 +1207,8 @@ class HTMLDocumentImpl(
                     this.docStyleSheetList
                 val jStyleSheets: MutableList<StyleSheet?> = ArrayList<StyleSheet?>()
                 for (style in documentStyles) {
-                    if ((!style.disabled) && (style.jStyleSheet != null)) {
-                        jStyleSheets.add(style.jStyleSheet)
+                    if ((!style.disabled) && (style.styleSheet != null)) {
+                        jStyleSheets.add(style.styleSheet)
                     }
                 }
                 enabledJStyleSheets = jStyleSheets

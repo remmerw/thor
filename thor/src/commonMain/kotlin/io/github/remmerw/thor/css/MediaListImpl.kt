@@ -6,15 +6,15 @@ import org.w3c.dom.stylesheets.MediaList
 import java.util.Collections
 
 internal class MediaListImpl : MediaList {
-    private val containingStyleSheet: JStyleSheetWrapper
+    private val containingStyleSheet: StyleSheetWrapper
     private val mediaList: MutableList<String?>
 
-    constructor(mediaListStr: String?, containingStyleSheet: JStyleSheetWrapper) {
+    constructor(mediaListStr: String?, containingStyleSheet: StyleSheetWrapper) {
         this.mediaList = splitMediaList(mediaListStr)
         this.containingStyleSheet = containingStyleSheet
     }
 
-    constructor(mediaQueries: MutableList<MediaQuery>, containingStyleSheet: JStyleSheetWrapper) {
+    constructor(mediaQueries: MutableList<MediaQuery>, containingStyleSheet: StyleSheetWrapper) {
         val mediaList: MutableList<String?> = ArrayList<String?>()
         for (mediaQuery in mediaQueries) {
             mediaList.add(mediaQuery.type)

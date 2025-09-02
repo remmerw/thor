@@ -10,7 +10,8 @@ class ParserTest {
     @Test
     fun parserTest(): Unit = runBlocking(Dispatchers.IO) {
 
-        val url = "http://www.benjysbrain.com/"
+        //val url = "http://www.benjysbrain.com/"
+        val url = "https://www.welt.de/"
         val p = Render(url)
         val document = p.parsePage()
         assertNotNull(document)

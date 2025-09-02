@@ -1,7 +1,7 @@
 package io.github.remmerw.thor.dom
 
 import io.github.remmerw.thor.core.Urls
-import io.github.remmerw.thor.css.JStyleSheetWrapper
+import io.github.remmerw.thor.css.StyleSheetWrapper
 import io.github.remmerw.thor.style.CSSUtilities
 import org.w3c.dom.css.CSSStyleSheet
 import org.w3c.dom.html.HTMLLinkElement
@@ -11,7 +11,7 @@ import java.net.URL
 import java.util.Locale
 
 class HTMLLinkElementModel(name: String) : HTMLAbstractUIElement(name), HTMLLinkElement, LinkStyle {
-    private var styleSheet: JStyleSheetWrapper? = null
+    private var styleSheet: StyleSheetWrapper? = null
     private var disabled = false
 
     override fun getDisabled(): Boolean {
@@ -183,9 +183,9 @@ class HTMLLinkElementModel(name: String) : HTMLAbstractUIElement(name), HTMLLink
                     doc.baseURI!!, false
                 )
                 if (this.styleSheet != null) {
-                    this.styleSheet!!.jStyleSheet = jSheet
+                    this.styleSheet!!.styleSheet = jSheet
                 } else {
-                    val styleSheet = JStyleSheetWrapper(
+                    val styleSheet = StyleSheetWrapper(
                         jSheet, this.media, href, this.type, this.title,
                         this, doc.styleSheetManager.bridge
                     )
@@ -231,10 +231,10 @@ class HTMLLinkElementModel(name: String) : HTMLAbstractUIElement(name), HTMLLink
         }
     }
 
-    private val emptyStyleSheet: JStyleSheetWrapper
+    private val emptyStyleSheet: StyleSheetWrapper
         get() {
             val doc = this.ownerDocument as HTMLDocumentImpl
-            return JStyleSheetWrapper(
+            return StyleSheetWrapper(
                 null, this.media, this.getHref(), this.type, this.title, this,
                 doc.styleSheetManager.bridge
             )

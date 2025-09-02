@@ -23,35 +23,12 @@
  */
 package io.github.remmerw.thor.dom
 
-import io.github.remmerw.thor.ua.UserAgentContext
 import org.w3c.dom.Document
 import org.w3c.dom.html.HTMLFrameElement
-import java.net.MalformedURLException
 
 class HTMLFrameElementModel(name: String) : HTMLElementModel(name), HTMLFrameElement {
 
     private var noResize = false
-
-
-    private fun loadURL() {
-        val src = getAttribute("src")
-        if (src != null) {
-            try {
-                val fullURL = getFullURL(src)
-                if (userAgentContext!!.isRequestPermitted(
-                        UserAgentContext.Request(
-                            fullURL,
-                            UserAgentContext.RequestKind.Frame
-                        )
-                    )
-                ) {
-
-                }
-            } catch (mfu: MalformedURLException) {
-                logger.warning("Frame URI=[" + src + "] is malformed.")
-            }
-        }
-    }
 
 
     override fun getFrameBorder(): String? {

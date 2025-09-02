@@ -2,11 +2,8 @@ package io.github.remmerw.thor.dom
 
 import io.github.remmerw.thor.style.IFrameRenderState
 import io.github.remmerw.thor.style.RenderState
-import io.github.remmerw.thor.ua.UserAgentContext
-import io.github.remmerw.thor.ua.UserAgentContext.RequestKind
 import org.w3c.dom.Document
 import org.w3c.dom.html.HTMLIFrameElement
-import java.net.MalformedURLException
 
 class HTMLIFrameElementModel(name: String) : HTMLAbstractUIElement(name), HTMLIFrameElement {
 
@@ -112,39 +109,6 @@ class HTMLIFrameElementModel(name: String) : HTMLAbstractUIElement(name), HTMLIF
         }
     }
 
-
-    private fun loadURLIntoFrame(value: String?) {
-
-        try {
-            val fullURL = if (value == null) null else this.getFullURL(value)
-            if (fullURL != null) {
-                if (userAgentContext!!.isRequestPermitted(
-                        UserAgentContext.Request(
-                            fullURL,
-                            RequestKind.Frame
-                        )
-                    )
-                ) {
-
-                    // frame.loadURL(fullURL);
-                    // ^^ Using window.open is better because it fires the various events correctly.
-                    //this.contentWindow!!.open(fullURL.toExternalForm(), "iframe", "", true)
-                } else {
-                    println("Request not permitted: " + fullURL)
-
-                }
-            } else {
-                this.warn("Can't load URL: " + value)
-                // TODO: Plug: marking as load=true because we are not handling javascript URIs currently.
-                //       javascript URI is being used in some of the web-platform-tests.
-
-            }
-        } catch (mfu: MalformedURLException) {
-            this.warn("loadURLIntoFrame(): Unable to navigate to src.", mfu)
-
-        }
-
-    }
 
     override fun createRenderState(prevRenderState: RenderState?): RenderState {
         return IFrameRenderState(prevRenderState, this)

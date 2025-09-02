@@ -3,7 +3,7 @@ package io.github.remmerw.thor.css
 import org.w3c.dom.css.CSSRule
 import org.w3c.dom.css.CSSStyleSheet
 
-internal abstract class AbstractCSSRule(val containingStyleSheet: JStyleSheetWrapper?) : CSSRule {
+internal abstract class AbstractCSSRule(val containingStyleSheet: StyleSheetWrapper?) : CSSRule {
     /**
      * @return The style sheet that contains this rule.
      */

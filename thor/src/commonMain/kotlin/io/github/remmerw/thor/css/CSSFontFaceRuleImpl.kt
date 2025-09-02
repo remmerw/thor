@@ -8,7 +8,7 @@ import org.w3c.dom.css.CSSStyleDeclaration
 
 internal class CSSFontFaceRuleImpl(
     val rule: RuleFontFace,
-    containingStyleSheet: JStyleSheetWrapper?
+    containingStyleSheet: StyleSheetWrapper?
 ) : AbstractCSSRule(containingStyleSheet), CSSFontFaceRule {
     override fun getCssText(): String? {
         return rule.toString()

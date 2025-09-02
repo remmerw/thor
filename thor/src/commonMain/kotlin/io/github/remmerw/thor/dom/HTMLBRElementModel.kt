@@ -11,8 +11,5 @@ class HTMLBRElementModel(name: String) : HTMLElementModel(name), HTMLBRElement {
         this.setAttribute("clear", clear)
     }
 
-    override fun appendInnerTextImpl(buffer: StringBuffer) {
-        buffer.append("\r\n")
-        super.appendInnerTextImpl(buffer)
-    }
+
 }

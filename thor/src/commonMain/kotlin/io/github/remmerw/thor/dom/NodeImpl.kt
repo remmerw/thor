@@ -9,20 +9,17 @@ import cz.vutbr.web.css.RuleSet
 import cz.vutbr.web.css.Selector
 import io.github.remmerw.thor.core.Strings
 import io.github.remmerw.thor.core.Urls
-import io.github.remmerw.thor.model.RendererContext
 import io.github.remmerw.thor.parser.HtmlParser
 import io.github.remmerw.thor.style.RenderState
 import io.github.remmerw.thor.style.StyleSheetRenderState
 import io.github.remmerw.thor.ua.UserAgentContext
 import org.w3c.dom.Attr
-import org.w3c.dom.Comment
 import org.w3c.dom.DOMException
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.w3c.dom.NamedNodeMap
 import org.w3c.dom.Node
 import org.w3c.dom.NodeList
-import org.w3c.dom.ProcessingInstruction
 import org.w3c.dom.Text
 import org.w3c.dom.UserDataHandler
 import org.w3c.dom.html.HTMLCollection
@@ -44,7 +41,6 @@ import kotlin.Short
 import kotlin.String
 import kotlin.Throwable
 import kotlin.Throws
-import kotlin.also
 import kotlin.arrayOfNulls
 import kotlin.concurrent.Volatile
 import kotlin.plus
@@ -1163,73 +1159,9 @@ abstract class NodeImpl : NodeModel, Node, ModelNode {
         }
     }
 
-    fun innerHTML(): String {
-
-        val buffer = StringBuffer()
-        synchronized(this) {
-            this.appendInnerHTMLImpl(buffer)
-        }
-        return buffer.toString()
-    }
-
-    protected fun appendInnerHTMLImpl(buffer: StringBuffer) {
-        val nl = this.nodeList
-        var size: Int = 0
-        if ((nl != null) && ((nl.size.also { size = it }) > 0)) {
-            for (i in 0..<size) {
-                val child: Node? = nl[i]
-                if (child is HTMLElementModel) {
-                    child.appendOuterHTMLImpl(buffer)
-                } else if (child is Comment) {
-                    buffer.append("<!--" + child.textContent + "-->")
-                } else if (child is Text) {
-                    val text = child.textContent
-                    val encText = this.htmlEncodeChildText(text)
-                    buffer.append(encText)
-                } else if (child is ProcessingInstruction) {
-                    buffer.append(child)
-                }
-            }
-        }
-    }
 
     protected open fun htmlEncodeChildText(text: String): String? {
         return Strings.strictHtmlEncode(text, false)
-    }
-
-    fun getInnerText(): String
-            /**
-             * Attempts to convert the subtree starting at this point to a close text
-             * representation. BR elements are converted to line breaks, and so forth.
-             */
-    {
-        val buffer = StringBuffer()
-        synchronized(this.treeLock) {
-            this.appendInnerTextImpl(buffer)
-        }
-        return buffer.toString()
-    }
-
-    protected open fun appendInnerTextImpl(buffer: StringBuffer) {
-        val nl = this.nodeList
-        if (nl == null) {
-            return
-        }
-        val size = nl.size
-        if (size == 0) {
-            return
-        }
-        for (i in 0..<size) {
-            val child: Node? = nl.get(i)
-            if (child is ElementModel) {
-                child.appendInnerTextImpl(buffer)
-            }
-            if (child is Comment) {
-                // skip
-            } else if (child is Text) {
-                buffer.append(child.textContent)
-            }
-        }
     }
 
     /**

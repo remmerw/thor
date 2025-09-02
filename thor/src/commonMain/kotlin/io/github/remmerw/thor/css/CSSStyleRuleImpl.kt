@@ -6,7 +6,7 @@ import org.w3c.dom.css.CSSRule.STYLE_RULE
 import org.w3c.dom.css.CSSStyleDeclaration
 import org.w3c.dom.css.CSSStyleRule
 
-internal class CSSStyleRuleImpl(val ruleSet: RuleSet, containingStyleSheet: JStyleSheetWrapper?) :
+internal class CSSStyleRuleImpl(val ruleSet: RuleSet, containingStyleSheet: StyleSheetWrapper?) :
     AbstractCSSRule(containingStyleSheet), CSSStyleRule {
     override fun getType(): Short {
         return STYLE_RULE

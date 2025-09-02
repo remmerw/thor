@@ -21,7 +21,7 @@
 package io.github.remmerw.thor.dom
 
 import io.github.remmerw.thor.core.Urls
-import io.github.remmerw.thor.css.JStyleSheetWrapper
+import io.github.remmerw.thor.css.StyleSheetWrapper
 import io.github.remmerw.thor.style.CSSUtilities
 import org.w3c.dom.css.CSSStyleSheet
 import org.w3c.dom.html.HTMLAnchorElement
@@ -34,7 +34,7 @@ import java.util.function.Function
 
 class HTMLAnchorElementModel(name: String) : HTMLAbstractUIElement(name), HTMLAnchorElement,
     LinkStyle {
-    private var styleSheet: JStyleSheetWrapper? = null
+    private var styleSheet: StyleSheetWrapper? = null
 
 
     override fun getAccessKey(): String? {
@@ -266,9 +266,9 @@ class HTMLAnchorElementModel(name: String) : HTMLAbstractUIElement(name), HTMLAn
                     doc.baseURI!!, false
                 )
                 if (this.styleSheet != null) {
-                    this.styleSheet!!.jStyleSheet = jSheet
+                    this.styleSheet!!.styleSheet = jSheet
                 } else {
-                    val styleSheet = JStyleSheetWrapper( // todo getMedia
+                    val styleSheet = StyleSheetWrapper( // todo getMedia
                         jSheet, this.getMedia(), href, this.type, this.title,
                         this, doc.styleSheetManager.bridge
                     )
@@ -314,10 +314,10 @@ class HTMLAnchorElementModel(name: String) : HTMLAbstractUIElement(name), HTMLAn
         }
     }
 
-    private val emptyStyleSheet: JStyleSheetWrapper
+    private val emptyStyleSheet: StyleSheetWrapper
         get() {
             val doc = this.ownerDocument as HTMLDocumentImpl
-            return JStyleSheetWrapper( // todo getMedia()
+            return StyleSheetWrapper( // todo getMedia()
                 null, this.getMedia(), this.getHref(), this.type, this.title, this,
                 doc.styleSheetManager.bridge
             )

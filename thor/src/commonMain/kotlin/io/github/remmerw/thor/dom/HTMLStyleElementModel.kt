@@ -23,7 +23,7 @@
  */
 package io.github.remmerw.thor.dom
 
-import io.github.remmerw.thor.css.JStyleSheetWrapper
+import io.github.remmerw.thor.css.StyleSheetWrapper
 import io.github.remmerw.thor.style.CSSUtilities
 import org.w3c.dom.DOMException
 import org.w3c.dom.Node.TEXT_NODE
@@ -34,7 +34,7 @@ import org.w3c.dom.stylesheets.LinkStyle
 import java.util.Locale
 
 class HTMLStyleElementModel(name: String) : HTMLElementModel(name), HTMLStyleElement, LinkStyle {
-    private var styleSheet: JStyleSheetWrapper? = null
+    private var styleSheet: StyleSheetWrapper? = null
     private var disabled = false
 
 
@@ -71,10 +71,6 @@ class HTMLStyleElementModel(name: String) : HTMLElementModel(name), HTMLStyleEle
         this.setAttribute("type", type)
     }
 
-    // TODO: This should probably not be a nop. We should probably be handling changes to inner text.
-    override fun appendInnerTextImpl(buffer: StringBuffer) {
-        // nop
-    }
 
     @Throws(DOMException::class)
     override fun setAttribute(name: String, value: String?) {
@@ -133,7 +129,7 @@ class HTMLStyleElementModel(name: String) : HTMLElementModel(name), HTMLStyleEle
         }
     }
 
-    private fun processStyleHelper(): JStyleSheetWrapper {
+    private fun processStyleHelper(): StyleSheetWrapper {
         val doc = this.ownerDocument as HTMLDocumentImpl
         // TODO a sanity check can be done for the media type while setting it to the style sheet
         // as in is it a valid media type or not
@@ -148,7 +144,7 @@ class HTMLStyleElementModel(name: String) : HTMLElementModel(name), HTMLStyleEle
                 processedText,
                 doc.userAgentContext()
             )
-            return JStyleSheetWrapper(
+            return StyleSheetWrapper(
                 jSheet,
                 this.media,
                 null,
@@ -163,10 +159,10 @@ class HTMLStyleElementModel(name: String) : HTMLElementModel(name), HTMLStyleEle
         return this.emptyStyleSheet
     }
 
-    private val emptyStyleSheet: JStyleSheetWrapper
+    private val emptyStyleSheet: StyleSheetWrapper
         get() {
             val doc = this.ownerDocument as HTMLDocumentImpl
-            return JStyleSheetWrapper(
+            return StyleSheetWrapper(
                 CSSUtilities.emptyStyleSheet,
                 this.media,
                 null,

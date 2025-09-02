@@ -84,8 +84,4 @@ class HTMLScriptElementModel(name: String) : HTMLElementModel(name), HTMLScriptE
     }
 
 
-    override fun appendInnerTextImpl(buffer: StringBuffer) {
-        // nop
-    }
-
 }

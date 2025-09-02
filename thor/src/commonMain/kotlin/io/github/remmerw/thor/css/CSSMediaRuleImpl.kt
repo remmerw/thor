@@ -10,7 +10,7 @@ import org.w3c.dom.stylesheets.MediaList
 
 internal class CSSMediaRuleImpl(
     private val mediaRule: RuleMedia,
-    containingStyleSheet: JStyleSheetWrapper?
+    containingStyleSheet: StyleSheetWrapper?
 ) : AbstractCSSRule(containingStyleSheet), CSSMediaRule {
     override fun getType(): Short {
         return MEDIA_RULE

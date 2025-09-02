@@ -9,7 +9,7 @@ import org.w3c.dom.css.CSSStyleDeclaration
 
 internal class CSSPageRuleImpl(
     private val rule: RulePage,
-    containingStyleSheet: JStyleSheetWrapper?
+    containingStyleSheet: StyleSheetWrapper?
 ) : AbstractCSSRule(containingStyleSheet), CSSPageRule {
     override fun getType(): Short {
         return PAGE_RULE

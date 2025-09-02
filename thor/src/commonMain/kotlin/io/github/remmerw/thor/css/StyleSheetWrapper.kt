@@ -20,8 +20,8 @@ import kotlin.concurrent.Volatile
  *
  * This class implements the common methods between the two class mentioned.
  */
-class JStyleSheetWrapper internal constructor(
-    @JvmField @field:Volatile var jStyleSheet: StyleSheet?,
+class StyleSheetWrapper internal constructor(
+    @JvmField @field:Volatile var styleSheet: StyleSheet?,
     private val mediaStr: String?,
     private val href: String?,
     private var ownerNode: Node?,
@@ -191,8 +191,8 @@ class JStyleSheetWrapper internal constructor(
      * @return A list of rules contained in this style sheet.
      */
     override fun getCssRules(): CSSRuleList {
-        if (this.jStyleSheet != null) {
-            return CSSRuleListImpl(jStyleSheet!!, this)
+        if (this.styleSheet != null) {
+            return CSSRuleListImpl(styleSheet!!, this)
         }
         throw DOMException(
             DOMException.INVALID_ACCESS_ERR,
@@ -229,7 +229,7 @@ class JStyleSheetWrapper internal constructor(
     override fun insertRule(rule: String?, index: Int): Int {
         val jSheet = CSSUtils.parse(rule)
         if (jSheet.size > 0) {
-            this.jStyleSheet!!.add(index, jSheet.get(0))
+            this.styleSheet!!.add(index, jSheet.get(0))
             bridge.notifyStyleSheetChanged(this)
             return index
         }
@@ -248,7 +248,7 @@ class JStyleSheetWrapper internal constructor(
      */
     @Throws(DOMException::class)
     override fun deleteRule(index: Int) {
-        this.jStyleSheet!!.removeAt(index)
+        this.styleSheet!!.removeAt(index)
         bridge.notifyStyleSheetChanged(this)
     }
 

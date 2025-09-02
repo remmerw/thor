@@ -10,7 +10,7 @@ import org.w3c.dom.css.CSSRuleList
 
 internal class CSSRuleListImpl(
     private val jSheet: StyleSheet,
-    private val parentStyleSheet: JStyleSheetWrapper?
+    private val parentStyleSheet: StyleSheetWrapper?
 ) : CSSRuleList {
     /**
      * @return The number of `CSSRules` in the list. The range of valid
