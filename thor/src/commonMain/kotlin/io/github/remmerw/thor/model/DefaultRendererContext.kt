@@ -1,16 +1,23 @@
 package io.github.remmerw.thor.model
 
 import io.github.remmerw.thor.dom.FormInput
+import io.github.remmerw.thor.dom.HTMLLinkElementModel
 import io.github.remmerw.thor.ua.UserAgentContext
 import org.w3c.dom.html.HTMLCollection
 import org.w3c.dom.html.HTMLElement
 import org.w3c.dom.html.HTMLLinkElement
+import java.net.MalformedURLException
 import java.net.URL
 import java.util.Optional
 
 class DefaultRendererContext : RendererContext {
     override fun navigate(url: URL, target: String?) {
         TODO("Not yet implemented")
+    }
+
+    override fun warn(message: String, err: Throwable?) {
+        println(message)
+        err?.printStackTrace()
     }
 
     override fun linkClicked(
@@ -134,7 +141,7 @@ class DefaultRendererContext : RendererContext {
     }
 
     override fun isVisitedLink(link: HTMLLinkElement?): Boolean {
-       return true
+        return true
     }
 
     override fun reload() {
@@ -168,5 +175,7 @@ class DefaultRendererContext : RendererContext {
     override fun goToHistoryURL(url: String?) {
         TODO("Not yet implemented")
     }
+
+
 
 }

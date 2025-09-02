@@ -8,8 +8,7 @@ import org.w3c.dom.Document
 import org.w3c.dom.html.HTMLIFrameElement
 import java.net.MalformedURLException
 
-class HTMLIFrameElementModel(name: String) : HTMLAbstractUIElement(name), HTMLIFrameElement{
-
+class HTMLIFrameElementModel(name: String) : HTMLAbstractUIElement(name), HTMLIFrameElement {
 
 
     override fun getAlign(): String? {
@@ -116,34 +115,34 @@ class HTMLIFrameElementModel(name: String) : HTMLAbstractUIElement(name), HTMLIF
 
     private fun loadURLIntoFrame(value: String?) {
 
-            try {
-                val fullURL = if (value == null) null else this.getFullURL(value)
-                if (fullURL != null) {
-                    if (userAgentContext!!.isRequestPermitted(
-                            UserAgentContext.Request(
-                                fullURL,
-                                RequestKind.Frame
-                            )
+        try {
+            val fullURL = if (value == null) null else this.getFullURL(value)
+            if (fullURL != null) {
+                if (userAgentContext!!.isRequestPermitted(
+                        UserAgentContext.Request(
+                            fullURL,
+                            RequestKind.Frame
                         )
-                    ) {
+                    )
+                ) {
 
-                        // frame.loadURL(fullURL);
-                        // ^^ Using window.open is better because it fires the various events correctly.
-                        //this.contentWindow!!.open(fullURL.toExternalForm(), "iframe", "", true)
-                    } else {
-                        println("Request not permitted: " + fullURL)
-
-                    }
+                    // frame.loadURL(fullURL);
+                    // ^^ Using window.open is better because it fires the various events correctly.
+                    //this.contentWindow!!.open(fullURL.toExternalForm(), "iframe", "", true)
                 } else {
-                    this.warn("Can't load URL: " + value)
-                    // TODO: Plug: marking as load=true because we are not handling javascript URIs currently.
-                    //       javascript URI is being used in some of the web-platform-tests.
+                    println("Request not permitted: " + fullURL)
 
                 }
-            } catch (mfu: MalformedURLException) {
-                this.warn("loadURLIntoFrame(): Unable to navigate to src.", mfu)
+            } else {
+                this.warn("Can't load URL: " + value)
+                // TODO: Plug: marking as load=true because we are not handling javascript URIs currently.
+                //       javascript URI is being used in some of the web-platform-tests.
 
             }
+        } catch (mfu: MalformedURLException) {
+            this.warn("loadURLIntoFrame(): Unable to navigate to src.", mfu)
+
+        }
 
     }
 

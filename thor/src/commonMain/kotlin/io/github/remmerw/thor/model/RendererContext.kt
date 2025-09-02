@@ -29,6 +29,8 @@ interface RendererContext {
      */
     fun navigate(url: URL, target: String?)
 
+    fun warn(message: String, err: Throwable?)
+
     /**
      * Performs a link click. Implementations should invoke
      * [.navigate].

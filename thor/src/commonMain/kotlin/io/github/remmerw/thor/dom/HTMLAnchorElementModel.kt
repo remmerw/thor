@@ -25,7 +25,6 @@ import io.github.remmerw.thor.css.JStyleSheetWrapper
 import io.github.remmerw.thor.style.CSSUtilities
 import org.w3c.dom.css.CSSStyleSheet
 import org.w3c.dom.html.HTMLAnchorElement
-import org.w3c.dom.html.HTMLLinkElement
 import org.w3c.dom.stylesheets.LinkStyle
 import java.net.MalformedURLException
 import java.net.URL
@@ -33,26 +32,10 @@ import java.util.Locale
 import java.util.Optional
 import java.util.function.Function
 
-class HTMLAnchorElementModel(name: String) : HTMLAbstractUIElement(name), HTMLAnchorElement, LinkStyle {
+class HTMLAnchorElementModel(name: String) : HTMLAbstractUIElement(name), HTMLAnchorElement,
+    LinkStyle {
     private var styleSheet: JStyleSheetWrapper? = null
-    private var disabled = false
 
-    fun getDisabled(): Boolean {
-        return this.disabled
-    }
-
-    fun setDisabled(disabled: Boolean) {
-        this.disabled = disabled
-        val sheet: CSSStyleSheet? = this.styleSheet
-        if (sheet != null) {
-            sheet.disabled = disabled
-        }
-    }
-
-
-    fun setDisabledInternal(disabled: Boolean) {
-        this.disabled = disabled
-    }
 
     override fun getAccessKey(): String? {
         TODO("Not yet implemented")
@@ -196,39 +179,6 @@ class HTMLAnchorElementModel(name: String) : HTMLAbstractUIElement(name), HTMLAn
             this.absoluteURL.map<String?>(Function { u: URL? -> u!!.toExternalForm() })
                 .orElse(getHref())
 
-    // TODO: Should HTMLLinkElement actually support navigation? The Link element seems to be conflated with <a> elements
-
-    fun navigate(): Boolean {
-        // If there is no href attribute, chromium only dispatches the handlers without starting a navigation
-
-
-
-        val hrefAttr = this.getAttribute("href")
-        if (hrefAttr == null) {
-            return false
-        }
-
-        if (this.disabled) {
-            return false
-        }
-        val href = getHref()
-        if (href.startsWith("#")) {
-            // TODO: Scroll to the element. Issue #101
-        } else if (href.startsWith("javascript:")) {
-            val script = href.substring(11)
-            // evalInScope adds the JS task
-            println(script)
-        } else {
-            val urlOpt = this.absoluteURL
-            if (urlOpt.isPresent) {
-                val rcontext = this.rendererContext
-                val target = this.getTarget()
-                rcontext?.linkClicked(this, urlOpt.get(), target)
-                return true
-            }
-        }
-        return false
-    }
 
     override fun toString(): String {
         // Javascript code often depends on this being exactly href. See js9.html.
@@ -324,7 +274,7 @@ class HTMLAnchorElementModel(name: String) : HTMLAbstractUIElement(name), HTMLAn
                     )
                     this.styleSheet = styleSheet
                 }
-                this.styleSheet!!.setDisabled(this.isAltStyleSheet or this.disabled)
+                this.styleSheet!!.setDisabled(this.isAltStyleSheet)
                 doc.styleSheetManager.invalidateStyles()
             } catch (mfe: MalformedURLException) {
                 this.detachStyleSheet()
@@ -393,7 +343,7 @@ class HTMLAnchorElementModel(name: String) : HTMLAbstractUIElement(name), HTMLAn
         // has to be re-processed.
         if (isSameRel(name, oldValue) || isSameHref(name, oldValue)) {
         } else if ("rel" == name || "href" == name || "type" == name || "media" == name) {
-            this.disabled = false
+
             this.detachStyleSheet()
             this.processLinkHelper(true)
         }

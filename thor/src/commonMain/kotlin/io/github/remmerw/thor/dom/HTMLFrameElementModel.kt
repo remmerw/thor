@@ -118,7 +118,7 @@ class HTMLFrameElementModel(name: String) : HTMLElementModel(name), HTMLFrameEle
         this.setAttribute("src", src)
     }
 
-     fun getContentDocument(): Document? {
+    fun getContentDocument(): Document? {
         TODO("Not yet implemented")
     }
 

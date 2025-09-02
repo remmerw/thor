@@ -1,23 +1,3 @@
-/*
-    GNU LESSER GENERAL PUBLIC LICENSE
-    Copyright (C) 2006 The Lobo Project
-
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-    Contact info: lobochief@users.sourceforge.net
- */
 package io.github.remmerw.thor.dom
 
 import io.github.remmerw.thor.core.Urls
@@ -29,8 +9,6 @@ import org.w3c.dom.stylesheets.LinkStyle
 import java.net.MalformedURLException
 import java.net.URL
 import java.util.Locale
-import java.util.Optional
-import java.util.function.Function
 
 class HTMLLinkElementModel(name: String) : HTMLAbstractUIElement(name), HTMLLinkElement, LinkStyle {
     private var styleSheet: JStyleSheetWrapper? = null
@@ -126,68 +104,6 @@ class HTMLLinkElementModel(name: String) : HTMLAbstractUIElement(name), HTMLLink
             }
         }
 
-    private val absoluteURL: Optional<URL>
-        get() {
-            val href = this.getHref()
-            if (href.startsWith("javascript:")) {
-                return Optional.empty<URL>()
-            } else {
-                try {
-                    return Optional.ofNullable<URL>(this.getFullURL(href))
-                } catch (mfu: MalformedURLException) {
-                    this.warn("Malformed URI: [" + href + "].", mfu)
-                }
-            }
-            return Optional.empty<URL>()
-        }
-
-
-    val absoluteHref: String?
-        get() =// TODO: Use Either in getAbsoluteURL and use the branch type for javascript
-            this.absoluteURL.map<String?>(Function { u: URL? -> u!!.toExternalForm() })
-                .orElse(getHref())
-
-    // TODO: Should HTMLLinkElement actually support navigation? The Link element seems to be conflated with <a> elements
-
-    fun navigate(): Boolean {
-        // If there is no href attribute, chromium only dispatches the handlers without starting a navigation
-
-
-
-        val hrefAttr = this.getAttribute("href")
-        if (hrefAttr == null) {
-            return false
-        }
-
-        if (this.disabled) {
-            return false
-        }
-        val href = getHref()
-        if (href.startsWith("#")) {
-            // TODO: Scroll to the element. Issue #101
-        } else if (href.startsWith("javascript:")) {
-            val script = href.substring(11)
-            // evalInScope adds the JS task
-            println(script)
-        } else {
-            val urlOpt = this.absoluteURL
-            if (urlOpt.isPresent) {
-                val rcontext = this.rendererContext
-                val target = this.getTarget()
-                rcontext?.linkClicked(this, urlOpt.get(), target)
-                return true
-            }
-        }
-        return false
-    }
-
-    override fun toString(): String {
-        // Javascript code often depends on this being exactly href. See js9.html.
-        // To change, perhaps add method to AbstractScriptableDelegate.
-        // Chromium 37 and FF 32 both return the full url
-        // return this.getHref();
-        return this.absoluteHref!!
-    }
 
     /**
      * Sets the owner node to null so as to update the old reference of the
