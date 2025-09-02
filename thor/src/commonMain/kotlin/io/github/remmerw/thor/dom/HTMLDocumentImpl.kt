@@ -85,9 +85,6 @@ import java.io.StringReader
 import java.net.MalformedURLException
 import java.net.URL
 import java.util.Locale
-import java.util.concurrent.Semaphore
-import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.atomic.AtomicInteger
 import java.util.logging.Level
 import kotlin.concurrent.Volatile
 
@@ -102,8 +99,6 @@ class HTMLDocumentImpl(
     private var documentURI: String? = null,
     private val contentType: String? = null
 ) : NodeImpl(), DocumentModel, HTMLDocument, DocumentView, DocumentStyle {
-    @JvmField
-    val layoutBlocked: AtomicBoolean = AtomicBoolean(true)
     val styleSheetManager: StyleSheetManager = StyleSheetManager()
     private val factory: ElementFactory
     private var documentURL: URL? = null
@@ -113,14 +108,6 @@ class HTMLDocumentImpl(
     private val elementsByName: MutableMap<String?, Element?> = HashMap<String?, Element?>(0)
     private val documentNotificationListeners = ArrayList<DocumentNotificationListener>(1)
 
-
-    private val registeredJobs = AtomicInteger(0)
-    private val layoutBlockingJobs = AtomicInteger(0)
-    private val doneAllJobs = Semaphore(0)
-    private val stopRequested = AtomicBoolean(false)
-    private val modificationsStarted = AtomicBoolean(false)
-    private val modificationsOver = AtomicBoolean(false)
-    private val loadOver = AtomicBoolean(false)
     /**
      * Gets an *immutable* set of locales previously set for this document.
      */

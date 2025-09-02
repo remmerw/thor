@@ -24,6 +24,7 @@ import io.github.remmerw.thor.core.Urls
 import io.github.remmerw.thor.css.JStyleSheetWrapper
 import io.github.remmerw.thor.style.CSSUtilities
 import org.w3c.dom.css.CSSStyleSheet
+import org.w3c.dom.html.HTMLAnchorElement
 import org.w3c.dom.html.HTMLLinkElement
 import org.w3c.dom.stylesheets.LinkStyle
 import java.net.MalformedURLException
@@ -32,15 +33,15 @@ import java.util.Locale
 import java.util.Optional
 import java.util.function.Function
 
-class HTMLLinkElementModel(name: String) : HTMLAbstractUIElement(name), HTMLLinkElement, LinkStyle {
+class HTMLAnchorElementModel(name: String) : HTMLAbstractUIElement(name), HTMLAnchorElement, LinkStyle {
     private var styleSheet: JStyleSheetWrapper? = null
     private var disabled = false
 
-    override fun getDisabled(): Boolean {
+    fun getDisabled(): Boolean {
         return this.disabled
     }
 
-    override fun setDisabled(disabled: Boolean) {
+    fun setDisabled(disabled: Boolean) {
         this.disabled = disabled
         val sheet: CSSStyleSheet? = this.styleSheet
         if (sheet != null) {
@@ -51,6 +52,22 @@ class HTMLLinkElementModel(name: String) : HTMLAbstractUIElement(name), HTMLLink
 
     fun setDisabledInternal(disabled: Boolean) {
         this.disabled = disabled
+    }
+
+    override fun getAccessKey(): String? {
+        TODO("Not yet implemented")
+    }
+
+    override fun setAccessKey(p0: String?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getCoords(): String? {
+        TODO("Not yet implemented")
+    }
+
+    override fun setCoords(p0: String?) {
+        TODO("Not yet implemented")
     }
 
     override fun getHref(): String {
@@ -70,11 +87,19 @@ class HTMLLinkElementModel(name: String) : HTMLAbstractUIElement(name), HTMLLink
         this.setAttribute("hreflang", hreflang)
     }
 
-    override fun getMedia(): String? {
+    override fun getName(): String? {
+        TODO("Not yet implemented")
+    }
+
+    override fun setName(p0: String?) {
+        TODO("Not yet implemented")
+    }
+
+    fun getMedia(): String? {
         return this.getAttribute("media")
     }
 
-    override fun setMedia(media: String?) {
+    fun setMedia(media: String?) {
         this.setAttribute("media", media)
     }
 
@@ -94,6 +119,22 @@ class HTMLLinkElementModel(name: String) : HTMLAbstractUIElement(name), HTMLLink
         this.setAttribute("rev", rev)
     }
 
+    override fun getShape(): String? {
+        TODO("Not yet implemented")
+    }
+
+    override fun setShape(p0: String?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getTabIndex(): Int {
+        TODO("Not yet implemented")
+    }
+
+    override fun setTabIndex(p0: Int) {
+        TODO("Not yet implemented")
+    }
+
     override fun getTarget(): String? {
         return this.getAttribute("target")
     }
@@ -108,6 +149,14 @@ class HTMLLinkElementModel(name: String) : HTMLAbstractUIElement(name), HTMLLink
 
     override fun setType(type: String?) {
         this.setAttribute("type", type)
+    }
+
+    override fun blur() {
+        TODO("Not yet implemented")
+    }
+
+    override fun focus() {
+        TODO("Not yet implemented")
     }
 
     private val isWellFormedURL: Boolean
@@ -269,8 +318,8 @@ class HTMLLinkElementModel(name: String) : HTMLAbstractUIElement(name), HTMLLink
                 if (this.styleSheet != null) {
                     this.styleSheet!!.jStyleSheet = jSheet
                 } else {
-                    val styleSheet = JStyleSheetWrapper(
-                        jSheet, this.media, href, this.type, this.title,
+                    val styleSheet = JStyleSheetWrapper( // todo getMedia
+                        jSheet, this.getMedia(), href, this.type, this.title,
                         this, doc.styleSheetManager.bridge
                     )
                     this.styleSheet = styleSheet
@@ -318,8 +367,8 @@ class HTMLLinkElementModel(name: String) : HTMLAbstractUIElement(name), HTMLLink
     private val emptyStyleSheet: JStyleSheetWrapper
         get() {
             val doc = this.ownerDocument as HTMLDocumentImpl
-            return JStyleSheetWrapper(
-                null, this.media, this.getHref(), this.type, this.title, this,
+            return JStyleSheetWrapper( // todo getMedia()
+                null, this.getMedia(), this.getHref(), this.type, this.title, this,
                 doc.styleSheetManager.bridge
             )
         }

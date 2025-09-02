@@ -115,7 +115,7 @@ abstract class HTMLElementBuilder {
 
     class Anchor : HTMLElementBuilder() {
         public override fun build(name: String): HTMLElementModel {
-            return HTMLLinkElementModel(name)
+            return HTMLAnchorElementModel(name)
         }
     }
 

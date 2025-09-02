@@ -12,7 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import coil3.compose.AsyncImage
 import io.github.remmerw.thor.dom.DocumentModel
+import io.github.remmerw.thor.dom.HTMLAnchorElementModel
 import io.github.remmerw.thor.dom.HTMLImageElementModel
+import io.github.remmerw.thor.dom.HTMLLinkElementModel
 import io.github.remmerw.thor.model.RendererContext
 import io.github.remmerw.thor.dom.NodeModel
 import io.github.remmerw.thor.model.DefaultRendererContext
@@ -91,8 +93,11 @@ fun Nodes(nodeModel: NodeModel,
                     Font(nodeModel, rendererContext)
                 }
 
-                "A" -> {
-                    A(nodeModel, rendererContext)
+                "LINK" -> {
+                    Link(nodeModel as HTMLLinkElementModel, rendererContext)
+                }
+                "A", "ANCHOR" -> {
+                    A(nodeModel as HTMLAnchorElementModel, rendererContext)
                 }
 
                 "LI" -> {
@@ -230,10 +235,18 @@ fun Table(nodeModel: NodeModel,
 
 
 @Composable
-fun A(nodeModel: NodeModel,
+fun Link(nodeModel: HTMLLinkElementModel,
       rendererContext: RendererContext) {
     Text(nodeModel.nodeName)
     Nodes(nodeModel, rendererContext)
+}
+
+@Composable
+fun A(nodeModel: HTMLAnchorElementModel,
+      rendererContext: RendererContext) {
+    Text(nodeModel.nodeName)
+    Nodes(nodeModel, rendererContext)
+
 }
 
 

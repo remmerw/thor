@@ -169,11 +169,4 @@ class DefaultRendererContext : RendererContext {
         TODO("Not yet implemented")
     }
 
-    override fun jobsFinished() {
-        TODO("Not yet implemented")
-    }
-
-    override fun setJobFinishedHandler(runnable: Runnable?) {
-        TODO("Not yet implemented")
-    }
 }

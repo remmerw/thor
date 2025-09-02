@@ -9,19 +9,14 @@ import java.net.URL
 import java.util.Optional
 
 /**
- * The `HtmlRendererContext` interface must be implemented in order
+ * The `RendererContext` interface must be implemented in order
  * to use the Cobra HTML renderer. An instance of this interface will be called
  * back whenever the renderer needs to perform an action that it is not designed
  * to know how to perform on its own, e.g. opening a browser window or a context
  * menu. In many ways this interface parallers the Javascript
  * `Window` class (which in reality represents a browser frame, not a
  * window).
- *
- *
- * A simple implementation of this interface is provided in
- * [ SimpleHtmlRendererContext][org.cobraparser.html.test.SimpleHtmlRendererContext].
- *
- * @see HtmlPanel.setDocument
+
  */
 interface RendererContext {
     /**
@@ -216,12 +211,7 @@ interface RendererContext {
     fun opener(): RendererContext?
 
     /**
-     * Gets the window status text.
-     */
-    /**
      * Sets the window status text.
-     *
-     * @param message A string.
      */
     fun status(): String?
 
@@ -279,7 +269,4 @@ interface RendererContext {
     fun goToHistoryURL(url: String?)
 
 
-    fun jobsFinished()
-
-    fun setJobFinishedHandler(runnable: Runnable?)
 }
