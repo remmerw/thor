@@ -89,7 +89,7 @@ class HTMLObjectElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLObj
         this.setAttribute("codetype", codeType)
     }
 
-    override fun getContentDocument(): Document? {
+    fun getContentDocument(): Document? {
         return this.ownerDocument
     }
 

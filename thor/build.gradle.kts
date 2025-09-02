@@ -39,6 +39,8 @@ kotlin {
                 implementation(libs.kotlinx.io.core)
 
 
+                // https://mvnrepository.com/artifact/xerces/xercesImpl
+                implementation("xerces:xercesImpl:2.12.2")
                 implementation(libs.sac)
                 implementation(libs.jstyleparser)
 

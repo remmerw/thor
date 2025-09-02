@@ -127,7 +127,7 @@ class HTMLFrameElementImpl(name: String) : HTMLElementImpl(name), HTMLFrameEleme
         this.setAttribute("src", src)
     }
 
-    override fun getContentDocument(): Document? {
+    fun getContentDocument(): Document? {
         val frame = this.browserFrame
         if (frame == null) {
             // Not loaded yet

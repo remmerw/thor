@@ -34,6 +34,10 @@ open class HTMLTableCellElementImpl(name: String) : HTMLAbstractUIElement(name),
         return 0
     }
 
+    override fun setCellIndex(pi:Int) {
+
+    }
+
     override fun getAbbr(): String? {
         return this.getAttribute("abbr")
     }

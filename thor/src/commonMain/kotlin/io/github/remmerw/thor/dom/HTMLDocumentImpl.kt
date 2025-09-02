@@ -66,9 +66,6 @@ import org.w3c.dom.ProcessingInstruction
 import org.w3c.dom.Text
 import org.w3c.dom.UserDataHandler
 import org.w3c.dom.css.CSSStyleSheet
-import org.w3c.dom.events.EventException
-import org.w3c.dom.events.EventListener
-import org.w3c.dom.events.EventTarget
 import org.w3c.dom.html.HTMLCollection
 import org.w3c.dom.html.HTMLDocument
 import org.w3c.dom.html.HTMLElement
@@ -103,7 +100,7 @@ class HTMLDocumentImpl(
     private var reader: WritableLineReader? = null,
     private var documentURI: String? = null,
     private val contentType: String? = null
-) : NodeImpl(), HTMLDocument, DocumentView, DocumentStyle, EventTarget {
+) : NodeImpl(), HTMLDocument, DocumentView, DocumentStyle {
     @JvmField
     val layoutBlocked: AtomicBoolean = AtomicBoolean(true)
     val styleSheetManager: StyleSheetManager = StyleSheetManager()
@@ -1140,7 +1137,7 @@ class HTMLDocumentImpl(
     private fun updateStyleRules() {
         synchronized(treeLock) {
             if (classifiedRules == null) {
-                val jSheets: MutableList<StyleSheet?> = ArrayList<StyleSheet?>()
+                val jSheets: MutableList<StyleSheet?> = ArrayList()
                 jSheets.add(if (this.isXML) recommendedStyleXML else recommendedStyle)
                 jSheets.add(if (this.isXML) userAgentStyleXML else userAgentStyle)
                 jSheets.addAll(styleSheetManager.getEnabledJStyleSheets()!!)
@@ -1175,22 +1172,6 @@ class HTMLDocumentImpl(
         }
     }
 
-
-    override fun addEventListener(type: String?, listener: EventListener?, useCapture: Boolean) {
-        // TODO Auto-generated method stub
-        throw UnsupportedOperationException()
-    }
-
-    override fun removeEventListener(type: String?, listener: EventListener?, useCapture: Boolean) {
-        // TODO Auto-generated method stub
-        throw UnsupportedOperationException()
-    }
-
-    @Throws(EventException::class)
-    override fun dispatchEvent(evt: org.w3c.dom.events.Event?): Boolean {
-        // TODO Auto-generated method stub
-        return false
-    }
 
     fun createRange(): Range {
         return RangeImpl(this)
