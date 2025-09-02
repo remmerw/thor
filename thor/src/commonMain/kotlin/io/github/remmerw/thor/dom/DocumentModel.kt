@@ -7,4 +7,7 @@ interface DocumentModel : NodeModel
 
 interface NodeModel : Node {
     fun nodes(): SnapshotStateList<NodeModel>
+
+    override fun getNodeName(): String
 }
+

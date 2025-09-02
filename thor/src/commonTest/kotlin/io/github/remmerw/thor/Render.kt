@@ -103,7 +103,7 @@ class Render(var url: String) {
                     inputStream, url,
                     "ISO-8859-1"
                 )
-            ) !!
+            )!!
 
             // Do a recursive traversal on the top-level DOM node.
             val ex = document.documentElement

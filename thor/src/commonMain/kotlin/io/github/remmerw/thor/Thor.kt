@@ -8,5 +8,6 @@ expect abstract class Context
 abstract class Thor {
 
 }
-expect fun thor() : Thor
+
+expect fun thor(): Thor
 expect fun initializeThor(context: Context)

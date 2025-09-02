@@ -3,7 +3,7 @@ package io.github.remmerw.thor
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.remmerw.thor.model.StateModel
-import io.github.remmerw.thor.ui.Html
+import io.github.remmerw.thor.ui.HtmlViewer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -26,7 +26,7 @@ class RenderTest {
             val stateModel: StateModel = viewModel { StateModel() }
 
 
-            Html(document)
+            HtmlViewer(document)
         }
 
 

@@ -1,7 +1,6 @@
 package io.github.remmerw.thor.parser
 
 import io.github.remmerw.thor.dom.DOMImplementationImpl
-import io.github.remmerw.thor.dom.DocumentModel
 import io.github.remmerw.thor.dom.HTMLDocumentImpl
 import io.github.remmerw.thor.dom.HtmlRendererContext
 import io.github.remmerw.thor.ua.UserAgentContext

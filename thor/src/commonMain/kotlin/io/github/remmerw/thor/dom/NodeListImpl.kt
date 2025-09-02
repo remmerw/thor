@@ -28,17 +28,16 @@ import org.w3c.dom.Node
 import org.w3c.dom.NodeList
 
 // TODO: This needs to be live (dynamic) not a static store of nodes.
-class NodeListImpl(collection: MutableCollection<Node>) : NodeList {
-    // Note: class must be public for reflection to work.
-    private val nodeList: ArrayList<Node> = ArrayList<Node>(collection)
+class NodeListImpl(val list: List<Node>) : NodeList {
+
 
     override fun getLength(): Int {
-        return this.nodeList.size
+        return this.list.size
     }
 
     override fun item(index: Int): Node? {
         try {
-            return this.nodeList.get(index)
+            return this.list.get(index)
         } catch (iob: IndexOutOfBoundsException) {
             return null
         }
@@ -60,6 +59,6 @@ class NodeListImpl(collection: MutableCollection<Node>) : NodeList {
     }
 
     override fun toString(): String {
-        return nodeList.toString()
+        return list.toString()
     }
 }

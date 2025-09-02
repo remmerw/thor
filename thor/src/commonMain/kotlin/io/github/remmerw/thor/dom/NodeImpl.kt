@@ -178,18 +178,17 @@ abstract class NodeImpl : NodeModel, Node, ModelNode {
     }
 
     protected fun getNodeList(filter: NodeFilter): NodeList {
-        val collection: MutableCollection<Node> = ArrayList()
+        val collection: MutableList<Node> = mutableListOf()
         synchronized(this.treeLock) {
             this.appendChildrenToCollectionImpl(filter, collection)
         }
-        return NodeListImpl(collection)
+        return NodeListImpl(collection.toList())
     }
 
 
     fun getChildCount(): Int {
         synchronized(this.treeLock) {
-            val nl = this.nodeList
-            return if (nl == null) 0 else nl.size
+           return nodes().size
         }
     }
 
@@ -238,7 +237,7 @@ abstract class NodeImpl : NodeModel, Node, ModelNode {
 
     private fun appendChildrenToCollectionImpl(
         filter: NodeFilter,
-        collection: MutableCollection<Node>
+        collection: MutableList<Node>
     ) {
         nodeList.forEach { nodeModel ->
             val node = nodeModel as NodeImpl
@@ -596,36 +595,26 @@ abstract class NodeImpl : NodeModel, Node, ModelNode {
     override fun getChildNodes(): NodeList {
         synchronized(this.treeLock) {
             val nl = this.nodeList
-            return NodeListImpl(nl.toMutableList())
+            return NodeListImpl(nl.toList())
         }
     }
 
     override fun getFirstChild(): Node? {
         synchronized(this.treeLock) {
-            val nl = this.nodeList
-            try {
-                return if (nl == null) null else nl.get(0)
-            } catch (iob: IndexOutOfBoundsException) {
-                return null
-            }
+            return nodes().first()
         }
     }
 
     override fun getLastChild(): Node? {
         synchronized(this.treeLock) {
-            val nl = this.nodeList
-            try {
-                return if (nl == null) null else nl.get(nl.size - 1)
-            } catch (iob: IndexOutOfBoundsException) {
-                return null
-            }
+            return this.nodeList.last()
         }
     }
 
     private fun getPreviousTo(node: Node?): Node? {
         synchronized(this.treeLock) {
             val nl = this.nodeList
-            val idx = if (nl == null) -1 else nl.indexOf(node)
+            val idx = nl.indexOf(node)
             if (idx == -1) {
                 throw DOMException(DOMException.NOT_FOUND_ERR, "node not found")
             }
