@@ -8,7 +8,7 @@ import org.w3c.dom.css.CSS2Properties
 import java.net.MalformedURLException
 import java.net.URL
 
-abstract class JStyleProperties(
+abstract class CssProperties(
     private val context: CSS2PropertiesContext, // TODO: this flag can be removed when the layout can handle empty strings
     // currently there is only a check for null and not for empty string
     protected val nullIfAbsent: Boolean

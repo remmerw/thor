@@ -523,15 +523,15 @@ object HtmlValues {
     private val dpi: Int
         get() {
             //if (GraphicsEnvironment.isHeadless()) {
-                // TODO: Why is this 72? The CSS native resolution seems to be 96, so we could use that instead.
-                return 72
+            // TODO: Why is this 72? The CSS native resolution seems to be 96, so we could use that instead.
+            return 72
             //} else {
             /** todo
-                val screenResolution =
-                    Toolkit.getDefaultToolkit().screenResolution
-                // TODO: Hack: converting to a multiple of 16. See GH-185
-                return (screenResolution + 15) and -0x10
-            */
+            val screenResolution =
+            Toolkit.getDefaultToolkit().screenResolution
+            // TODO: Hack: converting to a multiple of 16. See GH-185
+            return (screenResolution + 15) and -0x10
+             */
             //}
         }
 

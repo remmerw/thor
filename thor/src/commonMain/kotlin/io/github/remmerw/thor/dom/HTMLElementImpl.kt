@@ -35,9 +35,9 @@ import io.github.remmerw.thor.core.Strings
 import io.github.remmerw.thor.parser.HtmlParser
 import io.github.remmerw.thor.style.CSS2PropertiesContext
 import io.github.remmerw.thor.style.CSSUtilities
-import io.github.remmerw.thor.style.ComputedJStyleProperties
-import io.github.remmerw.thor.style.JStyleProperties
-import io.github.remmerw.thor.style.LocalJStyleProperties
+import io.github.remmerw.thor.style.ComputedCssProperties
+import io.github.remmerw.thor.style.CssProperties
+import io.github.remmerw.thor.style.LocalCssProperties
 import io.github.remmerw.thor.style.RenderState
 import io.github.remmerw.thor.style.StyleElements
 import io.github.remmerw.thor.style.StyleSheetRenderState
@@ -57,7 +57,7 @@ import kotlin.concurrent.Volatile
 
 open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2PropertiesContext {
     @Volatile
-    private var currentStyle: JStyleProperties? = null
+    private var currentStyle: CssProperties? = null
     private var cachedNodeData: NodeData? = null
 
     @Volatile
@@ -105,12 +105,12 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
     }
 
 
-    open fun getCurrentStyle(): JStyleProperties {
+    open fun cssProperties(): CssProperties {
         synchronized(this) {
             if (currentStyle != null) {
                 return currentStyle!!
             }
-            currentStyle = ComputedJStyleProperties(
+            currentStyle = ComputedCssProperties(
                 this,
                 getNodeData(null), true
             )
@@ -195,7 +195,7 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
     }
 
     fun style(): Any? {
-        return LocalJStyleProperties(this)
+        return LocalCssProperties(this)
     }
 
     fun setStyle() {
@@ -220,8 +220,8 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
     // TODO hide from JS
     // Chromium(v37) and firefox(v32) do not expose this function
     // couldn't find anything in the standards.
-    fun getComputedStyle(pseudoElement: String?): JStyleProperties {
-        return ComputedJStyleProperties(
+    fun getComputedStyle(pseudoElement: String?): CssProperties {
+        return ComputedCssProperties(
             this,
             getNodeData(getPseudoDeclaration(pseudoElement)),
             false
@@ -426,9 +426,9 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
     fun informLocalInvalid() {
         // TODO: forgetStyle can call informInvalid() since informInvalid() seems to always follow forgetStyle()
         //       ^^ Hah, not any more
-        val prevStyle: JStyleProperties? = currentStyle
+        val prevStyle: CssProperties? = currentStyle
         this.forgetLocalStyle()
-        val newStyle = getCurrentStyle()
+        val newStyle = cssProperties()
         if (layoutChanges(prevStyle, newStyle)) {
             super.informInvalid()
         } else {
@@ -923,8 +923,8 @@ open class HTMLElementImpl(name: String) : ElementImpl(name), HTMLElement, CSS2P
         }
 
         private fun layoutChanges(
-            prevStyle: JStyleProperties?,
-            newStyle: JStyleProperties?
+            prevStyle: CssProperties?,
+            newStyle: CssProperties?
         ): Boolean {
             if (prevStyle == null || newStyle == null) {
                 return true

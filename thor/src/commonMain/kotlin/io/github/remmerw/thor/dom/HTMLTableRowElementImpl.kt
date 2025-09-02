@@ -33,10 +33,11 @@ import org.w3c.dom.html.HTMLTableRowElement
 class HTMLTableRowElementImpl(name: String) : HTMLElementImpl(name), HTMLTableRowElement {
 
     override fun setRowIndex(p0: Int) {}
-    override fun setSectionRowIndex(p0: Int){}
+    override fun setSectionRowIndex(p0: Int) {}
     override fun setCells(p0: HTMLCollection) {
 
     }
+
     override fun getRowIndex(): Int {
         val parent = this.nodeParent as NodeImpl?
         if (parent == null) {

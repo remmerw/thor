@@ -147,7 +147,7 @@ class Render(var url: String) {
         println("<" + element.tagName + ">")
 
         if (element is HTMLElementImpl) {
-            println(element.getCurrentStyle().toString())
+            println(element.cssProperties().toString())
         }
     }
 

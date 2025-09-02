@@ -39,8 +39,6 @@ class HTMLTableElementImpl : HTMLAbstractUIElement, HTMLTableElement {
     private var thead: HTMLTableSectionElement? = null
     private var tfoot: HTMLTableSectionElement? = null
 
-    constructor() : super("TABLE")
-
     constructor(name: String) : super(name)
 
     override fun getCaption(): HTMLTableCaptionElement? {
@@ -159,7 +157,7 @@ class HTMLTableElementImpl : HTMLAbstractUIElement, HTMLTableElement {
      */
     fun getHeightLength(availHeight: Int): HtmlLength? {
         try {
-            val props = this.getCurrentStyle()
+            val props = this.cssProperties()
             val heightText = props.height
             if (heightText == null) {
                 // TODO: convert attributes to CSS properties
@@ -194,7 +192,7 @@ class HTMLTableElementImpl : HTMLAbstractUIElement, HTMLTableElement {
      */
     fun getWidthLength(availWidth: Int): HtmlLength? {
         try {
-            val props = this.getCurrentStyle()
+            val props = this.cssProperties()
             val widthText = props.width
             if (widthText == null) {
                 // TODO: convert attributes to CSS properties

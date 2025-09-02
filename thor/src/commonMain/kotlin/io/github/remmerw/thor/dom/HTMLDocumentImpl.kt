@@ -1158,7 +1158,7 @@ class HTMLDocumentImpl(
     fun primeNodeData() {
         visit({ node: Node ->
             if (node is HTMLElementImpl) {
-                node.getCurrentStyle()
+                node.cssProperties()
             }
         })
     }

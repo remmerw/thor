@@ -1,628 +1,663 @@
 package io.github.remmerw.thor.style
 
 import cz.vutbr.web.css.NodeData
+import cz.vutbr.web.css.StyleSheet
+import cz.vutbr.web.domassign.DirectAnalyzer
+import io.github.remmerw.thor.dom.HTMLElementImpl
 import org.w3c.dom.DOMException
+import org.w3c.dom.Element
+import java.util.Locale
 
-
-class ComputedJStyleProperties(
-    context: CSS2PropertiesContext,
-    private val nodeData: NodeData?,
-    nullIfAbsent: Boolean
-) : JStyleProperties(context, nullIfAbsent) {
-
-    override fun getNodeData(): NodeData? {
-        return nodeData
-    }
-
-    //TODO need to implement all the unimplemented setters.
+class LocalCssProperties(private val element: HTMLElementImpl) :
+    CssProperties(element, false) {
     @Throws(DOMException::class)
     override fun setAzimuth(azimuth: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("azimuth", azimuth)
     }
 
     @Throws(DOMException::class)
     override fun setBackground(background: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("background", background)
     }
 
     @Throws(DOMException::class)
     override fun setBackgroundAttachment(backgroundAttachment: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("background-attachment", backgroundAttachment)
     }
 
     @Throws(DOMException::class)
     override fun setBackgroundColor(backgroundColor: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("background-color", backgroundColor)
     }
 
     @Throws(DOMException::class)
     override fun setBackgroundImage(backgroundImage: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("background-image", backgroundImage)
     }
 
     @Throws(DOMException::class)
     override fun setBackgroundPosition(backgroundPosition: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("background-position", backgroundPosition)
     }
 
     @Throws(DOMException::class)
     override fun setBackgroundRepeat(backgroundRepeat: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("background-repeat", backgroundRepeat)
     }
 
     @Throws(DOMException::class)
     override fun setBorder(border: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("border", border)
     }
 
     @Throws(DOMException::class)
     override fun setBorderCollapse(borderCollapse: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("border-collapse", borderCollapse)
     }
 
     @Throws(DOMException::class)
     override fun setBorderColor(borderColor: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("border-color", borderColor)
     }
 
     @Throws(DOMException::class)
     override fun setBorderSpacing(borderSpacing: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("border-spacing", borderSpacing)
     }
 
     @Throws(DOMException::class)
     override fun setBorderStyle(borderStyle: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("border-style", borderStyle)
     }
 
     @Throws(DOMException::class)
     override fun setBorderTop(borderTop: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("border-top", borderTop)
     }
 
     @Throws(DOMException::class)
     override fun setBorderRight(borderRight: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("border-right", borderRight)
     }
 
     @Throws(DOMException::class)
     override fun setBorderBottom(borderBottom: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("border-bottom", borderBottom)
     }
 
     @Throws(DOMException::class)
     override fun setBorderLeft(borderLeft: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("border-left", borderLeft)
     }
 
     @Throws(DOMException::class)
     override fun setBorderTopColor(borderTopColor: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("border-top-color", borderTopColor)
     }
 
     @Throws(DOMException::class)
     override fun setBorderRightColor(borderRightColor: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("border-right-color", borderRightColor)
     }
 
     @Throws(DOMException::class)
     override fun setBorderBottomColor(borderBottomColor: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("border-bottom-color", borderBottomColor)
     }
 
     @Throws(DOMException::class)
     override fun setBorderLeftColor(borderLeftColor: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("border-left-color", borderLeftColor)
     }
 
     @Throws(DOMException::class)
     override fun setBorderTopStyle(borderTopStyle: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("border-top-style", borderTopStyle)
     }
 
     @Throws(DOMException::class)
     override fun setBorderRightStyle(borderRightStyle: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("border-right-style", borderRightStyle)
     }
 
     @Throws(DOMException::class)
     override fun setBorderBottomStyle(borderBottomStyle: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("border-bottom-style", borderBottomStyle)
     }
 
     @Throws(DOMException::class)
     override fun setBorderLeftStyle(borderLeftStyle: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("border-left-style", borderLeftStyle)
     }
 
     @Throws(DOMException::class)
     override fun setBorderTopWidth(borderTopWidth: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("border-top-width", borderTopWidth)
     }
 
     @Throws(DOMException::class)
     override fun setBorderRightWidth(borderRightWidth: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("border-right-width", borderRightWidth)
     }
 
     @Throws(DOMException::class)
     override fun setBorderBottomWidth(borderBottomWidth: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("border-bottom-width", borderBottomWidth)
     }
 
     @Throws(DOMException::class)
     override fun setBorderLeftWidth(borderLeftWidth: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("border-left-width", borderLeftWidth)
     }
 
     @Throws(DOMException::class)
     override fun setBorderWidth(borderWidth: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("border-width", borderWidth)
     }
 
     @Throws(DOMException::class)
     override fun setBottom(bottom: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("bottom", bottom)
     }
 
     @Throws(DOMException::class)
     override fun setCaptionSide(captionSide: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("caption-side", captionSide)
     }
 
     @Throws(DOMException::class)
     override fun setClear(clear: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("clear", clear)
     }
 
     @Throws(DOMException::class)
     override fun setClip(clip: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("clip", clip)
     }
 
     @Throws(DOMException::class)
     override fun setColor(color: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("color", color)
     }
 
     @Throws(DOMException::class)
     override fun setContent(content: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("content", content)
     }
 
     @Throws(DOMException::class)
     override fun setCounterIncrement(counterIncrement: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("counter-increment", counterIncrement)
     }
 
     @Throws(DOMException::class)
     override fun setCounterReset(counterReset: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("counter-reset", counterReset)
     }
 
     @Throws(DOMException::class)
     override fun setCue(cue: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("cue", cue)
     }
 
     @Throws(DOMException::class)
     override fun setCueAfter(cueAfter: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("cue-after", cueAfter)
     }
 
     @Throws(DOMException::class)
     override fun setCueBefore(cueBefore: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("cue-before", cueBefore)
     }
 
     @Throws(DOMException::class)
     override fun setCursor(cursor: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("cursor", cursor)
     }
 
     @Throws(DOMException::class)
     override fun setDirection(direction: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("direction", direction)
     }
 
     @Throws(DOMException::class)
     override fun setDisplay(display: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("display", display)
     }
 
     @Throws(DOMException::class)
     override fun setElevation(elevation: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("elevation", elevation)
     }
 
     @Throws(DOMException::class)
     override fun setEmptyCells(emptyCells: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("empty-cells", emptyCells)
     }
 
     @Throws(DOMException::class)
     override fun setCssFloat(cssFloat: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("css-float", cssFloat)
     }
 
     @Throws(DOMException::class)
     override fun setFont(font: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("font", font)
     }
 
     @Throws(DOMException::class)
     override fun setFontFamily(fontFamily: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("font-family", fontFamily)
     }
 
     @Throws(DOMException::class)
     override fun setFontSize(fontSize: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("font-size", fontSize)
     }
 
     @Throws(DOMException::class)
     override fun setFontSizeAdjust(fontSizeAdjust: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("font-size-adjust", fontSizeAdjust)
     }
 
     @Throws(DOMException::class)
     override fun setFontStretch(fontStretch: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("font-stretch", fontStretch)
     }
 
     @Throws(DOMException::class)
     override fun setFontStyle(fontStyle: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("font-style", fontStyle)
     }
 
     @Throws(DOMException::class)
     override fun setFontVariant(fontVariant: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("font-Variant", fontVariant)
     }
 
     @Throws(DOMException::class)
     override fun setFontWeight(fontWeight: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("font-weight", fontWeight)
     }
 
     @Throws(DOMException::class)
     override fun setHeight(height: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("height", height)
     }
 
     @Throws(DOMException::class)
     override fun setLeft(left: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("left", left)
     }
 
     @Throws(DOMException::class)
     override fun setLetterSpacing(letterSpacing: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("letter-spacing", letterSpacing)
     }
 
     @Throws(DOMException::class)
     override fun setLineHeight(lineHeight: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("line-height", lineHeight)
     }
 
     @Throws(DOMException::class)
     override fun setListStyle(listStyle: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("list-Style", listStyle)
     }
 
     @Throws(DOMException::class)
     override fun setListStyleImage(listStyleImage: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("list-style-image", listStyleImage)
     }
 
     @Throws(DOMException::class)
     override fun setListStylePosition(listStylePosition: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("list-style-position", listStylePosition)
     }
 
     @Throws(DOMException::class)
     override fun setListStyleType(listStyleType: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("list-style-type", listStyleType)
     }
 
     @Throws(DOMException::class)
     override fun setMargin(margin: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("margin", margin)
     }
 
     @Throws(DOMException::class)
     override fun setMarginTop(marginTop: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("margin-top", marginTop)
     }
 
     @Throws(DOMException::class)
     override fun setMarginRight(marginRight: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("margin-right", marginRight)
     }
 
     @Throws(DOMException::class)
     override fun setMarginBottom(marginBottom: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("margin-bottom", marginBottom)
     }
 
     @Throws(DOMException::class)
     override fun setMarginLeft(marginLeft: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("margin-left", marginLeft)
     }
 
     @Throws(DOMException::class)
     override fun setMarkerOffset(markerOffset: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("marker-offset", markerOffset)
     }
 
     @Throws(DOMException::class)
     override fun setMarks(marks: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("marks", marks)
     }
 
     @Throws(DOMException::class)
     override fun setMaxHeight(maxHeight: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("max-height", maxHeight)
     }
 
     @Throws(DOMException::class)
     override fun setMaxWidth(maxWidth: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("max-width", maxWidth)
     }
 
     @Throws(DOMException::class)
     override fun setMinHeight(minHeight: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("min-height", minHeight)
     }
 
     @Throws(DOMException::class)
     override fun setMinWidth(minWidth: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("min-width", minWidth)
     }
 
     @Throws(DOMException::class)
     override fun setOrphans(orphans: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("orphans", orphans)
     }
 
     @Throws(DOMException::class)
     override fun setOutline(outline: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("outline", outline)
     }
 
     @Throws(DOMException::class)
     override fun setOutlineColor(outlineColor: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("outline-color", outlineColor)
     }
 
     @Throws(DOMException::class)
     override fun setOutlineStyle(outlineStyle: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("outline-style", outlineStyle)
     }
 
     @Throws(DOMException::class)
     override fun setOutlineWidth(outlineWidth: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("outline-width", outlineWidth)
     }
 
     @Throws(DOMException::class)
     override fun setOverflow(overflow: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("overflow", overflow)
     }
 
     @Throws(DOMException::class)
     override fun setPadding(padding: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("padding", padding)
     }
 
     @Throws(DOMException::class)
     override fun setPaddingTop(paddingTop: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("padding-top", paddingTop)
     }
 
     @Throws(DOMException::class)
     override fun setPaddingRight(paddingRight: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("padding-right", paddingRight)
     }
 
     @Throws(DOMException::class)
     override fun setPaddingBottom(paddingBottom: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("padding-bottom", paddingBottom)
     }
 
     @Throws(DOMException::class)
     override fun setPaddingLeft(paddingLeft: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("padding-left", paddingLeft)
     }
 
     @Throws(DOMException::class)
     override fun setPage(page: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("page", page)
     }
 
     @Throws(DOMException::class)
     override fun setPageBreakAfter(pageBreakAfter: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("page-break-after", pageBreakAfter)
     }
 
     @Throws(DOMException::class)
     override fun setPageBreakBefore(pageBreakBefore: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("page-break-before", pageBreakBefore)
     }
 
     @Throws(DOMException::class)
     override fun setPageBreakInside(pageBreakInside: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("page-break-inside", pageBreakInside)
     }
 
     @Throws(DOMException::class)
     override fun setPause(pause: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("pause", pause)
     }
 
     @Throws(DOMException::class)
     override fun setPauseAfter(pauseAfter: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("pause-after", pauseAfter)
     }
 
     @Throws(DOMException::class)
     override fun setPauseBefore(pauseBefore: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("pause-before", pauseBefore)
     }
 
     @Throws(DOMException::class)
     override fun setPitch(pitch: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("pitch", pitch)
     }
 
     @Throws(DOMException::class)
     override fun setPitchRange(pitchRange: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("pitch-range", pitchRange)
     }
 
     @Throws(DOMException::class)
     override fun setPlayDuring(playDuring: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("play-during", playDuring)
     }
 
     @Throws(DOMException::class)
     override fun setPosition(position: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("position", position)
     }
 
     @Throws(DOMException::class)
     override fun setQuotes(quotes: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("quotes", quotes)
     }
 
     @Throws(DOMException::class)
     override fun setRichness(richness: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("richness", richness)
     }
 
     @Throws(DOMException::class)
     override fun setRight(right: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("right", right)
     }
 
     @Throws(DOMException::class)
     override fun setSize(size: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("size", size)
     }
 
     @Throws(DOMException::class)
     override fun setSpeak(speak: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("speak", speak)
     }
 
     @Throws(DOMException::class)
     override fun setSpeakHeader(speakHeader: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("speak-header", speakHeader)
     }
 
     @Throws(DOMException::class)
     override fun setSpeakNumeral(speakNumeral: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("speak-numeral", speakNumeral)
     }
 
     @Throws(DOMException::class)
     override fun setSpeakPunctuation(speakPunctuation: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("speak-punctuation", speakPunctuation)
     }
 
     @Throws(DOMException::class)
     override fun setSpeechRate(speechRate: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("speech-rate", speechRate)
     }
 
     @Throws(DOMException::class)
     override fun setStress(stress: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("stress", stress)
     }
 
     @Throws(DOMException::class)
     override fun setTableLayout(tableLayout: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("table-layout", tableLayout)
     }
 
     @Throws(DOMException::class)
     override fun setTextAlign(textAlign: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("text-align", textAlign)
     }
 
     @Throws(DOMException::class)
     override fun setTextDecoration(textDecoration: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("text-decoration", textDecoration)
     }
 
     @Throws(DOMException::class)
     override fun setTextIndent(textIndent: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("text-indent", textIndent)
     }
 
     @Throws(DOMException::class)
     override fun setTextShadow(textShadow: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("text-shadow", textShadow)
     }
 
     @Throws(DOMException::class)
     override fun setTextTransform(textTransform: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("text-transform", textTransform)
     }
 
     @Throws(DOMException::class)
     override fun setTop(top: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("top", top)
     }
 
     @Throws(DOMException::class)
     override fun setUnicodeBidi(unicodeBidi: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("unicode-bidi", unicodeBidi)
     }
 
     @Throws(DOMException::class)
     override fun setVerticalAlign(verticalAlign: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("vertical-align", verticalAlign)
     }
 
     @Throws(DOMException::class)
     override fun setVisibility(visibility: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("visibility", visibility)
     }
 
     @Throws(DOMException::class)
     override fun setVoiceFamily(voiceFamily: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("voice-family", voiceFamily)
     }
 
     @Throws(DOMException::class)
     override fun setVolume(volume: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("volume", volume)
     }
 
     @Throws(DOMException::class)
     override fun setWhiteSpace(whiteSpace: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("white-space", whiteSpace)
     }
 
     @Throws(DOMException::class)
     override fun setWidows(widows: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("widows", widows)
     }
 
     @Throws(DOMException::class)
     override fun setWidth(width: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("width", width)
     }
 
     @Throws(DOMException::class)
     override fun setWordSpacing(wordSpacing: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("word-spacing", wordSpacing)
     }
 
     @Throws(DOMException::class)
     override fun setZIndex(zIndex: String?) {
-        throw UnsupportedOperationException()
+        updateInlineStyle("z-index", zIndex)
+    }
+
+    override fun getNodeData(): NodeData? {
+        val ele = this.element
+        val inlineStyle = ele.getAttribute("style")
+        if ((inlineStyle != null) && (inlineStyle.length > 0)) {
+            val jSheets: MutableList<StyleSheet?> = ArrayList<StyleSheet?>()
+            val jSheet = CSSUtilities.jParseInlineStyle(inlineStyle, null, ele, true)
+            jSheets.add(jSheet)
+            val domAnalyser = DirectAnalyzer(jSheets)
+            return domAnalyser.getElementStyle(ele, null, "screen")
+        }
+        return null
+    }
+
+    private fun updateInlineStyle(propertyName: String, propertyValue: String?) {
+        val ele: Element? = this.element
+        if (ele != null) {
+            val sb = StringBuilder()
+            val inlineStyle = ele.getAttribute("style")
+            if ((inlineStyle != null) && (inlineStyle.length > 0)) {
+                val propertyNameLC = propertyName.lowercase(Locale.getDefault())
+                val styleDeclarations =
+                    inlineStyle.split(";".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+                for (styleDeclaration in styleDeclarations) {
+                    val nameValue =
+                        styleDeclaration.split(":".toRegex()).dropLastWhile { it.isEmpty() }
+                            .toTypedArray()
+                    if (nameValue.size == 2) {
+                        val oldPropertyName =
+                            nameValue[0].lowercase(Locale.getDefault()).trim { it <= ' ' }
+                        if (!(oldPropertyName == propertyNameLC)) {
+                            sb.append(styleDeclaration + ";")
+                        }
+                    }
+                }
+            }
+            sb.append(propertyName + ":" + propertyValue + ";")
+            ele.setAttribute("style", sb.toString())
+        }
     }
 
 }

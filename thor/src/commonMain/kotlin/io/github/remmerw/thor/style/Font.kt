@@ -1,10 +1,8 @@
 package io.github.remmerw.thor.style
 
-import java.util.Locale
-
 class Font(
     fontFamily: String?, fontStyle: String?, fontVariant: String?, fontWeight: String?,
-    val fontSize: Float,  val superscript: Int?
+    val fontSize: Float, val superscript: Int?
 ) {
     val fontFamily: String?
     val fontStyle: String?

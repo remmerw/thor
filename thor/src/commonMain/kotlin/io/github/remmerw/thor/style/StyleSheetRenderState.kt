@@ -145,9 +145,9 @@ open class StyleSheetRenderState : RenderState {
         // Dummy implementation
     }
 
-    fun cssProperties(): JStyleProperties? {
+    fun cssProperties(): CssProperties? {
         val element = this.element
-        return if (element == null) null else element.getCurrentStyle()
+        return if (element == null) null else element.cssProperties()
     }
 
     override fun invalidate() {

@@ -37,7 +37,7 @@ class HTMLOptionElementImpl(name: String) : HTMLElementImpl(name), HTMLOptionEle
         }
     }
 
-    override fun setIndex(po:Int) {
+    override fun setIndex(po: Int) {
 
     }
 

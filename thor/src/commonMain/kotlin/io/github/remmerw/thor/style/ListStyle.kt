@@ -5,7 +5,7 @@ class ListStyle {
     var type: Int = 0
     var position: Int = 0
 
-    constructor(type: Int,  position: Int) : super() {
+    constructor(type: Int, position: Int) : super() {
         this.type = type
         this.position = position
     }

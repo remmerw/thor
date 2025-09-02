@@ -37,7 +37,7 @@ class HTMLIFrameElementImpl(name: String) : HTMLAbstractUIElement(name), HTMLIFr
         this.setAttribute("align", align)
     }
 
-     fun getContentDocument(): Document? {
+    fun getContentDocument(): Document? {
         // TODO: Domain-based security
         val frame = this.getBrowserFrame()
         if (frame == null) {
