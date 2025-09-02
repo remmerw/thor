@@ -86,7 +86,7 @@ abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) 
     }
 
     fun submitForm(extraFormInputs: Array<FormInput>?) {
-        val form = this.getForm() as HTMLFormElementImpl?
+        val form = this.getForm() as HTMLFormElementModel?
         if (form != null) {
             form.submit(extraFormInputs)
         }

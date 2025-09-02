@@ -21,13 +21,13 @@
 package io.github.remmerw.thor.style
 
 import io.github.remmerw.thor.dom.HTMLDocumentImpl
-import io.github.remmerw.thor.dom.HTMLElementImpl
+import io.github.remmerw.thor.dom.HTMLElementModel
 
 /**
  * Render state for elements that are displayed as blocks by default.
  */
 class BlockRenderState : StyleSheetRenderState {
-    constructor(prevRenderState: RenderState?, element: HTMLElementImpl) : super(
+    constructor(prevRenderState: RenderState?, element: HTMLElementModel) : super(
         prevRenderState,
         element
     )

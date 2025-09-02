@@ -1,3 +1,3 @@
 package io.github.remmerw.thor.dom
 
-class HTMLNonStandardElement(name: String) : HTMLElementImpl(name)
+class HTMLNonStandardElement(name: String) : HTMLElementModel(name)

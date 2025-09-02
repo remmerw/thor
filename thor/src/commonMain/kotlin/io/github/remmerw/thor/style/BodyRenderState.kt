@@ -20,12 +20,12 @@
  */
 package io.github.remmerw.thor.style
 
-import io.github.remmerw.thor.dom.HTMLElementImpl
+import io.github.remmerw.thor.dom.HTMLElementModel
 
 class BodyRenderState  // Note: BODY behaves like an inline element, but the root
 // block uses the element and treats its properties as those
 // of a block element.
-    (prevRenderState: RenderState?, element: HTMLElementImpl) :
+    (prevRenderState: RenderState?, element: HTMLElementModel) :
     StyleSheetRenderState(prevRenderState, element) {
 
     // TODO: We can get rid of this if #158 is implemented

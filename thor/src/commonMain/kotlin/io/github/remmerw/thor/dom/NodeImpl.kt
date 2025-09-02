@@ -188,7 +188,7 @@ abstract class NodeImpl : NodeModel, Node, ModelNode {
 
     fun getChildCount(): Int {
         synchronized(this.treeLock) {
-           return nodes().size
+            return nodes().size
         }
     }
 
@@ -1061,7 +1061,7 @@ abstract class NodeImpl : NodeModel, Node, ModelNode {
             return true
         }
         val parent: Any? = this.nodeParent
-        if (parent is HTMLElementImpl) {
+        if (parent is HTMLElementModel) {
             return parent.isEqualOrDescendantOf(otherContext)
         } else {
             return false
@@ -1215,7 +1215,7 @@ abstract class NodeImpl : NodeModel, Node, ModelNode {
         if ((nl != null) && ((nl.size.also { size = it }) > 0)) {
             for (i in 0..<size) {
                 val child: Node? = nl[i]
-                if (child is HTMLElementImpl) {
+                if (child is HTMLElementModel) {
                     child.appendOuterHTMLImpl(buffer)
                 } else if (child is Comment) {
                     buffer.append("<!--" + child.textContent + "-->")
@@ -1258,7 +1258,7 @@ abstract class NodeImpl : NodeModel, Node, ModelNode {
         }
         for (i in 0..<size) {
             val child: Node? = nl.get(i)
-            if (child is ElementImpl) {
+            if (child is ElementModel) {
                 child.appendInnerTextImpl(buffer)
             }
             if (child is Comment) {
@@ -1321,7 +1321,7 @@ abstract class NodeImpl : NodeModel, Node, ModelNode {
         if (this.isAttachedToDocument != attached) {
             this.isAttachedToDocument = attached
             handleDocumentAttachmentChanged()
-            if (this is ElementImpl) {
+            if (this is ElementModel) {
                 this.updateIdMap(attached)
             }
         }
@@ -1350,7 +1350,7 @@ abstract class NodeImpl : NodeModel, Node, ModelNode {
             val firstSelector = selectors.get(0)
 
             nodes().forEach { n ->
-                if (n is ElementImpl) {
+                if (n is ElementModel) {
                     if (firstSelector.matches(n)) {
                         if (numSelectors > 1) {
                             val tailSelectors = selectors.subList(1, numSelectors)

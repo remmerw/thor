@@ -36,7 +36,7 @@ open class DescendantHTMLCollection @JvmOverloads constructor(
 ) : HTMLCollection {
 
 
-    private var itemsByName: MutableMap<String?, ElementImpl?>? = null
+    private var itemsByName: MutableMap<String?, ElementModel?>? = null
     private var itemsByIndex: MutableList<NodeImpl?>? = null
 
     /**
@@ -54,11 +54,11 @@ open class DescendantHTMLCollection @JvmOverloads constructor(
                 this.rootNode.getDescendants(this.nodeFilter!!, this.nestIntoMatchingNodes)
             this.itemsByIndex = if (descendents == null) mutableListOf<NodeImpl?>() else descendents
             val size = if (descendents == null) 0 else descendents.size
-            val itemsByName: MutableMap<String?, ElementImpl?> = HashMap((size * 3) / 2)
+            val itemsByName: MutableMap<String?, ElementModel?> = HashMap((size * 3) / 2)
             this.itemsByName = itemsByName
             for (i in 0..<size) {
                 val descNode = descendents!!.get(i)
-                if (descNode is ElementImpl) {
+                if (descNode is ElementModel) {
                     val id = descNode.getId()
                     if ((id != null) && (id.length != 0)) {
                         itemsByName.put(id, descNode)

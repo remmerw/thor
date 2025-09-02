@@ -111,7 +111,7 @@ internal class ElementFactory private constructor() {
             // TODO: ^^ Other browsers throw an exception if there are illegal characters in the name.
             //          But am not sure what the legal character set is. Characters like angle-brackets
             //          do throw an exception in Chromium and Firefox. - hrj
-            val element = HTMLElementImpl(name)
+            val element = HTMLElementModel(name)
             element.setOwnerDocument(document)
             return element
         } else {

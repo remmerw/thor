@@ -5,9 +5,7 @@ package io.github.remmerw.thor
 expect abstract class Context
 
 
-abstract class Thor {
-
-}
+abstract class Thor
 
 expect fun thor(): Thor
 expect fun initializeThor(context: Context)

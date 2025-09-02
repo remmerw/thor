@@ -1,15 +1,15 @@
 package io.github.remmerw.thor.style
 
-import io.github.remmerw.thor.dom.HTMLElementImpl
-import io.github.remmerw.thor.dom.HTMLTableCellElementImpl
-import io.github.remmerw.thor.dom.HTMLTableRowElementImpl
+import io.github.remmerw.thor.dom.HTMLElementModel
+import io.github.remmerw.thor.dom.HTMLTableCellElementModel
+import io.github.remmerw.thor.dom.HTMLTableRowElementModel
 import org.w3c.dom.css.CSS2Properties
 import org.w3c.dom.html.HTMLElement
 import org.w3c.dom.html.HTMLTableElement
 import java.net.MalformedURLException
 import java.util.Locale
 
-class TableCellRenderState(prevRenderState: RenderState?, element: HTMLElementImpl) :
+class TableCellRenderState(prevRenderState: RenderState?, element: HTMLElementModel) :
     StyleSheetRenderState(prevRenderState, element) {
     private var alignXPerc = -1
     private var alignYPerc = -1
@@ -134,10 +134,10 @@ class TableCellRenderState(prevRenderState: RenderState?, element: HTMLElementIm
         }
         // Apply style based on deprecated attributes.
         binfo = super.getBackgroundInfo()
-        val element = this.element as HTMLTableCellElementImpl
-        var rowElement: HTMLTableRowElementImpl? = null
+        val element = this.element as HTMLTableCellElementModel
+        var rowElement: HTMLTableRowElementModel? = null
         val parentNode: Any? = element.parentNode
-        if (parentNode is HTMLTableRowElementImpl) {
+        if (parentNode is HTMLTableRowElementModel) {
             rowElement = parentNode
         }
         if ((binfo == null) || (binfo.backgroundColor == null)) {

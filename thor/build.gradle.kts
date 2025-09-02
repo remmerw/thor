@@ -51,7 +51,8 @@ kotlin {
                 implementation(compose.ui)
                 implementation(compose.materialIconsExtended)
 
-
+                implementation(libs.coil.compose)
+                implementation(libs.coil.network.ktor)
             }
         }
 
@@ -84,7 +85,23 @@ kotlin {
 
         }
 
+        androidMain.dependencies {
+            // Ktor client dependency required for Coil
+            implementation(libs.ktor.client.android)
+        }
 
+
+        appleMain.dependencies {
+            // Ktor client dependency required for iOS
+            implementation(libs.ktor.client.darwin)
+        }
+
+        // alternatively jvmMain
+        jvmMain.dependencies {
+            // Ktor client dependency required for JVM/Desktop
+            implementation(libs.ktor.client.java)
+            implementation(libs.kotlinx.coroutines.swing)
+        }
     }
 }
 

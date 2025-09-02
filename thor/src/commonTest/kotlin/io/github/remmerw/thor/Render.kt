@@ -1,7 +1,7 @@
 package io.github.remmerw.thor
 
 import io.github.remmerw.thor.dom.DocumentModel
-import io.github.remmerw.thor.dom.HTMLElementImpl
+import io.github.remmerw.thor.dom.HTMLElementModel
 import io.github.remmerw.thor.parser.DocumentModelBuilder
 import io.github.remmerw.thor.parser.InputSourceImpl
 import io.github.remmerw.thor.ua.NetworkRequest
@@ -147,7 +147,7 @@ class Render(var url: String) {
     fun doElement(element: Element) {
         println("<" + element.tagName + ">")
 
-        if (element is HTMLElementImpl) {
+        if (element is HTMLElementModel) {
             println(element.cssProperties().toString())
         }
     }

@@ -20,11 +20,11 @@
  */
 package io.github.remmerw.thor.style
 
-import io.github.remmerw.thor.dom.HTMLElementImpl
-import io.github.remmerw.thor.dom.HTMLTableElementImpl
+import io.github.remmerw.thor.dom.HTMLElementModel
+import io.github.remmerw.thor.dom.HTMLTableElementModel
 import java.net.MalformedURLException
 
-class TableRenderState(prevRenderState: RenderState?, element: HTMLElementImpl) :
+class TableRenderState(prevRenderState: RenderState?, element: HTMLElementModel) :
     StyleSheetRenderState(prevRenderState, element) {
     private var backgroundInfo: BackgroundInfo? = INVALID_BACKGROUND_INFO
 
@@ -45,7 +45,7 @@ class TableRenderState(prevRenderState: RenderState?, element: HTMLElementImpl) 
         }
         // Apply style based on deprecated attributes.
         binfo = super.getBackgroundInfo()
-        val element = this.element as HTMLTableElementImpl
+        val element = this.element as HTMLTableElementModel
         if ((binfo == null) || (binfo.backgroundColor == null)) {
             val bgColor = element.bgColor
             if ((bgColor != null) && "" != bgColor) {

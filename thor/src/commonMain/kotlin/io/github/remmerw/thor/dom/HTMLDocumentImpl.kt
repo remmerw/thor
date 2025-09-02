@@ -569,7 +569,7 @@ class HTMLDocumentImpl(
         // TODO: According to documentation, when a document
         // fragment is added to a node, its children are added,
         // not itself.
-        val node = DocumentFragmentImpl()
+        val node = DocumentFragmentModel()
         node.setOwnerDocument(this)
         return node
     }
@@ -862,7 +862,7 @@ class HTMLDocumentImpl(
 
                 this.nodes().forEach { nodeModel ->
                     val node: Any? = nodeModel
-                    if (node is HTMLElementImpl) {
+                    if (node is HTMLElementModel) {
                         node.forgetStyle(true)
                     }
                 }
@@ -1154,7 +1154,7 @@ class HTMLDocumentImpl(
 
     fun primeNodeData() {
         visit({ node: Node ->
-            if (node is HTMLElementImpl) {
+            if (node is HTMLElementModel) {
                 node.cssProperties()
             }
         })
@@ -1216,11 +1216,11 @@ class HTMLDocumentImpl(
                 val ownerNode = styleSheet.ownerNode
                 if (ownerNode != null) {
                     val disabled = styleSheet.disabled
-                    if (ownerNode is HTMLStyleElementImpl) {
+                    if (ownerNode is HTMLStyleElementModel) {
                         if (ownerNode.disabled != disabled) {
                             ownerNode.setDisabledImpl(disabled)
                         }
-                    } else if (ownerNode is HTMLLinkElementImpl) {
+                    } else if (ownerNode is HTMLLinkElementModel) {
                         if (ownerNode.disabled != disabled) {
                             ownerNode.setDisabledInternal(disabled)
                         }

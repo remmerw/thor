@@ -3,7 +3,7 @@ package io.github.remmerw.thor.style
 import androidx.compose.ui.graphics.Color
 import cz.vutbr.web.css.CSSProperty.VerticalAlign
 import io.github.remmerw.thor.dom.HTMLDocumentImpl
-import io.github.remmerw.thor.dom.HTMLElementImpl
+import io.github.remmerw.thor.dom.HTMLElementModel
 import org.w3c.dom.css.CSS2Properties
 import org.w3c.dom.html.HTMLElement
 import java.util.Locale
@@ -11,7 +11,7 @@ import java.util.Optional
 import java.util.StringTokenizer
 
 open class StyleSheetRenderState : RenderState {
-    protected val element: HTMLElementImpl?
+    protected val element: HTMLElementModel?
     protected val document: HTMLDocumentImpl?
     protected val prevRenderState: RenderState?
     protected var iBackgroundInfo: BackgroundInfo? = INVALID_BACKGROUND_INFO
@@ -70,7 +70,7 @@ open class StyleSheetRenderState : RenderState {
     private var cachedFloat: Int? = null
     private var cachedClear: Int? = null
 
-    constructor(prevRenderState: RenderState?, element: HTMLElementImpl) {
+    constructor(prevRenderState: RenderState?, element: HTMLElementModel) {
         this.prevRenderState = prevRenderState
         this.element = element
         this.document = element.ownerDocument as HTMLDocumentImpl?

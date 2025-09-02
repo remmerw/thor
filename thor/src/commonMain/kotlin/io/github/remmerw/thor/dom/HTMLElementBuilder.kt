@@ -33,245 +33,245 @@ abstract class HTMLElementBuilder {
         return element
     }
 
-    protected abstract fun build(name: String): HTMLElementImpl
+    protected abstract fun build(name: String): HTMLElementModel
 
     class Html : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLHtmlElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLHtmlElementModel(name)
         }
     }
 
     class Title : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLTitleElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLTitleElementModel(name)
         }
     }
 
     class Base : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLBaseElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLBaseElementModel(name)
         }
     }
 
     class Body : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLBodyElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLBodyElementModel(name)
         }
     }
 
     class Span : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLSpanElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLSpanElementModel(name)
         }
     }
 
     class Script : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLScriptElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLScriptElementModel(name)
         }
     }
 
     class Img : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLImageElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLImageElementModel(name)
         }
     }
 
     class Style : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLStyleElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLStyleElementModel(name)
         }
     }
 
     class Table : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLTableElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLTableElementModel(name)
         }
     }
 
     class Td : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLTableCellElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLTableCellElementModel(name)
         }
     }
 
     class Th : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLTableHeadElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLTableHeadElementModel(name)
         }
     }
 
     class Tr : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLTableRowElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLTableRowElementModel(name)
         }
     }
 
     class Link : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLLinkElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLLinkElementModel(name)
         }
     }
 
     class Anchor : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLLinkElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLLinkElementModel(name)
         }
     }
 
     class Form : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLFormElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLFormElementModel(name)
         }
     }
 
     class Input : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLInputElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLInputElementModel(name)
         }
     }
 
     class Button : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLButtonElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLButtonElementModel(name)
         }
     }
 
     class Textarea : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLTextAreaElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLTextAreaElementModel(name)
         }
     }
 
     class Select : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLSelectElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLSelectElementModel(name)
         }
     }
 
     class Option : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLOptionElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLOptionElementModel(name)
         }
     }
 
     class Frameset : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLFrameSetElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLFrameSetElementModel(name)
         }
     }
 
     class Frame : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLFrameElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLFrameElementModel(name)
         }
     }
 
     class Ul : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLUListElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLUListElementModel(name)
         }
     }
 
     class Ol : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLOListElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLOListElementModel(name)
         }
     }
 
     class Li : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLLIElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLLIElementModel(name)
         }
     }
 
     class Pre : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLPreElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLPreElementModel(name)
         }
     }
 
     class Div : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLDivElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLDivElementModel(name)
         }
     }
 
     class Quote : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLQuoteElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLQuoteElementModel(name)
         }
     }
 
     class Hr : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLHRElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLHRElementModel(name)
         }
     }
 
     class Br : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLBRElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLBRElementModel(name)
         }
     }
 
     class P : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLPElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLPElementModel(name)
         }
     }
 
     class GenericMarkup : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
+        public override fun build(name: String): HTMLElementModel {
             return HTMLGenericMarkupElement(name)
         }
     }
 
     class HtmlObject : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLObjectElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLObjectElementModel(name)
         }
     }
 
     class Applet : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLAppletElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLAppletElementModel(name)
         }
     }
 
     class IFrame : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLIFrameElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLIFrameElementModel(name)
         }
     }
 
     class BaseFont : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLBaseFontElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLBaseFontElementModel(name)
         }
     }
 
     class Font : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLFontElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLFontElementModel(name)
         }
     }
 
     class Heading : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
-            return HTMLHeadingElementImpl(name)
+        public override fun build(name: String): HTMLElementModel {
+            return HTMLHeadingElementModel(name)
         }
     }
 
     class NonStandard : HTMLElementBuilder() {
-        public override fun build(name: String): HTMLElementImpl {
+        public override fun build(name: String): HTMLElementModel {
             return HTMLNonStandardElement(name)
         }
     }
 
     class Canvas : HTMLElementBuilder() {
-        override fun build(name: String): HTMLElementImpl {
-            return HTMLCanvasElementImpl()
+        override fun build(name: String): HTMLElementModel {
+            return HTMLCanvasElementModel()
         }
     }
 }

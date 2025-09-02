@@ -21,9 +21,9 @@
 package io.github.remmerw.thor.style
 
 import androidx.compose.ui.graphics.Color
-import io.github.remmerw.thor.dom.HTMLElementImpl
+import io.github.remmerw.thor.dom.HTMLElementModel
 
-class ImageRenderState(prevRenderState: RenderState?, element: HTMLElementImpl) :
+class ImageRenderState(prevRenderState: RenderState?, element: HTMLElementModel) :
     StyleSheetRenderState(prevRenderState, element) {
     // TODO: if this logic can be moved to attr2Styles, then this render state could be chopped off.
     override fun getMarginInsets(): HtmlInsets? {

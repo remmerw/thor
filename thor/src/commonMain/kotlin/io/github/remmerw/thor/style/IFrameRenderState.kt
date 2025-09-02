@@ -21,10 +21,10 @@
 package io.github.remmerw.thor.style
 
 import androidx.compose.ui.graphics.Color
-import io.github.remmerw.thor.dom.HTMLElementImpl
+import io.github.remmerw.thor.dom.HTMLElementModel
 import java.util.Locale
 
-class IFrameRenderState(prevRenderState: RenderState?, element: HTMLElementImpl) :
+class IFrameRenderState(prevRenderState: RenderState?, element: HTMLElementModel) :
     StyleSheetRenderState(prevRenderState, element) {
     // TODO: if this logic can be moved to attr2Styles, then this render state could be chopped off.
     override fun getOverflowX(): Int {

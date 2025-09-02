@@ -10,8 +10,8 @@ import io.github.remmerw.thor.style.ComputedCssProperties
 import io.github.remmerw.thor.style.CssProperties
 
 // TODO: Extend a common interface or a minimal class instead of HTMLElementImpl
-class GeneratedElement(parent: HTMLElementImpl, val nodeData: NodeData?, val content: TermList) :
-    HTMLElementImpl("") {
+class GeneratedElement(parent: HTMLElementModel, val nodeData: NodeData?, val content: TermList) :
+    HTMLElementModel("") {
 
     private var currentStyle: CssProperties? = null
 
@@ -47,7 +47,7 @@ class GeneratedElement(parent: HTMLElementImpl, val nodeData: NodeData?, val con
                     val params = c.value
                     if (params.size > 0) {
                         val `val` =
-                            (nodeParent as ElementImpl).getAttribute(params.get(0).toString())
+                            (nodeParent as ElementModel).getAttribute(params.get(0).toString())
                         if (`val` != null) {
                             val txt = ownerDocument!!.createTextNode(`val`)
                             nodeList.add(txt as NodeImpl?)

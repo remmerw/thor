@@ -31,7 +31,7 @@ import cz.vutbr.web.csskit.antlr4.CSSParserFactory
 import io.github.remmerw.thor.core.Strings
 import io.github.remmerw.thor.core.Urls
 import io.github.remmerw.thor.dom.HTMLDocumentImpl
-import io.github.remmerw.thor.dom.HTMLElementImpl
+import io.github.remmerw.thor.dom.HTMLElementModel
 import io.github.remmerw.thor.ua.UserAgentContext
 import io.github.remmerw.thor.ua.UserAgentContext.RequestKind
 import org.w3c.css.sac.InputSource
@@ -166,7 +166,7 @@ object CSSUtilities {
 
     fun jParseInlineStyle(
         style: String?, encoding: String?,
-        element: HTMLElementImpl, inlinePriority: Boolean
+        element: HTMLElementModel, inlinePriority: Boolean
     ): StyleSheet? {
         try {
             return CSSParserFactory.getInstance().parse(
