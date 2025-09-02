@@ -13,11 +13,13 @@ import androidx.compose.ui.layout.ContentScale
 import coil3.compose.AsyncImage
 import io.github.remmerw.thor.dom.DocumentModel
 import io.github.remmerw.thor.dom.HTMLAnchorElementModel
+import io.github.remmerw.thor.dom.HTMLFormElementModel
 import io.github.remmerw.thor.dom.HTMLImageElementModel
 import io.github.remmerw.thor.dom.HTMLLinkElementModel
 import io.github.remmerw.thor.model.RendererContext
 import io.github.remmerw.thor.dom.NodeModel
 import io.github.remmerw.thor.model.DefaultRendererContext
+import io.github.remmerw.thor.model.Utils
 
 
 @Composable
@@ -74,7 +76,7 @@ fun Nodes(nodeModel: NodeModel,
                 }
 
                 "FORM" -> {
-                    Form(nodeModel, rendererContext)
+                    Form(nodeModel as HTMLFormElementModel, rendererContext)
                 }
 
                 "CENTER" -> {
@@ -167,10 +169,13 @@ fun Img(nodeModel: HTMLImageElementModel,
         rendererContext: RendererContext) {
     Text(nodeModel.nodeName)
 
+    val src = remember { nodeModel.src!! }
+
+    val url = nodeModel.getFullURL(src)
 
     if(rendererContext.isImageLoadingEnabled()) {
         AsyncImage(
-            model = nodeModel.baseURI + nodeModel.src,
+            model = url.toExternalForm(),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -205,9 +210,12 @@ fun Li(nodeModel: NodeModel,
 }
 
 @Composable
-fun Form(nodeModel: NodeModel,
+fun Form(nodeModel: HTMLFormElementModel,
          rendererContext: RendererContext) {
     Text(nodeModel.nodeName)
+
+    Utils.submit(nodeModel, rendererContext)
+
     Nodes(nodeModel, rendererContext)
 }
 
@@ -239,6 +247,8 @@ fun Link(nodeModel: HTMLLinkElementModel,
       rendererContext: RendererContext) {
     Text(nodeModel.nodeName)
     Nodes(nodeModel, rendererContext)
+
+    Utils.navigate(nodeModel, rendererContext)
 }
 
 @Composable
@@ -246,6 +256,8 @@ fun A(nodeModel: HTMLAnchorElementModel,
       rendererContext: RendererContext) {
     Text(nodeModel.nodeName)
     Nodes(nodeModel, rendererContext)
+
+    Utils.navigate(nodeModel, rendererContext)
 
 
 }

@@ -39,10 +39,8 @@ import io.github.remmerw.thor.dom.NodeFilter.AnchorFilter
 import io.github.remmerw.thor.dom.NodeFilter.AppletFilter
 import io.github.remmerw.thor.dom.NodeFilter.ElementNameFilter
 import io.github.remmerw.thor.dom.NodeFilter.FormFilter
-import io.github.remmerw.thor.dom.NodeFilter.FrameFilter
 import io.github.remmerw.thor.dom.NodeFilter.LinkFilter
 import io.github.remmerw.thor.dom.NodeFilter.TagNameFilter
-import io.github.remmerw.thor.model.RendererContext
 import io.github.remmerw.thor.parser.EmptyReader
 import io.github.remmerw.thor.parser.HtmlParser
 import io.github.remmerw.thor.parser.WritableLineReader
@@ -84,7 +82,6 @@ import java.io.Reader
 import java.io.StringReader
 import java.net.MalformedURLException
 import java.net.URL
-import java.util.Locale
 import java.util.logging.Level
 import kotlin.concurrent.Volatile
 
@@ -94,7 +91,6 @@ import kotlin.concurrent.Volatile
  */
 class HTMLDocumentImpl(
     private val context: UserAgentContext,
-    private val rcontext: RendererContext? = null,
     private var reader: WritableLineReader? = null,
     private var documentURI: String? = null,
     private val contentType: String? = null
@@ -111,15 +107,6 @@ class HTMLDocumentImpl(
     /**
      * Gets an *immutable* set of locales previously set for this document.
      */
-    /**
-     * Sets the locales of the document. This helps determine whether specific
-     * fonts can display text in the languages of all the locales.
-     *
-     * @param locales An *immutable* set of `java.util.Locale`
-     * instances.
-     */
-    @JvmField
-    var locales: MutableSet<Locale?>? = null
 
     @Volatile
     private var baseURI: String? = null
@@ -131,16 +118,6 @@ class HTMLDocumentImpl(
     private var links: HTMLCollection? = null
     private var forms: HTMLCollection? = null
     private var anchors: HTMLCollection? = null
-    var frames: HTMLCollection? = null
-        get() {
-            synchronized(this) {
-                if (field == null) {
-                    field = DescendantHTMLCollection(this, FrameFilter(), this.treeLock)
-                }
-                return field
-            }
-        }
-        private set
     private var doctype: DocumentType? = null
     private var isDocTypeXHTML = false
     private var inputEncoding: String? = null
@@ -156,13 +133,7 @@ class HTMLDocumentImpl(
     private var oldPendingTaskId = -1
     private var classifiedRules: Analyzer.Holder? = null
 
-    constructor(rcontext: RendererContext) : this(
-        rcontext.userAgentContext(),
-        rcontext,
-        null,
-        documentURI = null,
-        null
-    )
+
 
     init {
         this.factory = ElementFactory.Companion.instance
@@ -815,9 +786,6 @@ class HTMLDocumentImpl(
         )
     }
 
-    fun htmlRendererContext(): RendererContext {
-        return this.rcontext!!
-    }
 
     fun userAgentContext(): UserAgentContext {
         return this.context
@@ -1073,31 +1041,7 @@ class HTMLDocumentImpl(
         return StyleSheetRenderState(this)
     }
 
-    /**
-     * Loads images asynchronously such that they are shared if loaded
-     * simultaneously from the same URI. Informs the listener immediately if an
-     * image is already known.
-     *
-     * @param relativeUri
-     * @param imageListener
-     */
-    fun loadImage(relativeUri: String) {
-        val rcontext = this.htmlRendererContext()
-        if ((rcontext == null) || !rcontext.isImageLoadingEnabled()) {
-            // Ignore image loading when there's no renderer context.
-            // Consider Cobra users who are only using the parser.
 
-            return
-        }
-        try {
-            val url = this.getFullURL(relativeUri)
-            url.toExternalForm()
-
-
-        } catch (mfe: MalformedURLException) {
-
-        }
-    }
 
     override fun setUserData(key: String, data: Any?, handler: UserDataHandler?): Any? {
         // if (org.cobraparser.html.parser.HtmlParser.MODIFYING_KEY.equals(key) && data == Boolean.FALSE) {
@@ -1110,7 +1054,6 @@ class HTMLDocumentImpl(
     override fun createSimilarNode(): Node {
         return HTMLDocumentImpl(
             this.context,
-            this.rcontext,
             this.reader,
             this.documentURI,
             this.contentType

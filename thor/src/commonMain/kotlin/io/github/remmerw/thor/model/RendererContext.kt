@@ -63,7 +63,7 @@ interface RendererContext {
         action: URL,
         target: String?,
         enctype: String?,
-        formInputs: Array<FormInput?>?
+        formInputs: Array<FormInput>
     )
 
     /**

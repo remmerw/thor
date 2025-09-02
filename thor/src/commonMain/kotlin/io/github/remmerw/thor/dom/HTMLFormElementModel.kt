@@ -1,26 +1,3 @@
-/*
-    GNU LESSER GENERAL PUBLIC LICENSE
-    Copyright (C) 2006 The Lobo Project
-
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-    Contact info: lobochief@users.sourceforge.net
- */
-/*
- * Created on Jan 14, 2006
- */
 package io.github.remmerw.thor.dom
 
 import org.w3c.dom.Element
@@ -147,48 +124,7 @@ class HTMLFormElementModel : HTMLAbstractUIElement, HTMLFormElement {
     }
 
     override fun submit() {
-        this.submit(null)
-    }
-
-    /**
-     * This method should be called when form submission is done by a submit
-     * button.
-     *
-     * @param extraFormInputs Any additional form inputs that need to be submitted, e.g. the
-     * submit button parameter.
-     */
-    fun submit(extraFormInputs: Array<FormInput>?) {
-        val context = this.rendererContext
-        if (context != null) {
-            val formInputs = ArrayList<FormInput?>()
-            if (extraFormInputs != null) {
-                Collections.addAll(formInputs, *extraFormInputs)
-            }
-            this.visit(object : NodeVisitor {
-                override fun visit(node: Node) {
-                    if (node is HTMLElementModel) {
-                        val fis = node.getFormInputs()
-                        if (fis != null) {
-                            for (fi in fis) {
-                                checkNotNull(fi.name) { "Form input does not have a name: " + node }
-                                formInputs.add(fi)
-                            }
-                        }
-                    }
-                }
-            })
-            val fia = formInputs.toArray<FormInput?>(FormInput.EMPTY_ARRAY)
-            var href = this.action
-            if (href == null) {
-                href = this.getBaseURI()
-            }
-            try {
-                val url = this.getFullURL(href!!)
-                context.submitForm(this.getMethod(), url, this.target, this.enctype, fia)
-            } catch (mfu: MalformedURLException) {
-                this.warn("submit()", mfu)
-            }
-        }
+        TODO("Not yet implemented")
     }
 
 

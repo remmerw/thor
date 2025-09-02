@@ -958,7 +958,7 @@ abstract class NodeImpl : NodeModel, Node, ModelNode {
 
     // ----- ModelNode implementation
     override fun toString(): String {
-        return this.nodeName!!
+        return this.nodeName
     }
 
     open val userAgentContext: UserAgentContext?
@@ -971,15 +971,6 @@ abstract class NodeImpl : NodeModel, Node, ModelNode {
             }
         }
 
-    open val rendererContext: RendererContext?
-        get() {
-            val doc: Any? = this.document
-            if (doc is HTMLDocumentImpl) {
-                return doc.htmlRendererContext()
-            } else {
-                return null
-            }
-        }
 
     fun setParentImpl(parent: Node?) {
         // Call holding treeLock.

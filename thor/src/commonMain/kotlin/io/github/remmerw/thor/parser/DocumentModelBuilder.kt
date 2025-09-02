@@ -15,55 +15,13 @@ import java.io.InputStreamReader
 import java.util.logging.Logger
 import javax.xml.parsers.DocumentBuilder
 
-class DocumentModelBuilder : DocumentBuilder {
-    private val context: UserAgentContext
-    private val renderer: RendererContext?
+class DocumentModelBuilder(val context: UserAgentContext) : DocumentBuilder() {
+
     var resolver: EntityResolver? = null
         private set
     private var errorHandler: ErrorHandler? = null
     private var domImplementation: DOMImplementation? = null
 
-    /**
-     * Constructs a `DocumentBuilderImpl`. This constructor should be
-     * used when only the parsing functionality (without rendering) is required.
-     *
-     * @param context An instance of [org.cobraparser.html.UserAgentContext],
-     * which may be an instance of
-     * [org.cobraparser.html.test.SimpleUserAgentContext].
-     */
-    constructor(context: UserAgentContext) {
-        this.renderer = null
-        this.context = context
-    }
-
-    /**
-     * Constructs a `DocumentBuilderImpl`. This constructor should be
-     * used when rendering is expected.
-     *
-     * @param ucontext An instance of [org.cobraparser.html.UserAgentContext],
-     * which may be an instance of
-     * [org.cobraparser.html.test.SimpleUserAgentContext].
-     * @param rcontext An instance of [io.github.remmerw.thor.cobra.html.HtmlRendererContext],
-     * which may be an instance of
-     * [org.cobraparser.html.test.SimpleHtmlRendererContext].
-     */
-    constructor(ucontext: UserAgentContext, rcontext: RendererContext?) {
-        this.renderer = rcontext
-        this.context = ucontext
-    }
-
-    /**
-     * Constructs a `DocumentBuilderImpl`. This constructor should be
-     * used when rendering is expected.
-     *
-     * @param rcontext An instance of [io.github.remmerw.thor.cobra.html.HtmlRendererContext],
-     * which may be an instance of
-     * [org.cobraparser.html.test.SimpleHtmlRendererContext].
-     */
-    constructor(rcontext: RendererContext) {
-        this.renderer = rcontext
-        this.context = rcontext.userAgentContext()
-    }
 
     /**
      * Parses an HTML document. Note that this method will read the entire input
@@ -105,7 +63,7 @@ class DocumentModelBuilder : DocumentBuilder {
         wis = WritableLineReader(InputStreamReader(inputStream, charset))
 
         val document = HTMLDocumentImpl(
-            this.context, this.renderer,
+            this.context,
             wis, uri!!, contentType
         )
         return document
@@ -118,6 +76,7 @@ class DocumentModelBuilder : DocumentBuilder {
     override fun isValidating(): Boolean {
         return false
     }
+
 
     override fun setEntityResolver(er: EntityResolver?) {
         this.resolver = er
