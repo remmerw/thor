@@ -30,7 +30,7 @@ class RenderTest {
         }
 
 
-        delay(10000)
+        delay(100000)
 
     }
 }

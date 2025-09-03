@@ -31,21 +31,13 @@ import org.w3c.dom.Text
 
 open class TextImpl(text: String = "") : CharacterDataImpl(text), Text {
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.w3c.dom.html2.Text#isElementContentWhitespace()
-     */
+
     override fun isElementContentWhitespace(): Boolean {
         val t = this.text
         return (t == null) || t.trim { it <= ' ' } == ""
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.w3c.dom.html2.Text#replaceWholeText(java.lang.String)
-     */
+
     @Throws(DOMException::class)
     override fun replaceWholeText(content: String?): Text? {
         val parent = this.nodeParent as NodeImpl
@@ -55,18 +47,14 @@ open class TextImpl(text: String = "") : CharacterDataImpl(text), Text {
         return parent.replaceAdjacentTextNodes(this, content)
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.w3c.dom.html2.Text#splitText(int)
-     */
+
     @Throws(DOMException::class)
     override fun splitText(offset: Int): Text? {
         val parent = this.nodeParent as NodeImpl
         if (parent == null) {
             throw DOMException(DOMException.HIERARCHY_REQUEST_ERR, "Text node has no parent")
         }
-        val t = this.text!!
+        val t = this.text
         if ((offset < 0) || (offset > t.length)) {
             throw DOMException(DOMException.INDEX_SIZE_ERR, "Bad offset: " + offset)
         }
@@ -87,37 +75,23 @@ open class TextImpl(text: String = "") : CharacterDataImpl(text), Text {
         return parent.getTextContent()
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.NodeImpl#getlocalName()
-     */
+
     override fun getLocalName(): String? {
         return null
     }
 
 
     override fun getNodeName(): String {
-        return "#text"
+        return "CHARS"
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.NodeImpl#getnodeType()
-     */
     override fun getNodeType(): Short {
         return TEXT_NODE
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.NodeImpl#getnodeValue()
-     */
     @Throws(DOMException::class)
     override fun getNodeValue(): String {
-        return this.text!!
+        return this.text
     }
 
     override fun setNodeValue(nodeValue: String) {
@@ -129,12 +103,12 @@ open class TextImpl(text: String = "") : CharacterDataImpl(text), Text {
     }
 
     override fun createSimilarNode(): Node {
-        return TextImpl(this.text!!)
+        return TextImpl(this.text)
     }
 
     override fun toString(): String {
         val text = this.text
-        val textLength = if (text == null) 0 else text.length
+        val textLength = text.length
         return "#text[length=" + textLength + ",value=\"" + Strings.truncate(text, 64)
     }
 }

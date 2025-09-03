@@ -14,9 +14,9 @@ import java.util.Vector
  * methods related to HTML specifics.
  */
 object StyleElements {
-    fun convertAttributesToStyles(n: Node): StyleSheet? {
-        if (n.nodeType == Node.ELEMENT_NODE) {
-            val el = n as HTMLElementModel
+    fun convertAttributesToStyles(node: Node): StyleSheet? {
+        if (node.nodeType == Node.ELEMENT_NODE) {
+            val el = node as HTMLElementModel
             //Analyze HTML attributes
             var attrs = ""
             val tagName = el.tagName
@@ -33,7 +33,7 @@ object StyleElements {
             }
 
             if (attrs.length > 0) {
-                return CSSUtilities.jParseInlineStyle(attrs, null, el, false)
+                return CSSUtilities.parseInlineStyle(attrs, null, el, false)
             }
         }
         return null

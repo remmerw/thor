@@ -28,7 +28,7 @@ import cz.vutbr.web.css.RuleFactory
 import cz.vutbr.web.css.StyleSheet
 import cz.vutbr.web.csskit.RuleFactoryImpl
 import cz.vutbr.web.csskit.antlr4.CSSParserFactory
-import io.github.remmerw.thor.dom.HTMLElementModel
+import io.github.remmerw.thor.dom.ElementImpl
 import org.w3c.css.sac.InputSource
 import java.io.BufferedReader
 import java.io.ByteArrayInputStream
@@ -116,9 +116,9 @@ object CSSUtilities {
         }
     }
 
-    fun jParseInlineStyle(
+    fun parseInlineStyle(
         style: String?, encoding: String?,
-        element: HTMLElementModel, inlinePriority: Boolean
+        element: ElementImpl, inlinePriority: Boolean
     ): StyleSheet? {
         try {
             return CSSParserFactory.getInstance().parse(

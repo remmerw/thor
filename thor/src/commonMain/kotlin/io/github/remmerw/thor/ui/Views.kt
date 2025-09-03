@@ -17,6 +17,7 @@ import io.github.remmerw.thor.dom.HTMLFormElementModel
 import io.github.remmerw.thor.dom.HTMLImageElementModel
 import io.github.remmerw.thor.dom.HTMLLinkElementModel
 import io.github.remmerw.thor.dom.NodeModel
+import io.github.remmerw.thor.dom.TextImpl
 import io.github.remmerw.thor.model.DefaultRendererContext
 import io.github.remmerw.thor.model.RendererContext
 import io.github.remmerw.thor.model.Utils
@@ -47,7 +48,7 @@ fun HtmlViewer(
 
                     when (nodeModel.nodeName.uppercase()) {
                         "HTML" -> {
-                            Html(nodeModel, rendererContext)
+                            Html(nodeModel, rendererContext, modifier = Modifier)
                         }
                     }
                 }
@@ -60,7 +61,8 @@ fun HtmlViewer(
 @Composable
 fun Nodes(
     nodeModel: NodeModel,
-    rendererContext: RendererContext
+    rendererContext: RendererContext,
+    modifier: Modifier
 ) {
 
     val nodeModels = remember { nodeModel.nodes() }
@@ -71,113 +73,128 @@ fun Nodes(
         nodeModels.forEach { nodeModel ->
             when (nodeModel.nodeName.uppercase()) {
                 "BODY" -> {
-                    Body(nodeModel, rendererContext)
+                    Body(nodeModel, rendererContext, modifier)
                 }
 
                 "TABLE" -> {
-                    Table(nodeModel, rendererContext)
+                    Table(nodeModel, rendererContext, modifier)
                 }
 
                 "FORM" -> {
-                    Form(nodeModel as HTMLFormElementModel, rendererContext)
+                    Form(nodeModel as HTMLFormElementModel, rendererContext, modifier)
                 }
 
                 "CENTER" -> {
-                    Center(nodeModel, rendererContext)
+                    Center(nodeModel, rendererContext, modifier)
                 }
 
                 "DIV" -> {
-                    Div(nodeModel, rendererContext)
+                    Div(nodeModel, rendererContext, modifier)
                 }
 
                 "Big" -> {
-                    Big(nodeModel, rendererContext)
+                    Big(nodeModel, rendererContext, modifier)
                 }
 
                 "FONT" -> {
-                    Font(nodeModel, rendererContext)
+                    Font(nodeModel, rendererContext, modifier)
                 }
 
                 "LINK" -> {
-                    Link(nodeModel as HTMLLinkElementModel, rendererContext)
+                    Link(nodeModel as HTMLLinkElementModel, rendererContext, modifier)
                 }
 
                 "A", "ANCHOR" -> {
-                    A(nodeModel as HTMLAnchorElementModel, rendererContext)
+                    A(nodeModel as HTMLAnchorElementModel, rendererContext, modifier)
                 }
 
                 "LI" -> {
-                    Li(nodeModel, rendererContext)
+                    Li(nodeModel, rendererContext, modifier)
                 }
 
                 "BR" -> {
-                    Br(nodeModel, rendererContext)
+                    Br(nodeModel, rendererContext, modifier)
                 }
 
                 "UL" -> {
-                    Ul(nodeModel, rendererContext)
+                    Ul(nodeModel, rendererContext, modifier)
                 }
 
                 "TR" -> {
-                    Tr(nodeModel, rendererContext)
+                    Tr(nodeModel, rendererContext, modifier)
                 }
 
                 "TD" -> {
-                    Td(nodeModel, rendererContext)
+                    Td(nodeModel, rendererContext, modifier)
                 }
 
                 "IMG" -> {
-                    Img(nodeModel as HTMLImageElementModel, rendererContext)
+                    Img(nodeModel as HTMLImageElementModel, rendererContext, modifier)
                 }
 
                 "BLOCKQUOTE" -> {
-                    Blockquote(nodeModel, rendererContext)
+                    Blockquote(nodeModel, rendererContext, modifier )
+                }
+
+                "CHARS" -> {
+                    Chars(nodeModel as TextImpl, modifier)
                 }
 
                 else -> {
                     println(nodeModel.nodeName)
-                    Dummy(nodeModel, rendererContext)
+                    Dummy(nodeModel, rendererContext, modifier )
                 }
             }
         }
 
     }
 }
+@Composable
+fun Chars(text: TextImpl, modifier: Modifier) {
+
+
+    Text(text.textContent, modifier = modifier)
+
+}
 
 @Composable
 fun Html(
     nodeModel: NodeModel,
-    rendererContext: RendererContext
+    rendererContext: RendererContext,
+    modifier: Modifier
 ) {
     Text(nodeModel.nodeName)
-    Nodes(nodeModel, rendererContext)
+    Nodes(nodeModel, rendererContext, modifier)
 }
 
 
 @Composable
 fun Dummy(
     nodeModel: NodeModel,
-    rendererContext: RendererContext
+    rendererContext: RendererContext,
+    modifier: Modifier
 ) {
     Text(nodeModel.nodeName)
-    Nodes(nodeModel, rendererContext)
+    Nodes(nodeModel, rendererContext, modifier)
 }
 
 
 @Composable
 fun Font(
     nodeModel: NodeModel,
-    rendererContext: RendererContext
+    rendererContext: RendererContext,
+    modifier: Modifier
 ) {
     Text(nodeModel.nodeName)
-    Nodes(nodeModel, rendererContext)
+    Nodes(nodeModel, rendererContext, modifier)
 }
 
 
 @Composable
 fun Img(
     nodeModel: HTMLImageElementModel,
-    rendererContext: RendererContext
+    rendererContext: RendererContext,
+    modifier: Modifier
 ) {
     Text(nodeModel.nodeName)
 
@@ -194,7 +211,7 @@ fun Img(
                 .fillMaxWidth()
         )
     }
-    Nodes(nodeModel, rendererContext)
+    Nodes(nodeModel, rendererContext, modifier)
     println(nodeModel.baseURI)
     println(nodeModel.src)
 }
@@ -202,79 +219,87 @@ fun Img(
 @Composable
 fun Ul(
     nodeModel: NodeModel,
-    rendererContext: RendererContext
+    rendererContext: RendererContext,
+    modifier: Modifier
 ) {
     Text(nodeModel.nodeName)
-    Nodes(nodeModel, rendererContext)
+    Nodes(nodeModel, rendererContext, modifier)
 }
 
 
 @Composable
 fun Blockquote(
     nodeModel: NodeModel,
-    rendererContext: RendererContext
+    rendererContext: RendererContext,
+    modifier: Modifier
 ) {
     Text(nodeModel.nodeName)
-    Nodes(nodeModel, rendererContext)
+    Nodes(nodeModel, rendererContext, modifier)
 }
 
 @Composable
 fun Li(
     nodeModel: NodeModel,
-    rendererContext: RendererContext
+    rendererContext: RendererContext,
+    modifier: Modifier
 ) {
     Text(nodeModel.nodeName)
-    Nodes(nodeModel, rendererContext)
+    Nodes(nodeModel, rendererContext, modifier)
 }
 
 @Composable
 fun Form(
     nodeModel: HTMLFormElementModel,
-    rendererContext: RendererContext
+    rendererContext: RendererContext,
+    modifier: Modifier
 ) {
     Text(nodeModel.nodeName)
 
     Utils.submit(nodeModel, rendererContext)
 
-    Nodes(nodeModel, rendererContext)
+    Nodes(nodeModel, rendererContext, modifier)
 }
 
 @Composable
 fun Body(
     nodeModel: NodeModel,
-    rendererContext: RendererContext
+    rendererContext: RendererContext,
+    modifier: Modifier
 ) {
     Text(nodeModel.nodeName)
-    Nodes(nodeModel, rendererContext)
+    Nodes(nodeModel, rendererContext, modifier)
 }
 
 
 @Composable
 fun Center(
     nodeModel: NodeModel,
-    rendererContext: RendererContext
+    rendererContext: RendererContext,
+    modifier: Modifier
 ) {
     Text(nodeModel.nodeName)
-    Nodes(nodeModel, rendererContext)
+    Nodes(nodeModel, rendererContext, modifier)
 }
 
 @Composable
 fun Table(
     nodeModel: NodeModel,
-    rendererContext: RendererContext
+    rendererContext: RendererContext,
+    modifier: Modifier
 ) {
     Text(nodeModel.nodeName)
-    Nodes(nodeModel, rendererContext)
+    Nodes(nodeModel, rendererContext, modifier)
 }
 
 
 @Composable
 fun Link(
     nodeModel: HTMLLinkElementModel,
-    rendererContext: RendererContext
+    rendererContext: RendererContext,
+    modifier: Modifier
 ) {
     Text(nodeModel.nodeName)
-    Nodes(nodeModel, rendererContext)
+    Nodes(nodeModel, rendererContext, modifier)
 
     Utils.navigate(nodeModel, rendererContext)
 }
@@ -282,10 +307,11 @@ fun Link(
 @Composable
 fun A(
     nodeModel: HTMLAnchorElementModel,
-    rendererContext: RendererContext
+    rendererContext: RendererContext,
+    modifier: Modifier
 ) {
     Text(nodeModel.nodeName)
-    Nodes(nodeModel, rendererContext)
+    Nodes(nodeModel, rendererContext, modifier)
 
     Utils.navigate(nodeModel, rendererContext)
 
@@ -296,45 +322,50 @@ fun A(
 @Composable
 fun Tr(
     nodeModel: NodeModel,
-    rendererContext: RendererContext
+    rendererContext: RendererContext,
+    modifier: Modifier
 ) {
     Text(nodeModel.nodeName)
-    Nodes(nodeModel, rendererContext)
+    Nodes(nodeModel, rendererContext, modifier)
 }
 
 
 @Composable
 fun Td(
     nodeModel: NodeModel,
-    rendererContext: RendererContext
+    rendererContext: RendererContext,
+    modifier: Modifier
 ) {
     Text(nodeModel.nodeName)
-    Nodes(nodeModel, rendererContext)
+    Nodes(nodeModel, rendererContext, modifier)
 }
 
 @Composable
 fun Div(
     nodeModel: NodeModel,
-    rendererContext: RendererContext
+    rendererContext: RendererContext,
+    modifier: Modifier
 ) {
     Text(nodeModel.nodeName)
-    Nodes(nodeModel, rendererContext)
+    Nodes(nodeModel, rendererContext, modifier)
 }
 
 @Composable
 fun Big(
     nodeModel: NodeModel,
-    rendererContext: RendererContext
+    rendererContext: RendererContext,
+    modifier: Modifier
 ) {
     Text(nodeModel.nodeName)
-    Nodes(nodeModel, rendererContext)
+    Nodes(nodeModel, rendererContext, modifier)
 }
 
 @Composable
 fun Br(
     nodeModel: NodeModel,
-    rendererContext: RendererContext
+    rendererContext: RendererContext,
+    modifier: Modifier
 ) {
     Text(nodeModel.nodeName)
-    Nodes(nodeModel, rendererContext)
+    Nodes(nodeModel, rendererContext, modifier)
 }

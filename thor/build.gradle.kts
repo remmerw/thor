@@ -60,7 +60,7 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.test)
                 implementation(libs.androidx.ui.test.junit4)
-                // TODO implementation(libs.androidx.ui.test.manifest)
+                implementation(libs.androidx.ui.test.manifest)
 
             }
         }

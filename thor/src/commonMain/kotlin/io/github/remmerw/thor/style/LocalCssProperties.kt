@@ -625,7 +625,7 @@ class LocalCssProperties(private val element: HTMLElementModel) :
         val inlineStyle = ele.getAttribute("style")
         if ((inlineStyle != null) && (inlineStyle.length > 0)) {
             val jSheets: MutableList<StyleSheet?> = ArrayList<StyleSheet?>()
-            val jSheet = CSSUtilities.jParseInlineStyle(inlineStyle, null, ele, true)
+            val jSheet = CSSUtilities.parseInlineStyle(inlineStyle, null, ele, true)
             jSheets.add(jSheet)
             val domAnalyser = DirectAnalyzer(jSheets)
             return domAnalyser.getElementStyle(ele, null, "screen")

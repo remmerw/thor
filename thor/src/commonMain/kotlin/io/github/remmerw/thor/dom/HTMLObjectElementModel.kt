@@ -178,9 +178,6 @@ class HTMLObjectElementModel(name: String) : HTMLAbstractUIElement(name), HTMLOb
         return this.getAttribute("vspace")
     }
 
-    /* public void setVspace(final int vspace) {
-    this.setAttribute("vspace", String.valueOf(vspace));
-  }*/
     override fun setVspace(vspace: String?) {
         this.setAttribute("vspace", vspace)
     }

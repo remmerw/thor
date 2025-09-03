@@ -29,15 +29,9 @@ import org.w3c.dom.Node
 
 abstract class CharacterDataImpl(var text: String) : NodeImpl(), CharacterData {
 
-
-    val className: String
-        get() = "HTMLCharacterData"
-
-
     override fun getTextContent(): String {
         return this.text
     }
-
 
     override fun setTextContent(textContent: String) {
         this.text = textContent
@@ -114,10 +108,10 @@ abstract class CharacterDataImpl(var text: String) : NodeImpl(), CharacterData {
 
     override fun toString(): String {
         var someText = this.text
-        if ((someText != null) && (someText.length > 32)) {
+        if (someText.length > 32) {
             someText = someText.substring(0, 29) + "..."
         }
-        val length = if (someText == null) 0 else someText.length
+        val length = someText.length
         return this.nodeName + "[length=" + length + ",text=" + someText + "]"
     }
 }

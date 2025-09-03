@@ -22,27 +22,13 @@
  */
 package io.github.remmerw.thor.dom
 
-import cz.vutbr.web.css.MatchCondition
-import cz.vutbr.web.css.NodeData
-import cz.vutbr.web.css.RuleSet
-import cz.vutbr.web.css.Selector
-import cz.vutbr.web.css.StyleSheet
-import cz.vutbr.web.css.TermList
-import cz.vutbr.web.csskit.MatchConditionOnElements
-import cz.vutbr.web.domassign.Analyzer.OrderedRule
-import cz.vutbr.web.domassign.AnalyzerUtil
 import io.github.remmerw.thor.style.CSS2PropertiesContext
-import io.github.remmerw.thor.style.CSSUtilities
 import io.github.remmerw.thor.style.ComputedCssProperties
 import io.github.remmerw.thor.style.CssProperties
 import io.github.remmerw.thor.style.LocalCssProperties
-import io.github.remmerw.thor.style.StyleElements
-import org.w3c.css.sac.InputSource
 import org.w3c.dom.DOMException
 import org.w3c.dom.html.HTMLElement
 import org.w3c.dom.html.HTMLFormElement
-import java.io.Reader
-import java.io.StringReader
 import java.util.Arrays
 import java.util.Locale
 import java.util.StringTokenizer
@@ -52,26 +38,13 @@ import kotlin.concurrent.Volatile
 open class HTMLElementModel(name: String) : ElementImpl(name), HTMLElement, CSS2PropertiesContext {
     @Volatile
     private var currentStyle: CssProperties? = null
-    private var cachedNodeData: NodeData? = null
-
-    @Volatile
-    private var cachedRules: Array<OrderedRule>? = null
-
-    /**
-     * True if there is any hover rule that is applicable to this element or descendants.
-     * This is a very crude measure, but highly effective with most web-sites.
-     */
-    private var cachedHasHoverRule = false
-    private var beforeNode: GeneratedElement? = null
-    private var afterNode: GeneratedElement? = null
-    private var isMouseOver = false
 
 
     protected fun forgetLocalStyle() {
         synchronized(this) {
             //TODO to be reconsidered in issue #41
             this.currentStyle = null
-            this.cachedNodeData = null
+
         }
     }
 
@@ -81,8 +54,7 @@ open class HTMLElementModel(name: String) : ElementImpl(name), HTMLElement, CSS2
         synchronized(treeLock) {
 
             this.currentStyle = null
-            this.cachedRules = null
-            this.cachedNodeData = null
+
             if (deep) {
 
                 this.nodes().forEach { nodeModel ->
@@ -97,113 +69,10 @@ open class HTMLElementModel(name: String) : ElementImpl(name), HTMLElement, CSS2
     }
 
 
-    open fun finish() {
-        synchronized(this) {
-            val data = getNodeData(null)
-            if (data != null) {
-                HtmlStyles.cssProperties(data, this)
-            }
-        }
-    }
-
-    private fun getNodeData(psuedoElement: Selector.PseudoElementType?): NodeData? {
-        // The analyzer needs the tree lock, when traversing the DOM.
-        // To break deadlocks, we take the tree lock before taking the element lock (priority based dead-lock break).
-        synchronized(this.treeLock) {
-            synchronized(this) {
-                if (cachedNodeData != null) {
-                    return cachedNodeData
-                }
-                val doc = this.document as HTMLDocumentImpl
-
-                if (cachedRules == null) {
-                    val jSheets = ArrayList<RuleSet?>(2)
-                    val attributeStyle = StyleElements.convertAttributesToStyles(this)
-                    if (attributeStyle != null && attributeStyle.size > 0) {
-                        jSheets.add(attributeStyle.get(0) as RuleSet?)
-                    }
-
-                    val inlineStyle = this.inlineJStyle
-                    if (inlineStyle != null && inlineStyle.size > 0) {
-                        jSheets.add(inlineStyle.get(0) as RuleSet?)
-                    }
-
-                    cachedRules = AnalyzerUtil.getApplicableRules(
-                        this,
-                        doc.getClassifiedRules(),
-                        if (jSheets.size > 0) jSheets.toTypedArray<RuleSet?>() else null
-                    )
-                    cachedHasHoverRule = hasHoverRule(cachedRules!!)
-                }
-
-                val nodeData = AnalyzerUtil.getElementStyle(
-                    this,
-                    psuedoElement,
-                    doc.matcher,
-                    elementMatchCondition,
-                    cachedRules
-                )
-                val parent = this.nodeParent
-                if ((parent != null) && (parent is HTMLElementModel)) {
-                    nodeData.inheritFrom(parent.getNodeData(psuedoElement))
-                    nodeData.concretize()
-                }
-
-                this.beforeNode = setupGeneratedNode(
-                    doc,
-                    nodeData,
-                    Selector.PseudoElementType.BEFORE,
-                    cachedRules!!,
-                    this
-                )
-                this.afterNode = setupGeneratedNode(
-                    doc,
-                    nodeData,
-                    Selector.PseudoElementType.AFTER,
-                    cachedRules!!,
-                    this
-                )
-
-                cachedNodeData = nodeData
-                // System.out.println("In " + this);
-                // System.out.println("  Node data: " + nodeData);
-                return nodeData
-            }
-        }
-    }
-
-
-    fun getBeforeNode(): NodeImpl? {
-        return beforeNode
-    }
-
-
-    fun getAfterNode(): NodeImpl? {
-        return afterNode
-    }
-
     fun style(): Any? {
         return LocalCssProperties(this)
     }
 
-    fun setStyle() {
-        throw DOMException(
-            DOMException.NOT_SUPPORTED_ERR,
-            "Cannot set style property"
-        )
-    }
-
-    private val inlineJStyle: StyleSheet?
-        get() {
-            synchronized(this) {
-                val style = this.getAttribute("style")
-                if ((style != null) && (style.length != 0)) {
-                    return CSSUtilities.jParseInlineStyle(style, null, this, true)
-                }
-            }
-            // Synchronization note: Make sure getStyle() does not return multiple values.
-            return null
-        }
 
     // TODO hide from JS
     // Chromium(v37) and firefox(v32) do not expose this function
@@ -211,7 +80,7 @@ open class HTMLElementModel(name: String) : ElementImpl(name), HTMLElement, CSS2
     fun getComputedStyle(pseudoElement: String?): CssProperties {
         return ComputedCssProperties(
             this,
-            getNodeData(getPseudoDeclaration(pseudoElement)),
+            getNodeData(HtmlStyles.getPseudoDeclaration(pseudoElement)),
             false
         )
     }
@@ -299,55 +168,6 @@ open class HTMLElementModel(name: String) : ElementImpl(name), HTMLElement, CSS2
         this.informInvalidRecursive()
     }
 
-
-    // TODO: Cache the result of this
-    private fun hasHoverStyle(): Boolean {
-        val rules = cachedRules
-        if (rules == null) {
-            return false
-        }
-        return AnalyzerUtil.hasPseudoSelector(
-            rules,
-            this,
-            elementMatchCondition,
-            Selector.PseudoClassType.HOVER
-        )
-    }
-
-    // TODO: Cache the result of this
-    private fun hasHoverStyle(
-        ancestor: HTMLElementModel?,
-        hoverCondition: MatchCondition?
-    ): Boolean {
-        val rules = cachedRules
-        if (rules == null) {
-            return false
-        }
-        val doc = this.document as HTMLDocumentImpl
-        return AnalyzerUtil.hasPseudoSelectorForAncestor(
-            rules,
-            this,
-            ancestor,
-            doc.matcher,
-            hoverCondition,
-            Selector.PseudoClassType.HOVER
-        )
-    }
-
-    fun pseudoNames(): MutableSet<String?>?
-            /**
-             * Gets the pseudo-element lowercase names currently applicable to this
-             * element. Method must return `null` if there are no such
-             * pseudo-elements.
-             */
-    {
-        var pnset: MutableSet<String?>? = null
-        if (this.isMouseOver) {
-            pnset = HashSet<String?>(1)
-            pnset.add("hover")
-        }
-        return pnset
-    }
 
     override fun informInvalid() {
         // This is called when an attribute or child changes.
@@ -650,118 +470,5 @@ open class HTMLElementModel(name: String) : ElementImpl(name), HTMLElement, CSS2
         } /* TODO: stringifier; */
     }
 
-    companion object {
-        private val elementMatchCondition = MatchConditionOnElements()
-        private val layoutProperties = arrayOf<String?>(
-            "margin-top",
-            "margin-bottom",
-            "margin-left",
-            "margin-right",
-            "padding-top",
-            "padding-bottom",
-            "padding-left",
-            "padding-right",
-            "border-top-width",
-            "border-bottom-width",
-            "border-left-width",
-            "border-right-width",
-            "position",
-            "display",
-            "top",
-            "left",
-            "right",
-            "bottom",
-            "max-width",
-            "min-width",
-            "max-height",
-            "min-height",
-            "font-size",
-            "font-family",
-            "font-weight",
-            "font-variant" // TODO: Add other font properties that affect layouting
-        )
 
-        private fun setupGeneratedNode(
-            doc: HTMLDocumentImpl,
-            nodeData: NodeData?,
-            decl: Selector.PseudoElementType?,
-            rules: Array<OrderedRule>,
-            elem: HTMLElementModel?
-        ): GeneratedElement? {
-            val genNodeData = AnalyzerUtil.getElementStyle(
-                elem,
-                decl,
-                doc.matcher,
-                elementMatchCondition,
-                rules
-            )
-            /*
-         * TODO: getValue returns null when `content:inherit` is set. This gives correct behavior per spec,
-         * but one of the test disagrees https://github.com/w3c/csswg-test/issues/1133
-         * If the test is accepted to be valid, then we should call inherit() and concretize() before getting the "content" value.
-         */
-            val content = genNodeData.getValue<TermList?>(TermList::class.java, "content", true)
-            if (content != null) {
-                genNodeData.inheritFrom(nodeData)
-                genNodeData.concretize()
-                return GeneratedElement(elem!!, genNodeData, content)
-            } else {
-                return null
-            }
-        }
-
-        private fun hasHoverRule(rules: Array<OrderedRule>): Boolean {
-            for (or in rules) {
-                val r = or.rule
-                for (cs in r.selectors) {
-                    for (s in cs) {
-                        if (s.hasPseudoClass(Selector.PseudoClassType.HOVER)) {
-                            return true
-                        }
-                    }
-                }
-            }
-            return false
-        }
-
-        private fun getPseudoDeclaration(pseudoElement: String?): Selector.PseudoElementType? {
-            if ((pseudoElement != null)) {
-                var choppedPseudoElement: String? = pseudoElement
-                if (pseudoElement.startsWith("::")) {
-                    choppedPseudoElement = pseudoElement.substring(2)
-                } else if (pseudoElement.startsWith(":")) {
-                    choppedPseudoElement = pseudoElement.substring(1)
-                }
-                val pseudoDeclarations = Selector.PseudoElementType.entries.toTypedArray()
-                for (pd in pseudoDeclarations) {
-                    if (pd.name == choppedPseudoElement) {
-                        return pd
-                    }
-                }
-            }
-            return null
-        }
-
-        protected fun getCssInputSourceForDecl(text: String): InputSource {
-            val reader: Reader = StringReader(text)
-            val `is` = InputSource(reader)
-            return `is`
-        }
-
-        private fun layoutChanges(
-            prevStyle: CssProperties?,
-            newStyle: CssProperties?
-        ): Boolean {
-            if (prevStyle == null || newStyle == null) {
-                return true
-            }
-
-            for (p in layoutProperties) {
-                if (prevStyle.helperTryBoth(p) != newStyle.helperTryBoth(p)) {
-                    return true
-                }
-            }
-            return false
-        }
-    }
 }

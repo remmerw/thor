@@ -105,8 +105,8 @@ abstract class NodeImpl : NodeModel, ModelNode {
                 if (newChild is NodeImpl) {
                     newChild.handleAddedToParent(this)
                 }
-                if (newChild is HTMLElementModel) {
-                    newChild.finish() // todo put in ElementImpl
+                if (newChild is ElementImpl) {
+                    newChild.finish()
                 }
             }
 

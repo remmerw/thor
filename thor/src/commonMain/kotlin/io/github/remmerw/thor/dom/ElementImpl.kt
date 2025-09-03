@@ -2,8 +2,15 @@ package io.github.remmerw.thor.dom
 
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
+import cz.vutbr.web.css.NodeData
+import cz.vutbr.web.css.RuleSet
+import cz.vutbr.web.css.Selector
+import cz.vutbr.web.css.StyleSheet
+import cz.vutbr.web.domassign.AnalyzerUtil
 import io.github.remmerw.thor.core.Strings
 import io.github.remmerw.thor.parser.HtmlParser
+import io.github.remmerw.thor.style.CSSUtilities
+import io.github.remmerw.thor.style.StyleElements
 import org.w3c.dom.Attr
 import org.w3c.dom.Comment
 import org.w3c.dom.DOMException
@@ -36,6 +43,71 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), ElementModel 
         }
     }
 
+
+    fun finish() {
+        synchronized(this) {
+            val data = getNodeData(null)
+            if (data != null) {
+                HtmlStyles.cssProperties(data, this)
+            }
+        }
+    }
+
+    protected fun getNodeData(psuedoElement: Selector.PseudoElementType?): NodeData? {
+        // The analyzer needs the tree lock, when traversing the DOM.
+        // To break deadlocks, we take the tree lock before taking the element lock (priority based dead-lock break).
+
+        synchronized(this) {
+
+            val doc = this.document as HTMLDocumentImpl
+
+
+            val ruleSets = ArrayList<RuleSet>(2)
+            val attributeStyle = StyleElements.convertAttributesToStyles(this)
+            if (attributeStyle != null && attributeStyle.isNotEmpty()) {
+                ruleSets.add(attributeStyle[0] as RuleSet)
+            }
+
+            val inlineStyle = inlineStyle()
+            if (inlineStyle != null && inlineStyle.isNotEmpty()) {
+                ruleSets.add(inlineStyle[0] as RuleSet)
+            }
+
+            val cachedRules = AnalyzerUtil.getApplicableRules(
+                this,
+                doc.getClassifiedRules(),
+                if (ruleSets.isNotEmpty()) ruleSets.toTypedArray<RuleSet?>() else null
+            )
+
+
+            val nodeData = AnalyzerUtil.getElementStyle(
+                this,
+                psuedoElement,
+                doc.matcher,
+                HtmlStyles.elementMatchCondition,
+                cachedRules
+            )
+            val parent = this.nodeParent
+            if ((parent != null) && (parent is HTMLElementModel)) {
+                nodeData.inheritFrom(parent.getNodeData(psuedoElement))
+                nodeData.concretize()
+            }
+
+
+            // System.out.println("In " + this);
+            // System.out.println("  Node data: " + nodeData);
+            return nodeData
+        }
+
+    }
+
+    protected fun inlineStyle(): StyleSheet? {
+        val style = this.getAttribute("style")
+        if (style != null && style.isNotEmpty()) {
+            return CSSUtilities.parseInlineStyle(style, null, this, true)
+        }
+        return null
+    }
 
     override fun getAttributes(): NamedNodeMap {
         synchronized(this) {
