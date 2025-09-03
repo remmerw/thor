@@ -25,14 +25,14 @@ package io.github.remmerw.thor.dom
 
 import org.w3c.dom.html.HTMLTableCellElement
 
-open class HTMLTableCellElementModel(name: String) : HTMLAbstractUIElement(name),
+open class HTMLTableCellElementModel(name: String) : HTMLElementModel(name),
     HTMLTableCellElement {
     override fun getCellIndex(): Int {
         // TODO Cell index in row
         return 0
     }
 
-    override fun setCellIndex(pi: Int) {
+    fun setCellIndex(pi: Int) {
 
     }
 

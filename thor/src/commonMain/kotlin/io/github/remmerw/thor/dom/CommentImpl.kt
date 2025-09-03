@@ -1,7 +1,6 @@
 package io.github.remmerw.thor.dom
 
 import org.w3c.dom.Comment
-import org.w3c.dom.Node
 import org.w3c.dom.Node.COMMENT_NODE
 
 class CommentImpl(text: String) : CharacterDataImpl(), Comment {
@@ -29,7 +28,4 @@ class CommentImpl(text: String) : CharacterDataImpl(), Comment {
         return COMMENT_NODE
     }
 
-    override fun createSimilarNode(): Node {
-        return CommentImpl(this.text)
-    }
 }

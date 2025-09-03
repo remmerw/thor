@@ -30,7 +30,7 @@ import org.w3c.dom.html.HTMLTableCaptionElement
 import org.w3c.dom.html.HTMLTableElement
 import org.w3c.dom.html.HTMLTableSectionElement
 
-class HTMLTableElementModel : HTMLAbstractUIElement, HTMLTableElement {
+class HTMLTableElementModel : HTMLElementModel, HTMLTableElement {
     private var caption: HTMLTableCaptionElement? = null
     private var thead: HTMLTableSectionElement? = null
     private var tfoot: HTMLTableSectionElement? = null

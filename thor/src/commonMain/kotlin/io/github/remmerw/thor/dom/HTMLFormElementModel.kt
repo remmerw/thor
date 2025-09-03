@@ -1,35 +1,16 @@
 package io.github.remmerw.thor.dom
 
-import org.w3c.dom.Element
 import org.w3c.dom.Node
 import org.w3c.dom.html.HTMLCollection
 import org.w3c.dom.html.HTMLFormElement
 import java.util.Locale
 
-class HTMLFormElementModel : HTMLAbstractUIElement, HTMLFormElement {
+class HTMLFormElementModel : HTMLElementModel, HTMLFormElement {
     private var elements: HTMLCollection? = null
 
 
     constructor(name: String) : super(name)
 
-
-    fun namedItem(name: String): Any? {
-        try {
-            // TODO: This could use document.namedItem.
-            this.visit(object : NodeVisitor {
-                override fun visit(node: Node) {
-                    if (isInput(node)) {
-                        if (name == (node as Element).getAttribute("name")) {
-                            throw StopVisitorException(node)
-                        }
-                    }
-                }
-            })
-        } catch (sve: StopVisitorException) {
-            return sve.tag
-        }
-        return null
-    }
 
     fun item(index: Int): Any? {
         try {

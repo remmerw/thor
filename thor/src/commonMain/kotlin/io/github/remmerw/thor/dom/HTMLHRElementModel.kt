@@ -2,7 +2,7 @@ package io.github.remmerw.thor.dom
 
 import org.w3c.dom.html.HTMLHRElement
 
-class HTMLHRElementModel(name: String) : HTMLAbstractUIElement(name), HTMLHRElement {
+class HTMLHRElementModel(name: String) : HTMLElementModel(name), HTMLHRElement {
     override fun getAlign(): String? {
         return this.getAttribute("align")
     }

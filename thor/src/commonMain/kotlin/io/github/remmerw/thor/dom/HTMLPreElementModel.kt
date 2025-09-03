@@ -25,7 +25,7 @@ package io.github.remmerw.thor.dom
 
 import org.w3c.dom.html.HTMLPreElement
 
-class HTMLPreElementModel(name: String) : HTMLAbstractUIElement(name), HTMLPreElement {
+class HTMLPreElementModel(name: String) : HTMLElementModel(name), HTMLPreElement {
     override fun getWidth(): Int {
         val widthText = this.getAttribute("width")
         if (widthText == null) {

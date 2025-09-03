@@ -9,10 +9,6 @@ class AnonymousNodeImpl(parentNode: Node?) : NodeImpl() {
         setParentImpl(parentNode)
     }
 
-    override fun createSimilarNode(): Node {
-        TODO()
-    }
-
     override fun getLocalName(): String {
         return ""
     }

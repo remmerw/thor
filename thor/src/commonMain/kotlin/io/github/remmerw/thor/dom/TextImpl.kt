@@ -2,7 +2,6 @@ package io.github.remmerw.thor.dom
 
 import io.github.remmerw.thor.core.Strings
 import org.w3c.dom.DOMException
-import org.w3c.dom.Node
 import org.w3c.dom.Node.TEXT_NODE
 import org.w3c.dom.Text
 
@@ -80,9 +79,6 @@ open class TextImpl(text: String = "") : CharacterDataImpl(), TextModel {
         this.text = textContent
     }
 
-    override fun createSimilarNode(): Node {
-        return TextImpl(this.text)
-    }
 
     override fun toString(): String {
         val text = this.text

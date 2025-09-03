@@ -37,7 +37,7 @@ class HTMLOptionElementModel(name: String) : HTMLElementModel(name), HTMLOptionE
         }
     }
 
-    override fun setIndex(po: Int) {
+    fun setIndex(po: Int) {
 
     }
 
@@ -53,7 +53,7 @@ class HTMLOptionElementModel(name: String) : HTMLElementModel(name), HTMLOptionE
         return this.selected
     }
 
-    fun setSelected(selected: Boolean) {
+    override fun setSelected(selected: Boolean) {
         val changed = selected != this.selected
         this.selected = selected
         // Changing the option state changes the selected index.

@@ -22,7 +22,7 @@ package io.github.remmerw.thor.dom
 
 import org.w3c.dom.html.HTMLFontElement
 
-class HTMLFontElementModel(name: String) : HTMLAbstractUIElement(name), HTMLFontElement {
+class HTMLFontElementModel(name: String) : HTMLElementModel(name), HTMLFontElement {
     override fun getColor(): String? {
         return this.getAttribute("color")
     }

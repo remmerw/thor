@@ -362,11 +362,6 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), ElementModel 
     }
 
 
-    override fun createSimilarNode(): Node? {
-        val doc = this.document as HTMLDocumentImpl?
-        return if (doc == null) null else doc.createElement(this.tagName)
-    }
-
     override fun htmlEncodeChildText(text: String): String? {
         if (HtmlParser.isDecodeEntities(this.name)) {
             return Strings.strictHtmlEncode(text, false)

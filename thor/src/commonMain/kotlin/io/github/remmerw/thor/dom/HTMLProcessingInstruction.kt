@@ -1,7 +1,6 @@
 package io.github.remmerw.thor.dom
 
 import org.w3c.dom.DOMException
-import org.w3c.dom.Node
 import org.w3c.dom.Node.PROCESSING_INSTRUCTION_NODE
 import org.w3c.dom.ProcessingInstruction
 
@@ -10,9 +9,7 @@ class HTMLProcessingInstruction(
     private var data: String?
 ) : NodeImpl(),
     ProcessingInstruction, Cloneable {
-    override fun createSimilarNode(): Node {
-        return clone() as Node
-    }
+
 
     override fun getLocalName(): String {
         return target

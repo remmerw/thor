@@ -11,7 +11,7 @@ import java.util.Locale
 import java.util.Optional
 import java.util.function.Function
 
-class HTMLAnchorElementModel(name: String) : HTMLAbstractUIElement(name), HTMLAnchorElement,
+class HTMLAnchorElementModel(name: String) : HTMLElementModel(name), HTMLAnchorElement,
     LinkStyle {
     private var styleSheet: StyleSheetWrapper? = null
 

@@ -136,8 +136,6 @@ class HTMLDocumentImpl(
         }
 
 
-
-
     override fun getBaseURI(): String? {
         val buri = this.baseURI
         return if (buri == null) this.documentURI else buri
@@ -934,15 +932,6 @@ class HTMLDocumentImpl(
         // dispatchLoadEvent();
         // }
         return super.setUserData(key, data, handler)
-    }
-
-
-    override fun createSimilarNode(): Node {
-        return HTMLDocumentImpl(
-            this.reader,
-            this.documentURI,
-            this.contentType
-        )
     }
 
 

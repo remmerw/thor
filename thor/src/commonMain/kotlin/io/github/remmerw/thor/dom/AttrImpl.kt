@@ -26,7 +26,6 @@ package io.github.remmerw.thor.dom
 import org.w3c.dom.Attr
 import org.w3c.dom.DOMException
 import org.w3c.dom.Element
-import org.w3c.dom.Node
 import org.w3c.dom.Node.ATTRIBUTE_NODE
 import org.w3c.dom.TypeInfo
 
@@ -121,7 +120,4 @@ class AttrImpl : NodeImpl, Attr {
         this.isId = value
     }
 
-    override fun createSimilarNode(): Node {
-        return AttrImpl(this.name, this.value, this.specified, this.ownerElement, this.isId)
-    }
 }

@@ -42,5 +42,4 @@ interface ModelNode {
     fun isEqualOrDescendantOf(otherNode: ModelNode?): Boolean
 
 
-
 }

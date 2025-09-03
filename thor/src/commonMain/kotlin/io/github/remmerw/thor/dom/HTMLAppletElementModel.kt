@@ -2,7 +2,7 @@ package io.github.remmerw.thor.dom
 
 import org.w3c.dom.html.HTMLAppletElement
 
-class HTMLAppletElementModel(name: String) : HTMLAbstractUIElement(name), HTMLAppletElement {
+class HTMLAppletElementModel(name: String) : HTMLElementModel(name), HTMLAppletElement {
     override fun getAlign(): String? {
         return this.getAttribute("align")
     }

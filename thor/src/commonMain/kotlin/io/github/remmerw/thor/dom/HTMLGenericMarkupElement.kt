@@ -1,3 +1,3 @@
 package io.github.remmerw.thor.dom
 
-class HTMLGenericMarkupElement(name: String) : HTMLAbstractUIElement(name)
+class HTMLGenericMarkupElement(name: String) : HTMLElementModel(name)

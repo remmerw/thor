@@ -25,7 +25,7 @@ package io.github.remmerw.thor.dom
 
 import org.w3c.dom.html.HTMLOListElement
 
-class HTMLOListElementModel(name: String) : HTMLAbstractUIElement(name), HTMLOListElement {
+class HTMLOListElementModel(name: String) : HTMLElementModel(name), HTMLOListElement {
     override fun getCompact(): Boolean {
         val compactText = this.getAttribute("compact")
         return "compact".equals(compactText, ignoreCase = true)

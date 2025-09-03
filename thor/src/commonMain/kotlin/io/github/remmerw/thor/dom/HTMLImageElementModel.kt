@@ -7,7 +7,7 @@ import java.lang.Boolean
 import kotlin.Any
 import kotlin.String
 
-class HTMLImageElementModel : HTMLAbstractUIElement, HTMLImageElement {
+class HTMLImageElementModel : HTMLElementModel, HTMLImageElement {
 
     constructor(name: String) : super(name)
 
@@ -143,7 +143,6 @@ class HTMLImageElementModel : HTMLAbstractUIElement, HTMLImageElement {
     override fun setWidth(width: String?) {
         this.setAttribute("width", width)
     }
-
 
 
     override fun setUserData(key: String, data: Any?, handler: UserDataHandler?): Any? {

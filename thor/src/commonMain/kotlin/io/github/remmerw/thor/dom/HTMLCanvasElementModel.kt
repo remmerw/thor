@@ -2,7 +2,7 @@ package io.github.remmerw.thor.dom
 
 import org.w3c.dom.html.HTMLElement
 
-class HTMLCanvasElementModel : HTMLAbstractUIElement("CANVAS"), HTMLElement {
+class HTMLCanvasElementModel : HTMLElementModel("CANVAS"), HTMLElement {
     /** TODO
     private val canvasContext = CanvasContext()
     var width: Int = 0

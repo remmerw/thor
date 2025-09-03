@@ -25,7 +25,6 @@ package io.github.remmerw.thor.dom
 
 import org.w3c.dom.DOMException
 import org.w3c.dom.DocumentFragment
-import org.w3c.dom.Node
 import org.w3c.dom.Node.DOCUMENT_FRAGMENT_NODE
 
 /* TODO: extends ElementImpl as a hack, to get the ParentNode functionality.
@@ -53,9 +52,6 @@ class DocumentFragmentModel : ElementImpl("#document-fragment"), DocumentFragmen
         return DOCUMENT_FRAGMENT_NODE
     }
 
-    override fun createSimilarNode(): Node {
-        return DocumentFragmentModel()
-    }
 
     override fun getId(): String? {
         TODO("Not yet implemented")

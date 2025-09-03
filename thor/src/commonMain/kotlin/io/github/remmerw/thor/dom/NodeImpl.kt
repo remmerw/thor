@@ -10,7 +10,6 @@ import cz.vutbr.web.css.Selector
 import io.github.remmerw.thor.core.Strings
 import io.github.remmerw.thor.core.Urls
 import io.github.remmerw.thor.parser.HtmlParser
-import org.w3c.dom.Attr
 import org.w3c.dom.DOMException
 import org.w3c.dom.Document
 import org.w3c.dom.Element
@@ -30,12 +29,11 @@ import java.util.logging.Logger
 import java.util.stream.Collectors
 import kotlin.Any
 import kotlin.Array
-import kotlin.Exception
-import kotlin.IllegalStateException
 import kotlin.IndexOutOfBoundsException
 import kotlin.Int
 import kotlin.Short
 import kotlin.String
+import kotlin.TODO
 import kotlin.Throwable
 import kotlin.Throws
 import kotlin.concurrent.Volatile
@@ -54,6 +52,11 @@ abstract class NodeImpl : NodeModel, ModelNode {
 
     @Volatile
     protected var document: Document? = null
+
+
+    override fun cloneNode(p0: kotlin.Boolean): Node? {
+        TODO("Not yet implemented")
+    }
 
     /**
      * A tree lock is less deadlock-prone than a node-level lock. This is assigned
@@ -208,52 +211,6 @@ abstract class NodeImpl : NodeModel, ModelNode {
         }
     }
 
-    /**
-     * Should create a node with some cloned properties, like the node name, but
-     * not attributes or children.
-     */
-    protected abstract fun createSimilarNode(): Node?
-
-    override fun cloneNode(deep: kotlin.Boolean): Node {
-        // TODO: Synchronize with treeLock?
-        try {
-            val newNode = this.createSimilarNode()
-            val children = this.childNodes
-            val length = children.length
-            for (i in 0..<length) {
-                val child = children.item(i)
-                val newChild = if (deep) child.cloneNode(deep) else child
-                newNode?.appendChild(newChild)
-            }
-            if (newNode is Element) {
-                val nnmap = this.attributes
-                if (nnmap != null) {
-                    val nnlength = nnmap.length
-                    for (i in 0..<nnlength) {
-                        val attr = nnmap.item(i) as Attr
-                        newNode.setAttributeNode(attr.cloneNode(true) as Attr?)
-                    }
-                }
-            }
-
-            synchronized(this) {
-                if ((userDataHandlers != null) && (userData != null)) {
-
-                    userDataHandlers.toMap().forEach { (k: String, handler: UserDataHandler) ->
-
-                        handler.handle(
-
-                            UserDataHandler.NODE_CLONED, k, userData!!.get(k), this, newNode
-                        )
-                    }
-                }
-            }
-
-            return newNode!!
-        } catch (err: Exception) {
-            throw IllegalStateException(err.message)
-        }
-    }
 
     fun nodeIndex(): Int {
         val parent =
@@ -1025,8 +982,6 @@ abstract class NodeImpl : NodeModel, ModelNode {
     }
 
 
-
-
     protected open fun htmlEncodeChildText(text: String): String? {
         return Strings.strictHtmlEncode(text, false)
     }
@@ -1045,8 +1000,6 @@ abstract class NodeImpl : NodeModel, ModelNode {
      */
     protected open fun handleDocumentAttachmentChanged() {
     }
-
-
 
 
     private fun postChildListChanged() {

@@ -3,7 +3,7 @@ package io.github.remmerw.thor.dom
 import org.w3c.dom.Document
 import org.w3c.dom.html.HTMLIFrameElement
 
-class HTMLIFrameElementModel(name: String) : HTMLAbstractUIElement(name), HTMLIFrameElement {
+class HTMLIFrameElementModel(name: String) : HTMLElementModel(name), HTMLIFrameElement {
 
 
     override fun getAlign(): String? {
@@ -87,11 +87,9 @@ class HTMLIFrameElementModel(name: String) : HTMLAbstractUIElement(name), HTMLIF
         this.setAttribute("width", width)
     }
 
-    fun getContentDocument(): Document? {
+    override fun getContentDocument(): Document? {
         TODO("Not yet implemented")
     }
-
-
 
 
 }

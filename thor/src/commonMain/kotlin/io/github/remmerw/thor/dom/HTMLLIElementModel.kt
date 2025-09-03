@@ -25,7 +25,7 @@ package io.github.remmerw.thor.dom
 
 import org.w3c.dom.html.HTMLLIElement
 
-class HTMLLIElementModel(name: String) : HTMLAbstractUIElement(name), HTMLLIElement {
+class HTMLLIElementModel(name: String) : HTMLElementModel(name), HTMLLIElement {
     override fun getType(): String? {
         return this.getAttribute("type")
     }

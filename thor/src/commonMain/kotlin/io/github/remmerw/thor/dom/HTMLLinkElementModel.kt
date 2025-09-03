@@ -9,7 +9,7 @@ import java.net.MalformedURLException
 import java.net.URL
 import java.util.Locale
 
-class HTMLLinkElementModel(name: String) : HTMLAbstractUIElement(name), HTMLLinkElement, LinkStyle {
+class HTMLLinkElementModel(name: String) : HTMLElementModel(name), HTMLLinkElement, LinkStyle {
     private var styleSheet: StyleSheetWrapper? = null
     private var disabled = false
 

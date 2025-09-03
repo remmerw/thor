@@ -4,7 +4,7 @@ import org.w3c.dom.Document
 import org.w3c.dom.html.HTMLFormElement
 import org.w3c.dom.html.HTMLObjectElement
 
-class HTMLObjectElementModel(name: String) : HTMLAbstractUIElement(name), HTMLObjectElement {
+class HTMLObjectElementModel(name: String) : HTMLElementModel(name), HTMLObjectElement {
     override fun getAlign(): String? {
         return this.getAttribute("align")
     }
@@ -89,7 +89,7 @@ class HTMLObjectElementModel(name: String) : HTMLAbstractUIElement(name), HTMLOb
         this.setAttribute("codetype", codeType)
     }
 
-    fun getContentDocument(): Document? {
+    override fun getContentDocument(): Document? {
         return this.ownerDocument
     }
 

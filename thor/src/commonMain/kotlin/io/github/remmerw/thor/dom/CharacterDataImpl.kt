@@ -4,7 +4,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import org.w3c.dom.DOMException
-import org.w3c.dom.Node
 
 abstract class CharacterDataImpl() : NodeImpl(), CharacterDataModel {
     var text: String by mutableStateOf("")
@@ -24,11 +23,6 @@ abstract class CharacterDataImpl() : NodeImpl(), CharacterDataModel {
         }
     }
 
-    override fun cloneNode(deep: Boolean): Node {
-        val newNode = super.cloneNode(deep) as CharacterDataImpl
-        newNode.setData(this.data)
-        return newNode
-    }
 
     @Throws(DOMException::class)
     override fun appendData(arg: String) {

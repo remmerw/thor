@@ -26,7 +26,6 @@ package io.github.remmerw.thor.dom
 import org.w3c.dom.DOMException
 import org.w3c.dom.DocumentType
 import org.w3c.dom.NamedNodeMap
-import org.w3c.dom.Node
 import org.w3c.dom.Node.DOCUMENT_TYPE_NODE
 
 class DocumentTypeImpl(
@@ -83,7 +82,4 @@ class DocumentTypeImpl(
         return null
     }
 
-    override fun createSimilarNode(): Node {
-        return DocumentTypeImpl(this.qualifiedName, this.publicId, this.systemId)
-    }
 }

@@ -32,9 +32,9 @@ import org.w3c.dom.html.HTMLTableRowElement
 
 class HTMLTableRowElementModel(name: String) : HTMLElementModel(name), HTMLTableRowElement {
 
-    override fun setRowIndex(p0: Int) {}
-    override fun setSectionRowIndex(p0: Int) {}
-    override fun setCells(p0: HTMLCollection) {
+    fun setRowIndex(p0: Int) {}
+    fun setSectionRowIndex(p0: Int) {}
+    fun setCells(p0: HTMLCollection) {
 
     }
 
@@ -114,21 +114,6 @@ class HTMLTableRowElementModel(name: String) : HTMLElementModel(name), HTMLTable
 
     override fun setVAlign(vAlign: String?) {
         this.setAttribute("valign", vAlign)
-    }
-
-    /**
-     * Inserts a TH element at the specified index.
-     *
-     *
-     * Note: This method is non-standard.
-     *
-     * @param index The cell index to insert at.
-     * @return The element that was inserted.
-     * @throws DOMException When the index is out of range.
-     */
-    @Throws(DOMException::class)
-    fun insertHeader(index: Int): HTMLElement? {
-        return this.insertCell(index, "TH")
     }
 
     @Throws(DOMException::class)

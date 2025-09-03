@@ -3,7 +3,7 @@ package io.github.remmerw.thor.dom
 import org.w3c.dom.html.HTMLFormElement
 import java.io.File
 
-abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) {
+abstract class HTMLBaseInputElement(name: String) : HTMLElementModel(name) {
 
     private var inputContext: InputContext? = null
     protected var deferredValue: String? = null
