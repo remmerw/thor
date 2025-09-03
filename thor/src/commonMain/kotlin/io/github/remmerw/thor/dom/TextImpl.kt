@@ -12,16 +12,13 @@ open class TextImpl(text: String = "") : CharacterDataImpl(), TextModel {
 
     override fun isElementContentWhitespace(): Boolean {
         val t = this.text
-        return (t == null) || t.trim { it <= ' ' } == ""
+        return t.trim { it <= ' ' } == ""
     }
 
 
     @Throws(DOMException::class)
     override fun replaceWholeText(content: String?): Text? {
         val parent = this.nodeParent as NodeImpl
-        if (parent == null) {
-            throw DOMException(DOMException.HIERARCHY_REQUEST_ERR, "Text node has no parent")
-        }
         return parent.replaceAdjacentTextNodes(this, content)
     }
 
@@ -29,12 +26,9 @@ open class TextImpl(text: String = "") : CharacterDataImpl(), TextModel {
     @Throws(DOMException::class)
     override fun splitText(offset: Int): Text? {
         val parent = this.nodeParent as NodeImpl
-        if (parent == null) {
-            throw DOMException(DOMException.HIERARCHY_REQUEST_ERR, "Text node has no parent")
-        }
         val t = this.text
         if ((offset < 0) || (offset > t.length)) {
-            throw DOMException(DOMException.INDEX_SIZE_ERR, "Bad offset: " + offset)
+            throw DOMException(DOMException.INDEX_SIZE_ERR, "Bad offset: $offset")
         }
         val content1 = t.substring(0, offset)
         val content2 = t.substring(offset)
@@ -47,9 +41,6 @@ open class TextImpl(text: String = "") : CharacterDataImpl(), TextModel {
 
     override fun getWholeText(): String? {
         val parent = this.nodeParent as NodeImpl
-        if (parent == null) {
-            throw DOMException(DOMException.HIERARCHY_REQUEST_ERR, "Text node has no parent")
-        }
         return parent.getTextContent()
     }
 

@@ -7,7 +7,6 @@ import org.w3c.dom.html.HTMLAnchorElement
 import org.w3c.dom.stylesheets.LinkStyle
 import java.net.MalformedURLException
 import java.net.URL
-import java.util.Locale
 import java.util.Optional
 import java.util.function.Function
 
@@ -121,22 +120,6 @@ class HTMLAnchorElementModel(name: String) : HTMLElementModel(name), HTMLAnchorE
         TODO("Not yet implemented")
     }
 
-    private val isWellFormedURL: Boolean
-        // TODO can go in Urls util class.
-        get() {
-            val doc = this.ownerDocument as HTMLDocumentImpl
-            try {
-                val baseURL = URL(doc.getBaseURI())
-                // we call createURL just to check whether it throws an exception
-                // if the URL is not well formed.
-                Urls.createURL(baseURL, this.getHref())
-                return true
-            } catch (mfe: MalformedURLException) {
-                // this.warn("Will not parse CSS. URI=[" + this.getHref() + "] with BaseURI=[" + doc.getBaseURI() + "] does not appear to be a valid URI.");
-                return false
-            }
-        }
-
     private val absoluteURL: Optional<URL>
         get() {
             val href = this.getHref()
@@ -166,72 +149,6 @@ class HTMLAnchorElementModel(name: String) : HTMLElementModel(name), HTMLAnchorE
         // return this.getHref();
         return this.absoluteHref!!
     }
-
-    /**
-     * Sets the owner node to null so as to update the old reference of the
-     * stylesheet held by JS
-     */
-    private fun detachStyleSheet() {
-        if (this.styleSheet != null) {
-            this.styleSheet!!.setOwnerNode(null)
-            this.styleSheet = null
-            val doc = this.ownerDocument as HTMLDocumentImpl
-            doc.styleSheetManager.invalidateStyles()
-        }
-    }
-
-    private fun isSameRel(name: String?, oldValue: String?): Boolean {
-        if ("rel" == name) {
-            return this.isSameAttributeValue("rel", oldValue)
-        }
-        return false
-    }
-
-    private fun isSameHref(name: String?, oldValue: String?): Boolean {
-        if ("href" == name) {
-            return this.isSameAttributeValue("href", oldValue)
-        }
-        return false
-    }
-
-    private fun isSameAttributeValue(name: String, oldValue: String?): Boolean {
-        val newValue = this.getAttribute(name)
-        if (oldValue == null) {
-            return newValue == null
-        } else {
-            return oldValue == newValue
-        }
-    }
-
-    private val cleanRel: String?
-        get() {
-            val rel = this.rel
-            return if (rel == null) null else rel.trim { it <= ' ' }
-                .lowercase(Locale.getDefault())
-        }
-
-    private fun isStyleSheet(): Boolean {
-        val rel = this.cleanRel
-        return ((rel != null) && (rel == "stylesheet"))
-    }
-
-    private val isAltStyleSheet: Boolean
-        get() {
-            val rel = this.cleanRel
-            return ((rel != null) && (rel == "alternate stylesheet"))
-        }
-
-    private val isAllowedRel: Boolean
-        get() = ((isStyleSheet()) || (this.isAltStyleSheet))
-
-    private val isAllowedType: Boolean
-        get() {
-            val type = this.type
-            return ((type == null) || (type.trim { it <= ' ' }.length == 0) || (type.equals(
-                "text/css",
-                ignoreCase = true
-            )))
-        }
 
 
     override fun getSheet(): CSSStyleSheet? {

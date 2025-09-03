@@ -23,9 +23,8 @@
  */
 package io.github.remmerw.thor.dom
 
+import org.w3c.dom.html.HTMLFormElement
 import org.w3c.dom.html.HTMLInputElement
-import java.util.Locale
-import java.util.logging.Level
 
 class HTMLInputElementModel(name: String) : HTMLBaseInputElement(name), HTMLInputElement {
     private var defaultChecked = false
@@ -39,6 +38,10 @@ class HTMLInputElementModel(name: String) : HTMLBaseInputElement(name), HTMLInpu
         this.defaultChecked = defaultChecked
     }
 
+    override fun getForm(): HTMLFormElement? {
+        TODO("Not yet implemented")
+    }
+
     override fun blur() {
         TODO("Not yet implemented")
     }
@@ -47,46 +50,49 @@ class HTMLInputElementModel(name: String) : HTMLBaseInputElement(name), HTMLInpu
         TODO("Not yet implemented")
     }
 
+    override fun select() {
+        TODO("Not yet implemented")
+    }
+
     override fun getChecked(): Boolean {
-        val ic = this.getInputContext()
-        if (ic == null) {
-            return this.getAttributeAsBoolean("checked")
-        } else {
-            return ic.checked
-        }
+        return this.getAttributeAsBoolean("checked")
     }
 
     override fun setChecked(checked: Boolean) {
-        val ic = this.getInputContext()
-        if (ic != null) {
-            ic.checked = (checked)
-        }
+        this.setAttribute("checked", checked.toString())
+    }
+
+    override fun getDisabled(): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun setDisabled(p0: Boolean) {
+        TODO("Not yet implemented")
     }
 
 
     override fun getMaxLength(): Int {
-        val ic = this.getInputContext()
-        return if (ic == null) 0 else ic.maxLength
+        TODO("Not yet implemented")
     }
 
     override fun setMaxLength(maxLength: Int) {
-        val ic = this.getInputContext()
-        if (ic != null) {
-            ic.maxLength = (maxLength)
-        }
+        TODO("Not yet implemented")
+    }
+
+    override fun getReadOnly(): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun setReadOnly(p0: Boolean) {
+        TODO("Not yet implemented")
     }
 
     override fun getSize(): String {
-        val ic = this.getInputContext()
-        val size = if (ic == null) 0 else ic.controlSize
-        return size.toString()
+        TODO("Not yet implemented")
     }
 
     override fun setSize(size: String) {
-        val ic = this.getInputContext()
-        if (ic != null) {
-            ic.controlSize = (size.toInt())
-        }
+        TODO("Not yet implemented")
     }
 
     override fun getSrc(): String? {
@@ -97,17 +103,19 @@ class HTMLInputElementModel(name: String) : HTMLBaseInputElement(name), HTMLInpu
         this.setAttribute("src", src)
     }
 
-    /**
-     * Gets input type in lowercase.
-     */
-    override fun getType(): String? {
-        val type = this.getAttribute("type")
-        return if (type == null) null else type.lowercase(Locale.getDefault())
+    override fun getTabIndex(): Int {
+        TODO("Not yet implemented")
     }
 
-    fun setType(type: String?) {
-        this.setAttribute("type", type)
+    override fun setTabIndex(p0: Int) {
+        TODO("Not yet implemented")
     }
+
+
+    override fun getType(): String? {
+        return this.getAttribute("type")
+    }
+
 
     override fun getUseMap(): String? {
         return this.getAttribute("usemap")
@@ -117,53 +125,22 @@ class HTMLInputElementModel(name: String) : HTMLBaseInputElement(name), HTMLInpu
         this.setAttribute("usemap", useMap)
     }
 
+    override fun getValue(): String? {
+        TODO("Not yet implemented")
+    }
+
+    override fun setValue(p0: String?) {
+        TODO("Not yet implemented")
+    }
+
 
     override fun click() {
-        val ic = this.getInputContext()
-        if (ic != null) {
-            ic.click()
-        }
+        TODO("Not yet implemented")
     }
 
-    val isSubmittableWithEnterKey: Boolean
-        get() {
-            val type = this.getType()
-            return ((type == null) || "" == type || "text" == type || "password" == type)
-        }
-
-    val isSubmittableWithPress: Boolean
-        get() {
-            val type = this.getType()
-            return "submit" == type || "image" == type
-        }
-
-    val isSubmitInput: Boolean
-        get() {
-            val type = this.getType()
-            return "submit" == type
-        }
-
-    val isImageInput: Boolean
-        get() {
-            val type = this.getType()
-            return "image" == type
-        }
-
-    val isResetInput: Boolean
-        get() {
-            val type = this.getType()
-            return "reset" == type
-        }
-
-    override fun resetInput() {
-        val ic = this.getInputContext()
-        if (ic != null) {
-            ic.resetInput()
-        }
-    }
 
     override fun getFormInputs(): Array<FormInput>? {
-        val type = this.getType()
+        val type = this.type
         val name = this.name
         if (name == null) {
             return null
@@ -177,7 +154,7 @@ class HTMLInputElementModel(name: String) : HTMLBaseInputElement(name), HTMLInpu
                 // It's done as an "extra" form input
                 return null
             } else if ("radio" == type || "checkbox" == type) {
-                if (this.getChecked()) {
+                if (this.checked) {
                     var value = this.value
                     if ((value == null) || (value.length == 0)) {
                         value = "on"
@@ -190,15 +167,7 @@ class HTMLInputElementModel(name: String) : HTMLBaseInputElement(name), HTMLInpu
                 // It's done as an "extra" form input
                 return null
             } else if ("file" == type) {
-                val file = this.fileValue()
-                if (file == null) {
-                    if (logger.isLoggable(Level.INFO)) {
-                        logger.info("getFormInputs(): File input named " + name + " has null file.")
-                    }
-                    return null
-                } else {
-                    return arrayOf<FormInput>(FormInput(name, file))
-                }
+                TODO("Not yet implemented")
             } else {
                 return null
             }

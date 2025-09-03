@@ -7,7 +7,6 @@ import cz.vutbr.web.css.CSSFactory
 import cz.vutbr.web.css.CombinedSelector
 import cz.vutbr.web.css.RuleSet
 import cz.vutbr.web.css.Selector
-import io.github.remmerw.thor.core.Strings
 import io.github.remmerw.thor.core.Urls
 import org.w3c.dom.DOMException
 import org.w3c.dom.Document
@@ -16,7 +15,6 @@ import org.w3c.dom.Node
 import org.w3c.dom.NodeList
 import org.w3c.dom.Text
 import org.w3c.dom.UserDataHandler
-import org.w3c.dom.html.HTMLCollection
 import java.io.IOException
 import java.net.URL
 import java.util.Arrays
@@ -54,19 +52,11 @@ abstract class NodeImpl : NodeModel {
     protected var nodeParent: Node? = null
     private var userData: MutableMap<String?, Any?>? = null
 
-    // TODO: Inform handlers on cloning, etc.
+
     private val userDataHandlers: MutableMap<String, UserDataHandler> = mutableMapOf()
 
     @Volatile
     private var prefix: String? = null
-
-    /**
-     * @return the attachment with the document. true if the element is attached
-     * to the document, false otherwise. Document nodes are considered
-     * attached by default.
-     */
-
-    var isAttachedToDocument: Boolean = this is Document
 
 
     @Throws(DOMException::class)
@@ -121,15 +111,6 @@ abstract class NodeImpl : NodeModel {
         synchronized(this.treeLock) {
             return nodes().size
         }
-    }
-
-    fun getChildren(): HTMLCollection {
-        // TODO: This is needed to be implemented only by Element, Document and DocumentFragment as per https://developer.mozilla.org/en-US/docs/Web/API/ParentNode
-        return DescendantHTMLCollection(
-            this,
-            NodeFilter.ElementFilter(),
-            this.treeLock
-        )
     }
 
     /**
@@ -189,16 +170,15 @@ abstract class NodeImpl : NodeModel {
     fun getChildIndex(child: Node?): Int {
         synchronized(this.treeLock) {
             val nl = this.nodeList
-            return if (nl == null) -1 else nl.indexOf(child)
+            return nl.indexOf(child)
         }
     }
 
     fun getChildAtIndex(index: Int): Node? {
         synchronized(this.treeLock) {
             try {
-                return this.nodeList.get(index)
-            } catch (iob: IndexOutOfBoundsException) {
-                this.warn("getChildAtIndex(): Bad index=" + index + " for node=" + this + ".")
+                return this.nodeList[index]
+            } catch (_: Throwable) {
                 return null
             }
         }
@@ -272,12 +252,10 @@ abstract class NodeImpl : NodeModel {
         if (deep) {
             synchronized(this.treeLock) {
                 val nl = this.nodeList
-                if (nl != null) {
-                    val i: MutableIterator<Node?> = nl.iterator()
-                    while (i.hasNext()) {
-                        val child = i.next() as NodeImpl
-                        child.setOwnerDocument(value, deep)
-                    }
+                val i: MutableIterator<Node?> = nl.iterator()
+                while (i.hasNext()) {
+                    val child = i.next() as NodeImpl
+                    child.setOwnerDocument(value, deep)
                 }
             }
         }
@@ -286,22 +264,20 @@ abstract class NodeImpl : NodeModel {
     fun visitImpl(visitor: NodeVisitor) {
         try {
             visitor.visit(this)
-        } catch (sve: SkipVisitorException) {
+        } catch (_: SkipVisitorException) {
             return
         } catch (sve: StopVisitorException) {
             throw sve
         }
         val nl = this.nodeList
-        if (nl != null) {
-            val i: MutableIterator<Node?> = nl.iterator()
-            while (i.hasNext()) {
-                val child = i.next() as NodeImpl
-                try {
-                    // Call with child's synchronization
-                    child.visit(visitor)
-                } catch (sve: StopVisitorException) {
-                    throw sve
-                }
+        val i: MutableIterator<Node?> = nl.iterator()
+        while (i.hasNext()) {
+            val child = i.next() as NodeImpl
+            try {
+                // Call with child's synchronization
+                child.visit(visitor)
+            } catch (sve: StopVisitorException) {
+                throw sve
             }
         }
     }
@@ -317,9 +293,6 @@ abstract class NodeImpl : NodeModel {
     // Pass 2: FAIL: 24
     @Throws(DOMException::class)
     override fun insertBefore(newChild: Node, refChild: Node?): Node {
-        if (newChild == null) {
-            throw DOMException(DOMException.TYPE_MISMATCH_ERR, "child is null")
-        }
         synchronized(this.treeLock) {
             if (newChild is NodeImpl) {
                 if (newChild.isInclusiveAncestorOf(this)) {
@@ -334,7 +307,7 @@ abstract class NodeImpl : NodeModel {
             // otherwise, this function will throw an exception if refChild is not found in the child list
             val nl = this.nodeList
             val idx =
-                if (refChild == null) nl!!.size else (if (nl == null) -1 else nl.indexOf(refChild))
+                if (refChild == null) nl.size else (nl.indexOf(refChild))
             if (idx == -1) {
                 throw DOMException(DOMException.NOT_FOUND_ERR, "refChild not found")
             }
@@ -439,8 +412,8 @@ abstract class NodeImpl : NodeModel {
                 throw DOMException(DOMException.NOT_FOUND_ERR, "node not found")
             }
             try {
-                return nl!!.get(idx - 1)
-            } catch (iob: IndexOutOfBoundsException) {
+                return nl[idx - 1]
+            } catch (_: Throwable) {
                 return null
             }
         }
@@ -449,13 +422,13 @@ abstract class NodeImpl : NodeModel {
     private fun getNextTo(node: Node?): Node? {
         synchronized(this.treeLock) {
             val nl = this.nodeList
-            val idx = if (nl == null) -1 else nl.indexOf(node)
+            val idx = nl.indexOf(node)
             if (idx == -1) {
                 throw DOMException(DOMException.NOT_FOUND_ERR, "node not found")
             }
             try {
-                return nl!!.get(idx + 1)
-            } catch (iob: IndexOutOfBoundsException) {
+                return nl[idx + 1]
+            } catch (_: IndexOutOfBoundsException) {
                 return null
             }
         }
@@ -532,21 +505,19 @@ abstract class NodeImpl : NodeModel {
         val sb = StringBuffer()
         synchronized(this.treeLock) {
             val nl = this.nodeList
-            if (nl != null) {
-                val i = nl.iterator()
-                while (i.hasNext()) {
-                    val node = i.next()
-                    val type = node.nodeType
-                    when (type) {
-                        Node.CDATA_SECTION_NODE, Node.TEXT_NODE, Node.ELEMENT_NODE -> {
-                            val textContent = node.textContent
-                            if (textContent != null) {
-                                sb.append(textContent)
-                            }
+            val i = nl.iterator()
+            while (i.hasNext()) {
+                val node = i.next()
+                val type = node.nodeType
+                when (type) {
+                    Node.CDATA_SECTION_NODE, Node.TEXT_NODE, Node.ELEMENT_NODE -> {
+                        val textContent = node.textContent
+                        if (textContent != null) {
+                            sb.append(textContent)
                         }
-
-                        else -> {}
                     }
+
+                    else -> {}
                 }
             }
         }
@@ -557,7 +528,7 @@ abstract class NodeImpl : NodeModel {
     override fun setTextContent(textContent: String) {
         synchronized(this.treeLock) {
             this.removeChildrenImpl(TextFilter())
-            if ((textContent != null) && "" != textContent) {
+            if ("" != textContent) {
                 val t = TextImpl(textContent)
                 t.setOwnerDocument(this.document)
                 t.setParentImpl(this)
@@ -590,14 +561,12 @@ abstract class NodeImpl : NodeModel {
     fun insertAfter(newChild: Node?, refChild: Node?): Node? {
         synchronized(this.treeLock) {
             val nl = this.nodeList
-            val idx = if (nl == null) -1 else nl.indexOf(refChild)
+            val idx = nl.indexOf(refChild)
             if (idx == -1) {
                 throw DOMException(DOMException.NOT_FOUND_ERR, "refChild not found")
             }
             nl.add(idx + 1, newChild!! as NodeModel)
-            if (newChild is NodeImpl) {
 
-            }
         }
 
         return newChild
@@ -616,17 +585,17 @@ abstract class NodeImpl : NodeModel {
             run {
                 var adjIdx = idx
                 while (--adjIdx >= 0) {
-                    val child: Any? = this.nodeList!![adjIdx]
+                    val child: Any? = this.nodeList[adjIdx]
                     if (child is Text) {
                         firstIdx = adjIdx
                         toDelete.add(child)
                     }
                 }
             }
-            val length = this.nodeList!!.size
+            val length = this.nodeList.size
             var adjIdx = idx
             while (++adjIdx < length) {
-                val child: Any? = this.nodeList!!.get(adjIdx)
+                val child: Any? = this.nodeList.get(adjIdx)
                 if (child is Text) {
                     toDelete.add(child)
                 }
@@ -784,11 +753,6 @@ abstract class NodeImpl : NodeModel {
 
     open fun warn(message: String?) {
         logger.log(Level.WARNING, message)
-    }
-
-
-    protected open fun htmlEncodeChildText(text: String): String? {
-        return Strings.strictHtmlEncode(text, false)
     }
 
 

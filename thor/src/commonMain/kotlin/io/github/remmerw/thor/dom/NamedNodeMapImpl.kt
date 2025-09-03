@@ -49,7 +49,7 @@ class NamedNodeMapImpl(owner: Element?, attribs: MutableMap<String, String>) :
     }
 
     override fun getNamedItem(name: String?): Node? {
-        return this.attributes.get(name)
+        return this.attributes[name]
     }
 
     @Throws(DOMException::class)

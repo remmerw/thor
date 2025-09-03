@@ -7,19 +7,15 @@ import cz.vutbr.web.css.RuleSet
 import cz.vutbr.web.css.Selector
 import cz.vutbr.web.css.StyleSheet
 import cz.vutbr.web.domassign.AnalyzerUtil
-import io.github.remmerw.thor.core.Strings
-import io.github.remmerw.thor.parser.HtmlParser
 import io.github.remmerw.thor.style.CSSUtilities
 import io.github.remmerw.thor.style.StyleElements
 import org.w3c.dom.Attr
-import org.w3c.dom.Comment
 import org.w3c.dom.DOMException
 import org.w3c.dom.Element
 import org.w3c.dom.NamedNodeMap
 import org.w3c.dom.Node
 import org.w3c.dom.Node.ELEMENT_NODE
 import org.w3c.dom.NodeList
-import org.w3c.dom.Text
 import org.w3c.dom.TypeInfo
 import java.util.LinkedList
 import java.util.Locale
@@ -42,7 +38,6 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), ElementModel 
             properties.put(name, value)
         }
     }
-
 
     fun finish() {
         synchronized(this) {
@@ -93,9 +88,6 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), ElementModel 
                 nodeData.concretize()
             }
 
-
-            // System.out.println("In " + this);
-            // System.out.println("  Node data: " + nodeData);
             return nodeData
         }
 
@@ -144,15 +136,13 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), ElementModel 
     }
 
     private fun getAttr(normalName: String, value: String?): Attr {
-        // TODO: "specified" attributes
         return AttrImpl(normalName, value, true, this, "id" == normalName)
     }
 
     override fun getAttributeNode(name: String): Attr? {
         val normalName: String = normalizeAttributeName(name)
         synchronized(this) {
-            val attributes: MutableMap<String, String>? = this.attributes
-            val value = if (attributes == null) null else attributes.get(normalName)
+            val value = this.attributes[normalName]
             return if (value == null) null else this.getAttr(normalName, value)
         }
     }
@@ -203,7 +193,7 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), ElementModel 
     override fun getTagName(): String {
         // In HTML, tag names are supposed to be returned in upper-case, but in XHTML they are returned in original case
         // as per https://developer.mozilla.org/en-US/docs/Web/API/Element.tagName
-        return this.nodeName!!.uppercase(Locale.getDefault())
+        return this.nodeName.uppercase(Locale.getDefault())
     }
 
     override fun hasAttribute(name: String): Boolean {
@@ -317,85 +307,7 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), ElementModel 
         // nop
     }
 
-    /**
-     * Gets inner text of the element, possibly including text in comments. This
-     * can be used to get Javascript code out of a SCRIPT element.
-     *
-     * @param includeComment
-     */
-    protected fun getRawInnerText(includeComment: Boolean): String {
-        synchronized(this.treeLock) {
 
-
-            var sb: StringBuffer? = null
-            this.nodes().forEach { nodeModel ->
-                val node: Any? = nodeModel
-                if (node is Text) {
-                    val txt = node.nodeValue
-                    if ("" != txt) {
-                        if (sb == null) {
-                            sb = StringBuffer()
-                        }
-                        sb.append(txt)
-                    }
-                } else if (node is ElementImpl) {
-                    val txt = node.getRawInnerText(includeComment)
-                    if ("" != txt) {
-                        if (sb == null) {
-                            sb = StringBuffer()
-                        }
-                        sb.append(txt)
-                    }
-                } else if (includeComment && (node is Comment)) {
-                    val txt = node.nodeValue
-                    if ("" != txt) {
-                        if (sb == null) {
-                            sb = StringBuffer()
-                        }
-                        sb.append(txt)
-                    }
-                }
-            }
-            return if (sb == null) "" else sb.toString()
-
-        }
-    }
-
-
-    override fun htmlEncodeChildText(text: String): String? {
-        if (HtmlParser.isDecodeEntities(this.name)) {
-            return Strings.strictHtmlEncode(text, false)
-        } else {
-            return text
-        }
-    }
-
-    /**
-     * To be overridden by Elements that need a notification of attribute changes.
-     *
-     *
-     * This is called only when the element is attached to a document at the time
-     * the attribute is changed. If an attribute is changed while not attached to
-     * a document, this function is *not* called when the element is attached to a
-     * document. We chose this design because it covers our current use cases
-     * well.
-     *
-     *
-     * If, in the future, a notification is always desired then the design can be
-     * altered easily later.
-     *
-     * @param name     normalized name
-     * @param oldValue null, if the attribute was absent
-     * @param newValue null, if the attribute is now removed
-     */
-
-
-    /**
-     * changes an attribute to the specified value. If the specified value is
-     * null, the attribute is removed
-     *
-     * @return the old attribute value. null if not set previously.
-     */
     private fun changeAttribute(name: String, newValue: String?): String? {
         val normalName: String = normalizeAttributeName(name)
 
@@ -414,19 +326,6 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), ElementModel 
     }
 
     abstract fun getId(): String?
-
-    val childElementCount: Int
-        get() {
-            val nl = this.nodes()
-            var count = 0
-            for (n in nl) {
-                if (n is Element) {
-                    count++
-                }
-            }
-
-            return count
-        }
 
 
     companion object {

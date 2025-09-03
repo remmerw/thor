@@ -28,19 +28,19 @@ import org.w3c.dom.DOMException
 import org.w3c.dom.DOMStringList
 
 class DOMConfigurationImpl : DOMConfiguration {
-    private val parameters: MutableMap<String?, Any?> = HashMap<String?, Any?>()
+    private val parameters: MutableMap<String, Any> = HashMap()
 
     @Throws(DOMException::class)
-    override fun setParameter(name: String?, value: Any?) {
+    override fun setParameter(name: String, value: Any) {
         synchronized(this) {
             this.parameters.put(name, value)
         }
     }
 
     @Throws(DOMException::class)
-    override fun getParameter(name: String?): Any? {
+    override fun getParameter(name: String): Any? {
         synchronized(this) {
-            return this.parameters.get(name)
+            return this.parameters[name]
         }
     }
 
@@ -51,7 +51,7 @@ class DOMConfigurationImpl : DOMConfiguration {
 
     override fun getParameterNames(): DOMStringList {
         synchronized(this) {
-            return DOMStringListImpl(parameters.keys)
+            return DOMStringListImpl(parameters.keys.toList())
         }
     }
 }

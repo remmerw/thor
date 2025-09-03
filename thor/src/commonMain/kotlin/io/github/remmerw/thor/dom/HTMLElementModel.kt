@@ -1,7 +1,6 @@
 package io.github.remmerw.thor.dom
 
 import org.w3c.dom.html.HTMLElement
-import org.w3c.dom.html.HTMLFormElement
 import java.util.Locale
 import java.util.logging.Level
 
@@ -9,8 +8,7 @@ open class HTMLElementModel(name: String) : ElementImpl(name), HTMLElement {
 
 
     override fun getId(): String? {
-        // TODO: Check if a cache is useful for this attribute. Original gngr code had a cache here.
-        val id = this.getAttribute("id")
+        return this.getAttribute("id")
         return if (id == null) "" else id
     }
 
@@ -103,18 +101,6 @@ open class HTMLElementModel(name: String) : ElementImpl(name), HTMLElement {
                 return nodeObj
             }
             return nodeObj.getAncestor(elementTL)
-        } else {
-            return null
-        }
-    }
-
-
-    protected fun getAncestorForJavaClass(javaClass: Class<HTMLFormElement>): Any? {
-        val nodeObj: Any? = this.nodeParent
-        if ((nodeObj == null) || javaClass.isInstance(nodeObj)) {
-            return nodeObj
-        } else if (nodeObj is HTMLElementModel) {
-            return nodeObj.getAncestorForJavaClass(javaClass)
         } else {
             return null
         }

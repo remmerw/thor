@@ -43,16 +43,13 @@ import org.w3c.dom.css.CSSStyleSheet
 import org.w3c.dom.html.HTMLCollection
 import org.w3c.dom.html.HTMLDocument
 import org.w3c.dom.html.HTMLElement
-import org.w3c.dom.ranges.Range
 import org.w3c.dom.stylesheets.DocumentStyle
 import org.w3c.dom.stylesheets.LinkStyle
 import org.w3c.dom.stylesheets.StyleSheetList
 import org.w3c.dom.views.AbstractView
 import org.w3c.dom.views.DocumentView
-import org.xml.sax.ErrorHandler
 import org.xml.sax.SAXException
 import java.io.IOException
-import java.io.LineNumberReader
 import java.io.Reader
 import java.io.StringReader
 import java.net.MalformedURLException
@@ -90,9 +87,6 @@ class HTMLDocumentImpl(
     private var domConfig: DOMConfiguration? = null
     private var domImplementation: DOMImplementation? = null
     private var body: HTMLElement? = null
-
-
-    private var oldPendingTaskId = -1
     private var classifiedRules: Analyzer.Holder? = null
 
 
@@ -379,7 +373,7 @@ class HTMLDocumentImpl(
                 try {
                     // This can end up in openBufferChanged
                     this.reader!!.write(text + "\r\n")
-                } catch (ioe: IOException) {
+                } catch (_: IOException) {
                     // ignore
                 }
             }
@@ -389,12 +383,12 @@ class HTMLDocumentImpl(
     private fun openBufferChanged(text: String) {
         // Assumed to execute in a lock
         // Assumed that text is not broken up HTML.
-        val errorHandler: ErrorHandler = LocalErrorHandler()
+        LocalErrorHandler()
         val systemId = this.documentURI
-        val publicId = systemId
+        systemId
         val parser = HtmlParser(
             this,
-            false, 
+            false,
             true
         )
         val strReader = StringReader(text)
@@ -741,30 +735,8 @@ class HTMLDocumentImpl(
     }
 
 
-    fun createRange(): Range {
-        return RangeImpl(this)
-    }
-
-    fun hasFocus(): Boolean {
-        // TODO: Plug
-        return true
-    }
-
-    /**
-     * Tag class that also notifies document when text is written to an open
-     * buffer.
-     *
-     * @author J. H. S.
-     */
     private inner class LocalWritableLineReader : WritableLineReader {
-        /**
-         * @param reader
-         */
-        constructor(reader: LineNumberReader) : super(reader)
 
-        /**
-         * @param reader
-         */
         constructor(reader: Reader) : super(reader)
 
         @Throws(IOException::class)

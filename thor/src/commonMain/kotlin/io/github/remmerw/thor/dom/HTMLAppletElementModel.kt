@@ -71,8 +71,8 @@ class HTMLAppletElementModel(name: String) : HTMLElementModel(name), HTMLAppletE
         return this.getAttribute("object")
     }
 
-    override fun setObject(`object`: String?) {
-        this.setAttribute("object", `object`)
+    override fun setObject(str: String?) {
+        this.setAttribute("object", str)
     }
 
     override fun getVspace(): String? {

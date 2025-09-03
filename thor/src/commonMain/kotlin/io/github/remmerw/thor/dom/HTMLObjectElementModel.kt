@@ -97,13 +97,6 @@ class HTMLObjectElementModel(name: String) : HTMLElementModel(name), HTMLObjectE
         return this.getAttribute("data")
     }
 
-    /* public int getHspace() {
-    try {
-      return Integer.parseInt(this.getAttribute("hspace"));
-    } catch (final Exception err) {
-      return 0;
-    }
-  }*/
     override fun setData(data: String?) {
         this.setAttribute("data", data)
     }
@@ -117,20 +110,13 @@ class HTMLObjectElementModel(name: String) : HTMLElementModel(name), HTMLObjectE
     }
 
     override fun getForm(): HTMLFormElement? {
-        return this.getAncestorForJavaClass(HTMLFormElement::class.java) as HTMLFormElement?
+        TODO()
     }
 
     override fun getHspace(): String? {
         return this.getAttribute("hspace")
     }
 
-    /* public int getVspace() {
-    try {
-      return Integer.parseInt(this.getAttribute("vspace"));
-    } catch (final Exception err) {
-      return 0;
-    }
-  }*/
     override fun setHspace(hspace: String?) {
         this.setAttribute("hspace", hspace)
     }

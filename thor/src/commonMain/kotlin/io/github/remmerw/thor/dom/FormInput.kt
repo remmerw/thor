@@ -1,16 +1,7 @@
 package io.github.remmerw.thor.dom
 
-import java.io.ByteArrayInputStream
 import java.io.File
-import java.io.FileInputStream
-import java.io.IOException
-import java.io.InputStream
-import java.nio.charset.StandardCharsets
 
-/**
- * The `FormInput` class contains the state of an HTML form input
- * item.
- */
 class FormInput {
     /**
      * Gets the name of the input.
@@ -69,44 +60,7 @@ class FormInput {
          */
         get() = this.fileValue != null
 
-    @get:Deprecated(
-        """The method is implemented only to provide some backward
-      compatibility."""
-    )
-    val charset: String
-        /**
-         * Always returns UTF-8.
-         *
-         */
-        get() = "UTF-8"
 
-    @get:Throws(IOException::class)
-    @get:Deprecated(
-        """Call either {@link #getTextValue()} or {@link #getFileValue()}
-      instead."""
-    )
-    val inputStream: InputStream?
-        /**
-         * Gets data as an input stream. The caller is responsible for closing the
-         * stream.
-         *
-         */
-        get() {
-            if (this.isText) {
-                return ByteArrayInputStream(this.textValue!!.toByteArray(StandardCharsets.UTF_8))
-            } else if (this.isFile) {
-                return FileInputStream(this.fileValue)
-            } else {
-                return null
-            }
-        }
-
-    /**
-     * Shows a string representation of the `FormInput` that may be
-     * useful in debugging.
-     *
-     * @see .getTextValue
-     */
     override fun toString(): String {
         return "FormInput[name=" + this.name + ",textValue=" + this.textValue + "]"
     }

@@ -23,6 +23,7 @@
  */
 package io.github.remmerw.thor.dom
 
+import org.w3c.dom.html.HTMLFormElement
 import org.w3c.dom.html.HTMLTextAreaElement
 
 class HTMLTextAreaElementModel : HTMLBaseInputElement, HTMLTextAreaElement {
@@ -36,47 +37,72 @@ class HTMLTextAreaElementModel : HTMLBaseInputElement, HTMLTextAreaElement {
         TODO("Not yet implemented")
     }
 
+    override fun select() {
+        TODO("Not yet implemented")
+    }
+
     override fun getFormInputs(): Array<FormInput>? {
         val name = this.name
         if (name == null) {
             return null
         }
-        return arrayOf<FormInput>(FormInput(name, this.value))
+        return arrayOf(FormInput(name, this.value))
     }
 
+    override fun getForm(): HTMLFormElement? {
+        TODO("Not yet implemented")
+    }
 
     override fun getCols(): Int {
-        val ic = this.getInputContext()
-        return if (ic == null) 0 else ic.getCols()
+        TODO("Not yet implemented")
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.w3c.dom.html2.HTMLTextAreaElement#setCols(int)
-     */
-    override fun setCols(cols: Int) {
-        val ic = this.getInputContext()
-        if (ic != null) {
-            ic.setCols(cols)
-        }
+    override fun setCols(p0: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getDisabled(): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun setDisabled(p0: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getReadOnly(): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun setReadOnly(p0: Boolean) {
+        TODO("Not yet implemented")
     }
 
     override fun getRows(): Int {
-        val ic = this.getInputContext()
-        return if (ic == null) 0 else ic.getRows()
+        TODO("Not yet implemented")
     }
 
+    override fun setRows(p0: Int) {
+        TODO("Not yet implemented")
+    }
 
-    override fun setRows(rows: Int) {
-        val ic = this.getInputContext()
-        if (ic != null) {
-            ic.setRows(rows)
-        }
+    override fun getTabIndex(): Int {
+        TODO("Not yet implemented")
+    }
+
+    override fun setTabIndex(p0: Int) {
+        TODO("Not yet implemented")
     }
 
     override fun getType(): String {
         return "textarea"
+    }
+
+    override fun getValue(): String? {
+        TODO("Not yet implemented")
+    }
+
+    override fun setValue(p0: String?) {
+        TODO("Not yet implemented")
     }
 
 }

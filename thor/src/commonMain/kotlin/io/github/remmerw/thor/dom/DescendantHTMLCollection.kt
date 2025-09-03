@@ -62,20 +62,6 @@ open class DescendantHTMLCollection @JvmOverloads constructor(
         }
     }
 
-    private fun invalidate() {
-        synchronized(this.treeLock) {
-            this.itemsByName = null
-            this.itemsByIndex = null
-        }
-    }
-
-    private val isValid: Boolean
-        get() {
-            synchronized(this.treeLock) {
-                return (this.itemsByName != null) && (this.itemsByIndex != null)
-            }
-        }
-
     override fun getLength(): Int {
         synchronized(this.treeLock) {
             this.ensurePopulatedImpl()
@@ -86,10 +72,10 @@ open class DescendantHTMLCollection @JvmOverloads constructor(
     override fun item(index: Int): Node? {
         synchronized(this.treeLock) {
             this.ensurePopulatedImpl()
-            try {
-                return this.itemsByIndex!!.get(index)
-            } catch (iob: IndexOutOfBoundsException) {
-                return null
+            return try {
+                this.itemsByIndex!!.get(index)
+            } catch (_: Throwable) {
+                null
             }
         }
     }

@@ -20,8 +20,5 @@ class BackgroundInfo {
 
     companion object {
         const val BR_REPEAT: Int = 0
-        const val BR_NO_REPEAT: Int = 1
-        const val BR_REPEAT_X: Int = 2
-        const val BR_REPEAT_Y: Int = 3
     }
 }

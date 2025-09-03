@@ -36,8 +36,6 @@ class HTMLBaseElementModel(name: String) : HTMLElementModel(name) {
 
     private fun processBaseTag() {
         val doc = this.document as HTMLDocumentImpl?
-        if (doc != null) {
-            doc.setBaseURI(this.getAttribute("href"))
-        }
+        doc?.setBaseURI(this.getAttribute("href"))
     }
 }

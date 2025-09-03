@@ -108,13 +108,7 @@ class HTMLFormElementModel : HTMLElementModel, HTMLFormElement {
 
 
     override fun reset() {
-        this.visit(object : NodeVisitor {
-            override fun visit(node: Node) {
-                if (node is HTMLBaseInputElement) {
-                    node.resetInput()
-                }
-            }
-        })
+        TODO("Not yet implemented")
     }
 
     open inner class InputFilter : NodeFilter {

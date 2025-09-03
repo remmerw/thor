@@ -116,8 +116,4 @@ class AttrImpl : NodeImpl, Attr {
         return this.isId
     }
 
-    fun setId(value: Boolean) {
-        this.isId = value
-    }
-
 }

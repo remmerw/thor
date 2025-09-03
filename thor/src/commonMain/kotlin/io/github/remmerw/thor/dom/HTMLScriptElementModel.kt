@@ -31,12 +31,7 @@ class HTMLScriptElementModel(name: String) : HTMLElementModel(name), HTMLScriptE
 
 
     override fun getText(): String? {
-        val t = this.text
-        if (t == null) {
-            return this.getRawInnerText(true)
-        } else {
-            return t
-        }
+        return this.text
     }
 
     override fun setText(text: String?) {

@@ -8,7 +8,6 @@ import org.w3c.dom.Text
 import org.w3c.dom.css.CSSStyleSheet
 import org.w3c.dom.html.HTMLStyleElement
 import org.w3c.dom.stylesheets.LinkStyle
-import java.util.Locale
 
 open class HTMLStyleElementModel(name: String) : HTMLElementModel(name), HTMLStyleElement,
     LinkStyle {
@@ -28,7 +27,6 @@ open class HTMLStyleElementModel(name: String) : HTMLElementModel(name), HTMLSty
         }
     }
 
-    //TODO hide from JS
     fun setDisabledImpl(disabled: Boolean) {
         this.disabled = disabled
     }
@@ -53,13 +51,6 @@ open class HTMLStyleElementModel(name: String) : HTMLElementModel(name), HTMLSty
     @Throws(DOMException::class)
     override fun setAttribute(name: String, value: String?) {
         super.setAttribute(name, value)
-        if (isAttachedToDocument) {
-            val nameLowerCase = name.lowercase(Locale.getDefault())
-            if ("type" == nameLowerCase || "media" == nameLowerCase || "title" == nameLowerCase) {
-                this.disabled = false
-                this.processStyle()
-            }
-        }
     }
 
     private val onlyText: String
@@ -87,21 +78,21 @@ open class HTMLStyleElementModel(name: String) : HTMLElementModel(name), HTMLSty
 
     // TODO: check if this method can be made private
     protected fun processStyle() {
-        if (isAttachedToDocument) {
-            /* check if type == "text/css" or no, empty value is also allowed as well.
-       if it is something other than empty or "text/css" set the style sheet to null
-       we need not check for the media type here, jStyle parser should take care of this.
-       */
-            if (this.isAllowedType) {
-                val doc = this.ownerDocument as HTMLDocumentImpl
-                val newStyleSheet = processStyleHelper()
-                newStyleSheet.setDisabled(this.disabled)
-                this.styleSheet = newStyleSheet
-                doc.styleSheetManager.invalidateStyles()
-            } else {
-                this.detachStyleSheet()
-            }
+
+        /* check if type == "text/css" or no, empty value is also allowed as well.
+   if it is something other than empty or "text/css" set the style sheet to null
+   we need not check for the media type here, jStyle parser should take care of this.
+   */
+        if (this.isAllowedType) {
+            val doc = this.ownerDocument as HTMLDocumentImpl
+            val newStyleSheet = processStyleHelper()
+            newStyleSheet.setDisabled(this.disabled)
+            this.styleSheet = newStyleSheet
+            doc.styleSheetManager.invalidateStyles()
+        } else {
+            this.detachStyleSheet()
         }
+
     }
 
     private fun processStyleHelper(): StyleSheetWrapper {

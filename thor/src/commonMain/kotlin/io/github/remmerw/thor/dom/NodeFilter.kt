@@ -25,8 +25,6 @@ package io.github.remmerw.thor.dom
 
 import org.w3c.dom.Element
 import org.w3c.dom.Node
-import org.w3c.dom.html.HTMLFrameElement
-import org.w3c.dom.html.HTMLIFrameElement
 import org.w3c.dom.html.HTMLLinkElement
 
 interface NodeFilter {
@@ -68,11 +66,6 @@ interface NodeFilter {
         }
     }
 
-    class FrameFilter : NodeFilter {
-        override fun accept(node: Node): Boolean {
-            return (node is HTMLFrameElement) || (node is HTMLIFrameElement)
-        }
-    }
 
     class ElementNameFilter(private val name: String) : NodeFilter {
         override fun accept(node: Node): Boolean {

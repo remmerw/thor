@@ -11,7 +11,7 @@ import kotlin.math.min
  * @author J. H. S.
  */
 class ColorFactory private constructor() {
-    private val colorMap: MutableMap<String?, Color?> = HashMap<String?, Color?>(256)
+    private val colorMap: MutableMap<String, Color> = HashMap(256)
 
     init {
         val colorMap = this.colorMap
@@ -289,7 +289,7 @@ class ColorFactory private constructor() {
                     }
                     return Color.Red
                 }
-                colorMap.put(normalSpec, color)
+                colorMap.put(normalSpec, color!!)
             }
             return color
         }
