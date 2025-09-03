@@ -97,21 +97,12 @@ open class HTMLElementModel(name: String) : ElementImpl(name), HTMLElement, CSS2
     }
 
 
-    open fun evalCssProperties(): CssProperties { // todo rename to finish (invoked by sax)
+    open fun finish() {
         synchronized(this) {
-            if (currentStyle != null) {
-                return currentStyle!!
-            }
             val data = getNodeData(null)
-            currentStyle = ComputedCssProperties(
-                this,
-                data, true
-            )
             if (data != null) {
                 HtmlStyles.cssProperties(data, this)
-
             }
-            return currentStyle!!
         }
     }
 
@@ -308,60 +299,6 @@ open class HTMLElementModel(name: String) : ElementImpl(name), HTMLElement, CSS2
         this.informInvalidRecursive()
     }
 
-    fun setMouseOver(mouseOver: Boolean) {
-        // TODO: Synchronize with treeLock here instead of in invalidateDescendtsForHover?
-        if (this.isMouseOver != mouseOver) {
-            if (mouseOver) {
-                elementMatchCondition.addMatch(this, Selector.PseudoClassType.HOVER)
-            } else {
-                elementMatchCondition.removeMatch(this, Selector.PseudoClassType.HOVER)
-            }
-            // Change isMouseOver field before checking to invalidate.
-            this.isMouseOver = mouseOver
-
-            // TODO: If informLocalInvalid detects a layout change, then there is no need to do descendant invalidation.
-
-            // Check if descendents are affected (e.g. div:hover a { ... } )
-            if (cachedHasHoverRule) {
-                this.invalidateDescendentsForHover(mouseOver)
-                if (this.hasHoverStyle()) {
-                    this.informLocalInvalid()
-                }
-            }
-        }
-    }
-
-    private fun invalidateDescendentsForHover(mouseOver: Boolean) {
-        synchronized(this.treeLock) {
-            if (!mouseOver) {
-                val hoverCondition = elementMatchCondition.clone() as MatchConditionOnElements
-                hoverCondition.addMatch(this, Selector.PseudoClassType.HOVER)
-                invalidateDescendantsForHoverImpl(this, hoverCondition)
-            } else {
-                invalidateDescendantsForHoverImpl(this, elementMatchCondition)
-            }
-        }
-    }
-
-    private fun invalidateDescendantsForHoverImpl(
-        ancestor: HTMLElementModel?,
-        hoverCondition: MatchCondition?
-    ) {
-        val nodeList = this.nodes()
-
-        val size = nodeList.size
-        for (i in 0..<size) {
-            val node: Any? = nodeList.get(i)
-            if (node is HTMLElementModel) {
-                val hasMatch = node.hasHoverStyle(ancestor, hoverCondition)
-                if (hasMatch) {
-                    node.informLocalInvalid()
-                }
-                node.invalidateDescendantsForHoverImpl(ancestor, hoverCondition)
-            }
-
-        }
-    }
 
     // TODO: Cache the result of this
     private fun hasHoverStyle(): Boolean {
@@ -419,19 +356,6 @@ open class HTMLElementModel(name: String) : ElementImpl(name), HTMLElement, CSS2
         super.informInvalid()
     }
 
-
-    fun informLocalInvalid() {
-        // TODO: forgetStyle can call informInvalid() since informInvalid() seems to always follow forgetStyle()
-        //       ^^ Hah, not any more
-        val prevStyle: CssProperties? = currentStyle
-        this.forgetLocalStyle()
-        val newStyle = evalCssProperties()
-        if (layoutChanges(prevStyle, newStyle)) {
-            super.informInvalid()
-        } else {
-            super.informLookInvalid()
-        }
-    }
 
     private fun informInvalidRecursive() {
         super.informInvalid()

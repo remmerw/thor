@@ -155,7 +155,7 @@ class HtmlParser {
     /**
      * Parses HTML from an input stream, assuming the character set is ISO-8859-1.
      *
-     * @param in The input stream.
+     * @param `in` The input stream.
      * @throws IOException  Thrown when there are errors reading the stream.
      * @throws SAXException Thrown when there are parse errors.
      */

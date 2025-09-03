@@ -36,6 +36,7 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), ElementModel 
         }
     }
 
+
     override fun getAttributes(): NamedNodeMap {
         synchronized(this) {
             // TODO: Check if NamedNodeMapImpl can be changed to dynamically query the attributes field

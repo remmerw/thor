@@ -105,6 +105,9 @@ abstract class NodeImpl : NodeModel, ModelNode {
                 if (newChild is NodeImpl) {
                     newChild.handleAddedToParent(this)
                 }
+                if (newChild is HTMLElementModel) {
+                    newChild.finish() // todo put in ElementImpl
+                }
             }
 
             this.postChildListChanged()
@@ -1153,11 +1156,9 @@ abstract class NodeImpl : NodeModel, ModelNode {
                 this.updateIdMap(attached)
             }
         }
-        if (nodeList != null) {
-            for (node in this.nodeList) {
-                if (node is NodeImpl) {
-                    node.changeDocumentAttachment(attached)
-                }
+        for (node in this.nodeList) {
+            if (node is NodeImpl) {
+                node.changeDocumentAttachment(attached)
             }
         }
     }

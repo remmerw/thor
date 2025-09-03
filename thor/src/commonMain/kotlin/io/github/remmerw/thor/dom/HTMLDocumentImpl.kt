@@ -384,6 +384,7 @@ class HTMLDocumentImpl(
                     this.isXML, true
                 )
                 parser.parse(reader)
+
             } finally {
                 if (closeReader) {
                     try {
@@ -746,11 +747,6 @@ class HTMLDocumentImpl(
         return null
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.NodeImpl#getNodeName()
-     */
     override fun getNodeName(): String {
         return "#document"
     }
@@ -1059,19 +1055,6 @@ class HTMLDocumentImpl(
     val matcher: ElementMatcher
         get() = if (this.isXML) xhtmlMatcher else stdMatcher
 
-    /**
-     * Visits all elements and computes their styles. This is faster than
-     * computing them separately when needed. Note: If styles were to be stored as
-     * soft / weak references, this method will lose its value.
-     */
-
-    fun primeNodeData() {
-        visit({ node: Node ->
-            if (node is HTMLElementModel) {
-                node.evalCssProperties()
-            }
-        })
-    }
 
     fun getClassifiedRules(): Analyzer.Holder? {
         synchronized(treeLock) {
