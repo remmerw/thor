@@ -38,11 +38,7 @@ open class HTMLSelectElementModel(name: String) : HTMLBaseInputElement(name), HT
     }
 
     override fun setMultiple(multiple: Boolean) {
-        val prevMultiple = this.getMultiple()
         this.multipleState = multiple
-        if (prevMultiple != multiple) {
-            this.informLayoutInvalid()
-        }
     }
 
     override fun getOptions(): HTMLCollection {

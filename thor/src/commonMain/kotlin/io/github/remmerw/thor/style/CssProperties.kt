@@ -9,7 +9,6 @@ import java.net.MalformedURLException
 import java.net.URL
 
 abstract class CssProperties(
-    private val context: CSS2PropertiesContext, // TODO: this flag can be removed when the layout can handle empty strings
     // currently there is only a check for null and not for empty string
     protected val nullIfAbsent: Boolean
 ) : CSS2Properties {
@@ -18,7 +17,6 @@ abstract class CssProperties(
     var overlayColor: String? = null
         set(value) {
             field = value
-            this.context.informLookInvalid()
         }
 
     //TODO All the methods that are not implemented need more detailed understanding.

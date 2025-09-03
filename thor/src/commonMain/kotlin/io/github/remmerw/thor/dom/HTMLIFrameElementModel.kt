@@ -91,21 +91,7 @@ class HTMLIFrameElementModel(name: String) : HTMLAbstractUIElement(name), HTMLIF
         TODO("Not yet implemented")
     }
 
-    override fun handleAttributeChanged(name: String, oldValue: String?, newValue: String?) {
-        super.handleAttributeChanged(name, oldValue, newValue)
-        if ("src" == name) {
-            // todo
-        }
-    }
 
-    override fun handleDocumentAttachmentChanged() {
-        super.handleDocumentAttachmentChanged()
-        if (isAttachedToDocument) {
-            if (hasAttribute("onload")) {
-
-            }
-        }
-    }
 
 
 }

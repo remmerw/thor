@@ -1,88 +1,24 @@
-/*    GNU LESSER GENERAL PUBLIC LICENSE
-    Copyright (C) 2006 The Lobo Project
 
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-    Contact info: lobochief@users.sourceforge.net
- */
-/*
- * Created on Sep 3, 2005
- */
 package io.github.remmerw.thor.dom
 
-import io.github.remmerw.thor.style.CSS2PropertiesContext
-import io.github.remmerw.thor.style.ComputedCssProperties
 import io.github.remmerw.thor.style.CssProperties
 import io.github.remmerw.thor.style.LocalCssProperties
-import org.w3c.dom.DOMException
 import org.w3c.dom.html.HTMLElement
 import org.w3c.dom.html.HTMLFormElement
-import java.util.Arrays
 import java.util.Locale
 import java.util.StringTokenizer
 import java.util.logging.Level
 import kotlin.concurrent.Volatile
 
-open class HTMLElementModel(name: String) : ElementImpl(name), HTMLElement, CSS2PropertiesContext {
+open class HTMLElementModel(name: String) : ElementImpl(name), HTMLElement {
     @Volatile
     private var currentStyle: CssProperties? = null
 
 
-    protected fun forgetLocalStyle() {
-        synchronized(this) {
-            //TODO to be reconsidered in issue #41
-            this.currentStyle = null
-
-        }
-    }
-
-    fun forgetStyle(deep: Boolean) {
-        // TODO: OPTIMIZATION: If we had a ComputedStyle map in
-        // window (Mozilla model) the map could be cleared in one shot.
-        synchronized(treeLock) {
-
-            this.currentStyle = null
-
-            if (deep) {
-
-                this.nodes().forEach { nodeModel ->
-                    val node: Any? = nodeModel
-                    if (node is HTMLElementModel) {
-                        node.forgetStyle(deep)
-                    }
-                }
-
-            }
-        }
-    }
 
 
     fun style(): Any? {
         return LocalCssProperties(this)
-    }
-
-
-    // TODO hide from JS
-    // Chromium(v37) and firefox(v32) do not expose this function
-    // couldn't find anything in the standards.
-    fun getComputedStyle(pseudoElement: String?): CssProperties {
-        return ComputedCssProperties(
-            this,
-            getNodeData(HtmlStyles.getPseudoDeclaration(pseudoElement)),
-            false
-        )
     }
 
 
@@ -160,31 +96,6 @@ open class HTMLElementModel(name: String) : ElementImpl(name), HTMLElement, CSS2
 
     fun getAttributeAsBoolean(name: String): Boolean {
         return this.getAttribute(name) != null
-    }
-
-    override fun handleAttributeChanged(name: String, oldValue: String?, newValue: String?) {
-        super.handleAttributeChanged(name, oldValue, newValue)
-        forgetStyle(true)
-        this.informInvalidRecursive()
-    }
-
-
-    override fun informInvalid() {
-        // This is called when an attribute or child changes.
-        // TODO: forgetStyle can call informInvalid() since informInvalid() seems to always follow forgetStyle()
-        this.forgetStyle(false)
-        super.informInvalid()
-    }
-
-
-    private fun informInvalidRecursive() {
-        super.informInvalid()
-        this.nodes().forEach { nodeModel ->
-            if (nodeModel is HTMLElementModel) {
-                nodeModel.informInvalidRecursive()
-            }
-        }
-
     }
 
     open fun getFormInputs(): Array<FormInput>? {
@@ -368,106 +279,13 @@ open class HTMLElementModel(name: String) : ElementImpl(name), HTMLElement, CSS2
     }
 
 
-    override fun documentBaseURI(): String? {
+    fun documentBaseURI(): String? {
         val doc = this.document as HTMLDocumentImpl?
         if (doc != null) {
             return doc.getBaseURI()
         } else {
             return null
         }
-    }
-
-    override fun handleDocumentAttachmentChanged() {
-        if (isAttachedToDocument) {
-            forgetLocalStyle()
-            forgetStyle(false)
-            informInvalid()
-        }
-        super.handleDocumentAttachmentChanged()
-    }
-
-
-    // Based on http://www.w3.org/TR/dom/#domtokenlist
-    inner class DOMTokenList {
-        private val classes: Array<String>
-            get() = getAttribute("class")?.split(" ".toRegex())?.dropLastWhile { it.isEmpty() }
-                ?.toTypedArray() ?: emptyArray()
-
-        private fun getClasses(max: Int): Array<String> {
-            return getAttribute("class")?.split(" ".toRegex(), max.coerceAtLeast(0))?.toTypedArray()
-                ?: emptyArray()
-        }
-
-        val length: Long
-            get() = this.classes.size.toLong()
-
-        fun item(index: Long): String? {
-            val indexInt = index.toInt()
-            return getClasses(indexInt + 1)[0]
-        }
-
-        fun contains(token: String?): Boolean {
-            return Arrays.stream<String?>(this.classes).anyMatch { t: String? -> t == token }
-        }
-
-        fun add(token: String?) {
-            add(arrayOf<String>(token!!))
-        }
-
-        fun add(tokens: Array<String>) {
-            val sb = StringBuilder()
-            for (token in tokens) {
-                if (token.length == 0) {
-                    throw DOMException(DOMException.SYNTAX_ERR, "empty token")
-                }
-
-                // TODO: Check for whitespace and throw IllegalCharacterError
-                sb.append(' ')
-                sb.append(token)
-            }
-            setAttribute("class", getAttribute("class") + sb)
-        }
-
-        fun remove(tokenToRemove: String?) {
-            remove(arrayOf<String?>(tokenToRemove))
-        }
-
-        fun remove(tokensToRemove: Array<String?>) {
-            val existingClasses = this.classes
-            val sb = StringBuilder()
-            for (clazz in existingClasses) {
-                if (!Arrays.stream<String?>(tokensToRemove)
-                        .anyMatch { tr: String? -> tr == clazz }
-                ) {
-                    sb.append(' ')
-                    sb.append(clazz)
-                }
-            }
-            setAttribute("class", sb.toString())
-        }
-
-        fun toggle(tokenToToggle: String): Boolean {
-            val existingClasses = this.classes
-            for (clazz in existingClasses) {
-                if (tokenToToggle == clazz) {
-                    remove(tokenToToggle)
-                    return false
-                }
-            }
-
-            // Not found, hence add
-            add(tokenToToggle)
-            return true
-        }
-
-        fun toggle(token: String?, force: Boolean): Boolean {
-            if (force) {
-                add(token)
-            } else {
-                remove(token)
-            }
-            return force
-        } /* TODO: stringifier; */
     }
 
 

@@ -9,7 +9,7 @@ import org.w3c.dom.Element
 import java.util.Locale
 
 class LocalCssProperties(private val element: HTMLElementModel) :
-    CssProperties(element, false) {
+    CssProperties(false) {
     @Throws(DOMException::class)
     override fun setAzimuth(azimuth: String?) {
         updateInlineStyle("azimuth", azimuth)

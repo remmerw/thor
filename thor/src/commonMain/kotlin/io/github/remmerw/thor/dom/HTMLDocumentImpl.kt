@@ -71,8 +71,8 @@ class HTMLDocumentImpl(
     private var documentURL: URL? = null
 
 
-    private val elementsById: MutableMap<String, Element?> = mutableMapOf()
-    private val elementsByName: MutableMap<String?, Element?> = HashMap<String?, Element?>(0)
+    //private val elementsById: MutableMap<String, Element?> = mutableMapOf()
+
     private val documentNotificationListeners = ArrayList<DocumentNotificationListener>(1)
 
     /**
@@ -135,24 +135,7 @@ class HTMLDocumentImpl(
             return if (docUrl == null) null else docUrl.host
         }
 
-    /**
-     * Caller should synchronize on document.
-     */
-    fun setElementById(id: String, element: Element?) {
-        synchronized(this) {
-            // TODO: Need to take care of document order. The following check is crude and only takes
-            //       care of document order for elements in static HTML.
-            if (!elementsById.containsKey(id)) {
-                this.elementsById.put(id, element)
-            }
-        }
-    }
 
-    fun removeElementById(id: String?) {
-        synchronized(this) {
-            this.elementsById.remove(id)
-        }
-    }
 
 
     override fun getBaseURI(): String? {
@@ -329,14 +312,7 @@ class HTMLDocumentImpl(
         }
     }
 
-    /**
-     * Loads the document from the reader provided when the current instance of
-     * `HTMLDocumentImpl` was constructed. It then closes the reader.
-     *
-     * @throws IOException
-     * @throws SAXException
-     * @throws UnsupportedEncodingException
-     */
+
     @JvmOverloads
     @Throws(IOException::class, SAXException::class)
     fun load(closeReader: Boolean = true) {
@@ -591,33 +567,7 @@ class HTMLDocumentImpl(
     }
 
     override fun getElementById(elementId: String?): Element? {
-        if ((elementId != null) && (elementId.length > 0)) {
-            synchronized(this) {
-                return this.elementsById.get(elementId)
-            }
-        } else {
-            return null
-        }
-    }
-
-    fun namedItem(name: String?): Element? {
-        val element: Element?
-        synchronized(this) {
-            element = this.elementsByName.get(name)
-        }
-        return element
-    }
-
-    fun setNamedItem(name: String?, element: Element?) {
-        synchronized(this) {
-            this.elementsByName.put(name, element)
-        }
-    }
-
-    fun removeNamedItem(name: String?) {
-        synchronized(this) {
-            this.elementsByName.remove(name)
-        }
+        TODO()
     }
 
     override fun getInputEncoding(): String? {
@@ -768,25 +718,6 @@ class HTMLDocumentImpl(
         return this.documentURI
     }
 
-    fun allInvalidated(forgetRenderStates: Boolean) {
-        if (forgetRenderStates) {
-            synchronized(this.treeLock) {
-                // Need to invalidate all children up to
-                // this point.
-
-                // TODO: this might be ineffcient.
-
-                this.nodes().forEach { nodeModel ->
-                    val node: Any? = nodeModel
-                    if (node is HTMLElementModel) {
-                        node.forgetStyle(true)
-                    }
-                }
-
-            }
-        }
-        this.allInvalidated()
-    }
 
     override fun getStyleSheets(): StyleSheetList {
         return styleSheetManager.constructStyleSheetList()
@@ -1170,8 +1101,7 @@ class HTMLDocumentImpl(
             synchronized(treeLock) {
                 this@HTMLDocumentImpl.classifiedRules = null
             }
-            // System.out.println("Stylesheets set to null");
-            allInvalidated(true)
+
         }
 
         fun constructStyleSheetList(): StyleSheetList {

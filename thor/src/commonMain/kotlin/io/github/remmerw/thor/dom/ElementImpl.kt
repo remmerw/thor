@@ -393,17 +393,7 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), ElementModel 
      * @param oldValue null, if the attribute was absent
      * @param newValue null, if the attribute is now removed
      */
-    protected open fun handleAttributeChanged(name: String, oldValue: String?, newValue: String?) {
-        // TODO: Need to move this to a separate function, similar to updateIdMap()
-        // TODO: Need to update the name map, whenever attachment changes
-        val document = this.document as HTMLDocumentImpl
-        if ("name" == name) {
-            if (oldValue != null) {
-                document.removeNamedItem(oldValue)
-            }
-            document.setNamedItem(newValue, this)
-        }
-    }
+
 
     /**
      * changes an attribute to the specified value. If the specified value is
@@ -424,65 +414,11 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), ElementModel 
             }
         }
 
-        if ("id" == normalName) {
-            updateIdMap(oldValue, newValue)
-        }
-
-        if (isAttachedToDocument) {
-            handleAttributeChanged(normalName, oldValue, newValue)
-        }
 
         return oldValue
     }
 
     abstract fun getId(): String?
-    fun updateIdMap(isAttached: Boolean) {
-        if (hasAttribute("id")) {
-            val id = getId()!!
-            if (isAttached) {
-                (document as HTMLDocumentImpl).setElementById(id, this)
-            } else {
-                (document as HTMLDocumentImpl).removeElementById(getId())
-            }
-        }
-    }
-
-    private fun updateIdMap(oldIdValue: String?, newIdValue: String?) {
-        if (isAttachedToDocument && oldIdValue != newIdValue) {
-            if (oldIdValue != null) {
-                (document as HTMLDocumentImpl).removeElementById(oldIdValue)
-            }
-            if (newIdValue != null) {
-                (document as HTMLDocumentImpl).setElementById(newIdValue, this)
-            }
-        }
-    }
-
-    val firstElementChild: Element?
-        // TODO: GH #88 Need to implement these for Document and DocumentFragment as part of ParentNode API
-        get() {
-            this.nodes().forEach { nodeModel ->
-                if (nodeModel is Element) {
-                    return nodeModel
-                }
-            }
-
-            return null
-        }
-
-    val lastElementChild: Element?
-        get() {
-            val nl = this.nodes()
-            val size = nl.size
-            for (i in size - 1 downTo 0) {
-                val n = nl.get(i)
-                if (n is Element) {
-                    return n
-                }
-            }
-
-            return null
-        }
 
     val childElementCount: Int
         get() {

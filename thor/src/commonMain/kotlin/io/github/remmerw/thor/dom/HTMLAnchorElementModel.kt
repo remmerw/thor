@@ -1,23 +1,3 @@
-/*
-    GNU LESSER GENERAL PUBLIC LICENSE
-    Copyright (C) 2006 The Lobo Project
-
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-    Contact info: lobochief@users.sourceforge.net
- */
 package io.github.remmerw.thor.dom
 
 import io.github.remmerw.thor.core.Urls
@@ -258,21 +238,4 @@ class HTMLAnchorElementModel(name: String) : HTMLAbstractUIElement(name), HTMLAn
         return this.styleSheet
     }
 
-
-    override fun handleAttributeChanged(name: String, oldValue: String?, newValue: String?) {
-        super.handleAttributeChanged(name, oldValue, newValue)
-
-        // TODO according to firefox's behavior whenever a valid attribute is
-        // changed on the element the disabled flag is set to false. Need to
-        // verify with the specs.
-        // TODO check for all the attributes associated with an link element
-        // according to firefox if the new value of rel/href is the same as the
-        // old one then, the nothing has to be done. In all other cases the link element
-        // has to be re-processed.
-        if (isSameRel(name, oldValue) || isSameHref(name, oldValue)) {
-        } else if ("rel" == name || "href" == name || "type" == name || "media" == name) {
-
-
-        }
-    }
 }

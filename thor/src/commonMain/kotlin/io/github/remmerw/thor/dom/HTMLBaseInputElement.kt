@@ -215,31 +215,6 @@ abstract class HTMLBaseInputElement(name: String) : HTMLAbstractUIElement(name) 
         ic?.select()
     }
 
-    override fun handleAttributeChanged(name: String, oldValue: String?, newValue: String?) {
-        super.handleAttributeChanged(name, oldValue, newValue)
-        if ("value" == name) {
-            this.setValue(newValue)
-        } else if ("checked" == name) {
-            this.setChecked(newValue != null)
-        } else if ("disabled" == name) {
-            this.setDisabled(newValue != null)
-        } else if ("readonly" == name) {
-            this.setReadOnly(newValue != null)
-        } else if ("src" == name) {
-            // TODO: Should check whether "type" == "image"
-            this.loadImage(newValue)
-        }
-    }
-
-    private fun loadImage(src: String?) {
-        val document = this.document as HTMLDocumentImpl?
-        if (document != null) {
-
-            if (src != null) {
-                //document.loadImage(src, HTMLBaseInputElement.LocalImageListener(src))
-            }
-        }
-    }
 
     open fun resetInput() {
         val ic = this.inputContext

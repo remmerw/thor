@@ -102,9 +102,7 @@ abstract class NodeImpl : NodeModel, ModelNode {
 
 
                 this.nodeList.add(newChild as NodeModel)
-                if (newChild is NodeImpl) {
-                    newChild.handleAddedToParent(this)
-                }
+
                 if (newChild is ElementImpl) {
                     newChild.finish()
                 }
@@ -129,7 +127,7 @@ abstract class NodeImpl : NodeModel, ModelNode {
             if (nl != null) {
                 for (node in nl) {
                     if (node is NodeImpl) {
-                        node.handleDeletedFromParent()
+
                     }
                 }
                 this.nodeList.clear()
@@ -281,31 +279,7 @@ abstract class NodeImpl : NodeModel, ModelNode {
         }
     }
 
-    /*
-  public Node insertBefore(final Node newChild, final Node refChild) throws DOMException {
-    synchronized (this.treeLock) {
-      final ArrayList<Node> nl = getNonEmptyNodeList();
-      // int idx = nl == null ? -1 : nl.indexOf(refChild);
-      int idx = nl.indexOf(refChild);
-      if (idx == -1) {
-        // The exception was misleading. -1 could have resulted from an empty node list too. (but that is no more the case)
-        // throw new DOMException(DOMException.NOT_FOUND_ERR, "refChild not found");
 
-        // From what I understand from https://developer.mozilla.org/en-US/docs/Web/API/Node.insertBefore
-        // an invalid refChild will add the new child at the end of the list
-
-        idx = nl.size();
-      }
-      nl.add(idx, newChild);
-      if (newChild instanceof NodeImpl) {
-        ((NodeImpl) newChild).handleAddedToParent(this);
-      }
-    }
-
-    this.postChildListChanged();
-
-    return newChild;
-  }*/
     private fun isAncestorOf(other: Node): kotlin.Boolean {
         val parent = other.parentNode as NodeImpl?
         if (parent === this) {
@@ -440,9 +414,7 @@ abstract class NodeImpl : NodeModel, ModelNode {
                 throw DOMException(DOMException.NOT_FOUND_ERR, "refChild not found")
             }
             nl!!.add(idx, newChild as NodeModel)
-            if (newChild is NodeImpl) {
-                newChild.handleAddedToParent(this)
-            }
+
         }
 
         this.postChildListChanged()
@@ -456,9 +428,7 @@ abstract class NodeImpl : NodeModel, ModelNode {
         synchronized(this.treeLock) {
 
             nodes().add(idx, newChild!! as NodeModel)
-            if (newChild is NodeImpl) {
-                newChild.handleAddedToParent(this)
-            }
+
         }
 
         this.postChildListChanged()
@@ -489,12 +459,7 @@ abstract class NodeImpl : NodeModel, ModelNode {
             }
             nl!!.set(idx, newChild!! as NodeModel)
 
-            if (newChild is NodeImpl) {
-                newChild.handleAddedToParent(this)
-            }
-            if (oldChild is NodeImpl) {
-                oldChild.handleDeletedFromParent()
-            }
+
         }
 
         this.postChildListChanged()
@@ -509,9 +474,7 @@ abstract class NodeImpl : NodeModel, ModelNode {
             if ((nl == null) || !nl.remove(oldChild)) {
                 throw DOMException(DOMException.NOT_FOUND_ERR, "oldChild not found")
             }
-            if (oldChild is NodeImpl) {
-                oldChild.handleDeletedFromParent()
-            }
+
         }
 
         this.postChildListChanged()
@@ -532,9 +495,7 @@ abstract class NodeImpl : NodeModel, ModelNode {
                 if (n == null) {
                     throw DOMException(DOMException.INDEX_SIZE_ERR, "No node with that index")
                 }
-                if (n is NodeImpl) {
-                    n.handleDeletedFromParent()
-                }
+
                 return n
             }
         } finally {
@@ -773,7 +734,7 @@ abstract class NodeImpl : NodeModel, ModelNode {
             if (filter.accept(node)) {
                 val n: Node? = nl.removeAt(i)
                 if (n is NodeImpl) {
-                    n.handleDeletedFromParent()
+
                 }
             }
         }
@@ -788,7 +749,7 @@ abstract class NodeImpl : NodeModel, ModelNode {
             }
             nl.add(idx + 1, newChild!! as NodeModel)
             if (newChild is NodeImpl) {
-                newChild.handleAddedToParent(this)
+
             }
         }
 
@@ -984,21 +945,6 @@ abstract class NodeImpl : NodeModel, ModelNode {
     }
 
 
-    override fun getDocumentItem(name: String?): Any? {
-        val document = this.document
-        return if (document == null) null else document.getUserData(name)
-    }
-
-
-    override fun setDocumentItem(name: String?, value: Any?) {
-        val document = this.document
-        if (document == null) {
-            return
-        }
-        document.setUserData(name, value, null)
-    }
-
-
     override fun isEqualOrDescendantOf(otherContext: ModelNode?): kotlin.Boolean {
         if (otherContext === this) {
             return true
@@ -1078,22 +1024,7 @@ abstract class NodeImpl : NodeModel, ModelNode {
         }
     }
 
-    fun informLayoutInvalid() {
-        // This is called by the style properties object.
 
-        val doc = this.document as HTMLDocumentImpl?
-        if (doc != null) {
-            doc.invalidated(this)
-        }
-    }
-
-    fun informDocumentInvalid() {
-        // This is called when an attribute or child changes.
-        val doc = this.document as HTMLDocumentImpl?
-        if (doc != null) {
-            doc.allInvalidated(true)
-        }
-    }
 
 
     protected open fun htmlEncodeChildText(text: String): String? {
@@ -1115,53 +1046,8 @@ abstract class NodeImpl : NodeModel, ModelNode {
     protected open fun handleDocumentAttachmentChanged() {
     }
 
-    /**
-     * This method will be called on a node whenever it is being appended to a
-     * parent node.
-     *
-     *
-     * NOTE: changeDocumentAttachment will call updateIds() which needs to be tree
-     * locked, and hence these methods are also being tree locked
-     */
-    private fun handleAddedToParent(parent: NodeImpl) {
-        this.setParentImpl(parent)
-        changeDocumentAttachment(parent.isAttachedToDocument)
-    }
 
-    /**
-     * This method will be called on a node whenever it is being deleted from a
-     * parent node.
-     *
-     *
-     * NOTE: changeDocumentAttachment will call updateIds() which needs to be tree
-     * locked, and hence these methods are also being tree locked
-     */
-    private fun handleDeletedFromParent() {
-        this.setParentImpl(null)
-        changeDocumentAttachment(false)
-    }
 
-    /**
-     * This method will change the attachment of a node with the document. It will
-     * also change the attachment of all its descendant nodes.
-     *
-     * @param attached the attachment with the document. true when attached, false
-     * otherwise.
-     */
-    private fun changeDocumentAttachment(attached: kotlin.Boolean) {
-        if (this.isAttachedToDocument != attached) {
-            this.isAttachedToDocument = attached
-            handleDocumentAttachmentChanged()
-            if (this is ElementImpl) {
-                this.updateIdMap(attached)
-            }
-        }
-        for (node in this.nodeList) {
-            if (node is NodeImpl) {
-                node.changeDocumentAttachment(attached)
-            }
-        }
-    }
 
     private fun postChildListChanged() {
         this.handleChildListChanged()

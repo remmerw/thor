@@ -90,11 +90,4 @@ class HTMLBodyElementModel(name: String) : HTMLAbstractUIElement(name), HTMLBody
         this.setAttribute("vlink", vLink)
     }
 
-
-    override fun handleAttributeChanged(name: String, oldValue: String?, newValue: String?) {
-        super.handleAttributeChanged(name, oldValue, newValue)
-        if ("onload" == name) {
-
-        }
-    }
 }

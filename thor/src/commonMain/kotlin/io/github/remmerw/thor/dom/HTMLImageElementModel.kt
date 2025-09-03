@@ -144,12 +144,6 @@ class HTMLImageElementModel : HTMLAbstractUIElement, HTMLImageElement {
         this.setAttribute("width", width)
     }
 
-    override fun handleAttributeChanged(name: String, oldValue: String?, newValue: String?) {
-        super.handleAttributeChanged(name, oldValue, newValue)
-        if ("src" == name) {
-            // todo
-        }
-    }
 
 
     override fun setUserData(key: String, data: Any?, handler: UserDataHandler?): Any? {

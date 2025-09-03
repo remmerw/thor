@@ -5,10 +5,9 @@ import org.w3c.dom.DOMException
 
 
 class ComputedCssProperties(
-    context: CSS2PropertiesContext,
     private val nodeData: NodeData?,
     nullIfAbsent: Boolean
-) : CssProperties(context, nullIfAbsent) {
+) : CssProperties(nullIfAbsent) {
 
     override fun getNodeData(): NodeData? {
         return nodeData
