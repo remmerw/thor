@@ -6,18 +6,12 @@ import org.w3c.dom.DOMImplementation
 import org.w3c.dom.Document
 import org.xml.sax.EntityResolver
 import org.xml.sax.ErrorHandler
-import org.xml.sax.InputSource
-import org.xml.sax.SAXException
 import java.io.IOException
 import java.io.InputStreamReader
-import java.util.logging.Logger
 import javax.xml.parsers.DocumentBuilder
 
 class DocumentModelBuilder() : DocumentBuilder() {
 
-    var resolver: EntityResolver? = null
-        private set
-    private var errorHandler: ErrorHandler? = null
     private var domImplementation: DOMImplementation? = null
 
 
@@ -29,8 +23,8 @@ class DocumentModelBuilder() : DocumentBuilder() {
      * [InputSourceImpl].
      * @see .createDocument
      */
-    @Throws(SAXException::class, IOException::class)
-    override fun parse(inputSource: InputSource): Document? {
+    @Throws(Exception::class, IOException::class)
+    fun parse(inputSource: InputSource): Document? {
         val document = this.createDocument(inputSource, "") as HTMLDocumentImpl
         document.load()
         return document
@@ -45,23 +39,20 @@ class DocumentModelBuilder() : DocumentBuilder() {
      * source must provide either an input stream or a reader.
      * @see HTMLDocumentImpl.load
      */
-    @Throws(SAXException::class, IOException::class)
+    @Throws(Exception::class, IOException::class)
     fun createDocument(inputSource: InputSource, contentType: String?): Document {
-        val encoding = inputSource.encoding
-        var charset = encoding
-        if (charset == null) {
-            charset = "US-ASCII"
-        }
-        val uri = inputSource.systemId
-        if (uri == null) {
-            logger.warning("parse(): InputSource has no SystemId (URI); document item URLs will not be resolvable.")
-        }
+        val charset = inputSource.charset
+        val uri = inputSource.uri
         val wis: WritableLineReader?
-        val inputStream = inputSource.byteStream!!
+        val inputStream = inputSource.byteStream
         wis = WritableLineReader(InputStreamReader(inputStream, charset))
 
         val document = HTMLDocumentImpl(wis, uri!!, contentType)
         return document
+    }
+
+    override fun parse(p0: org.xml.sax.InputSource?): Document? {
+        TODO("Not yet implemented")
     }
 
     override fun isNamespaceAware(): Boolean {
@@ -72,9 +63,12 @@ class DocumentModelBuilder() : DocumentBuilder() {
         return false
     }
 
+    override fun setEntityResolver(p0: EntityResolver?) {
+        TODO("Not yet implemented")
+    }
 
-    override fun setEntityResolver(er: EntityResolver?) {
-        this.resolver = er
+    override fun setErrorHandler(p0: ErrorHandler?) {
+        TODO("Not yet implemented")
     }
 
     override fun newDocument(): Document {
@@ -90,11 +84,4 @@ class DocumentModelBuilder() : DocumentBuilder() {
         }
     }
 
-    override fun setErrorHandler(eh: ErrorHandler?) {
-        this.errorHandler = eh
-    }
-
-    companion object {
-        private val logger: Logger = Logger.getLogger(DocumentModelBuilder::class.java.name)
-    }
 }

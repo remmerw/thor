@@ -7,9 +7,6 @@ import cz.vutbr.web.csskit.MatchConditionOnElements
 import cz.vutbr.web.domassign.Analyzer.OrderedRule
 import cz.vutbr.web.domassign.AnalyzerUtil
 import io.github.remmerw.thor.style.CssProperties
-import org.w3c.css.sac.InputSource
-import java.io.Reader
-import java.io.StringReader
 
 object HtmlStyles {
 
@@ -105,11 +102,6 @@ object HtmlStyles {
         return null
     }
 
-    fun getCssInputSourceForDecl(text: String): InputSource {
-        val reader: Reader = StringReader(text)
-        val `is` = InputSource(reader)
-        return `is`
-    }
 
     private fun layoutChanges(
         prevStyle: CssProperties?,

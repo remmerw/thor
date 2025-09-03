@@ -39,9 +39,7 @@ kotlin {
                 implementation(libs.kotlinx.io.core)
 
 
-
                 implementation(libs.xercesimpl)
-                implementation(libs.sac)
                 implementation(libs.jstyleparser)
 
                 implementation(libs.lifecycle)
@@ -60,8 +58,7 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.test)
                 implementation(libs.androidx.ui.test.junit4)
-                implementation(libs.androidx.ui.test.manifest)
-
+               //  implementation(libs.androidx.ui.test.manifest)
             }
         }
 

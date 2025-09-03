@@ -29,12 +29,10 @@ import cz.vutbr.web.css.StyleSheet
 import cz.vutbr.web.csskit.RuleFactoryImpl
 import cz.vutbr.web.csskit.antlr4.CSSParserFactory
 import io.github.remmerw.thor.dom.ElementImpl
-import org.w3c.css.sac.InputSource
 import java.io.BufferedReader
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.InputStream
-import java.io.Reader
 import java.io.StringReader
 import java.net.URL
 import java.util.logging.Level
@@ -74,18 +72,12 @@ object CSSUtilities {
         }
     }
 
-    fun getCssInputSourceForStyleSheet(text: String, scriptURI: String?): InputSource {
-        val reader: Reader = StringReader(text)
-        val `is` = InputSource(reader)
-        `is`.uri = scriptURI
-        return `is`
-    }
 
     fun parseStyleSheet(
         baseURI: String,
         stylesheetStr: String?
     ): StyleSheet? {
-        return jParseCSS2(baseURI, stylesheetStr)
+        return parseCSS2(baseURI, stylesheetStr)
     }
 
 
@@ -96,7 +88,7 @@ object CSSUtilities {
             return css
         }
 
-    private fun jParseCSS2(cssURI: String, processedText: String?): StyleSheet? {
+    private fun parseCSS2(cssURI: String, processedText: String?): StyleSheet? {
         try {
             val base = URL(cssURI)
             CSSFactory.setAutoImportMedia(MediaSpec("screen"))
