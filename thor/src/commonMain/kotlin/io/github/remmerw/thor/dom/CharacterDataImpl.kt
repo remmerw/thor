@@ -18,18 +18,12 @@ abstract class CharacterDataImpl() : NodeImpl(), CharacterDataModel {
 
     override fun setTextContent(textContent: String) {
         this.text = textContent
-        if (!this.notificationsSuspended) {
-            this.informInvalid()
-        }
     }
 
 
     @Throws(DOMException::class)
     override fun appendData(arg: String) {
         this.text += arg
-        if (!this.notificationsSuspended) {
-            this.informInvalid()
-        }
     }
 
     @Throws(DOMException::class)
@@ -37,9 +31,7 @@ abstract class CharacterDataImpl() : NodeImpl(), CharacterDataModel {
         val buffer = StringBuffer(this.text)
         val result = buffer.delete(offset, offset + count)
         this.text = result.toString()
-        if (!this.notificationsSuspended) {
-            this.informInvalid()
-        }
+
     }
 
     @Throws(DOMException::class)
@@ -50,9 +42,7 @@ abstract class CharacterDataImpl() : NodeImpl(), CharacterDataModel {
     @Throws(DOMException::class)
     override fun setData(data: String) {
         this.text = data
-        if (!this.notificationsSuspended) {
-            this.informInvalid()
-        }
+
     }
 
     override fun getLength(): Int {
@@ -64,9 +54,6 @@ abstract class CharacterDataImpl() : NodeImpl(), CharacterDataModel {
         val buffer = StringBuffer(this.text)
         val result = buffer.insert(offset, arg)
         this.text = result.toString()
-        if (!this.notificationsSuspended) {
-            this.informInvalid()
-        }
     }
 
     @Throws(DOMException::class)
@@ -74,9 +61,6 @@ abstract class CharacterDataImpl() : NodeImpl(), CharacterDataModel {
         val buffer = StringBuffer(this.text)
         val result = buffer.replace(offset, offset + count, arg)
         this.text = result.toString()
-        if (!this.notificationsSuspended) {
-            this.informInvalid()
-        }
     }
 
     @Throws(DOMException::class)

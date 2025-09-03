@@ -9,10 +9,8 @@ import cz.vutbr.web.css.RuleSet
 import cz.vutbr.web.css.Selector
 import io.github.remmerw.thor.core.Strings
 import io.github.remmerw.thor.core.Urls
-import io.github.remmerw.thor.parser.HtmlParser
 import org.w3c.dom.DOMException
 import org.w3c.dom.Document
-import org.w3c.dom.Element
 import org.w3c.dom.NamedNodeMap
 import org.w3c.dom.Node
 import org.w3c.dom.NodeList
@@ -20,28 +18,15 @@ import org.w3c.dom.Text
 import org.w3c.dom.UserDataHandler
 import org.w3c.dom.html.HTMLCollection
 import java.io.IOException
-import java.lang.Boolean
 import java.net.URL
 import java.util.Arrays
 import java.util.LinkedList
 import java.util.logging.Level
 import java.util.logging.Logger
 import java.util.stream.Collectors
-import kotlin.Any
-import kotlin.Array
-import kotlin.IndexOutOfBoundsException
-import kotlin.Int
-import kotlin.Short
-import kotlin.String
-import kotlin.TODO
-import kotlin.Throwable
-import kotlin.Throws
 import kotlin.concurrent.Volatile
-import kotlin.plus
-import kotlin.run
-import kotlin.synchronized
 
-abstract class NodeImpl : NodeModel, ModelNode {
+abstract class NodeImpl : NodeModel {
 
 
     private var nodeList = mutableStateListOf<NodeModel>()
@@ -54,7 +39,7 @@ abstract class NodeImpl : NodeModel, ModelNode {
     protected var document: Document? = null
 
 
-    override fun cloneNode(p0: kotlin.Boolean): Node? {
+    override fun cloneNode(p0: Boolean): Node? {
         TODO("Not yet implemented")
     }
 
@@ -64,9 +49,6 @@ abstract class NodeImpl : NodeModel, ModelNode {
      */
     @Volatile
     var treeLock: Any = this
-
-    @Volatile
-    protected var notificationsSuspended: kotlin.Boolean = false
 
     @Volatile
     protected var nodeParent: Node? = null
@@ -84,7 +66,7 @@ abstract class NodeImpl : NodeModel, ModelNode {
      * attached by default.
      */
 
-    var isAttachedToDocument: kotlin.Boolean = this is Document
+    var isAttachedToDocument: Boolean = this is Document
 
 
     @Throws(DOMException::class)
@@ -111,7 +93,7 @@ abstract class NodeImpl : NodeModel, ModelNode {
                 }
             }
 
-            this.postChildListChanged()
+
 
             return newChild
         } else {
@@ -119,25 +101,11 @@ abstract class NodeImpl : NodeModel, ModelNode {
         }
     }
 
-    // TODO not used by anyone
-    protected fun removeAllChildren() {
-        this.removeAllChildrenImpl()
-    }
 
     protected fun removeAllChildrenImpl() {
         synchronized(this.treeLock) {
-            val nl = this.nodeList
-            if (nl != null) {
-                for (node in nl) {
-                    if (node is NodeImpl) {
-
-                    }
-                }
-                this.nodeList.clear()
-            }
+            this.nodeList.clear()
         }
-
-        this.postChildListChanged()
     }
 
     protected fun getNodeList(filter: NodeFilter): NodeList {
@@ -170,7 +138,7 @@ abstract class NodeImpl : NodeModel, ModelNode {
      */
     fun getDescendants(
         filter: NodeFilter,
-        nestIntoMatchingNodes: kotlin.Boolean
+        nestIntoMatchingNodes: Boolean
     ): java.util.ArrayList<NodeImpl?> {
         val al = java.util.ArrayList<NodeImpl?>()
         synchronized(this.treeLock) {
@@ -183,7 +151,7 @@ abstract class NodeImpl : NodeModel, ModelNode {
     private fun extractDescendantsArrayImpl(
         filter: NodeFilter,
         al: java.util.ArrayList<NodeImpl?>,
-        nestIntoMatchingNodes: kotlin.Boolean
+        nestIntoMatchingNodes: Boolean
     ) {
         this.nodeList.forEach { node ->
             val n = node as NodeImpl
@@ -237,7 +205,7 @@ abstract class NodeImpl : NodeModel, ModelNode {
     }
 
 
-    private fun isAncestorOf(other: Node): kotlin.Boolean {
+    private fun isAncestorOf(other: Node): Boolean {
         val parent = other.parentNode as NodeImpl?
         if (parent === this) {
             return true
@@ -248,7 +216,7 @@ abstract class NodeImpl : NodeModel, ModelNode {
         }
     }
 
-    private fun isInclusiveAncestorOf(other: Node?): kotlin.Boolean {
+    private fun isInclusiveAncestorOf(other: Node?): Boolean {
         if (other === this) {
             return true
         } else if (other == null) {
@@ -298,7 +266,7 @@ abstract class NodeImpl : NodeModel, ModelNode {
         this.treeLock = if (value == null) this else value
     }
 
-    open fun setOwnerDocument(value: Document?, deep: kotlin.Boolean) {
+    open fun setOwnerDocument(value: Document?, deep: Boolean) {
         this.document = value
         this.treeLock = if (value == null) this else value
         if (deep) {
@@ -370,11 +338,8 @@ abstract class NodeImpl : NodeModel, ModelNode {
             if (idx == -1) {
                 throw DOMException(DOMException.NOT_FOUND_ERR, "refChild not found")
             }
-            nl!!.add(idx, newChild as NodeModel)
-
+            nl.add(idx, newChild as NodeModel)
         }
-
-        this.postChildListChanged()
 
         return newChild
     }
@@ -383,13 +348,8 @@ abstract class NodeImpl : NodeModel, ModelNode {
     @Throws(DOMException::class)
     protected fun insertAt(newChild: Node?, idx: Int): Node? {
         synchronized(this.treeLock) {
-
             nodes().add(idx, newChild!! as NodeModel)
-
         }
-
-        this.postChildListChanged()
-
         return newChild
     }
 
@@ -410,16 +370,15 @@ abstract class NodeImpl : NodeModel, ModelNode {
             }
 
             val nl = this.nodeList
-            val idx = if (nl == null) -1 else nl.indexOf(oldChild)
+            val idx = nl.indexOf(oldChild)
             if (idx == -1) {
                 throw DOMException(DOMException.NOT_FOUND_ERR, "oldChild not found")
             }
-            nl!!.set(idx, newChild!! as NodeModel)
+            nl.set(idx, newChild!! as NodeModel)
 
 
         }
 
-        this.postChildListChanged()
 
         return newChild
     }
@@ -427,43 +386,24 @@ abstract class NodeImpl : NodeModel, ModelNode {
     @Throws(DOMException::class)
     override fun removeChild(oldChild: Node?): Node? {
         synchronized(this.treeLock) {
-            val nl = this.nodeList
-            if ((nl == null) || !nl.remove(oldChild)) {
+            if (!nodeList.remove(oldChild)) {
                 throw DOMException(DOMException.NOT_FOUND_ERR, "oldChild not found")
             }
-
         }
-
-        this.postChildListChanged()
-
         return oldChild
     }
 
 
     @Throws(DOMException::class)
     fun removeChildAt(index: Int): Node {
-        try {
-            synchronized(this.treeLock) {
-                val nl = this.nodeList
-                if (nl == null) {
-                    throw DOMException(DOMException.INDEX_SIZE_ERR, "Empty list of children")
-                }
-                val n = nl.removeAt(index)
-                if (n == null) {
-                    throw DOMException(DOMException.INDEX_SIZE_ERR, "No node with that index")
-                }
-
-                return n
-            }
-        } finally {
-            this.postChildListChanged()
+        synchronized(this.treeLock) {
+            return nodeList.removeAt(index)
         }
     }
 
-    override fun hasChildNodes(): kotlin.Boolean {
+    override fun hasChildNodes(): Boolean {
         synchronized(this.treeLock) {
-            val nl = this.nodeList
-            return (nl != null) && !nl.isEmpty()
+            return nodeList.isNotEmpty()
         }
     }
 
@@ -531,55 +471,12 @@ abstract class NodeImpl : NodeModel, ModelNode {
         return if (parent == null) null else parent.getNextTo(this)
     }
 
-    val previousElementSibling: Element?
-        get() {
-            val parent =
-                this.nodeParent as NodeImpl?
-            if (parent != null) {
-                var previous: Node? = this
-                do {
-                    previous = parent.getPreviousTo(previous)
-                    if ((previous != null) && (previous is Element)) {
-                        return previous
-                    }
-                } while (previous != null)
-                return null
-            } else {
-                return null
-            }
-        }
-
-    val nextElementSibling: Element?
-        get() {
-            val parent =
-                this.nodeParent as NodeImpl?
-            if (parent != null) {
-                var next: Node? = this
-                do {
-                    next = parent.getNextTo(next)
-                    if ((next != null) && (next is Element)) {
-                        return next
-                    }
-                } while (next != null)
-                return null
-            } else {
-                return null
-            }
-        }
-
     override fun getFeature(feature: String?, version: String?): Any? {
         // TODO What should this do?
         return null
     }
 
     override fun setUserData(key: String, data: Any?, handler: UserDataHandler?): Any? {
-        if (HtmlParser.MODIFYING_KEY == key) {
-            val ns = (Boolean.TRUE === data)
-            this.notificationsSuspended = ns
-            if (!ns) {
-                this.informNodeLoaded()
-            }
-        }
         // here we spent some effort preventing our maps from growing too much
         synchronized(this) {
             if (handler != null) {
@@ -608,9 +505,7 @@ abstract class NodeImpl : NodeModel, ModelNode {
         }
     }
 
-    // abstract override fun getLocalName(): String?
-
-    override fun hasAttributes(): kotlin.Boolean {
+    override fun hasAttributes(): Boolean {
         return false
     }
 
@@ -671,15 +566,13 @@ abstract class NodeImpl : NodeModel, ModelNode {
             }
         }
 
-        this.postChildListChanged()
+
     }
 
     protected fun removeChildren(filter: NodeFilter) {
         synchronized(this.treeLock) {
             this.removeChildrenImpl(filter)
         }
-
-        this.postChildListChanged()
     }
 
     protected fun removeChildrenImpl(filter: NodeFilter) {
@@ -687,12 +580,9 @@ abstract class NodeImpl : NodeModel, ModelNode {
         val len = nl.size
         var i = len
         while (--i >= 0) {
-            val node: Node = nl.get(i)
+            val node: Node = nl[i]
             if (filter.accept(node)) {
-                val n: Node? = nl.removeAt(i)
-                if (n is NodeImpl) {
-
-                }
+                nl.removeAt(i)
             }
         }
     }
@@ -710,98 +600,86 @@ abstract class NodeImpl : NodeModel, ModelNode {
             }
         }
 
-        this.postChildListChanged()
-
         return newChild
     }
 
     fun replaceAdjacentTextNodes(node: Text, textContent: String?): Text {
-        try {
-            synchronized(this.treeLock) {
-                val nl = this.nodeList
-                if (nl == null) {
-                    throw DOMException(DOMException.NOT_FOUND_ERR, "Node not a child")
-                }
-                val idx = nl.indexOf(node as NodeModel)
-                if (idx == -1) {
-                    throw DOMException(DOMException.NOT_FOUND_ERR, "Node not a child")
-                }
-                var firstIdx = idx
-                val toDelete: MutableList<Any?> = LinkedList<Any?>()
-                run {
-                    var adjIdx = idx
-                    while (--adjIdx >= 0) {
-                        val child: Any? = this.nodeList!![adjIdx]
-                        if (child is Text) {
-                            firstIdx = adjIdx
-                            toDelete.add(child)
-                        }
-                    }
-                }
-                val length = this.nodeList!!.size
+
+        synchronized(this.treeLock) {
+            val nl = this.nodeList
+            val idx = nl.indexOf(node as NodeModel)
+            if (idx == -1) {
+                throw DOMException(DOMException.NOT_FOUND_ERR, "Node not a child")
+            }
+            var firstIdx = idx
+            val toDelete: MutableList<Any?> = LinkedList<Any?>()
+            run {
                 var adjIdx = idx
-                while (++adjIdx < length) {
-                    val child: Any? = this.nodeList!!.get(adjIdx)
+                while (--adjIdx >= 0) {
+                    val child: Any? = this.nodeList!![adjIdx]
                     if (child is Text) {
+                        firstIdx = adjIdx
                         toDelete.add(child)
                     }
                 }
-                this.nodeList.removeAll(toDelete)
-                val textNode = TextImpl(textContent!!)
-                textNode.setOwnerDocument(this.document)
-                textNode.setParentImpl(this)
-                this.nodeList.add(firstIdx, textNode)
-                return textNode
             }
-        } finally {
-            this.postChildListChanged()
+            val length = this.nodeList!!.size
+            var adjIdx = idx
+            while (++adjIdx < length) {
+                val child: Any? = this.nodeList!!.get(adjIdx)
+                if (child is Text) {
+                    toDelete.add(child)
+                }
+            }
+            this.nodeList.removeAll(toDelete)
+            val textNode = TextImpl(textContent!!)
+            textNode.setOwnerDocument(this.document)
+            textNode.setParentImpl(this)
+            this.nodeList.add(firstIdx, textNode)
+            return textNode
         }
+
     }
 
     fun replaceAdjacentTextNodes(node: Text): Text {
-        try {
-            synchronized(this.treeLock) {
-                val nl = this.nodeList
-                if (nl == null) {
-                    throw DOMException(DOMException.NOT_FOUND_ERR, "Node not a child")
-                }
-                val idx = nl.indexOf(node as NodeModel)
-                if (idx == -1) {
-                    throw DOMException(DOMException.NOT_FOUND_ERR, "Node not a child")
-                }
-                val textBuffer = StringBuffer()
-                var firstIdx = idx
-                val toDelete: MutableList<Any?> = LinkedList<Any?>()
-                run {
-                    var adjIdx = idx
-                    while (--adjIdx >= 0) {
-                        val child: Any? = this.nodeList[adjIdx]
-                        if (child is Text) {
-                            firstIdx = adjIdx
-                            toDelete.add(child)
-                            textBuffer.append(child.nodeValue)
-                        }
-                    }
-                }
-                val length = this.nodeList!!.size
+
+        synchronized(this.treeLock) {
+            val nl = this.nodeList
+            val idx = nl.indexOf(node as NodeModel)
+            if (idx == -1) {
+                throw DOMException(DOMException.NOT_FOUND_ERR, "Node not a child")
+            }
+            val textBuffer = StringBuffer()
+            var firstIdx = idx
+            val toDelete: MutableList<Any?> = LinkedList<Any?>()
+            run {
                 var adjIdx = idx
-                while (++adjIdx < length) {
-                    val child: Any? = this.nodeList!!.get(adjIdx)
+                while (--adjIdx >= 0) {
+                    val child: Any? = this.nodeList[adjIdx]
                     if (child is Text) {
+                        firstIdx = adjIdx
                         toDelete.add(child)
                         textBuffer.append(child.nodeValue)
                     }
                 }
-                this.nodeList!!.removeAll(toDelete)
-                val textNode = TextImpl(textBuffer.toString())
-                textNode.setOwnerDocument(this.document)
-                textNode.setParentImpl(this)
-                this.nodeList!!.add(firstIdx, textNode)
-                return textNode
             }
-        } finally {
-            this.postChildListChanged()
+            val length = this.nodeList.size
+            var adjIdx = idx
+            while (++adjIdx < length) {
+                val child: Any? = this.nodeList.get(adjIdx)
+                if (child is Text) {
+                    toDelete.add(child)
+                    textBuffer.append(child.nodeValue)
+                }
+            }
+            this.nodeList.removeAll(toDelete)
+            val textNode = TextImpl(textBuffer.toString())
+            textNode.setOwnerDocument(this.document)
+            textNode.setParentImpl(this)
+            this.nodeList.add(firstIdx, textNode)
+            return textNode
         }
+
     }
 
     override fun getParentNode(): Node? {
@@ -809,11 +687,11 @@ abstract class NodeImpl : NodeModel, ModelNode {
         return this.nodeParent
     }
 
-    override fun isSameNode(other: Node?): kotlin.Boolean {
+    override fun isSameNode(other: Node?): Boolean {
         return this === other
     }
 
-    override fun isSupported(feature: String?, version: String): kotlin.Boolean {
+    override fun isSupported(feature: String?, version: String): Boolean {
         return ("HTML" == feature && (version.compareTo("4.01") <= 0))
     }
 
@@ -821,17 +699,17 @@ abstract class NodeImpl : NodeModel, ModelNode {
         return null
     }
 
-    open fun equalAttributes(arg: Node?): kotlin.Boolean {
+    open fun equalAttributes(arg: Node?): Boolean {
         return false
     }
 
-    override fun isEqualNode(arg: Node?): kotlin.Boolean {
+    override fun isEqualNode(arg: Node?): Boolean {
         return (arg is NodeImpl) && (this.nodeType == arg.nodeType) && this.nodeName == arg.nodeName
                 && this.nodeValue == arg.nodeValue && this.localName == arg.localName
                 && this.nodeList == arg.nodeList && this.equalAttributes(arg)
     }
 
-    override fun isDefaultNamespace(namespaceURI: String?): kotlin.Boolean {
+    override fun isDefaultNamespace(namespaceURI: String?): Boolean {
         return namespaceURI == null
     }
 
@@ -861,10 +739,9 @@ abstract class NodeImpl : NodeModel, ModelNode {
                 this.replaceAdjacentTextNodes(text)
             }
         }
-        this.postChildListChanged()
     }
 
-    // ----- ModelNode implementation
+
     override fun toString(): String {
         return this.nodeName
     }
@@ -882,7 +759,7 @@ abstract class NodeImpl : NodeModel, ModelNode {
      * org.xamjwg.html.renderer.RenderableContext#getFullURL(java.lang.String)
      */
 
-    override fun getFullURL(spec: String): URL {
+    open fun getFullURL(spec: String): URL {
         val doc: Any? = this.document
         val cleanSpec = Urls.encodeIllegalCharacters(spec)
         if (doc is HTMLDocumentImpl) {
@@ -901,21 +778,7 @@ abstract class NodeImpl : NodeModel, ModelNode {
         }
     }
 
-
-    override fun isEqualOrDescendantOf(otherContext: ModelNode?): kotlin.Boolean {
-        if (otherContext === this) {
-            return true
-        }
-        val parent: Any? = this.nodeParent
-        if (parent is HTMLElementModel) {
-            return parent.isEqualOrDescendantOf(otherContext)
-        } else {
-            return false
-        }
-    }
-
-
-    override fun warn(message: String?, err: Throwable?) {
+    open fun warn(message: String?, err: Throwable?) {
         logger.log(Level.WARNING, message, err)
     }
 
@@ -923,91 +786,9 @@ abstract class NodeImpl : NodeModel, ModelNode {
         logger.log(Level.WARNING, message)
     }
 
-    fun informSizeInvalid() {
-        val doc = this.document as HTMLDocumentImpl?
-        if (doc != null) {
-            doc.sizeInvalidated(this)
-        }
-    }
-
-    fun informLookInvalid() {
-
-        val doc = this.document as HTMLDocumentImpl?
-        if (doc != null) {
-            doc.lookInvalidated(this)
-        }
-    }
-
-    fun informPositionInvalid() {
-        val doc = this.document as HTMLDocumentImpl?
-        if (doc != null) {
-            doc.positionInParentInvalidated(this)
-        }
-    }
-
-    open fun informInvalid() {
-        // This is called when an attribute or child changes.
-
-        val doc = this.document as HTMLDocumentImpl?
-        if (doc != null) {
-            doc.invalidated(this)
-        }
-    }
-
-    fun informStructureInvalid() {
-        // This is called when an attribute or child changes.
-
-        val doc = this.document as HTMLDocumentImpl?
-        if (doc != null) {
-            doc.structureInvalidated(this)
-        }
-    }
-
-    protected fun informNodeLoaded() {
-        // This is called when an attribute or child changes.
-
-        val doc = this.document as HTMLDocumentImpl?
-        if (doc != null) {
-            doc.nodeLoaded(this)
-        }
-    }
-
-    protected fun informExternalScriptLoading() {
-        // This is called when an attribute or child changes.
-
-        val doc = this.document as HTMLDocumentImpl?
-        if (doc != null) {
-            doc.externalScriptLoading(this)
-        }
-    }
-
 
     protected open fun htmlEncodeChildText(text: String): String? {
         return Strings.strictHtmlEncode(text, false)
-    }
-
-    /**
-     * This method is intended to be overriden by subclasses that are interested
-     * in processing their child-list whenever it is updated.
-     */
-    protected open fun handleChildListChanged() {
-    }
-
-    /**
-     * This method is intended to be overriden by subclasses that are interested
-     * in performing some operation when they are attached/detached from the
-     * document.
-     */
-    protected open fun handleDocumentAttachmentChanged() {
-    }
-
-
-    private fun postChildListChanged() {
-        this.handleChildListChanged()
-
-        if (!this.notificationsSuspended) {
-            this.informStructureInvalid()
-        }
     }
 
 
@@ -1050,17 +831,6 @@ abstract class NodeImpl : NodeModel, ModelNode {
             e.printStackTrace()
             throw DOMException(DOMException.SYNTAX_ERR, "Couldn't parse selector: " + query)
         }
-    }
-
-    fun getElementsByClassName(classNames: String): NodeList {
-        val classNamesArray: Array<String?> =
-            classNames.split("\\s".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-        // TODO: escape commas in class-names
-        val query = Arrays.stream<String?>(classNamesArray)
-            .filter { cn: String? -> cn!!.length > 0 }
-            .map<String?> { cn: String? -> "." + cn }
-            .collect(Collectors.joining(","))
-        return querySelectorAll(query)
     }
 
     open fun getElementsByTagName(classNames: String): NodeList {

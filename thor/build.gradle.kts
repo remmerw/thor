@@ -39,7 +39,7 @@ kotlin {
                 implementation(libs.kotlinx.io.core)
 
 
-                implementation(libs.xercesimpl)
+                //implementation(libs.xercesimpl)
                 implementation(libs.jstyleparser)
 
                 implementation(libs.lifecycle)

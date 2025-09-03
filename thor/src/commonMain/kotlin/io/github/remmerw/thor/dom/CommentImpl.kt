@@ -21,7 +21,7 @@ class CommentImpl(text: String) : CharacterDataImpl(), Comment {
     }
 
     override fun setNodeValue(nodeValue: String) {
-        this.setTextContent(nodeValue)
+        this.textContent = nodeValue
     }
 
     override fun getNodeType(): Short {

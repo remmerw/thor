@@ -23,10 +23,8 @@
  */
 package io.github.remmerw.thor.dom
 
-import io.github.remmerw.thor.parser.Nodes
 import org.w3c.dom.Node
 import org.w3c.dom.html.HTMLCollection
-import java.lang.ref.WeakReference
 
 open class DescendantHTMLCollection @JvmOverloads constructor(
     private val rootNode: NodeImpl,
@@ -39,14 +37,6 @@ open class DescendantHTMLCollection @JvmOverloads constructor(
     private var itemsByName: MutableMap<String?, ElementImpl?>? = null
     private var itemsByIndex: MutableList<NodeImpl?>? = null
 
-    /**
-     * @param rootNode
-     * @param nodeFilter
-     */
-    init {
-        val document = rootNode.ownerDocument as HTMLDocumentImpl
-        document.addDocumentNotificationListener(LocalNotificationListener(document, this))
-    }
 
     private fun ensurePopulatedImpl() {
         if (this.itemsByName == null) {
@@ -124,99 +114,6 @@ open class DescendantHTMLCollection @JvmOverloads constructor(
         synchronized(this.treeLock) {
             this.ensurePopulatedImpl()
             return this.itemsByIndex!!.indexOf(node)
-        }
-    }
-
-    // private final class NodeCounter implements NodeVisitor {
-    // private int count = 0;
-    //
-    // public final void visit(Node node) {
-    // if(nodeFilter.accept(node)) {
-    // this.count++;
-    // throw new SkipVisitorException();
-    // }
-    // }
-    //
-    // public int getCount() {
-    // return this.count;
-    // }
-    // }
-    //
-    // private final class NodeScanner implements NodeVisitor {
-    // private int count = 0;
-    // private Node foundNode = null;
-    // private final int targetIndex;
-    //
-    // public NodeScanner(int idx) {
-    // this.targetIndex = idx;
-    // }
-    //
-    // public final void visit(Node node) {
-    // if(nodeFilter.accept(node)) {
-    // if(this.count == this.targetIndex) {
-    // this.foundNode = node;
-    // throw new StopVisitorException();
-    // }
-    // this.count++;
-    // throw new SkipVisitorException();
-    // }
-    // }
-    //
-    // public Node getNode() {
-    // return this.foundNode;
-    // }
-    // }
-    //
-    // private final class NodeScanner2 implements NodeVisitor {
-    // private int count = 0;
-    // private int foundIndex = -1;
-    // private final Node targetNode;
-    //
-    // public NodeScanner2(Node node) {
-    // this.targetNode = node;
-    // }
-    //
-    // public final void visit(Node node) {
-    // if(nodeFilter.accept(node)) {
-    // if(node == this.targetNode) {
-    // this.foundIndex = this.count;
-    // throw new StopVisitorException();
-    // }
-    // this.count++;
-    // throw new SkipVisitorException();
-    // }
-    // }
-    //
-    // public int getIndex() {
-    // return this.foundIndex;
-    // }
-    // }
-    private class LocalNotificationListener(// Needs to be a static class with a weak reference to
-        // the collection object.
-        private val document: HTMLDocumentImpl, collection: DescendantHTMLCollection?
-    ) : DocumentNotificationAdapter() {
-        private val collectionRef: WeakReference<DescendantHTMLCollection?>
-
-        init {
-            this.collectionRef = WeakReference<DescendantHTMLCollection?>(collection)
-        }
-
-        override fun structureInvalidated(node: NodeImpl) {
-            val collection = this.collectionRef.get()
-            if (collection == null) {
-                // Gone!
-                this.document.removeDocumentNotificationListener(this)
-                return
-            }
-            if (collection.isValid) {
-                if (Nodes.isSameOrAncestorOf(collection.rootNode, node)) {
-                    collection.invalidate()
-                }
-            }
-        }
-
-        override fun nodeLoaded(node: NodeImpl) {
-            this.structureInvalidated(node)
         }
     }
 }
