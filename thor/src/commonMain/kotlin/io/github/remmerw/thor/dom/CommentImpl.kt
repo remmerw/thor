@@ -4,7 +4,10 @@ import org.w3c.dom.Comment
 import org.w3c.dom.Node
 import org.w3c.dom.Node.COMMENT_NODE
 
-class CommentImpl(text: String) : CharacterDataImpl(text), Comment {
+class CommentImpl(text: String) : CharacterDataImpl(), Comment {
+    init {
+        textContent = text
+    }
     override fun getLocalName(): String? {
         return null
     }

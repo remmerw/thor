@@ -17,7 +17,7 @@ import io.github.remmerw.thor.dom.HTMLFormElementModel
 import io.github.remmerw.thor.dom.HTMLImageElementModel
 import io.github.remmerw.thor.dom.HTMLLinkElementModel
 import io.github.remmerw.thor.dom.NodeModel
-import io.github.remmerw.thor.dom.TextImpl
+import io.github.remmerw.thor.dom.TextModel
 import io.github.remmerw.thor.model.DefaultRendererContext
 import io.github.remmerw.thor.model.RendererContext
 import io.github.remmerw.thor.model.Utils
@@ -137,7 +137,7 @@ fun Nodes(
                 }
 
                 "CHARS" -> {
-                    Chars(nodeModel as TextImpl, modifier)
+                    Chars(nodeModel as TextModel, modifier)
                 }
 
                 else -> {
@@ -150,10 +150,10 @@ fun Nodes(
     }
 }
 @Composable
-fun Chars(text: TextImpl, modifier: Modifier) {
+fun Chars(text: TextModel, modifier: Modifier) {
+    val text = remember { text.text() }
 
-
-    Text(text.textContent, modifier = modifier)
+    Text(text = text, modifier = modifier)
 
 }
 
