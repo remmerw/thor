@@ -11,7 +11,7 @@ import io.github.remmerw.thor.dom.HTMLElementBuilder.Pre
 import io.github.remmerw.thor.dom.HTMLElementBuilder.Quote
 import io.github.remmerw.thor.dom.HTMLElementBuilder.Textarea
 import org.w3c.dom.DOMException
-import org.w3c.dom.html.HTMLElement
+import org.w3c.dom.Element
 
 internal class ElementFactory private constructor() {
     private val builders: MutableMap<String, HTMLElementBuilder> = HashMap(80)
@@ -78,7 +78,7 @@ internal class ElementFactory private constructor() {
     }
 
     @Throws(DOMException::class)
-    fun createElement(document: HTMLDocumentImpl?, name: String): HTMLElement {
+    fun createElement(document: HTMLDocumentImpl?, name: String): Element {
         val normalName = name.uppercase()
         // No need to synchronize; read-only map at this point.
         val builder = this.builders[normalName]
