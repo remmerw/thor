@@ -1,6 +1,7 @@
 package io.github.remmerw.thor
 
 import io.github.remmerw.thor.dom.DocumentModel
+import io.github.remmerw.thor.dom.ElementModel
 import io.github.remmerw.thor.dom.HTMLElementModel
 import io.github.remmerw.thor.parser.DocumentModelBuilder
 import io.github.remmerw.thor.parser.InputSourceImpl
@@ -122,7 +123,7 @@ class Render(var url: String) {
      * are tags contained inside the parent tag.
      */
     fun doTree(node: Node?) {
-        if (node is HTMLElement) {
+        if (node is ElementModel) {
             // Visit tag.
 
             doElement(node)
@@ -142,8 +143,10 @@ class Render(var url: String) {
      * Simple doElement to print the tag name of the Element.  Override
      * to do something real.
      */
-    fun doElement(element: Element) {
+    fun doElement(element: ElementModel) {
         println("<" + element.tagName + ">")
+
+        println(element.attributes().toString())
 
         if (element is HTMLElementModel) {
             println(element.cssProperties().toString())
@@ -154,7 +157,7 @@ class Render(var url: String) {
      * Simple doTagEnd() to print the closing tag of the Element.
      * Override to do something real.
      */
-    fun doTagEnd(element: Element) {
+    fun doTagEnd(element: ElementModel) {
         println("</" + element.tagName + ">")
     }
 

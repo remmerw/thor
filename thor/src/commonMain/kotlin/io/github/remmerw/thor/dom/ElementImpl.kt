@@ -1,5 +1,7 @@
 package io.github.remmerw.thor.dom
 
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import io.github.remmerw.thor.core.Strings
 import io.github.remmerw.thor.parser.HtmlParser
 import org.w3c.dom.Attr
@@ -15,42 +17,34 @@ import org.w3c.dom.TypeInfo
 import java.util.LinkedList
 import java.util.Locale
 
-abstract class ElementModel(private val name: String) : NodeImpl(), Element {
-    protected var attributes: MutableMap<String, String>? = null
+abstract class ElementImpl(private val name: String) : NodeImpl(), ElementModel {
 
+    private var attributes = mutableStateMapOf<String, String>()
+
+    override fun attributes(): SnapshotStateMap<String, String> {
+        return attributes
+    }
 
     override fun getAttributes(): NamedNodeMap {
         synchronized(this) {
-            var attrs: MutableMap<String, String>? = this.attributes
             // TODO: Check if NamedNodeMapImpl can be changed to dynamically query the attributes field
             //       instead of keeping a reference to it. This will allow the NamedNodeMap to be live as well
             //       as avoid allocating of a HashMap here when attributes are empty.
-            if (attrs == null) {
-                attrs = HashMap<String, String>()
-                this.attributes = attrs
-            }
-            return NamedNodeMapImpl(this, this.attributes!!)
+            return NamedNodeMapImpl(this, this.attributes)
         }
     }
 
     override fun hasAttributes(): Boolean {
         synchronized(this) {
-            val attrs: MutableMap<String, String>? = this.attributes
-            return attrs != null && !attrs.isEmpty()
+            return !attributes.isEmpty()
         }
     }
 
     override fun equalAttributes(arg: Node?): Boolean {
-        if (arg is ElementModel) {
+        if (arg is ElementImpl) {
             synchronized(this) {
-                var attrs1: MutableMap<String, String>? = this.attributes
-                if (attrs1 == null) {
-                    attrs1 = mutableMapOf<String, String>()
-                }
-                var attrs2: MutableMap<String, String>? = arg.attributes
-                if (attrs2 == null) {
-                    attrs2 = mutableMapOf<String, String>()
-                }
+                val attrs1: MutableMap<String, String> = this.attributes
+                val attrs2: MutableMap<String, String> = arg.attributes
                 return attrs1 == attrs2
             }
         } else {
@@ -61,8 +55,7 @@ abstract class ElementModel(private val name: String) : NodeImpl(), Element {
     override fun getAttribute(name: String): String? {
         val normalName: String = normalizeAttributeName(name)
         synchronized(this) {
-            val attributes: MutableMap<String, String>? = this.attributes
-            return if (attributes == null) null else attributes.get(normalName)
+            return attributes[normalName]
         }
     }
 
@@ -296,7 +289,7 @@ abstract class ElementModel(private val name: String) : NodeImpl(), Element {
                         }
                         sb.append(txt)
                     }
-                } else if (node is ElementModel) {
+                } else if (node is ElementImpl) {
                     val txt = node.getRawInnerText(includeComment)
                     if ("" != txt) {
                         if (sb == null) {
@@ -319,21 +312,6 @@ abstract class ElementModel(private val name: String) : NodeImpl(), Element {
         }
     }
 
-
-    fun setInnerText(newText: String?) {
-        // TODO: Is this check for owner document really required?
-        val document = this.document
-        if (document == null) {
-            this.warn("setInnerText(): Element " + this + " does not belong to a document.")
-            return
-        }
-
-        removeAllChildrenImpl()
-
-        // Create node and call appendChild outside of synchronized block.
-        val textNode: Node? = document.createTextNode(newText)
-        this.appendChild(textNode)
-    }
 
     override fun createSimilarNode(): Node? {
         val doc = this.document as HTMLDocumentImpl?
@@ -390,15 +368,10 @@ abstract class ElementModel(private val name: String) : NodeImpl(), Element {
         var oldValue: String? = null
         synchronized(this) {
             if (newValue == null) {
-                if (attributes != null) {
-                    oldValue = attributes!!.remove(normalName)
-                }
+                oldValue = attributes.remove(normalName)
             } else {
-                if (attributes == null) {
-                    attributes = HashMap<String, String>(2)
-                }
 
-                oldValue = attributes!!.put(normalName, newValue)
+                oldValue = attributes.put(normalName, newValue)
             }
         }
 

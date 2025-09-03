@@ -51,7 +51,7 @@ import java.util.StringTokenizer
 import java.util.logging.Level
 import kotlin.concurrent.Volatile
 
-open class HTMLElementModel(name: String) : ElementModel(name), HTMLElement, CSS2PropertiesContext {
+open class HTMLElementModel(name: String) : ElementImpl(name), HTMLElement, CSS2PropertiesContext {
     @Volatile
     private var currentStyle: CssProperties? = null
     private var cachedNodeData: NodeData? = null

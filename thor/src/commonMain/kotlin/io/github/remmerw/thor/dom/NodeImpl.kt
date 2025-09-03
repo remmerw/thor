@@ -46,7 +46,7 @@ import kotlin.plus
 import kotlin.run
 import kotlin.synchronized
 
-abstract class NodeImpl : NodeModel, Node, ModelNode {
+abstract class NodeImpl : NodeModel, ModelNode {
 
     private var renderState: RenderState? = null
     override fun renderState(): RenderState? {
@@ -1205,7 +1205,7 @@ abstract class NodeImpl : NodeModel, Node, ModelNode {
         if (this.isAttachedToDocument != attached) {
             this.isAttachedToDocument = attached
             handleDocumentAttachmentChanged()
-            if (this is ElementModel) {
+            if (this is ElementImpl) {
                 this.updateIdMap(attached)
             }
         }
@@ -1234,7 +1234,7 @@ abstract class NodeImpl : NodeModel, Node, ModelNode {
             val firstSelector = selectors.get(0)
 
             nodes().forEach { n ->
-                if (n is ElementModel) {
+                if (n is ElementImpl) {
                     if (firstSelector.matches(n)) {
                         if (numSelectors > 1) {
                             val tailSelectors = selectors.subList(1, numSelectors)

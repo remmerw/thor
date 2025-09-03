@@ -31,7 +31,7 @@ import org.w3c.dom.Node.DOCUMENT_FRAGMENT_NODE
 /* TODO: extends ElementImpl as a hack, to get the ParentNode functionality.
          Better solution would be to extend from NodeImpl and create a ParentNode interface with default methods.
          Issue #88 */
-class DocumentFragmentModel : ElementModel("#document-fragment"), DocumentFragment {
+class DocumentFragmentModel : ElementImpl("#document-fragment"), DocumentFragment {
     override fun getLocalName(): String? {
         return null
     }
