@@ -17,11 +17,9 @@ import org.w3c.dom.Text
 import org.w3c.dom.UserDataHandler
 import java.io.IOException
 import java.net.URL
-import java.util.Arrays
 import java.util.LinkedList
 import java.util.logging.Level
 import java.util.logging.Logger
-import java.util.stream.Collectors
 import kotlin.concurrent.Volatile
 
 abstract class NodeImpl : NodeModel {
@@ -50,8 +48,7 @@ abstract class NodeImpl : NodeModel {
 
     @Volatile
     protected var nodeParent: Node? = null
-    private var userData: MutableMap<String?, Any?>? = null
-
+    private var userData: MutableMap<String, Any> = mutableMapOf()
 
     private val userDataHandlers: MutableMap<String, UserDataHandler> = mutableMapOf()
 
@@ -456,25 +453,18 @@ abstract class NodeImpl : NodeModel {
                 this.userDataHandlers.remove(key)
                 this.userDataHandlers.put(key, handler)
             }
-            var userData = this.userData
-            if (data != null) {
-                if (userData == null) {
-                    userData = HashMap<String?, Any?>()
-                    this.userData = userData
-                }
-                return userData.put(key, data)
-            } else if (userData != null) {
-                return userData.remove(key)
+
+            return if (data != null) {
+                userData.put(key, data)
             } else {
-                return null
+                userData.remove(key)
             }
         }
     }
 
     override fun getUserData(key: String?): Any? {
         synchronized(this) {
-            val ud = this.userData
-            return if (ud == null) null else ud.get(key)
+            return userData[key]
         }
     }
 
@@ -721,29 +711,23 @@ abstract class NodeImpl : NodeModel {
         this.nodeParent = parent
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.xamjwg.html.renderer.RenderableContext#getFullURL(java.lang.String)
-     */
 
     open fun getFullURL(spec: String): URL {
         val doc: Any? = this.document
         val cleanSpec = Urls.encodeIllegalCharacters(spec)
-        if (doc is HTMLDocumentImpl) {
-            return doc.getFullURL(cleanSpec)
+        return if (doc is HTMLDocumentImpl) {
+            doc.getFullURL(cleanSpec)
         } else {
-            return URL(cleanSpec)
+            URL(cleanSpec)
         }
     }
 
     open fun getDocumentURL(): URL? {
         val doc: Any? = this.document
-        if (doc is HTMLDocumentImpl) {
-            return doc.getDocumentURL()
+        return if (doc is HTMLDocumentImpl) {
+            doc.getDocumentURL()
         } else {
-            return null
+            null
         }
     }
 
@@ -780,44 +764,9 @@ abstract class NodeImpl : NodeModel {
         return matchingElements
     }
 
-    fun querySelectorAll(query: String?): NodeList {
-        try {
-            val selectors: Array<CombinedSelector> = makeSelectors(query)
-            val matches = LinkedList<Node>()
-            for (selector in selectors) {
-                matches.addAll(getMatchingChildren(selector))
-            }
-            return NodeListImpl(matches)
-        } catch (e: IOException) {
-            e.printStackTrace()
-            throw DOMException(DOMException.SYNTAX_ERR, "Couldn't parse selector: " + query)
-        } catch (e: CSSException) {
-            e.printStackTrace()
-            throw DOMException(DOMException.SYNTAX_ERR, "Couldn't parse selector: " + query)
-        }
-    }
-
-    open fun getElementsByTagName(classNames: String): NodeList {
-        val classNamesArray: Array<String?> =
-            classNames.split("\\s".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-        // TODO: escape commas in class-names
-        val query = Arrays.stream<String?>(classNamesArray).collect(Collectors.joining(","))
-        return querySelectorAll(query)
-    }
-
 
     companion object {
         @JvmStatic
         protected val logger: Logger = Logger.getLogger(NodeImpl::class.java.name)
-
-        @Throws(IOException::class, CSSException::class)
-        private fun makeSelectors(query: String?): Array<CombinedSelector> {
-            // this is quick way to parse the selectors. TODO: check if jStyleParser supports a better option.
-            val tempBlock = query + " { display: none}"
-            val styleSheet = CSSFactory.parseString(tempBlock, null)
-            val firstRuleBlock = styleSheet.get(0) as RuleSet
-            val selectors = firstRuleBlock.selectors
-            return selectors
-        }
     }
 }
