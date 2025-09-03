@@ -605,7 +605,7 @@ abstract class CssProperties(
         if (nodeData != null) {
             val value = nodeData.getValue(propertyName, true)
             // The trim() is a temporary work around for #154
-            return if (value == null) null else value.toString().trim { it <= ' ' }
+            return value?.toString()?.trim { it <= ' ' }
         } else {
             return if (nullIfAbsent) null else ""
         }
@@ -614,7 +614,7 @@ abstract class CssProperties(
     private fun helperGetProperty(propertyName: String?): String? {
         val nodeData = this.getNodeData()
         if (nodeData != null) {
-            val property = nodeData.getProperty<CSSProperty?>(propertyName, true)
+            val property = nodeData.getProperty<CSSProperty>(propertyName, true)
             // final CSSProperty property = nodeData.getProperty(propertyName);
             return if (property == null) null else property.toString()
         } else {
@@ -643,13 +643,13 @@ abstract class CssProperties(
         private fun border2Pixel(width: String?): String? {
             if (width != null) {
                 if ("thin".equals(width, ignoreCase = true)) {
-                    return HtmlValues.BORDER_THIN_SIZE
+                    return "1px"
                 }
                 if ("medium".equals(width, ignoreCase = true)) {
-                    return HtmlValues.BORDER_MEDIUM_SIZE
+                    return "3px"
                 }
                 if ("thick".equals(width, ignoreCase = true)) {
-                    return HtmlValues.BORDER_THICK_SIZE
+                    return "5px"
                 }
             }
             return width

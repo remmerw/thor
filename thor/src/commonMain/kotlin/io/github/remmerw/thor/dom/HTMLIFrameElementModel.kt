@@ -1,7 +1,5 @@
 package io.github.remmerw.thor.dom
 
-import io.github.remmerw.thor.style.IFrameRenderState
-import io.github.remmerw.thor.style.RenderState
 import org.w3c.dom.Document
 import org.w3c.dom.html.HTMLIFrameElement
 
@@ -109,9 +107,5 @@ class HTMLIFrameElementModel(name: String) : HTMLAbstractUIElement(name), HTMLIF
         }
     }
 
-
-    override fun createRenderState(prevRenderState: RenderState?): RenderState {
-        return IFrameRenderState(prevRenderState, this)
-    }
 
 }

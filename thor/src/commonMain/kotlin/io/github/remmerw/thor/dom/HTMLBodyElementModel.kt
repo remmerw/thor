@@ -23,8 +23,6 @@
  */
 package io.github.remmerw.thor.dom
 
-import io.github.remmerw.thor.style.BodyRenderState
-import io.github.remmerw.thor.style.RenderState
 import org.w3c.dom.Document
 import org.w3c.dom.html.HTMLBodyElement
 import org.w3c.dom.html.HTMLDocument
@@ -90,10 +88,6 @@ class HTMLBodyElementModel(name: String) : HTMLAbstractUIElement(name), HTMLBody
 
     override fun setVLink(vLink: String?) {
         this.setAttribute("vlink", vLink)
-    }
-
-    override fun createRenderState(prevRenderState: RenderState?): RenderState {
-        return BodyRenderState(prevRenderState, this)
     }
 
 

@@ -24,7 +24,6 @@
 package io.github.remmerw.thor.dom
 
 
-import io.github.remmerw.thor.style.RenderState
 import java.net.MalformedURLException
 import java.net.URL
 
@@ -42,7 +41,6 @@ interface ModelNode {
 
     fun isEqualOrDescendantOf(otherNode: ModelNode?): Boolean
 
-    fun renderState(): RenderState?
 
     /**
      * Sets a document item. A radio button, for example, can use this to set

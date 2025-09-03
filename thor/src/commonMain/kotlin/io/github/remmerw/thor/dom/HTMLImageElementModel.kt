@@ -1,8 +1,6 @@
 package io.github.remmerw.thor.dom
 
 import io.github.remmerw.thor.parser.HtmlParser
-import io.github.remmerw.thor.style.ImageRenderState
-import io.github.remmerw.thor.style.RenderState
 import org.w3c.dom.UserDataHandler
 import org.w3c.dom.html.HTMLImageElement
 import java.lang.Boolean
@@ -162,10 +160,6 @@ class HTMLImageElementModel : HTMLAbstractUIElement, HTMLImageElement {
         return super.setUserData(key, data, handler)
     }
 
-
-    override fun createRenderState(prevRenderState: RenderState?): RenderState {
-        return ImageRenderState(prevRenderState, this)
-    }
 
     override fun getLowSrc(): String? {
         // TODO

@@ -23,8 +23,6 @@
  */
 package io.github.remmerw.thor.dom
 
-import io.github.remmerw.thor.style.RenderState
-import io.github.remmerw.thor.style.TableCellRenderState
 import org.w3c.dom.html.HTMLTableCellElement
 
 open class HTMLTableCellElementModel(name: String) : HTMLAbstractUIElement(name),
@@ -168,7 +166,4 @@ open class HTMLTableCellElementModel(name: String) : HTMLAbstractUIElement(name)
         this.setAttribute("width", width)
     }
 
-    override fun createRenderState(prevRenderState: RenderState?): RenderState {
-        return TableCellRenderState(prevRenderState, this)
-    }
 }

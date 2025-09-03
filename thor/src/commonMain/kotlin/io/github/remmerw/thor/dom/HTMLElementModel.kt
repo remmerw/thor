@@ -36,9 +36,7 @@ import io.github.remmerw.thor.style.CSSUtilities
 import io.github.remmerw.thor.style.ComputedCssProperties
 import io.github.remmerw.thor.style.CssProperties
 import io.github.remmerw.thor.style.LocalCssProperties
-import io.github.remmerw.thor.style.RenderState
 import io.github.remmerw.thor.style.StyleElements
-import io.github.remmerw.thor.style.StyleSheetRenderState
 import org.w3c.css.sac.InputSource
 import org.w3c.dom.DOMException
 import org.w3c.dom.html.HTMLElement
@@ -618,13 +616,6 @@ open class HTMLElementModel(name: String) : ElementImpl(name), HTMLElement, CSS2
         } else {
             return null
         }
-    }
-
-
-    override fun createRenderState(prevRenderState: RenderState?): RenderState {
-        // Overrides NodeImpl method
-        // Called in synchronized block already
-        return StyleSheetRenderState(prevRenderState, this)
     }
 
 

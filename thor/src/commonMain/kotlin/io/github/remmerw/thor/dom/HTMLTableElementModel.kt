@@ -23,10 +23,6 @@
  */
 package io.github.remmerw.thor.dom
 
-import io.github.remmerw.thor.style.HtmlLength
-import io.github.remmerw.thor.style.HtmlValues
-import io.github.remmerw.thor.style.RenderState
-import io.github.remmerw.thor.style.TableRenderState
 import org.w3c.dom.DOMException
 import org.w3c.dom.html.HTMLCollection
 import org.w3c.dom.html.HTMLElement
@@ -150,75 +146,6 @@ class HTMLTableElementModel : HTMLAbstractUIElement, HTMLTableElement {
         this.setAttribute("width", width)
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.renderer.RenderableContext#getHeightLength()
-     */
-    fun getHeightLength(availHeight: Int): HtmlLength? {
-        try {
-            val props = this.cssProperties()
-            val heightText = props.height
-            if (heightText == null) {
-                // TODO: convert attributes to CSS properties
-                return HtmlLength(
-                    HtmlValues.getPixelSize(
-                        this.getAttribute("height")!!,
-                        this.getRenderState(),
-                        0,
-                        availHeight
-                    )
-                )
-            } else {
-                return HtmlLength(
-                    HtmlValues.getPixelSize(
-                        heightText,
-                        this.getRenderState(),
-                        0,
-                        availHeight
-                    )
-                )
-            }
-        } catch (err: NumberFormatException) {
-            println("Number format exception: " + err)
-            return null
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.renderer.RenderableContext#getWidthLength()
-     */
-    fun getWidthLength(availWidth: Int): HtmlLength? {
-        try {
-            val props = this.cssProperties()
-            val widthText = props.width
-            if (widthText == null) {
-                // TODO: convert attributes to CSS properties
-                return HtmlLength(
-                    HtmlValues.getPixelSize(
-                        this.getAttribute("width")!!,
-                        this.getRenderState(),
-                        0,
-                        availWidth
-                    )
-                )
-            } else {
-                return HtmlLength(
-                    HtmlValues.getPixelSize(
-                        widthText,
-                        this.getRenderState(),
-                        0,
-                        availWidth
-                    )
-                )
-            }
-        } catch (err: NumberFormatException) {
-            println("Number format exception: " + err)
-            return null
-        }
-    }
 
     override fun createTHead(): HTMLElement? {
         val doc = this.document
@@ -307,7 +234,4 @@ class HTMLTableElementModel : HTMLAbstractUIElement, HTMLTableElement {
         throw DOMException(DOMException.INDEX_SIZE_ERR, "Index out of range")
     }
 
-    override fun createRenderState(prevRenderState: RenderState?): RenderState {
-        return TableRenderState(prevRenderState, this)
-    }
 }

@@ -45,8 +45,6 @@ import io.github.remmerw.thor.parser.EmptyReader
 import io.github.remmerw.thor.parser.HtmlParser
 import io.github.remmerw.thor.parser.WritableLineReader
 import io.github.remmerw.thor.style.CSSNorm
-import io.github.remmerw.thor.style.RenderState
-import io.github.remmerw.thor.style.StyleSheetRenderState
 import org.w3c.dom.Attr
 import org.w3c.dom.CDATASection
 import org.w3c.dom.Comment
@@ -804,7 +802,7 @@ class HTMLDocumentImpl(
             synchronized(this.treeLock) {
                 // Need to invalidate all children up to
                 // this point.
-                this.forgetRenderState()
+
                 // TODO: this might be ineffcient.
 
                 this.nodes().forEach { nodeModel ->
@@ -1028,11 +1026,6 @@ class HTMLDocumentImpl(
             }
         }
     }
-
-    override fun createRenderState(prevRenderState: RenderState?): RenderState {
-        return StyleSheetRenderState(this)
-    }
-
 
     override fun setUserData(key: String, data: Any?, handler: UserDataHandler?): Any? {
         // if (org.cobraparser.html.parser.HtmlParser.MODIFYING_KEY.equals(key) && data == Boolean.FALSE) {

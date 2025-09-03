@@ -10,8 +10,6 @@ import cz.vutbr.web.css.Selector
 import io.github.remmerw.thor.core.Strings
 import io.github.remmerw.thor.core.Urls
 import io.github.remmerw.thor.parser.HtmlParser
-import io.github.remmerw.thor.style.RenderState
-import io.github.remmerw.thor.style.StyleSheetRenderState
 import org.w3c.dom.Attr
 import org.w3c.dom.DOMException
 import org.w3c.dom.Document
@@ -40,18 +38,12 @@ import kotlin.Short
 import kotlin.String
 import kotlin.Throwable
 import kotlin.Throws
-import kotlin.arrayOfNulls
 import kotlin.concurrent.Volatile
 import kotlin.plus
 import kotlin.run
 import kotlin.synchronized
 
 abstract class NodeImpl : NodeModel, ModelNode {
-
-    private var renderState: RenderState? = null
-    override fun renderState(): RenderState? {
-        return renderState
-    }
 
 
     private var nodeList = mutableStateListOf<NodeModel>()
@@ -1033,7 +1025,7 @@ abstract class NodeImpl : NodeModel, ModelNode {
     }
 
     fun informLookInvalid() {
-        this.forgetRenderState()
+
         val doc = this.document as HTMLDocumentImpl?
         if (doc != null) {
             doc.lookInvalidated(this)
@@ -1049,7 +1041,7 @@ abstract class NodeImpl : NodeModel, ModelNode {
 
     open fun informInvalid() {
         // This is called when an attribute or child changes.
-        this.forgetRenderState()
+
         val doc = this.document as HTMLDocumentImpl?
         if (doc != null) {
             doc.invalidated(this)
@@ -1058,7 +1050,7 @@ abstract class NodeImpl : NodeModel, ModelNode {
 
     fun informStructureInvalid() {
         // This is called when an attribute or child changes.
-        this.forgetRenderState()
+
         val doc = this.document as HTMLDocumentImpl?
         if (doc != null) {
             doc.structureInvalidated(this)
@@ -1067,7 +1059,7 @@ abstract class NodeImpl : NodeModel, ModelNode {
 
     protected fun informNodeLoaded() {
         // This is called when an attribute or child changes.
-        this.forgetRenderState()
+
         val doc = this.document as HTMLDocumentImpl?
         if (doc != null) {
             doc.nodeLoaded(this)
@@ -1076,7 +1068,7 @@ abstract class NodeImpl : NodeModel, ModelNode {
 
     protected fun informExternalScriptLoading() {
         // This is called when an attribute or child changes.
-        this.forgetRenderState()
+
         val doc = this.document as HTMLDocumentImpl?
         if (doc != null) {
             doc.externalScriptLoading(this)
@@ -1085,7 +1077,7 @@ abstract class NodeImpl : NodeModel, ModelNode {
 
     fun informLayoutInvalid() {
         // This is called by the style properties object.
-        this.forgetRenderState()
+
         val doc = this.document as HTMLDocumentImpl?
         if (doc != null) {
             doc.invalidated(this)
@@ -1097,54 +1089,6 @@ abstract class NodeImpl : NodeModel, ModelNode {
         val doc = this.document as HTMLDocumentImpl?
         if (doc != null) {
             doc.allInvalidated(true)
-        }
-    }
-
-    fun getRenderState(): RenderState {
-        // Generally called from the GUI thread, except for
-        // offset properties.
-        synchronized(this.treeLock) {
-            var rs: RenderState? = this.renderState
-            rs = this.renderState
-            if (rs != null) {
-                return rs
-            }
-            val parent: Any? = this.nodeParent
-            if ((parent != null) || (this is Document)) {
-                val prs: RenderState? = getParentRenderState(parent)
-                rs = this.createRenderState(prs)
-                this.renderState = rs
-                return rs
-            } else {
-                // Scenario is possible due to Javascript.
-                return BLANK_RENDER_STATE
-            }
-        }
-    }
-
-    // abstract protected RenderState createRenderState(final RenderState prevRenderState);
-    protected open fun createRenderState(prevRenderState: RenderState?): RenderState {
-        if (prevRenderState == null) {
-            return BLANK_RENDER_STATE
-        } else {
-            return prevRenderState
-        }
-    }
-
-    protected fun forgetRenderState() {
-        synchronized(this.treeLock) {
-            if (this.renderState != null) {
-                this.renderState = null
-                // Note that getRenderState() "validates"
-                // ancestor states as well.
-                val nl = this.nodeList
-                if (nl != null) {
-                    val i: MutableIterator<Node?> = nl.iterator()
-                    while (i.hasNext()) {
-                        (i.next() as NodeImpl).forgetRenderState()
-                    }
-                }
-            }
         }
     }
 
@@ -1301,15 +1245,6 @@ abstract class NodeImpl : NodeModel, ModelNode {
     companion object {
         @JvmStatic
         protected val logger: Logger = Logger.getLogger(NodeImpl::class.java.name)
-        private val EMPTY_ARRAY = arrayOfNulls<NodeImpl>(0)
-        private val BLANK_RENDER_STATE: RenderState = StyleSheetRenderState(null)
-        private fun getParentRenderState(parent: Any?): RenderState? {
-            if (parent is NodeImpl) {
-                return parent.getRenderState()
-            } else {
-                return null
-            }
-        }
 
         @Throws(IOException::class, CSSException::class)
         private fun makeSelectors(query: String?): Array<CombinedSelector> {

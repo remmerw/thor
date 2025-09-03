@@ -20,9 +20,6 @@
  */
 package io.github.remmerw.thor.dom
 
-import io.github.remmerw.thor.style.BaseFontRenderState
-import io.github.remmerw.thor.style.HtmlValues
-import io.github.remmerw.thor.style.RenderState
 import org.w3c.dom.html.HTMLBaseFontElement
 
 class HTMLBaseFontElementModel(name: String) : HTMLAbstractUIElement(name), HTMLBaseFontElement {
@@ -50,15 +47,4 @@ class HTMLBaseFontElementModel(name: String) : HTMLAbstractUIElement(name), HTML
         this.setAttribute("size", size)
     }
 
-    override fun createRenderState(prevRenderState: RenderState?): RenderState {
-        var prevRenderState = prevRenderState
-        val size = this.getAttribute("size")
-        if (size != null) {
-            val fontNumber = HtmlValues.getFontNumberOldStyle(size, prevRenderState!!)
-            // TODO: Check why the following call is not used.
-            // final float fontSize = HtmlValues.getFontSize(fontNumber);
-            prevRenderState = BaseFontRenderState(prevRenderState, fontNumber)
-        }
-        return super.createRenderState(prevRenderState)
-    }
 }
