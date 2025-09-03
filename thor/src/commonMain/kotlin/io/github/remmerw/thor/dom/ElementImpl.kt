@@ -233,25 +233,7 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), ElementModel 
         return if (oldValue == null) null else this.getAttr(normalName, oldValue)
     }
 
-    /*
-  protected void assignAttributeField(final String normalName, final String value) {
-    // Note: overriders assume that processing here is only done after
-    // checking attribute names, i.e. they may not call the super
-    // implementation if an attribute is already taken care of.
 
-    // TODO: Need to move this to a separate function, similar to updateIdMap()
-    // TODO: Need to update the name map, whenever attachment changes
-    if (isAttachedToDocument()) {
-      final HTMLDocumentImpl document = (HTMLDocumentImpl) this.document;
-      if ("name".equals(normalName)) {
-        final String oldName = this.getAttribute("name");
-        if (oldName != null) {
-          document.removeNamedItem(oldName);
-        }
-        document.setNamedItem(value, this);
-      }
-    }
-  }*/
     @Throws(DOMException::class)
     override fun removeAttributeNS(namespaceURI: String?, localName: String?) {
         throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Namespaces not supported")
@@ -309,29 +291,16 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), ElementModel 
         throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Namespaces not supported")
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.NodeImpl#getLocalName()
-     */
+
     override fun getLocalName(): String? {
-        return this.nodeName!!
+        return this.nodeName
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.NodeImpl#getNodeName()
-     */
+
     override fun getNodeName(): String {
         return this.name
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.NodeImpl#getNodeType()
-     */
     override fun getNodeType(): Short {
         return ELEMENT_NODE
     }
@@ -342,11 +311,7 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), ElementModel 
         return null
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.NodeImpl#setNodeValue(java.lang.String)
-     */
+
     @Throws(DOMException::class)
     override fun setNodeValue(nodeValue: String?) {
         // nop

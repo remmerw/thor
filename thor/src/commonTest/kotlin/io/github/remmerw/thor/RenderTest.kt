@@ -26,7 +26,7 @@ class RenderTest {
             val stateModel: StateModel = viewModel { StateModel() }
 
 
-            HtmlViewer(document)
+            HtmlViewer(document, stateModel)
         }
 
 

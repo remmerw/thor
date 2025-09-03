@@ -22,7 +22,7 @@ object Utils {
      */
     fun submit(
         form: HTMLFormElementModel,
-        rendererContext: RendererContext,
+        stateModel: StateModel,
         extraFormInputs: List<FormInput> = emptyList()
     ) {
 
@@ -50,17 +50,17 @@ object Utils {
         }
         try {
             val url = form.getFullURL(href!!)
-            rendererContext.submitForm(
+            stateModel.submitForm(
                 form.getMethod(), url,
                 form.target, form.enctype, fia
             )
         } catch (mfu: MalformedURLException) {
-            rendererContext.warn("submit()", mfu)
+            stateModel.warn("submit()", mfu)
         }
 
     }
 
-    fun navigate(anchor: HTMLAnchorElementModel, rendererContext: RendererContext) {
+    fun navigate(anchor: HTMLAnchorElementModel, stateModel: StateModel) {
 
         val href = anchor.getHref()
         if (href.startsWith("#")) {
@@ -70,10 +70,10 @@ object Utils {
             // evalInScope adds the JS task
             println(script)
         } else {
-            val url = absoluteURL(anchor, rendererContext)
+            val url = absoluteURL(anchor, stateModel)
             if (url != null) {
                 val target = anchor.target
-                rendererContext.linkClicked(anchor, url, target)
+                stateModel.linkClicked(anchor, url, target)
             }
         }
     }
@@ -81,7 +81,7 @@ object Utils {
 
     private fun absoluteURL(
         anchor: HTMLAnchorElementModel,
-        rendererContext: RendererContext
+        stateModel: StateModel
     ): URL? {
         val href = anchor.getHref()
         if (href.startsWith("javascript:")) {
@@ -90,13 +90,13 @@ object Utils {
             try {
                 return anchor.getFullURL(href)
             } catch (mfu: MalformedURLException) {
-                rendererContext.warn("Malformed URI: [" + href + "].", mfu)
+                stateModel.warn("Malformed URI: [" + href + "].", mfu)
             }
         }
         return null
     }
 
-    fun navigate(link: HTMLLinkElementModel, rendererContext: RendererContext) {
+    fun navigate(link: HTMLLinkElementModel, stateModel: StateModel) {
 
         if (link.disabled) {
             return
@@ -109,15 +109,15 @@ object Utils {
             // evalInScope adds the JS task
             println(script)
         } else {
-            val url = absoluteURL(link, rendererContext)
+            val url = absoluteURL(link, stateModel)
             if (url != null) {
                 val target = link.target
-                rendererContext.linkClicked(link, url, target)
+                stateModel.linkClicked(link, url, target)
             }
         }
     }
 
-    private fun absoluteURL(link: HTMLLinkElementModel, rendererContext: RendererContext): URL? {
+    private fun absoluteURL(link: HTMLLinkElementModel, stateModel: StateModel): URL? {
         val href = link.getHref()
         if (href.startsWith("javascript:")) {
             return null
@@ -125,7 +125,7 @@ object Utils {
             try {
                 return link.getFullURL(href)
             } catch (mfu: MalformedURLException) {
-                rendererContext.warn("Malformed URI: [" + href + "].", mfu)
+                stateModel.warn("Malformed URI: [" + href + "].", mfu)
             }
         }
         return null

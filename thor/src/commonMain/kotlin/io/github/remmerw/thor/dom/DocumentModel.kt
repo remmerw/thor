@@ -12,7 +12,7 @@ interface DocumentModel : NodeModel
 interface NodeModel : Node {
     fun nodes(): SnapshotStateList<NodeModel>
 
-    override fun getNodeName(): String
+    override fun getNodeName(): String // todo rename to nodeName()
 }
 
 
@@ -21,8 +21,8 @@ interface ElementModel : NodeModel, Element {
     fun properties(): SnapshotStateMap<String, String>
 }
 
-interface TextModel : Text, CharacterDataModel {
-}
+interface TextModel : Text, CharacterDataModel
+
 interface CharacterDataModel : NodeModel, CharacterData {
-    fun text() : String
+    fun text(): String
 }

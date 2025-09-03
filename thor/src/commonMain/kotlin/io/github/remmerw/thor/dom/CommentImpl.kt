@@ -8,6 +8,7 @@ class CommentImpl(text: String) : CharacterDataImpl(), Comment {
     init {
         textContent = text
     }
+
     override fun getLocalName(): String? {
         return null
     }

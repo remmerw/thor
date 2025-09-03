@@ -3,14 +3,13 @@ package io.github.remmerw.thor.dom
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import org.w3c.dom.CharacterData
 import org.w3c.dom.DOMException
 import org.w3c.dom.Node
 
 abstract class CharacterDataImpl() : NodeImpl(), CharacterDataModel {
     var text: String by mutableStateOf("")
 
-    override fun text() : String {
+    override fun text(): String {
         return text
     }
 

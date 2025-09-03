@@ -7,9 +7,9 @@ import org.w3c.dom.Node.TEXT_NODE
 import org.w3c.dom.Text
 
 open class TextImpl(text: String = "") : CharacterDataImpl(), TextModel {
-   init {
-       textContent = text
-   }
+    init {
+        textContent = text
+    }
 
     override fun isElementContentWhitespace(): Boolean {
         val t = this.text
