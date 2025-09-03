@@ -4,10 +4,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import io.github.remmerw.thor.dom.FormInput
-import org.w3c.dom.html.HTMLCollection
-import org.w3c.dom.html.HTMLElement
-import org.w3c.dom.html.HTMLLinkElement
 import java.net.URL
 import java.util.Optional
 
@@ -25,26 +21,12 @@ class StateModel() : ViewModel() {
     }
 
     fun linkClicked(
-        linkNode: HTMLElement?,
         url: URL,
         target: String?
     ) {
         println("TODO linkClicked $url")
     }
 
-    fun frames(): HTMLCollection? {
-        TODO("Not yet implemented")
-    }
-
-    fun submitForm(
-        method: String?,
-        action: URL,
-        target: String?,
-        enctype: String?,
-        formInputs: Array<FormInput>
-    ) {
-        println("TODO submitForm $method")
-    }
 
     fun alert(message: String?) {
         TODO("Not yet implemented")
@@ -125,9 +107,6 @@ class StateModel() : ViewModel() {
         TODO("Not yet implemented")
     }
 
-    fun isVisitedLink(link: HTMLLinkElement?): Boolean {
-        return true
-    }
 
     fun reload() {
         TODO("Not yet implemented")

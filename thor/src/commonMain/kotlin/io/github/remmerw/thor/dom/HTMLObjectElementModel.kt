@@ -13,11 +13,6 @@ class HTMLObjectElementModel(name: String) : HTMLElementModel(name), HTMLObjectE
         this.setAttribute("align", align)
     }
 
-    var alt: String?
-        get() = this.getAttribute("alt")
-        set(alt) {
-            this.setAttribute("alt", alt)
-        }
 
     override fun getArchive(): String? {
         return this.getAttribute("archive")
@@ -58,12 +53,6 @@ class HTMLObjectElementModel(name: String) : HTMLElementModel(name), HTMLObjectE
     override fun setName(name: String?) {
         this.setAttribute("name", name)
     }
-
-    var `object`: String?
-        get() = this.getAttribute("object")
-        set(`object`) {
-            this.setAttribute("object", `object`)
-        }
 
     override fun getWidth(): String? {
         return this.getAttribute("width")

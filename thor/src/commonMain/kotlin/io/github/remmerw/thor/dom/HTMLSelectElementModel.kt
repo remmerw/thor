@@ -6,7 +6,7 @@ import org.w3c.dom.html.HTMLElement
 import org.w3c.dom.html.HTMLFormElement
 import org.w3c.dom.html.HTMLSelectElement
 
-open class HTMLSelectElementModel(name: String) : HTMLBaseInputElement(name), HTMLSelectElement {
+open class HTMLSelectElementModel(name: String) : HTMLElementModel(name), HTMLSelectElement {
 
     override fun blur() {
         TODO("Not yet implemented")
@@ -87,6 +87,15 @@ open class HTMLSelectElementModel(name: String) : HTMLBaseInputElement(name), HT
 
     override fun setValue(p0: String?) {
         TODO("Not yet implemented")
+    }
+
+
+    override fun getName(): String? {
+        return this.getAttribute("name") // TODO: Should this return value of "id"?
+    }
+
+    override fun setName(name: String?) {
+        this.setAttribute("name", name) // TODO: Should this return value of "id"?
     }
 
     override fun remove(index: Int) {

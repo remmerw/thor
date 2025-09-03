@@ -258,7 +258,7 @@ fun Form(
 ) {
     Text(nodeModel.nodeName)
 
-    Utils.submit(nodeModel, stateModel)
+
 
     Nodes(nodeModel, stateModel, modifier)
 }

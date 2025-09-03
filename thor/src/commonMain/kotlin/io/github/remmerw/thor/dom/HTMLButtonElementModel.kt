@@ -1,3 +1,3 @@
 package io.github.remmerw.thor.dom
 
-class HTMLButtonElementModel(name: String) : HTMLBaseInputElement(name)
+class HTMLButtonElementModel(name: String) : HTMLElementModel(name)

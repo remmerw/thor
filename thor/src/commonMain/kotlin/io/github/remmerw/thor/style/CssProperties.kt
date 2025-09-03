@@ -15,9 +15,6 @@ abstract class CssProperties(
 
 
     var overlayColor: String? = null
-        set(value) {
-            field = value
-        }
 
     //TODO All the methods that are not implemented need more detailed understanding.
     // most of them are short hand properties and they need to be constructed from the long

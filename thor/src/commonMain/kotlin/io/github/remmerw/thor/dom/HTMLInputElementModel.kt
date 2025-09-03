@@ -1,32 +1,9 @@
-/*
-    GNU LESSER GENERAL PUBLIC LICENSE
-    Copyright (C) 2006 The Lobo Project
-
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-    Contact info: lobochief@users.sourceforge.net
- */
-/*
- * Created on Jan 15, 2006
- */
 package io.github.remmerw.thor.dom
 
 import org.w3c.dom.html.HTMLFormElement
 import org.w3c.dom.html.HTMLInputElement
 
-class HTMLInputElementModel(name: String) : HTMLBaseInputElement(name), HTMLInputElement {
+class HTMLInputElementModel(name: String) : HTMLElementModel(name), HTMLInputElement {
     private var defaultChecked = false
 
 
@@ -138,39 +115,51 @@ class HTMLInputElementModel(name: String) : HTMLBaseInputElement(name), HTMLInpu
         TODO("Not yet implemented")
     }
 
+    override fun getDefaultValue(): String? {
+        return this.getAttribute("defaultValue")
+    }
 
-    override fun getFormInputs(): Array<FormInput>? {
-        val type = this.type
-        val name = this.name
-        if (name == null) {
-            return null
-        }
-        if (type == null) {
-            return arrayOf<FormInput>(FormInput(name, this.value))
-        } else {
-            if ("text" == type || "password" == type || "hidden" == type || "url" == type || "number" == type || "search" == type || "" == type) {
-                return arrayOf<FormInput>(FormInput(name, this.value))
-            } else if ("submit" == type) {
-                // It's done as an "extra" form input
-                return null
-            } else if ("radio" == type || "checkbox" == type) {
-                if (this.checked) {
-                    var value = this.value
-                    if ((value == null) || (value.length == 0)) {
-                        value = "on"
-                    }
-                    return arrayOf<FormInput>(FormInput(name, value))
-                } else {
-                    return null
-                }
-            } else if ("image" == type) {
-                // It's done as an "extra" form input
-                return null
-            } else if ("file" == type) {
-                TODO("Not yet implemented")
-            } else {
-                return null
-            }
-        }
+    override fun setDefaultValue(defaultValue: String?) {
+        this.setAttribute("defaultValue", defaultValue)
+    }
+
+    override fun getAccept(): String? {
+        return this.getAttribute("accept")
+    }
+
+    override fun setAccept(accept: String?) {
+        this.setAttribute("accept", accept)
+    }
+
+    override fun getAccessKey(): String? {
+        return this.getAttribute("accessKey")
+    }
+
+    override fun setAccessKey(accept: String?) {
+        this.setAttribute("accessKey", accept)
+    }
+
+    override fun getAlign(): String? {
+        return this.getAttribute("align")
+    }
+
+    override fun setAlign(align: String?) {
+        this.setAttribute("align", align)
+    }
+
+    override fun getAlt(): String? {
+        return this.getAttribute("alt")
+    }
+
+    override fun setAlt(alt: String?) {
+        this.setAttribute("alt", alt)
+    }
+
+    override fun getName(): String? {
+        return this.getAttribute("name") // TODO: Should this return value of "id"?
+    }
+
+    override fun setName(name: String?) {
+        this.setAttribute("name", name) // TODO: Should this return value of "id"?
     }
 }

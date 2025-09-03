@@ -65,8 +65,4 @@ open class HTMLElementModel(name: String) : ElementImpl(name), HTMLElement {
         return this.getAttribute(name) != null
     }
 
-    open fun getFormInputs(): Array<FormInput>? {
-        return null
-    }
-
 }

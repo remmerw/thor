@@ -26,8 +26,33 @@ package io.github.remmerw.thor.dom
 import org.w3c.dom.html.HTMLFormElement
 import org.w3c.dom.html.HTMLTextAreaElement
 
-class HTMLTextAreaElementModel : HTMLBaseInputElement, HTMLTextAreaElement {
-    constructor(name: String) : super(name)
+class HTMLTextAreaElementModel(name: String) : HTMLElementModel(name), HTMLTextAreaElement {
+
+    override fun getDefaultValue(): String? {
+        return this.getAttribute("defaultValue")
+    }
+
+    override fun setDefaultValue(defaultValue: String?) {
+        this.setAttribute("defaultValue", defaultValue)
+    }
+
+
+    override fun getAccessKey(): String? {
+        return this.getAttribute("accessKey")
+    }
+
+    override fun setAccessKey(accept: String?) {
+        this.setAttribute("accessKey", accept)
+    }
+
+
+    override fun getName(): String? {
+        return this.getAttribute("name") // TODO: Should this return value of "id"?
+    }
+
+    override fun setName(name: String?) {
+        this.setAttribute("name", name) // TODO: Should this return value of "id"?
+    }
 
     override fun blur() {
         TODO("Not yet implemented")
@@ -39,14 +64,6 @@ class HTMLTextAreaElementModel : HTMLBaseInputElement, HTMLTextAreaElement {
 
     override fun select() {
         TODO("Not yet implemented")
-    }
-
-    override fun getFormInputs(): Array<FormInput>? {
-        val name = this.name
-        if (name == null) {
-            return null
-        }
-        return arrayOf(FormInput(name, this.value))
     }
 
     override fun getForm(): HTMLFormElement? {
