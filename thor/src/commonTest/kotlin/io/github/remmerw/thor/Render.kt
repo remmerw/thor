@@ -5,9 +5,7 @@ import io.github.remmerw.thor.dom.ElementModel
 import io.github.remmerw.thor.dom.HTMLElementModel
 import io.github.remmerw.thor.parser.DocumentModelBuilder
 import io.github.remmerw.thor.parser.InputSourceImpl
-import org.w3c.dom.Element
 import org.w3c.dom.Node
-import org.w3c.dom.html.HTMLElement
 import java.net.URI
 import java.net.URL
 import java.util.logging.Level
@@ -149,9 +147,10 @@ class Render(var url: String) {
         println(element.attributes().toString())
 
         if (element is HTMLElementModel) {
-            println(element.cssProperties().toString())
+            println(element.evalCssProperties().toString())
         }
 
+        println(element.cssProperties().toString())
 
     }
 

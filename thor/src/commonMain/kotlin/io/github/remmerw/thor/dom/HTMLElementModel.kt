@@ -97,15 +97,20 @@ open class HTMLElementModel(name: String) : ElementImpl(name), HTMLElement, CSS2
     }
 
 
-    open fun cssProperties(): CssProperties {
+    open fun evalCssProperties(): CssProperties { // todo rename to finish (invoked by sax)
         synchronized(this) {
             if (currentStyle != null) {
                 return currentStyle!!
             }
+            val data = getNodeData(null)
             currentStyle = ComputedCssProperties(
                 this,
-                getNodeData(null), true
+                data, true
             )
+            if (data != null) {
+                HtmlStyles.cssProperties(data, this)
+
+            }
             return currentStyle!!
         }
     }
@@ -420,7 +425,7 @@ open class HTMLElementModel(name: String) : ElementImpl(name), HTMLElement, CSS2
         //       ^^ Hah, not any more
         val prevStyle: CssProperties? = currentStyle
         this.forgetLocalStyle()
-        val newStyle = cssProperties()
+        val newStyle = evalCssProperties()
         if (layoutChanges(prevStyle, newStyle)) {
             super.informInvalid()
         } else {

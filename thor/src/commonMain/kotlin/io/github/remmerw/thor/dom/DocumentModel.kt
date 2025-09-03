@@ -16,4 +16,5 @@ interface NodeModel : Node {
 
 interface ElementModel : NodeModel, Element {
     fun attributes(): SnapshotStateMap<String, String>
+    fun cssProperties(): SnapshotStateMap<String, String>
 }

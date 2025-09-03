@@ -20,7 +20,7 @@ class GeneratedElement(parent: HTMLElementModel, val nodeData: NodeData?, val co
         setOwnerDocument(parent.ownerDocument)
     }
 
-    override fun cssProperties(): CssProperties {
+    override fun evalCssProperties(): CssProperties {
         synchronized(this) {
             if (currentStyle != null) {
                 return currentStyle!!
