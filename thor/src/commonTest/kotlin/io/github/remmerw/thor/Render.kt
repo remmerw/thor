@@ -77,7 +77,7 @@ class Render(var url: String) {
             return document as DocumentModel
         } catch (e: Exception) {
             e.printStackTrace()
-            println("parsePage(" + url + "):  " + e)
+            println("parsePage($url):  $e")
             throw e
         }
 

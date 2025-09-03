@@ -82,18 +82,19 @@ class HtmlParser {
         this.parse(reader, doc)
     }
 
-
-    @Throws(IOException::class)
     fun parse(reader: Reader, parent: Node) {
         this.parse(LineNumberReader(reader), parent)
     }
 
     fun parse(reader: LineNumberReader, parent: Node) {
-        // Note: Parser does not clear document. It could be used incrementally.
 
         try {
             parent.setUserData(MODIFYING_KEY, Boolean.TRUE, null)
-            while (this.parseToken(parent, reader, null, LinkedList<String?>()) != TOKEN_EOD) {
+            while (this.parseToken(
+                    parent, reader, null,
+                    LinkedList<String?>()
+                ) != TOKEN_EOD
+            ) {
             }
         } finally {
             if (QUIRKS_MODE && needRoot) {

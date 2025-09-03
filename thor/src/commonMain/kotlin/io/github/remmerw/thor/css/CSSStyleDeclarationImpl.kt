@@ -18,7 +18,7 @@ internal class CSSStyleDeclarationImpl(
 
     @Throws(DOMException::class)
     override fun setCssText(cssText: String?) {
-        val jSheet = CSSUtils.parse("*{" + cssText + "}")
+        val jSheet = CSSUtils.parse("*{$cssText}")
         declarations.clear()
         for (rule in jSheet) {
             declarations.addAll((rule as RuleSet?)!!)
@@ -29,7 +29,7 @@ internal class CSSStyleDeclarationImpl(
 
     override fun getPropertyValue(propertyName: String?): String? {
         val propertyValueTerm = getPropertyValueTerm(propertyName)
-        return if (propertyValueTerm == null) null else propertyValueTerm.asList().toString()
+        return propertyValueTerm?.asList()?.toString()
     }
 
     private fun getPropertyValueTerm(propertyName: String?): Declaration? {
@@ -71,7 +71,7 @@ internal class CSSStyleDeclarationImpl(
     // currently priority is not being used at all
     @Throws(DOMException::class)
     override fun setProperty(propertyName: String?, value: String?, priority: String?) {
-        val jSheet = parseStyle(propertyName, value, priority)
+        val jSheet = parseStyle(propertyName, value)
         for (rule in jSheet) {
             val rs = rule as RuleSet
             for (decl in rs) {
@@ -91,15 +91,15 @@ internal class CSSStyleDeclarationImpl(
     }
 
     override fun item(index: Int): String? {
-        return declarations.get(index).property
+        return declarations[index].property
     }
 
     override fun getParentRule(): CSSRule {
         return this.parentRule
     }
 
-    private fun parseStyle(propertyName: String?, value: String?, priority: String?): StyleSheet {
-        return CSSUtils.parse("* { " + propertyName + ": " + value + "; }")
+    private fun parseStyle(propertyName: String?, value: String?): StyleSheet {
+        return CSSUtils.parse("* { $propertyName: $value; }")
     }
 
     override fun toString(): String {

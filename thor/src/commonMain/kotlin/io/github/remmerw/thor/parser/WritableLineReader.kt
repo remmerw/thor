@@ -5,17 +5,10 @@ import java.io.LineNumberReader
 import java.io.Reader
 import kotlin.math.min
 
-open class WritableLineReader : LineNumberReader {
-    private val delegate: Reader
-    private var writeBuffer: StringBuffer? = null // todo what bullshit is this
+open class WritableLineReader(reader: Reader) : LineNumberReader(reader) {
 
-    constructor(reader: Reader) : super(reader) {
-        this.delegate = reader
-    }
+    private var writeBuffer: StringBuffer? = null
 
-    /*
-     * Note: Not implicitly thread safe.
-     */
     @Throws(IOException::class)
     override fun read(): Int {
         val sb = this.writeBuffer
