@@ -7,11 +7,7 @@ import kotlin.math.min
 
 open class WritableLineReader : LineNumberReader {
     private val delegate: Reader
-    private var writeBuffer: StringBuffer? = null
-
-    constructor(reader: Reader, bufferSize: Int) : super(reader, bufferSize) {
-        this.delegate = reader
-    }
+    private var writeBuffer: StringBuffer? = null // todo what bullshit is this
 
     constructor(reader: Reader) : super(reader) {
         this.delegate = reader
@@ -34,11 +30,7 @@ open class WritableLineReader : LineNumberReader {
         return super.read()
     }
 
-    /*
-     * (non-Javadoc) Note: Not implicitly thread safe.
-     *
-     * @see java.io.Reader#read(byte[], int, int)
-     */
+
     @Throws(IOException::class)
     override fun read(b: CharArray, off: Int, len: Int): Int {
         val sb = this.writeBuffer
@@ -63,23 +55,14 @@ open class WritableLineReader : LineNumberReader {
         return super.ready()
     }
 
-    /*
-     * (non-Javadoc) Note: Not implicitly thread safe.
-     *
-     * @see java.io.Reader#close()
-     */
+
     @Throws(IOException::class)
     override fun close() {
         this.writeBuffer = null
         super.close()
     }
 
-    /**
-     * Note: Not implicitly thread safe.
-     *
-     * @param text
-     * @throws IOException
-     */
+
     @Throws(IOException::class)
     open fun write(text: String?) {
         // Document overrides this to know that new data is coming.

@@ -1,26 +1,3 @@
-/*
-    GNU LESSER GENERAL PUBLIC LICENSE
-    Copyright (C) 2006 The Lobo Project
-
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-    Contact info: lobochief@users.sourceforge.net
- */
-/*
- * Created on Aug 28, 2005
- */
 package io.github.remmerw.thor.parser
 
 import io.github.remmerw.thor.dom.DocumentTypeImpl
@@ -29,14 +6,11 @@ import org.w3c.dom.DOMException
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.w3c.dom.Node
-import org.xml.sax.ErrorHandler
-import org.xml.sax.SAXException
 import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.io.LineNumberReader
 import java.io.Reader
-import java.io.UnsupportedEncodingException
 import java.lang.Boolean
 import java.util.LinkedList
 import java.util.Locale
@@ -47,7 +21,7 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 import kotlin.Char
 import kotlin.CharArray
-import kotlin.Deprecated
+import kotlin.Exception
 import kotlin.Int
 import kotlin.NumberFormatException
 import kotlin.String
@@ -58,15 +32,9 @@ import kotlin.arrayOf
 import kotlin.code
 import kotlin.math.min
 
-/**
- * The `HtmlParser` class is an HTML DOM parser. This parser provides
- * the functionality for the standard DOM parser implementation
- * [DocumentModelBuilder]. This parser class
- * may be used directly when a different DOM implementation is preferred.
- */
+internal class StopException(val element: Element) : Exception()
 class HtmlParser {
     private val document: Document
-    private val errorHandler: ErrorHandler?
     private val isXML: kotlin.Boolean
     private var lastRootElement: Node? = null
     private var lastHeadElement: Node? = null
@@ -82,143 +50,50 @@ class HtmlParser {
      */
     private var justReadEmptyElement = false
 
-    /**
-     * Constructs a `HtmlParser`.
-     *
-     * @param document     A W3C Document instance.
-     * @param errorHandler The error handler.
-     * @param publicId     The public ID of the document.
-     * @param systemId     The system ID of the document.
-     */
-    @Deprecated("UserAgentContext should be passed in constructor.")
-    constructor(
-        document: Document,
-        errorHandler: ErrorHandler?,
-        publicId: String?,
-        systemId: String?
-    ) {
-        this.document = document
-        this.errorHandler = errorHandler
-        this.isXML = false
-        this.needRoot = true
-    }
 
-    /**
-     * Constructs a `HtmlParser`.
-     *
-     * @param ucontext     The user agent context.
-     * @param document     An W3C Document instance.
-     * @param errorHandler The error handler.
-     * @param publicId     The public ID of the document.
-     * @param systemId     The system ID of the document.
-     * @param isXML
-     */
     constructor(
         document: Document,
-        errorHandler: ErrorHandler?,
-        publicId: String?,
-        systemId: String?,
         isXML: kotlin.Boolean,
         needRoot: kotlin.Boolean
     ) {
         this.document = document
-        this.errorHandler = errorHandler
         this.isXML = isXML
         this.needRoot = needRoot
     }
 
-    /**
-     * Constructs a `HtmlParser`.
-     *
-     * @param document A W3C Document instance.
-     */
-    constructor(document: Document) {
-        this.document = document
-        this.errorHandler = null
-        this.isXML = false
-        this.needRoot = true
-    }
 
     private fun shouldDecodeEntities(einfo: ElementInfo?): kotlin.Boolean {
         return isXML || (einfo == null || einfo.decodeEntities)
     }
 
-    /**
-     * Parses HTML from an input stream, using the given character set.
-     *
-     * @param in      The input stream.
-     * @param charset The character set.
-     * @throws IOException                  Thrown when there's an error reading from the stream.
-     * @throws SAXException                 Thrown when there is a parser error.
-     * @throws UnsupportedEncodingException Thrown if the character set is not supported.
-     */
-    /**
-     * Parses HTML from an input stream, assuming the character set is ISO-8859-1.
-     *
-     * @param `in` The input stream.
-     * @throws IOException  Thrown when there are errors reading the stream.
-     * @throws SAXException Thrown when there are parse errors.
-     */
-    @JvmOverloads
-    @Throws(IOException::class, SAXException::class, UnsupportedEncodingException::class)
-    fun parse(`in`: InputStream, charset: String = "ISO-8859-1") {
-        val reader = WritableLineReader(InputStreamReader(`in`, charset))
+
+    fun parse(inputStream: InputStream, charset: String = "ISO-8859-1") {
+        val reader = WritableLineReader(InputStreamReader(inputStream, charset))
         this.parse(reader)
     }
 
-    /**
-     * Parses HTML given by a `Reader`. This method appends nodes to
-     * the document provided to the parser.
-     *
-     * @param reader An instance of `Reader`.
-     * @throws IOException  Thrown if there are errors reading the input stream.
-     * @throws SAXException Thrown if there are parse errors.
-     */
-    @Throws(IOException::class, SAXException::class)
+
     fun parse(reader: Reader) {
         this.parse(LineNumberReader(reader))
     }
 
-    @Throws(IOException::class, SAXException::class)
     fun parse(reader: LineNumberReader) {
         val doc = this.document
         this.parse(reader, doc)
     }
 
-    /**
-     * This method may be used when the DOM should be built under a given node,
-     * such as when `innerHTML` is used in Javascript.
-     *
-     * @param reader A document reader.
-     * @param parent The root node for the parsed DOM.
-     * @throws IOException
-     * @throws SAXException
-     */
-    @Throws(IOException::class, SAXException::class)
+
+    @Throws(IOException::class)
     fun parse(reader: Reader, parent: Node) {
         this.parse(LineNumberReader(reader), parent)
     }
 
-    /**
-     * This method may be used when the DOM should be built under a given node,
-     * such as when `innerHTML` is used in Javascript.
-     *
-     * @param reader A LineNumberReader for the document.
-     * @param parent The root node for the parsed DOM.
-     * @throws IOException
-     * @throws SAXException
-     */
-    @Throws(IOException::class, SAXException::class)
     fun parse(reader: LineNumberReader, parent: Node) {
         // Note: Parser does not clear document. It could be used incrementally.
 
         try {
             parent.setUserData(MODIFYING_KEY, Boolean.TRUE, null)
-            try {
-                while (this.parseToken(parent, reader, null, LinkedList<String?>()) != TOKEN_EOD) {
-                }
-            } catch (se: StopException) {
-                throw SAXException("Unexpected flow exception", se)
+            while (this.parseToken(parent, reader, null, LinkedList<String?>()) != TOKEN_EOD) {
             }
         } finally {
             if (QUIRKS_MODE && needRoot) {
@@ -229,7 +104,6 @@ class HtmlParser {
             parent.setUserData(MODIFYING_KEY, Boolean.FALSE, null)
         }
 
-        // dumpTree(parent);
     }
 
     private fun safeAppendChild(parent: Node, child: Node) {
@@ -302,20 +176,7 @@ class HtmlParser {
         }
     }
 
-    /**
-     * Parses text followed by one element.
-     *
-     * @param parent
-     * @param reader
-     * @param stopAtTagUC If this tag is encountered, the method throws StopException.
-     * @param stopTags    If tags in this set are encountered, the method throws
-     * StopException.
-     * @return
-     * @throws IOException
-     * @throws StopException
-     * @throws SAXException
-     */
-    @Throws(IOException::class, StopException::class, SAXException::class)
+
     private fun parseToken(
         parent: Node,
         reader: LineNumberReader,
@@ -564,11 +425,7 @@ class HtmlParser {
         }
     }
 
-    /**
-     * Reads text until the beginning of the next tag. Leaves the reader offset
-     * past the opening angle bracket. Returns null only on EOF.
-     */
-    @Throws(IOException::class, SAXException::class)
+
     private fun readUpToTagBegin(reader: LineNumberReader): StringBuffer? {
         var sb: StringBuffer? = null
         var intCh: Int
@@ -594,17 +451,6 @@ class HtmlParser {
         return sb
     }
 
-    /**
-     * Assumes that the content is completely made up of text, and parses until an
-     * ending tag is found.
-     *
-     * @param parent
-     * @param reader
-     * @param tagName
-     * @return
-     * @throws IOException
-     */
-    @Throws(IOException::class, SAXException::class)
     private fun parseForEndTag(
         parent: Node, reader: LineNumberReader, tagName: String?,
         addTextNode: kotlin.Boolean,
@@ -969,7 +815,7 @@ class HtmlParser {
         return pidata
     }
 
-    @Throws(IOException::class, SAXException::class)
+
     private fun readAttribute(reader: LineNumberReader, element: Element): kotlin.Boolean {
         if (this.justReadTagEnd) {
             return false
@@ -1671,7 +1517,7 @@ class HtmlParser {
             }
         }
 
-        @Throws(SAXException::class)
+
         private fun entityDecode(rawText: StringBuffer): StringBuffer {
             var startIdx = 0
             var sb: StringBuffer? = null

@@ -316,12 +316,9 @@ class HTMLDocumentImpl(
         }
         if (reader != null) {
             try {
-                val errorHandler: ErrorHandler = LocalErrorHandler()
-                val systemId = this.documentURI
-                val publicId = systemId
+
                 val parser = HtmlParser(
-                    this, errorHandler, publicId, systemId,
-                    this.isXML, true
+                    this, this.isXML, true
                 )
                 parser.parse(reader)
 
@@ -397,10 +394,7 @@ class HTMLDocumentImpl(
         val publicId = systemId
         val parser = HtmlParser(
             this,
-            errorHandler,
-            publicId,
-            systemId,
-            false,  /* TODO */
+            false, 
             true
         )
         val strReader = StringReader(text)

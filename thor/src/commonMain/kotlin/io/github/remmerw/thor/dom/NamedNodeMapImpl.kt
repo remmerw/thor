@@ -52,24 +52,16 @@ class NamedNodeMapImpl(owner: Element?, attribs: MutableMap<String, String>) :
         return this.attributes.get(name)
     }
 
-    /**
-     * @param name
-     */
-    fun namedItem(name: String?): Node? {
-        // Method needed for Javascript indexing.
-        return this.getNamedItem(name)
-    }
-
     @Throws(DOMException::class)
     override fun getNamedItemNS(namespaceURI: String?, localName: String?): Node? {
         throw DOMException(DOMException.NOT_SUPPORTED_ERR, "No namespace support")
     }
 
     override fun item(index: Int): Node? {
-        try {
-            return this.attributeList.get(index)
-        } catch (iob: IndexOutOfBoundsException) {
-            return null
+        return try {
+            this.attributeList[index]
+        } catch (_: Throwable) {
+            null
         }
     }
 

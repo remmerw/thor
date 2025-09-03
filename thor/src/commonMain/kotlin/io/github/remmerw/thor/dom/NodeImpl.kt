@@ -841,16 +841,6 @@ abstract class NodeImpl : NodeModel {
         return querySelectorAll(query)
     }
 
-    val nameSpaceURI: String?
-        // TODO: This is a plug
-        get() {
-            val nodeType = getNodeType()
-            if (nodeType == Node.ELEMENT_NODE || nodeType == Node.ATTRIBUTE_NODE) {
-                return "http://www.w3.org/1999/xhtml"
-            } else {
-                return null
-            }
-        }
 
     companion object {
         @JvmStatic
