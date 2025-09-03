@@ -36,18 +36,6 @@ class FormInput {
         this.fileValue = null
     }
 
-    /**
-     * Constructs a `FormInput` with a file value.
-     *
-     * @param name  The name of the input.
-     * @param value The value of the input.
-     */
-    constructor(name: String, value: File?) {
-        this.name = name
-        this.textValue = null
-        this.fileValue = value
-    }
-
     val isText: Boolean
         /**
          * Returns true if the form input holds a text value.
@@ -63,11 +51,5 @@ class FormInput {
 
     override fun toString(): String {
         return "FormInput[name=" + this.name + ",textValue=" + this.textValue + "]"
-    }
-
-    companion object {
-        // private final InputStream inputStream;
-        // private final String charset;
-        val EMPTY_ARRAY: Array<FormInput?> = arrayOfNulls<FormInput>(0)
     }
 }

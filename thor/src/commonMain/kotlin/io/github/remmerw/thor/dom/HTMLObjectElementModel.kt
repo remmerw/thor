@@ -130,10 +130,10 @@ class HTMLObjectElementModel(name: String) : HTMLElementModel(name), HTMLObjectE
     }
 
     override fun getTabIndex(): Int {
-        try {
-            return this.getAttribute("tabindex")!!.toInt()
-        } catch (err: Exception) {
-            return 0
+        return try {
+            this.getAttribute("tabindex")!!.toInt()
+        } catch (_: Throwable) {
+            0
         }
     }
 

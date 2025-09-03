@@ -1,21 +1,17 @@
 package io.github.remmerw.thor.dom
 
 import org.w3c.dom.html.HTMLElement
-import java.util.Locale
 import java.util.logging.Level
 
 open class HTMLElementModel(name: String) : ElementImpl(name), HTMLElement {
 
-
     override fun getId(): String? {
         return this.getAttribute("id")
-        return if (id == null) "" else id
     }
 
     override fun setId(p0: String?) {
         this.setAttribute("id", id)
     }
-
 
     override fun getTitle(): String? {
         return this.getAttribute("title")
@@ -72,39 +68,5 @@ open class HTMLElementModel(name: String) : ElementImpl(name), HTMLElement {
     open fun getFormInputs(): Array<FormInput>? {
         return null
     }
-
-
-    fun getAncestorWithId(elementTL: String, idTL: String): HTMLElementModel? {
-        val nodeObj: Any? = this.nodeParent
-        if (nodeObj is HTMLElementModel) {
-            val pelementTL = nodeObj.tagName.lowercase(Locale.getDefault())
-            val pid = nodeObj.id
-            val pidTL = if (pid == null) null else pid.lowercase(Locale.getDefault())
-            if (("*" == elementTL || elementTL == pelementTL) && idTL == pidTL) {
-                return nodeObj
-            }
-            return nodeObj.getAncestorWithId(elementTL, idTL)
-        } else {
-            return null
-        }
-    }
-
-
-    fun getAncestor(elementTL: String): HTMLElementModel? {
-        val nodeObj: Any? = this.nodeParent
-        if (nodeObj is HTMLElementModel) {
-            if ("*" == elementTL) {
-                return nodeObj
-            }
-            val pelementTL = nodeObj.tagName.lowercase(Locale.getDefault())
-            if (elementTL == pelementTL) {
-                return nodeObj
-            }
-            return nodeObj.getAncestor(elementTL)
-        } else {
-            return null
-        }
-    }
-
 
 }

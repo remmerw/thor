@@ -11,7 +11,7 @@ class HTMLOptionElementModel(name: String) : HTMLElementModel(name), HTMLOptionE
     }
 
     override fun setDefaultSelected(defaultSelected: Boolean) {
-        this.setAttribute("selected", if (defaultSelected) "selected" else null)
+        this.setAttribute("selected", defaultSelected.toString())
     }
 
     override fun getText(): String? {
@@ -32,7 +32,7 @@ class HTMLOptionElementModel(name: String) : HTMLElementModel(name), HTMLOptionE
 
 
     override fun getForm(): HTMLFormElement? {
-        return this.form
+        return null
     }
 
 
@@ -45,11 +45,11 @@ class HTMLOptionElementModel(name: String) : HTMLElementModel(name), HTMLOptionE
     }
 
     override fun getSelected(): Boolean {
-        return this.selected
+        return this.getAttributeAsBoolean("selected")
     }
 
-    override fun setSelected(p0: Boolean) {
-        TODO("Not yet implemented")
+    override fun setSelected(selected: Boolean) {
+        this.setAttribute("selected", selected.toString())
     }
 
 
@@ -62,7 +62,4 @@ class HTMLOptionElementModel(name: String) : HTMLElementModel(name), HTMLOptionE
     }
 
 
-    override fun toString(): String {
-        return "HTMLOptionElementImpl[text=" + this.text + ",selected=" + this.selected + "]"
-    }
 }

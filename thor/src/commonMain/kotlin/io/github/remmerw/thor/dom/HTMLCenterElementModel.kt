@@ -20,5 +20,4 @@
  */
 package io.github.remmerw.thor.dom
 
-// TODO: Can be chopped off; this class is now a shell after removing createRenderState
 class HTMLCenterElementModel(name: String) : HTMLElementModel(name)

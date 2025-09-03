@@ -5,49 +5,20 @@ import org.w3c.dom.html.HTMLCollection
 import org.w3c.dom.html.HTMLFormElement
 import java.util.Locale
 
-class HTMLFormElementModel : HTMLElementModel, HTMLFormElement {
-    private var elements: HTMLCollection? = null
+class HTMLFormElementModel(name: String) : HTMLElementModel(name), HTMLFormElement {
 
-
-    constructor(name: String) : super(name)
-
-
-    fun item(index: Int): Any? {
-        try {
-            this.visit(object : NodeVisitor {
-                private var current = 0
-
-                override fun visit(node: Node) {
-                    if (isInput(node)) {
-                        if (this.current == index) {
-                            throw StopVisitorException(node)
-                        }
-                        this.current++
-                    }
-                }
-            })
-        } catch (sve: StopVisitorException) {
-            return sve.tag
-        }
-        return null
-    }
 
     override fun getElements(): HTMLCollection {
-        var elements = this.elements
-        if (elements == null) {
-            elements = DescendantHTMLCollection(
-                this,
-                InputFilter(),
-                this.treeLock,
-                false
-            )
-            this.elements = elements
-        }
-        return elements
+        return DescendantHTMLCollection(
+            this,
+            InputFilter(),
+            this.treeLock,
+            false
+        )
     }
 
     override fun getLength(): Int {
-        return this.getElements().length
+        return this.elements.length
     }
 
     override fun getName(): String? {
@@ -112,20 +83,14 @@ class HTMLFormElementModel : HTMLElementModel, HTMLFormElement {
     }
 
     open inner class InputFilter : NodeFilter {
-        /*
-         * (non-Javadoc)
-         *
-         * @see org.xamjwg.html.domimpl.NodeFilter#accept(org.w3c.dom.Node)
-         */
         override fun accept(node: Node): Boolean {
             return isInput(node)
         }
-    }
 
-    companion object {
         fun isInput(node: Node): Boolean {
             val name = node.nodeName.lowercase(Locale.getDefault())
             return name == "input" || name == "textarea" || name == "select"
         }
     }
+
 }

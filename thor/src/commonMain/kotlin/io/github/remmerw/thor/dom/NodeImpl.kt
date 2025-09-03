@@ -2,11 +2,6 @@ package io.github.remmerw.thor.dom
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import cz.vutbr.web.css.CSSException
-import cz.vutbr.web.css.CSSFactory
-import cz.vutbr.web.css.CombinedSelector
-import cz.vutbr.web.css.RuleSet
-import cz.vutbr.web.css.Selector
 import io.github.remmerw.thor.core.Urls
 import org.w3c.dom.DOMException
 import org.w3c.dom.Document
@@ -15,7 +10,6 @@ import org.w3c.dom.Node
 import org.w3c.dom.NodeList
 import org.w3c.dom.Text
 import org.w3c.dom.UserDataHandler
-import java.io.IOException
 import java.net.URL
 import java.util.LinkedList
 import java.util.logging.Level
@@ -104,12 +98,6 @@ abstract class NodeImpl : NodeModel {
     }
 
 
-    fun getChildCount(): Int {
-        synchronized(this.treeLock) {
-            return nodes().size
-        }
-    }
-
     /**
      * Creates an `ArrayList` of descendent nodes that the given filter
      * condition.
@@ -168,16 +156,6 @@ abstract class NodeImpl : NodeModel {
         synchronized(this.treeLock) {
             val nl = this.nodeList
             return nl.indexOf(child)
-        }
-    }
-
-    fun getChildAtIndex(index: Int): Node? {
-        synchronized(this.treeLock) {
-            try {
-                return this.nodeList[index]
-            } catch (_: Throwable) {
-                return null
-            }
         }
     }
 
@@ -737,31 +715,6 @@ abstract class NodeImpl : NodeModel {
 
     open fun warn(message: String?) {
         logger.log(Level.WARNING, message)
-    }
-
-
-    protected fun getMatchingChildren(selectors: MutableList<Selector>): MutableCollection<Node> {
-        val matchingElements: MutableCollection<Node> = LinkedList<Node>()
-        val numSelectors = selectors.size
-        if (numSelectors > 0) {
-            val firstSelector = selectors.get(0)
-
-            nodes().forEach { n ->
-                if (n is ElementImpl) {
-                    if (firstSelector.matches(n)) {
-                        if (numSelectors > 1) {
-                            val tailSelectors = selectors.subList(1, numSelectors)
-                            matchingElements.addAll(n.getMatchingChildren(tailSelectors))
-                        } else {
-                            matchingElements.add(n)
-                        }
-                    }
-                    matchingElements.addAll(n.getMatchingChildren(selectors))
-                }
-            }
-
-        }
-        return matchingElements
     }
 
 

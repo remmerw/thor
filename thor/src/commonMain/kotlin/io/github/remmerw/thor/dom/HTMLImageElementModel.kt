@@ -1,15 +1,9 @@
 package io.github.remmerw.thor.dom
 
-import io.github.remmerw.thor.parser.HtmlParser
-import org.w3c.dom.UserDataHandler
 import org.w3c.dom.html.HTMLImageElement
-import java.lang.Boolean
-import kotlin.Any
-import kotlin.String
 
-class HTMLImageElementModel : HTMLElementModel, HTMLImageElement {
+class HTMLImageElementModel(name: String) : HTMLElementModel(name), HTMLImageElement {
 
-    constructor(name: String) : super(name)
 
     override fun getName(): String? {
         return this.getAttribute("name")
@@ -27,23 +21,7 @@ class HTMLImageElementModel : HTMLElementModel, HTMLImageElement {
         this.setAttribute("align", align)
     }
 
-    /*
-  public int getHeight() {
-    final UINode r = this.uiNode;
-    return r == null ? 0 : r.getBounds().height;
-  }
 
-  public void setHeight(final int height) {
-    this.setAttribute("height", String.valueOf(height));
-  }
-
-  public int getHspace() {
-    return this.getAttributeAsInt("hspace", 0);
-  }
-
-  public void setHspace(final int hspace) {
-    this.setAttribute("hspace", String.valueOf("hspace"));
-  } */
     override fun getAlt(): String? {
         return this.getAttribute("alt")
     }
@@ -76,11 +54,11 @@ class HTMLImageElementModel : HTMLElementModel, HTMLImageElement {
         this.setAttribute("hspace", hspace)
     }
 
-    override fun getIsMap(): kotlin.Boolean {
+    override fun getIsMap(): Boolean {
         return this.getAttributeAsBoolean("isMap")
     }
 
-    override fun setIsMap(isMap: kotlin.Boolean) {
+    override fun setIsMap(isMap: Boolean) {
         this.setAttribute("isMap", if (isMap) "isMap" else null)
     }
 
@@ -92,34 +70,14 @@ class HTMLImageElementModel : HTMLElementModel, HTMLImageElement {
         this.setAttribute("longDesc", longDesc)
     }
 
-    /* public int getVspace() {
-    return this.getAttributeAsInt("vspace", 0);
-  }
-
-  public void setVspace(final int vspace) {
-    this.setAttribute("vspace", String.valueOf(vspace));
-  } */
     override fun getSrc(): String? {
         return this.getAttribute("src")
     }
 
-    /**
-     * Sets the image URI and starts to load the image. Note that an
-     * HtmlRendererContext should be available to the HTML document for images to
-     * be loaded.
-     */
     override fun setSrc(src: String?) {
         this.setAttribute("src", src)
     }
 
-    /* public int getWidth() {
-    final UINode r = this.uiNode;
-    return r == null ? 0 : r.getBounds().width;
-  }
-
-  public void setWidth(final int width) {
-    this.setAttribute("width", String.valueOf(width));
-  }*/
     override fun getUseMap(): String? {
         return this.getAttribute("useMap")
     }
@@ -145,21 +103,11 @@ class HTMLImageElementModel : HTMLElementModel, HTMLImageElement {
     }
 
 
-    override fun setUserData(key: String, data: Any?, handler: UserDataHandler?): Any? {
-        if (HtmlParser.MODIFYING_KEY == key && (data != Boolean.TRUE)) {
-            // todo
-            // this.loadImage(getSrc());
-        }
-        return super.setUserData(key, data, handler)
-    }
-
-
     override fun getLowSrc(): String? {
-        // TODO
-        return null
+        TODO()
     }
 
     override fun setLowSrc(lowSrc: String?) {
-        // TODO
+        TODO()
     }
 }

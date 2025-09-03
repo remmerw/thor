@@ -54,7 +54,4 @@ class HTMLProcessingInstruction(
         }
     }
 
-    override fun toString(): String {
-        return "<?" + target + " " + data + ">"
-    }
 }
