@@ -2,7 +2,6 @@ package io.github.remmerw.thor
 
 import io.github.remmerw.thor.dom.DocumentModel
 import io.github.remmerw.thor.dom.ElementModel
-import io.github.remmerw.thor.dom.HTMLElementModel
 import io.github.remmerw.thor.parser.DocumentModelBuilder
 import io.github.remmerw.thor.parser.InputSourceImpl
 import org.w3c.dom.Node
@@ -144,13 +143,9 @@ class Render(var url: String) {
     fun doElement(element: ElementModel) {
         println("<" + element.tagName + ">")
 
-        println(element.attributes().toString())
+        println("Attributes : " + element.attributes().toString())
 
-        if (element is HTMLElementModel) {
-            println(element.evalCssProperties().toString())
-        }
-
-        println(element.cssProperties().toString())
+        println("Properties : " + element.properties().toString())
 
     }
 

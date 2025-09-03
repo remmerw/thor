@@ -20,19 +20,19 @@ import java.util.Locale
 abstract class ElementImpl(private val name: String) : NodeImpl(), ElementModel {
 
     private val attributes = mutableStateMapOf<String, String>()
-    private val cssProperties = mutableStateMapOf<String, String>()
+    private val properties = mutableStateMapOf<String, String>()
 
     override fun attributes(): SnapshotStateMap<String, String> {
         return attributes
     }
 
-    override fun cssProperties(): SnapshotStateMap<String, String> {
-        return cssProperties
+    override fun properties(): SnapshotStateMap<String, String> {
+        return properties
     }
 
-    fun cssProperty(name: String, value: String?) {
+    fun setProperty(name: String, value: String?) {
         if (value != null) {
-            cssProperties.put(name, value)
+            properties.put(name, value)
         }
     }
 

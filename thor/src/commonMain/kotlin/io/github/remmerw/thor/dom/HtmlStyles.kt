@@ -128,7 +128,7 @@ object HtmlStyles {
     }
 
     private fun cssProperty(nodeData: NodeData, elementImpl: ElementImpl, attribute: String) {
-        elementImpl.cssProperty(
+        elementImpl.setProperty(
             attribute,
             nodeData.getAsString(attribute, true)
         )
