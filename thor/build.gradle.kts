@@ -38,8 +38,7 @@ kotlin {
                 implementation(libs.kotlin.stdlib)
                 implementation(libs.kotlinx.io.core)
 
-
-                //implementation(libs.xercesimpl)
+                
                 implementation(libs.jstyleparser)
 
                 implementation(libs.lifecycle)
@@ -57,8 +56,7 @@ kotlin {
         commonTest {
             dependencies {
                 implementation(libs.kotlin.test)
-                implementation(libs.androidx.ui.test.junit4)
-                // implementation(libs.androidx.ui.test.manifest)
+
             }
         }
 
@@ -72,14 +70,16 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.test)
                 implementation(libs.androidx.core)
+                implementation(libs.androidx.ui.test.junit4)
+                implementation(libs.androidx.ui.test.manifest)
             }
         }
         androidInstrumentedTest.dependencies {
             implementation(libs.kotlin.test)
             implementation(libs.androidx.runner)
             implementation(libs.androidx.core)
-
-
+            implementation(libs.androidx.ui.test.junit4)
+            implementation(libs.androidx.ui.test.manifest)
         }
 
         androidMain.dependencies {

@@ -6,7 +6,6 @@ kotlin = "2.2.10"
 compose-multiplatform = "1.8.2"
 lifecycle = "2.9.3"
 ui-test-junit4 = "1.9.0"
-xercesimpl = "2.12.2"
 coil = "3.3.0"
 ktor = "3.2.3"
 kotlinx-coroutines = "1.10.2"
@@ -21,7 +20,6 @@ kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotl
 kotlinx-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version = "0.8.0" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
 lifecycle = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
-xercesimpl = { module = "xerces:xercesImpl", version.ref = "xercesimpl" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }

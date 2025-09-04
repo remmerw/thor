@@ -10,9 +10,6 @@ import cz.vutbr.web.csskit.antlr4.CSSParserFactory
 import cz.vutbr.web.domassign.Analyzer
 import cz.vutbr.web.domassign.AnalyzerUtil
 import io.github.remmerw.thor.core.Urls
-import io.github.remmerw.thor.css.StyleSheetBridge
-import io.github.remmerw.thor.css.StyleSheetWrapper
-import io.github.remmerw.thor.css.StyleSheetWrapper.Companion.getStyleSheets
 import io.github.remmerw.thor.dom.NodeFilter.AnchorFilter
 import io.github.remmerw.thor.dom.NodeFilter.AppletFilter
 import io.github.remmerw.thor.dom.NodeFilter.ElementNameFilter
@@ -39,12 +36,6 @@ import org.w3c.dom.NodeList
 import org.w3c.dom.ProcessingInstruction
 import org.w3c.dom.Text
 import org.w3c.dom.UserDataHandler
-import org.w3c.dom.css.CSSStyleSheet
-import org.w3c.dom.stylesheets.DocumentStyle
-import org.w3c.dom.stylesheets.LinkStyle
-import org.w3c.dom.stylesheets.StyleSheetList
-import org.w3c.dom.views.AbstractView
-import org.w3c.dom.views.DocumentView
 import org.xml.sax.SAXException
 import java.io.IOException
 import java.io.Reader
@@ -59,8 +50,8 @@ class HTMLDocumentImpl(
     private var reader: WritableLineReader? = null,
     private var documentURI: String? = null,
     private val contentType: String? = null
-) : NodeImpl(), DocumentModel, DocumentView, DocumentStyle {
-    val styleSheetManager: StyleSheetManager = StyleSheetManager()
+) : NodeImpl(), DocumentModel {
+
     private val factory: ElementFactory
     private var documentURL: URL? = null
 
@@ -140,10 +131,6 @@ class HTMLDocumentImpl(
         } else {
             this.baseURI = null
         }
-    }
-
-    override fun getDefaultView(): AbstractView? {
-        return null
     }
 
     @Throws(DOMException::class)
@@ -302,7 +289,7 @@ class HTMLDocumentImpl(
             this.title = null
             this.setBaseURI(null)
 
-            this.styleSheetManager.invalidateStyles()
+
             reader = this.reader
         }
         if (reader != null) {
@@ -668,11 +655,6 @@ class HTMLDocumentImpl(
     }
 
 
-    override fun getStyleSheets(): StyleSheetList {
-        return styleSheetManager.constructStyleSheetList()
-    }
-
-
     override fun setUserData(key: String, data: Any?, handler: UserDataHandler?): Any? {
         // if (org.cobraparser.html.parser.HtmlParser.MODIFYING_KEY.equals(key) && data == Boolean.FALSE) {
         // dispatchLoadEvent();
@@ -687,7 +669,6 @@ class HTMLDocumentImpl(
                 val jSheets: MutableList<StyleSheet?> = ArrayList()
                 jSheets.add(if (this.isXML) recommendedStyleXML else recommendedStyle)
                 jSheets.add(if (this.isXML) userAgentStyleXML else userAgentStyle)
-                jSheets.addAll(styleSheetManager.getEnabledJStyleSheets()!!)
                 classifiedRules = AnalyzerUtil.getClassifiedRules(jSheets, MediaSpec("screen"))
             }
         }
@@ -717,93 +698,6 @@ class HTMLDocumentImpl(
             if ("" == text) {
                 openBufferChanged(text)
             }
-        }
-    }
-
-    inner class StyleSheetManager {
-        @Volatile
-        private var styleSheets: MutableList<StyleSheetWrapper>? = null
-
-        @Volatile
-        private var enabledJStyleSheets: MutableList<StyleSheet?>? = null
-        val bridge: StyleSheetBridge = object : StyleSheetBridge {
-            override fun notifyStyleSheetChanged(styleSheet: CSSStyleSheet) {
-            }
-
-            override val docStyleSheets: MutableList<StyleSheetWrapper>?
-                get() = TODO("Not yet implemented")
-
-
-        }
-
-        private val docStyleSheetList: MutableList<StyleSheetWrapper>
-            get() {
-                synchronized(this) {
-                    if (styleSheets == null) {
-                        styleSheets = ArrayList<StyleSheetWrapper>()
-                        val docStyles: MutableList<StyleSheetWrapper> =
-                            ArrayList<StyleSheetWrapper>()
-                        synchronized(treeLock) {
-                            scanElementStyleSheets(docStyles, this@HTMLDocumentImpl)
-                        }
-                        styleSheets!!.addAll(docStyles)
-                        // System.out.println("Found stylesheets: " + this.styleSheets.size());
-                    }
-                    return this.styleSheets!!
-                }
-            }
-
-        private fun scanElementStyleSheets(styles: MutableList<StyleSheetWrapper>, node: Node) {
-            if (node is LinkStyle) {
-                val sheet = node.sheet as StyleSheetWrapper?
-                if (sheet != null) {
-                    styles.add(sheet)
-                }
-            }
-
-            if (node.hasChildNodes()) {
-                val nodeList = node.childNodes
-                for (i in 0..<nodeList.length) {
-                    scanElementStyleSheets(styles, nodeList.item(i))
-                }
-            }
-        }
-
-        // TODO enabled style sheets can be cached
-        fun getEnabledJStyleSheets(): MutableList<StyleSheet?>? {
-            synchronized(this) {
-                if (enabledJStyleSheets != null) {
-                    return enabledJStyleSheets
-                }
-                val documentStyles =
-                    this.docStyleSheetList
-                val jStyleSheets: MutableList<StyleSheet?> = ArrayList<StyleSheet?>()
-                for (style in documentStyles) {
-                    if ((!style.disabled) && (style.styleSheet != null)) {
-                        jStyleSheets.add(style.styleSheet)
-                    }
-                }
-                enabledJStyleSheets = jStyleSheets
-                return jStyleSheets
-            }
-        }
-
-        fun invalidateStyles() {
-            synchronized(treeLock) {
-                this.styleSheets = null
-                this.docStyleSheetList
-            }
-            synchronized(this) {
-                this.enabledJStyleSheets = null
-            }
-            synchronized(treeLock) {
-                this@HTMLDocumentImpl.classifiedRules = null
-            }
-
-        }
-
-        fun constructStyleSheetList(): StyleSheetList {
-            return getStyleSheets(bridge)
         }
     }
 

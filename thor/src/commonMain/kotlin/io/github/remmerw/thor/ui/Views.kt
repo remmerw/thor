@@ -41,7 +41,7 @@ fun HtmlViewer(
                 ) { nodeModel ->
 
                     nodeModel.hasChildNodes()
-                    println(nodeModel.nodeName)
+
 
                     when (nodeModel.nodeName.uppercase()) {
                         "HTML" -> {
@@ -69,82 +69,87 @@ fun Nodes(
 
         nodeModels.forEach { nodeModel ->
 
-            if (nodeModel is TextModel) {
-                Chars(nodeModel, modifier)
-            } else if (nodeModel is ElementModel) {
+            when (nodeModel) {
+                is TextModel -> {
+                    Chars(nodeModel, modifier)
+                }
 
-                when (nodeModel.elementType()) {
-                    ElementType.BODY -> {
-                        Body(nodeModel, stateModel, modifier)
-                    }
+                is ElementModel -> {
 
-                    ElementType.TABLE -> {
-                        Table(nodeModel, stateModel, modifier)
-                    }
+                    when (nodeModel.elementType()) {
+                        ElementType.BODY -> {
+                            Body(nodeModel, stateModel, modifier)
+                        }
 
-                    ElementType.FORM -> {
-                        Form(nodeModel, stateModel, modifier)
-                    }
+                        ElementType.TABLE -> {
+                            Table(nodeModel, stateModel, modifier)
+                        }
 
-                    ElementType.CENTER -> {
-                        Center(nodeModel, stateModel, modifier)
-                    }
+                        ElementType.FORM -> {
+                            Form(nodeModel, stateModel, modifier)
+                        }
 
-                    ElementType.DIV -> {
-                        Div(nodeModel, stateModel, modifier)
-                    }
+                        ElementType.CENTER -> {
+                            Center(nodeModel, stateModel, modifier)
+                        }
 
-                    ElementType.BIG -> {
-                        Big(nodeModel, stateModel, modifier)
-                    }
+                        ElementType.DIV -> {
+                            Div(nodeModel, stateModel, modifier)
+                        }
 
-                    ElementType.FONT -> {
-                        Font(nodeModel, stateModel, modifier)
-                    }
+                        ElementType.BIG -> {
+                            Big(nodeModel, stateModel, modifier)
+                        }
 
-                    ElementType.LINK -> {
-                        Link(nodeModel, stateModel, modifier)
-                    }
+                        ElementType.FONT -> {
+                            Font(nodeModel, stateModel, modifier)
+                        }
 
-                    ElementType.A, ElementType.ANCHOR -> {
-                        A(nodeModel, stateModel, modifier)
-                    }
+                        ElementType.LINK -> {
+                            Link(nodeModel, stateModel, modifier)
+                        }
 
-                    ElementType.LI -> {
-                        Li(nodeModel, stateModel, modifier)
-                    }
+                        ElementType.A, ElementType.ANCHOR -> {
+                            A(nodeModel, stateModel, modifier)
+                        }
 
-                    ElementType.BR -> {
-                        Br(nodeModel, stateModel, modifier)
-                    }
+                        ElementType.LI -> {
+                            Li(nodeModel, stateModel, modifier)
+                        }
 
-                    ElementType.UL -> {
-                        Ul(nodeModel, stateModel, modifier)
-                    }
+                        ElementType.BR -> {
+                            Br(nodeModel, stateModel, modifier)
+                        }
 
-                    ElementType.TR -> {
-                        Tr(nodeModel, stateModel, modifier)
-                    }
+                        ElementType.UL -> {
+                            Ul(nodeModel, stateModel, modifier)
+                        }
 
-                    ElementType.TD -> {
-                        Td(nodeModel, stateModel, modifier)
-                    }
+                        ElementType.TR -> {
+                            Tr(nodeModel, stateModel, modifier)
+                        }
 
-                    ElementType.IMG -> {
-                        Img(nodeModel, stateModel, modifier)
-                    }
+                        ElementType.TD -> {
+                            Td(nodeModel, stateModel, modifier)
+                        }
 
-                    ElementType.BLOCKQUOTE -> {
-                        Blockquote(nodeModel, stateModel, modifier)
-                    }
+                        ElementType.IMG -> {
+                            Img(nodeModel, stateModel, modifier)
+                        }
 
-                    else -> {
-                        println(nodeModel.nodeName)
-                        Dummy(nodeModel, stateModel, modifier)
+                        ElementType.BLOCKQUOTE -> {
+                            Blockquote(nodeModel, stateModel, modifier)
+                        }
+
+                        else -> {
+                            Dummy(nodeModel, stateModel, modifier)
+                        }
                     }
                 }
-            } else {
-                println("TODO")
+
+                else -> {
+                    println("TODO")
+                }
             }
         }
     }
@@ -206,7 +211,7 @@ fun Img(
     val src = remember { attributes.getValue("src") }
 
 
-    println("redraw img")
+    println("redraw img $src")
     if (isImageLoadingEnabled) {
         AsyncImage(
             model = Utils.getFullURL(nodeModel, src).toExternalForm(),
@@ -217,7 +222,6 @@ fun Img(
         )
     }
     Nodes(nodeModel, stateModel, modifier)
-    println(nodeModel.baseURI)
 
 }
 
