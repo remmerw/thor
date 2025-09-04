@@ -39,13 +39,19 @@ import java.io.Reader
 import java.net.MalformedURLException
 import java.net.URL
 import kotlin.concurrent.Volatile
+import kotlin.concurrent.atomics.AtomicLong
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.concurrent.atomics.incrementAndFetch
 
 
 class DocumentImpl(
     private var reader: WritableLineReader? = null,
     private var documentURI: String? = null,
     private val contentType: String? = null
-) : NodeImpl(null), DocumentModel {
+) : NodeImpl(null, 0), DocumentModel {
+
+    @OptIn(ExperimentalAtomicApi::class)
+    private val uids = AtomicLong(0L)
 
     private val factory: ElementFactory
     private var documentURL: URL? = null
@@ -86,6 +92,11 @@ class DocumentImpl(
 
         this.setOwnerDocument(this)
 
+    }
+
+    @OptIn(ExperimentalAtomicApi::class)
+    fun nextUid(): Long {
+        return uids.incrementAndFetch()
     }
 
     override fun getDocumentURL(): URL? {
@@ -324,18 +335,18 @@ class DocumentImpl(
     }
 
     override fun createTextNode(data: String): Text {
-        val node = TextImpl(this, data)
+        val node = TextImpl(this, nextUid(), data)
         return node
     }
 
     override fun createComment(data: String): Comment {
-        val node = CommentImpl(this, data)
+        val node = CommentImpl(this, nextUid(), data)
         return node
     }
 
     @Throws(DOMException::class)
     override fun createCDATASection(data: String): CDATASection {
-        val node = CDataSectionImpl(this, data)
+        val node = CDataSectionImpl(this, nextUid(), data)
         return node
     }
 
@@ -344,13 +355,16 @@ class DocumentImpl(
         target: String,
         data: String?
     ): ProcessingInstruction {
-        val node = ProcessingInstructionImpl(this, target, data)
+        val node = ProcessingInstructionImpl(
+            this, nextUid(),
+            target, data
+        )
         return node
     }
 
     @Throws(DOMException::class)
     override fun createAttribute(name: String): Attr {
-        return AttrImpl(this, name)
+        return AttrImpl(this, nextUid(), name)
     }
 
     @Throws(DOMException::class)

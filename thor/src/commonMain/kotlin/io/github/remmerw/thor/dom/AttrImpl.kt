@@ -20,7 +20,7 @@ class AttrImpl : NodeImpl, Attr {
         specified: Boolean,
         owner: Element,
         isId: Boolean
-    ) : super(owner.ownerDocument!!) {
+    ) : super(owner.ownerDocument!!, (owner.ownerDocument!! as DocumentImpl).nextUid()) {
         this.name = name
         this.value = value
         this.specified = specified
@@ -29,7 +29,7 @@ class AttrImpl : NodeImpl, Attr {
     }
 
 
-    constructor(document: Document, name: String) : super(document) {
+    constructor(document: Document, uid: Long, name: String) : super(document, uid) {
         this.name = name
         this.value = ""
         this.specified = false

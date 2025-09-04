@@ -16,7 +16,10 @@ class DOMImplementationImpl(private val document: Document) : DOMImplementation 
         publicId: String?,
         systemId: String?
     ): DocumentType {
-        return DocumentTypeImpl(document, qualifiedName, publicId, systemId)
+        return DocumentTypeImpl(
+            document, (document as DocumentImpl).nextUid(),
+            qualifiedName, publicId, systemId
+        )
     }
 
     @Throws(DOMException::class)

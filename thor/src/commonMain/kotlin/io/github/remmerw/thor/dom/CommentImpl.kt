@@ -4,7 +4,8 @@ import org.w3c.dom.Comment
 import org.w3c.dom.Document
 import org.w3c.dom.Node.COMMENT_NODE
 
-class CommentImpl(document: Document, text: String) : CharacterDataImpl(document), Comment {
+class CommentImpl(document: Document, uid: Long, text: String) :
+    CharacterDataImpl(document, uid), Comment {
     init {
         textContent = text
     }

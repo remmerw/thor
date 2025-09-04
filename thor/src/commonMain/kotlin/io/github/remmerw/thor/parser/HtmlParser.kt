@@ -228,7 +228,7 @@ class HtmlParser {
                             val publicId = doctypeMatcher.group(2)
                             val systemId = doctypeMatcher.group(3)
                             val doctype = DocumentTypeImpl(
-                                htmlDoc,
+                                htmlDoc, htmlDoc.nextUid(),
                                 qName,
                                 publicId, systemId
                             )

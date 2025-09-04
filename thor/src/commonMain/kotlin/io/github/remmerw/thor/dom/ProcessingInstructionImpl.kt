@@ -7,9 +7,10 @@ import org.w3c.dom.ProcessingInstruction
 
 class ProcessingInstructionImpl(
     document: Document,
+    uid: Long,
     private var target: String,
     private var data: String?
-) : NodeImpl(document),
+) : NodeImpl(document, uid),
     ProcessingInstruction, Cloneable {
 
 

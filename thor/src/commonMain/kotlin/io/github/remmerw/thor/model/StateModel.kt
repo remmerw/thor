@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import io.github.remmerw.thor.dom.ElementModel
 import java.net.URL
 import java.util.Optional
 
@@ -18,6 +19,11 @@ class StateModel() : ViewModel() {
     fun warn(message: String, err: Throwable?) {
         println(message)
         err?.printStackTrace()
+    }
+
+
+    fun getAttribute(modelElement: ElementModel, attribute:String) : String {
+        return ""
     }
 
     fun linkClicked(

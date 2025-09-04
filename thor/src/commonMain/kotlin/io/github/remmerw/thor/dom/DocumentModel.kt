@@ -12,8 +12,7 @@ interface DocumentModel : NodeModel, Document
 
 interface NodeModel : Node {
     fun nodes(): SnapshotStateList<NodeModel>
-
-    override fun getNodeName(): String // todo rename to nodeName()
+    fun uid(): Long
 }
 
 

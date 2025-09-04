@@ -15,7 +15,7 @@ import org.w3c.dom.UserDataHandler
 import java.net.URL
 import java.util.LinkedList
 
-abstract class NodeImpl(doc: Document?) : NodeModel {
+abstract class NodeImpl(doc: Document?, val uid: Long) : NodeModel {
 
     private var document by mutableStateOf(doc)
     private val nodeList = mutableStateListOf<NodeModel>()
@@ -34,6 +34,9 @@ abstract class NodeImpl(doc: Document?) : NodeModel {
         TODO("Not yet implemented")
     }
 
+    override fun uid(): Long {
+        return uid
+    }
 
     @Throws(DOMException::class)
     override fun appendChild(newChild: Node?): Node {
@@ -429,7 +432,11 @@ abstract class NodeImpl(doc: Document?) : NodeModel {
 
         this.removeChildrenImpl(TextFilter())
         if ("" != textContent) {
-            val t = TextImpl(ownerDocument!!, textContent)
+            val impl = ownerDocument!! as DocumentImpl
+            val t = TextImpl(
+                ownerDocument!!,
+                impl.nextUid(), textContent
+            )
             t.parent = (this)
 
             this.nodeList.add(t)
@@ -493,7 +500,8 @@ abstract class NodeImpl(doc: Document?) : NodeModel {
             }
         }
         this.nodeList.removeAll(toDelete)
-        val textNode = TextImpl(ownerDocument!!, textContent!!)
+        val impl = ownerDocument!! as DocumentImpl
+        val textNode = TextImpl(ownerDocument!!, impl.nextUid(), textContent!!)
         textNode.parent = (this)
         this.nodeList.add(firstIdx, textNode)
         return textNode
@@ -533,7 +541,11 @@ abstract class NodeImpl(doc: Document?) : NodeModel {
             }
         }
         this.nodeList.removeAll(toDelete)
-        val textNode = TextImpl(ownerDocument!!, textBuffer.toString())
+        val impl = ownerDocument!! as DocumentImpl
+        val textNode = TextImpl(
+            ownerDocument!!, impl.nextUid(),
+            textBuffer.toString()
+        )
 
         textNode.parent = (this)
         this.nodeList.add(firstIdx, textNode)
@@ -610,5 +622,6 @@ abstract class NodeImpl(doc: Document?) : NodeModel {
             null
         }
     }
+
 
 }

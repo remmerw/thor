@@ -9,13 +9,14 @@ internal class ElementFactory private constructor() {
     @Throws(DOMException::class)
     fun createElement(document: DocumentImpl, name: String): Element {
 
+        val uid = document.nextUid()
         try {
             val type = ElementType.valueOf(name.uppercase())
-            val element = ElementImpl(document, type)
+            val element = ElementImpl(document, uid, type)
             return element
         } catch (_: Throwable) {
             println("Not yet supported node $name")
-            val element = ElementImpl(document, ElementType.UNKNOWN)
+            val element = ElementImpl(document, uid, ElementType.UNKNOWN)
             return element
         }
     }

@@ -6,7 +6,8 @@ import org.w3c.dom.Document
 import org.w3c.dom.Node.TEXT_NODE
 import org.w3c.dom.Text
 
-open class TextImpl(document: Document, text: String = "") : CharacterDataImpl(document),
+open class TextImpl(document: Document, uid: Long, text: String = "") :
+    CharacterDataImpl(document, uid),
     TextModel {
     init {
         textContent = text
@@ -35,7 +36,8 @@ open class TextImpl(document: Document, text: String = "") : CharacterDataImpl(d
         val content1 = t.substring(0, offset)
         val content2 = t.substring(offset)
         this.text = content1
-        val newNode = TextImpl(ownerDocument!!, content2)
+        val impl = ownerDocument!! as DocumentImpl
+        val newNode = TextImpl(ownerDocument!!, impl.nextUid(), content2)
         return parent.insertAfter(newNode, this) as Text?
     }
 

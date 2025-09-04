@@ -4,7 +4,8 @@ import org.w3c.dom.CDATASection
 import org.w3c.dom.Document
 import org.w3c.dom.Node.CDATA_SECTION_NODE
 
-class CDataSectionImpl(document: Document, text: String) : TextImpl(document, text), CDATASection {
+class CDataSectionImpl(document: Document, uid: Long, text: String) : TextImpl(document, uid, text),
+    CDATASection {
 
     override fun getNodeName(): String {
         return "#cdata-section"
