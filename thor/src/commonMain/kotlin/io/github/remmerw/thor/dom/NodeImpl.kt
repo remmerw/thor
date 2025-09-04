@@ -57,9 +57,6 @@ abstract class NodeImpl(doc: Document?) : NodeModel {
                 newChild.finish()
             }
 
-
-
-
             return newChild
         } else {
             throw DOMException(DOMException.INVALID_ACCESS_ERR, "Trying to append a null child!")
@@ -76,17 +73,13 @@ abstract class NodeImpl(doc: Document?) : NodeModel {
     }
 
 
-    /**
-     * Creates an `ArrayList` of descendent nodes that the given filter
-     * condition.
-     */
     fun getDescendants(
         filter: NodeFilter,
         nestIntoMatchingNodes: Boolean
-    ): ArrayList<NodeImpl?> {
-        val al = java.util.ArrayList<NodeImpl?>()
+    ): ArrayList<NodeImpl> {
+        val al = ArrayList<NodeImpl>()
 
-        this.extractDescendantsArrayImpl(filter, al, nestIntoMatchingNodes)
+        this.extractDescendantsArrayImpl(filter, al, nestIntoMatchingNodes) // todo
 
         return al
     }
@@ -94,7 +87,7 @@ abstract class NodeImpl(doc: Document?) : NodeModel {
 
     private fun extractDescendantsArrayImpl(
         filter: NodeFilter,
-        al: java.util.ArrayList<NodeImpl?>,
+        al: ArrayList<NodeImpl>,
         nestIntoMatchingNodes: Boolean
     ) {
         this.nodeList.forEach { node ->

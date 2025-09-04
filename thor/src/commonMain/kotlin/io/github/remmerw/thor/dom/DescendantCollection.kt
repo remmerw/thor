@@ -15,11 +15,11 @@ open class DescendantHTMLCollection @JvmOverloads constructor(
     private val rootNode: NodeImpl,
     private val nodeFilter: NodeFilter?,
     private val nestIntoMatchingNodes: Boolean = true
-) : Collection {
+) : Collection { // TODO cleanup
 
 
     private var itemsByName: MutableMap<String?, ElementImpl?>? = null
-    private var itemsByIndex: MutableList<NodeImpl?>? = null
+    private var itemsByIndex: MutableList<NodeImpl>? = null
 
 
     private fun ensurePopulatedImpl() {
