@@ -3,11 +3,12 @@ package io.github.remmerw.thor.dom
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import org.w3c.dom.CharacterData
+import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.w3c.dom.Node
 import org.w3c.dom.Text
 
-interface DocumentModel : NodeModel
+interface DocumentModel : NodeModel, Document
 
 interface NodeModel : Node {
     fun nodes(): SnapshotStateList<NodeModel>

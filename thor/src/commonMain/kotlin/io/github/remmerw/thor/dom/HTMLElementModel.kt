@@ -1,47 +1,47 @@
 package io.github.remmerw.thor.dom
 
-import org.w3c.dom.html.HTMLElement
+import org.w3c.dom.Element
 import java.util.logging.Level
 
-open class HTMLElementModel(type: ElementType) : ElementImpl(type), HTMLElement {
+open class HTMLElementModel(type: ElementType) : ElementImpl(type), Element {
 
     override fun getId(): String? {
         return this.getAttribute("id")
     }
 
-    override fun setId(p0: String?) {
+    fun setId(id: String?) {
         this.setAttribute("id", id)
     }
 
-    override fun getTitle(): String? {
+    fun getTitle(): String? {
         return this.getAttribute("title")
     }
 
-    override fun setTitle(title: String?) {
+    fun setTitle(title: String?) {
         this.setAttribute("title", title)
     }
 
-    override fun getLang(): String? {
+    fun getLang(): String? {
         return this.getAttribute("lang")
     }
 
-    override fun setLang(lang: String?) {
+    fun setLang(lang: String?) {
         this.setAttribute("lang", lang)
     }
 
-    override fun getDir(): String? {
+    fun getDir(): String? {
         return this.getAttribute("dir")
     }
 
-    override fun setDir(dir: String?) {
+    fun setDir(dir: String?) {
         this.setAttribute("dir", dir)
     }
 
-    override fun getClassName(): String? {
+    fun getClassName(): String? {
         return this.getAttribute("class")
     }
 
-    override fun setClassName(className: String?) {
+    fun setClassName(className: String?) {
         this.setAttribute("class", className)
     }
 

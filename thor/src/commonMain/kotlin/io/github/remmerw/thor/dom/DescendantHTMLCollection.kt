@@ -1,14 +1,22 @@
 package io.github.remmerw.thor.dom
 
 import org.w3c.dom.Node
-import org.w3c.dom.html.HTMLCollection
+
+
+interface Collection {
+    fun getLength(): Int
+
+    fun item(index: Int): Node?
+
+    fun namedItem(name: String): Node?
+}
 
 open class DescendantHTMLCollection @JvmOverloads constructor(
     private val rootNode: NodeImpl,
     private val nodeFilter: NodeFilter?,
     private val treeLock: Any,
     private val nestIntoMatchingNodes: Boolean = true
-) : HTMLCollection {
+) : Collection {
 
 
     private var itemsByName: MutableMap<String?, ElementImpl?>? = null
@@ -66,7 +74,7 @@ open class DescendantHTMLCollection @JvmOverloads constructor(
     }
 
 
-    override fun namedItem(name: String?): Node? {
+    override fun namedItem(name: String): Node? {
         synchronized(this.treeLock) {
             this.ensurePopulatedImpl()
             return this.itemsByName!!.get(name)

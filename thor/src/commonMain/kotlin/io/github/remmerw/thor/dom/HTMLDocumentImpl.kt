@@ -40,9 +40,6 @@ import org.w3c.dom.ProcessingInstruction
 import org.w3c.dom.Text
 import org.w3c.dom.UserDataHandler
 import org.w3c.dom.css.CSSStyleSheet
-import org.w3c.dom.html.HTMLCollection
-import org.w3c.dom.html.HTMLDocument
-import org.w3c.dom.html.HTMLElement
 import org.w3c.dom.stylesheets.DocumentStyle
 import org.w3c.dom.stylesheets.LinkStyle
 import org.w3c.dom.stylesheets.StyleSheetList
@@ -62,7 +59,7 @@ class HTMLDocumentImpl(
     private var reader: WritableLineReader? = null,
     private var documentURI: String? = null,
     private val contentType: String? = null
-) : NodeImpl(), DocumentModel, HTMLDocument, DocumentView, DocumentStyle {
+) : NodeImpl(), DocumentModel, DocumentView, DocumentStyle {
     val styleSheetManager: StyleSheetManager = StyleSheetManager()
     private val factory: ElementFactory
     private var documentURL: URL? = null
@@ -72,11 +69,11 @@ class HTMLDocumentImpl(
     private var title: String? = null
     private var referrer: String? = null
     private var domain: String? = null
-    private var images: HTMLCollection? = null
-    private var applets: HTMLCollection? = null
-    private var links: HTMLCollection? = null
-    private var forms: HTMLCollection? = null
-    private var anchors: HTMLCollection? = null
+    private var images: Collection? = null
+    private var applets: Collection? = null
+    private var links: Collection? = null
+    private var forms: Collection? = null
+    private var anchors: Collection? = null
     private var doctype: DocumentType? = null
     private var isDocTypeXHTML = false
     private var inputEncoding: String? = null
@@ -86,7 +83,7 @@ class HTMLDocumentImpl(
     private var strictErrorChecking = true
     private var domConfig: DOMConfiguration? = null
     private var domImplementation: DOMImplementation? = null
-    private var body: HTMLElement? = null
+    private var body: Element? = null
     private var classifiedRules: Analyzer.Holder? = null
 
 
@@ -159,16 +156,16 @@ class HTMLDocumentImpl(
         // NOP, per spec
     }
 
-    override fun getTitle(): String? {
+    fun getTitle(): String? {
         return title
     }
 
 
-    override fun setTitle(title: String?) {
+    fun setTitle(title: String?) {
         this.title = title
     }
 
-    override fun getReferrer(): String? {
+    fun getReferrer(): String? {
         return this.referrer
     }
 
@@ -176,7 +173,7 @@ class HTMLDocumentImpl(
         this.referrer = value
     }
 
-    override fun getDomain(): String? {
+    fun getDomain(): String? {
         return this.domain
     }
 
@@ -189,19 +186,19 @@ class HTMLDocumentImpl(
         }
     }
 
-    override fun getBody(): HTMLElement? {
+    fun getBody(): Element? {
         synchronized(this) {
             return this.body
         }
     }
 
-    override fun setBody(body: HTMLElement?) {
+    fun setBody(body: Element?) {
         synchronized(this) {
             this.body = body
         }
     }
 
-    override fun getImages(): HTMLCollection {
+    fun getImages(): Collection {
         synchronized(this) {
             if (this.images == null) {
                 this.images =
@@ -211,7 +208,7 @@ class HTMLDocumentImpl(
         }
     }
 
-    override fun getApplets(): HTMLCollection {
+    fun getApplets(): Collection {
         synchronized(this) {
             if (this.applets == null) {
                 // TODO: Should include OBJECTs that are applets?
@@ -221,7 +218,7 @@ class HTMLDocumentImpl(
         }
     }
 
-    override fun getLinks(): HTMLCollection {
+    fun getLinks(): Collection {
         synchronized(this) {
             if (this.links == null) {
                 this.links = DescendantHTMLCollection(this, LinkFilter(), this.treeLock)
@@ -230,7 +227,7 @@ class HTMLDocumentImpl(
         }
     }
 
-    override fun getForms(): HTMLCollection {
+    fun getForms(): Collection {
         synchronized(this) {
             if (this.forms == null) {
                 this.forms = DescendantHTMLCollection(this, FormFilter(), this.treeLock)
@@ -239,7 +236,7 @@ class HTMLDocumentImpl(
         }
     }
 
-    override fun getAnchors(): HTMLCollection {
+    fun getAnchors(): Collection {
         synchronized(this) {
             if (this.anchors == null) {
                 this.anchors = DescendantHTMLCollection(this, AnchorFilter(), this.treeLock)
@@ -248,7 +245,7 @@ class HTMLDocumentImpl(
         }
     }
 
-    override fun getCookie(): String? {
+    fun getCookie(): String? {
         // Justification: A caller (e.g. Google Analytics script)
         // might want to get cookies from the parent document.
         // If the caller has access to the document, it appears
@@ -262,7 +259,7 @@ class HTMLDocumentImpl(
     }
 
     @Throws(DOMException::class)
-    override fun setCookie(cookie: String?) {
+    fun setCookie(cookie: String?) {
         // Justification: A caller (e.g. Google Analytics script)
         // might want to set cookies on the parent document.
         // If the caller has access to the document, it appears
@@ -274,7 +271,7 @@ class HTMLDocumentImpl(
 
     }
 
-    override fun open() {
+    fun open() {
         synchronized(this.treeLock) {
             if (this.reader != null) {
                 if (this.reader is LocalWritableLineReader) {
@@ -339,7 +336,7 @@ class HTMLDocumentImpl(
     val isXML: Boolean
         get() = isDocTypeXHTML || "application/xhtml+xml" == contentType
 
-    override fun close() {
+    fun close() {
         synchronized(this.treeLock) {
             if (this.reader is LocalWritableLineReader) {
                 try {
@@ -354,7 +351,7 @@ class HTMLDocumentImpl(
         }
     }
 
-    override fun write(text: String?) {
+    fun write(text: String?) {
         synchronized(this.treeLock) {
             if (this.reader != null) {
                 try {
@@ -367,7 +364,7 @@ class HTMLDocumentImpl(
         }
     }
 
-    override fun writeln(text: String?) {
+    fun writeln(text: String?) {
         synchronized(this.treeLock) {
             if (this.reader != null) {
                 try {
@@ -407,7 +404,7 @@ class HTMLDocumentImpl(
      * Gets the collection of elements whose `name` attribute is
      * `elementName`.
      */
-    override fun getElementsByName(elementName: String): NodeList? {
+    fun getElementsByName(elementName: String): NodeList? {
         return this.getNodeList(ElementNameFilter(elementName))
     }
 
@@ -620,11 +617,7 @@ class HTMLDocumentImpl(
         throw DOMException(DOMException.NOT_SUPPORTED_ERR, "No renaming")
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.w3c.dom.Document#getImplementation()
-     */
+
     override fun getImplementation(): DOMImplementation {
         synchronized(this) {
             if (this.domImplementation == null) {
@@ -634,11 +627,7 @@ class HTMLDocumentImpl(
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.NodeImpl#getLocalName()
-     */
+
     override fun getLocalName(): String? {
         // Always null for document
         return null
@@ -674,7 +663,7 @@ class HTMLDocumentImpl(
     }
 
 
-    override fun getURL(): String? {
+    fun getURL(): String? {
         return this.documentURI
     }
 
