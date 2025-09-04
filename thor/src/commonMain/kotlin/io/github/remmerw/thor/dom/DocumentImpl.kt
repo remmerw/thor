@@ -16,7 +16,6 @@ import io.github.remmerw.thor.dom.NodeFilter.ElementNameFilter
 import io.github.remmerw.thor.dom.NodeFilter.FormFilter
 import io.github.remmerw.thor.dom.NodeFilter.LinkFilter
 import io.github.remmerw.thor.dom.NodeFilter.TagNameFilter
-import io.github.remmerw.thor.parser.EmptyReader
 import io.github.remmerw.thor.parser.HtmlParser
 import io.github.remmerw.thor.parser.WritableLineReader
 import io.github.remmerw.thor.style.CSSNorm
@@ -35,14 +34,10 @@ import org.w3c.dom.Node.DOCUMENT_NODE
 import org.w3c.dom.NodeList
 import org.w3c.dom.ProcessingInstruction
 import org.w3c.dom.Text
-import org.w3c.dom.UserDataHandler
-import org.xml.sax.SAXException
 import java.io.IOException
 import java.io.Reader
-import java.io.StringReader
 import java.net.MalformedURLException
 import java.net.URL
-import java.util.logging.Level
 import kotlin.concurrent.Volatile
 
 
@@ -85,8 +80,8 @@ class DocumentImpl(
 
             this.documentURL = docURL
             this.domain = docURL.host
-        } catch (mfu: MalformedURLException) {
-            logger.warning("HTMLDocumentImpl(): Document URI [" + documentURI + "] is malformed.")
+        } catch (throwable: Throwable) {
+            throwable.printStackTrace()
         }
 
         this.setOwnerDocument(this)
@@ -184,7 +179,7 @@ class DocumentImpl(
         synchronized(this) {
             if (this.images == null) {
                 this.images =
-                    DescendantHTMLCollection(this, NodeFilter.ImageFilter(), this.treeLock)
+                    DescendantHTMLCollection(this, NodeFilter.ImageFilter())
             }
             return this.images!!
         }
@@ -194,7 +189,7 @@ class DocumentImpl(
         synchronized(this) {
             if (this.applets == null) {
                 // TODO: Should include OBJECTs that are applets?
-                this.applets = DescendantHTMLCollection(this, AppletFilter(), this.treeLock)
+                this.applets = DescendantHTMLCollection(this, AppletFilter())
             }
             return this.applets!!
         }
@@ -203,7 +198,7 @@ class DocumentImpl(
     fun getLinks(): Collection {
         synchronized(this) {
             if (this.links == null) {
-                this.links = DescendantHTMLCollection(this, LinkFilter(), this.treeLock)
+                this.links = DescendantHTMLCollection(this, LinkFilter())
             }
             return this.links!!
         }
@@ -212,7 +207,7 @@ class DocumentImpl(
     fun getForms(): Collection {
         synchronized(this) {
             if (this.forms == null) {
-                this.forms = DescendantHTMLCollection(this, FormFilter(), this.treeLock)
+                this.forms = DescendantHTMLCollection(this, FormFilter())
             }
             return this.forms!!
         }
@@ -221,7 +216,7 @@ class DocumentImpl(
     fun getAnchors(): Collection {
         synchronized(this) {
             if (this.anchors == null) {
-                this.anchors = DescendantHTMLCollection(this, AnchorFilter(), this.treeLock)
+                this.anchors = DescendantHTMLCollection(this, AnchorFilter())
             }
             return this.anchors!!
         }
@@ -253,62 +248,27 @@ class DocumentImpl(
 
     }
 
-    fun open() {
-        synchronized(this.treeLock) {
-            if (this.reader != null) {
-                if (this.reader is LocalWritableLineReader) {
-                    try {
-                        this.reader!!.close()
-                    } catch (ioe: IOException) {
-                        // ignore
-                    }
-                    this.reader = null
-                } else {
-                    // Already open, return.
-                    // Do not close http/file documents in progress.
-                    return
-                }
-            }
-            this.removeAllChildrenImpl()
-            this.reader = LocalWritableLineReader(EmptyReader())
-        }
-    }
+
+    fun load() {
+
+        this.title = null
+        this.setBaseURI(null)
 
 
-    @JvmOverloads
-    @Throws(IOException::class, SAXException::class)
-    fun load(closeReader: Boolean = true) {
-        val reader: WritableLineReader?
-        synchronized(this.treeLock) {
-            this.removeAllChildrenImpl()
-            this.title = null
-            this.setBaseURI(null)
+        val reader = this.reader
 
 
-            reader = this.reader
-        }
         if (reader != null) {
             try {
-
                 val parser = HtmlParser(
                     this, this.isXML, true
                 )
                 parser.parse(reader)
 
             } finally {
-                if (closeReader) {
-                    try {
-                        reader.close()
-                    } catch (err: Exception) {
-                        logger.log(
-                            Level.WARNING,
-                            "load(): Unable to close stream",
-                            err
-                        )
-                    }
-                    synchronized(this.treeLock) {
-                        this.reader = null
-                    }
+                try {
+                    reader.close()
+                } catch (_: Throwable) {
                 }
             }
         }
@@ -318,69 +278,6 @@ class DocumentImpl(
     val isXML: Boolean
         get() = isDocTypeXHTML || "application/xhtml+xml" == contentType
 
-    fun close() {
-        synchronized(this.treeLock) {
-            if (this.reader is LocalWritableLineReader) {
-                try {
-                    this.reader!!.close()
-                } catch (ioe: IOException) {
-                    // ignore
-                }
-                this.reader = null
-            } else {
-                // do nothing - could be parsing document off the web.
-            }
-        }
-    }
-
-    fun write(text: String?) {
-        synchronized(this.treeLock) {
-            if (this.reader != null) {
-                try {
-                    // This can end up in openBufferChanged
-                    this.reader!!.write(text)
-                } catch (ioe: IOException) {
-                    // ignore
-                }
-            }
-        }
-    }
-
-    fun writeln(text: String?) {
-        synchronized(this.treeLock) {
-            if (this.reader != null) {
-                try {
-                    // This can end up in openBufferChanged
-                    this.reader!!.write(text + "\r\n")
-                } catch (_: IOException) {
-                    // ignore
-                }
-            }
-        }
-    }
-
-    private fun openBufferChanged(text: String) {
-        // Assumed to execute in a lock
-        // Assumed that text is not broken up HTML.
-        LocalErrorHandler()
-        val systemId = this.documentURI
-        systemId
-        val parser = HtmlParser(
-            this,
-            false,
-            true
-        )
-        val strReader = StringReader(text)
-        try {
-            // This sets up another Javascript scope Window. Does it matter?
-            parser.parse(strReader)
-        } catch (err: Exception) {
-            this.warn(
-                "Unable to parse written HTML text. BaseURI=[" + this.getBaseURI() + "].",
-                err
-            )
-        }
-    }
 
     /**
      * Gets the collection of elements whose `name` attribute is
@@ -402,18 +299,14 @@ class DocumentImpl(
     }
 
     override fun getDocumentElement(): Element? {
-        synchronized(this.treeLock) {
-
-
-            this.nodes().forEach { nodeModel ->
-                val node: Any? = nodeModel
-                if (node is Element) {
-                    return node
-                }
+        this.nodes().forEach { nodeModel ->
+            val node: Any? = nodeModel
+            if (node is Element) {
+                return node
             }
-
-            return null
         }
+        return null
+
     }
 
     @Throws(DOMException::class)
@@ -581,14 +474,11 @@ class DocumentImpl(
     }
 
     override fun normalizeDocument() {
-        // TODO: Normalization options from domConfig
-        synchronized(this.treeLock) {
-            this.visitImpl(object : NodeVisitor {
-                override fun visit(node: Node) {
-                    node.normalize()
-                }
-            })
-        }
+        this.visitImpl(object : NodeVisitor {
+            override fun visit(node: Node) {
+                node.normalize()
+            }
+        })
     }
 
     @Throws(DOMException::class)
@@ -647,22 +537,12 @@ class DocumentImpl(
     }
 
 
-    override fun setUserData(key: String, data: Any?, handler: UserDataHandler?): Any? {
-        // if (org.cobraparser.html.parser.HtmlParser.MODIFYING_KEY.equals(key) && data == Boolean.FALSE) {
-        // dispatchLoadEvent();
-        // }
-        return super.setUserData(key, data, handler)
-    }
-
-
     private fun updateStyleRules() {
-        synchronized(treeLock) {
-            if (classifiedRules == null) {
-                val jSheets: MutableList<StyleSheet?> = ArrayList()
-                jSheets.add(if (this.isXML) recommendedStyleXML else recommendedStyle)
-                jSheets.add(if (this.isXML) userAgentStyleXML else userAgentStyle)
-                classifiedRules = AnalyzerUtil.getClassifiedRules(jSheets, MediaSpec("screen"))
-            }
+        if (classifiedRules == null) {
+            val jSheets: MutableList<StyleSheet?> = ArrayList()
+            jSheets.add(if (this.isXML) recommendedStyleXML else recommendedStyle)
+            jSheets.add(if (this.isXML) userAgentStyleXML else userAgentStyle)
+            classifiedRules = AnalyzerUtil.getClassifiedRules(jSheets, MediaSpec("screen"))
         }
     }
 
@@ -671,12 +551,12 @@ class DocumentImpl(
 
 
     fun getClassifiedRules(): Analyzer.Holder? {
-        synchronized(treeLock) {
-            if (classifiedRules == null) {
-                updateStyleRules()
-            }
-            return classifiedRules
+
+        if (classifiedRules == null) {
+            updateStyleRules()
         }
+        return classifiedRules
+
     }
 
 
@@ -687,9 +567,6 @@ class DocumentImpl(
         @Throws(IOException::class)
         override fun write(text: String?) {
             super.write(text)
-            if ("" == text) {
-                openBufferChanged(text)
-            }
         }
     }
 

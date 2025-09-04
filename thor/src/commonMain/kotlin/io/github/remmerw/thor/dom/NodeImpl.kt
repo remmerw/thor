@@ -14,64 +14,49 @@ import org.w3c.dom.Text
 import org.w3c.dom.UserDataHandler
 import java.net.URL
 import java.util.LinkedList
-import java.util.logging.Level
-import java.util.logging.Logger
-import kotlin.concurrent.Volatile
 
 abstract class NodeImpl(doc: Document?) : NodeModel {
 
     private var document by mutableStateOf(doc)
     private var nodeList = mutableStateListOf<NodeModel>()
 
+    var parent by mutableStateOf<Node?>(null)
+
+    override fun getAttributes(): NamedNodeMap? {
+        return null  // todo
+    }
+
     override fun nodes(): SnapshotStateList<NodeModel> {
         return nodeList
     }
-
 
     override fun cloneNode(p0: Boolean): Node? {
         TODO("Not yet implemented")
     }
 
-    /**
-     * A tree lock is less deadlock-prone than a node-level lock. This is assigned
-     * in setOwnerDocument.
-     */
-    @Volatile
-    var treeLock: Any = this
-
-    @Volatile
-    protected var nodeParent: Node? = null
-    private var userData: MutableMap<String, Any> = mutableMapOf()
-
-    private val userDataHandlers: MutableMap<String, UserDataHandler> = mutableMapOf()
-
-    @Volatile
-    private var prefix: String? = null
-
 
     @Throws(DOMException::class)
     override fun appendChild(newChild: Node?): Node {
         if (newChild != null) {
-            synchronized(this.treeLock) {
-                if (isInclusiveAncestorOf(newChild)) {
-                    val prevParent = newChild.parentNode
-                    if (prevParent is NodeImpl) {
-                        prevParent.removeChild(newChild)
-                    }
-                } else if ((newChild is NodeImpl) && newChild.isInclusiveAncestorOf(this)) {
-                    throw DOMException(
-                        DOMException.HIERARCHY_REQUEST_ERR,
-                        "Trying to append an ancestor element."
-                    )
+
+            if (isInclusiveAncestorOf(newChild)) {
+                val prevParent = newChild.parentNode
+                if (prevParent is NodeImpl) {
+                    prevParent.removeChild(newChild)
                 }
-
-
-                this.nodeList.add(newChild as NodeModel)
-
-                if (newChild is ElementImpl) {
-                    newChild.finish()
-                }
+            } else if ((newChild is NodeImpl) && newChild.isInclusiveAncestorOf(this)) {
+                throw DOMException(
+                    DOMException.HIERARCHY_REQUEST_ERR,
+                    "Trying to append an ancestor element."
+                )
             }
+
+            this.nodeList.add(newChild as NodeModel)
+
+            if (newChild is ElementImpl) {
+                newChild.finish()
+            }
+
 
 
 
@@ -82,17 +67,11 @@ abstract class NodeImpl(doc: Document?) : NodeModel {
     }
 
 
-    protected fun removeAllChildrenImpl() {
-        synchronized(this.treeLock) {
-            this.nodeList.clear()
-        }
-    }
-
     protected fun getNodeList(filter: NodeFilter): NodeList {
         val collection: MutableList<Node> = mutableListOf()
-        synchronized(this.treeLock) {
-            this.appendChildrenToCollectionImpl(filter, collection)
-        }
+
+        this.appendChildrenToCollectionImpl(filter, collection)
+
         return NodeListImpl(collection.toList())
     }
 
@@ -104,11 +83,11 @@ abstract class NodeImpl(doc: Document?) : NodeModel {
     fun getDescendants(
         filter: NodeFilter,
         nestIntoMatchingNodes: Boolean
-    ): java.util.ArrayList<NodeImpl?> {
+    ): ArrayList<NodeImpl?> {
         val al = java.util.ArrayList<NodeImpl?>()
-        synchronized(this.treeLock) {
-            this.extractDescendantsArrayImpl(filter, al, nestIntoMatchingNodes)
-        }
+
+        this.extractDescendantsArrayImpl(filter, al, nestIntoMatchingNodes)
+
         return al
     }
 
@@ -146,47 +125,46 @@ abstract class NodeImpl(doc: Document?) : NodeModel {
 
 
     fun nodeIndex(): Int {
-        val parent =
-            this.nodeParent as NodeImpl?
-        return if (parent == null) -1 else parent.getChildIndex(this)
+        val parent = this.parentNode as NodeImpl?
+        return parent?.getChildIndex(this) ?: -1
     }
 
     fun getChildIndex(child: Node?): Int {
-        synchronized(this.treeLock) {
-            val nl = this.nodeList
-            return nl.indexOf(child)
-        }
+
+        val nl = this.nodeList
+        return nl.indexOf(child)
+
     }
 
 
     private fun isAncestorOf(other: Node): Boolean {
         val parent = other.parentNode as NodeImpl?
-        if (parent === this) {
-            return true
+        return if (parent === this) {
+            true
         } else if (parent == null) {
-            return false
+            false
         } else {
-            return this.isAncestorOf(parent)
+            this.isAncestorOf(parent)
         }
     }
 
     private fun isInclusiveAncestorOf(other: Node?): Boolean {
-        if (other === this) {
-            return true
+        return if (other === this) {
+            true
         } else if (other == null) {
-            return false
+            false
         } else {
-            return this.isAncestorOf(other)
+            this.isAncestorOf(other)
         }
     }
 
     @Throws(DOMException::class)
     override fun compareDocumentPosition(other: Node?): Short {
-        val parent = this.nodeParent
+        val parent = this.parentNode
         if (other !is NodeImpl) {
             throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Unknwon node implementation")
         }
-        if ((parent != null) && (parent === other.nodeParent)) {
+        if ((parent != null) && (parent === other.parentNode)) {
             val thisIndex = this.nodeIndex()
             val otherIndex =
                 other.nodeIndex()
@@ -207,9 +185,6 @@ abstract class NodeImpl(doc: Document?) : NodeModel {
         }
     }
 
-    override fun getAttributes(): NamedNodeMap? {
-        return null
-    }
 
     override fun getOwnerDocument(): Document? {
         return document
@@ -217,20 +192,20 @@ abstract class NodeImpl(doc: Document?) : NodeModel {
 
     open fun setOwnerDocument(value: Document) {
         this.document = value
-        this.treeLock = value
+
     }
 
     open fun setOwnerDocument(value: Document, deep: Boolean) {
         setOwnerDocument(value)
         if (deep) {
-            synchronized(this.treeLock) {
-                val nl = this.nodeList
-                val i: MutableIterator<Node?> = nl.iterator()
-                while (i.hasNext()) {
-                    val child = i.next() as NodeImpl
-                    child.setOwnerDocument(value, deep)
-                }
+
+            val nl = this.nodeList
+            val i: MutableIterator<Node?> = nl.iterator()
+            while (i.hasNext()) {
+                val child = i.next() as NodeImpl
+                child.setOwnerDocument(value, deep)
             }
+
         }
     }
 
@@ -256,9 +231,9 @@ abstract class NodeImpl(doc: Document?) : NodeModel {
     }
 
     fun visit(visitor: NodeVisitor) {
-        synchronized(this.treeLock) {
-            this.visitImpl(visitor)
-        }
+
+        this.visitImpl(visitor)
+
     }
 
     // Ongoing issue : 152
@@ -266,64 +241,56 @@ abstract class NodeImpl(doc: Document?) : NodeModel {
     // Pass 2: FAIL: 24
     @Throws(DOMException::class)
     override fun insertBefore(newChild: Node, refChild: Node?): Node {
-        synchronized(this.treeLock) {
-            if (newChild is NodeImpl) {
-                if (newChild.isInclusiveAncestorOf(this)) {
-                    throw DOMException(
-                        DOMException.HIERARCHY_REQUEST_ERR,
-                        "new child is an ancestor"
-                    )
-                }
+
+        if (newChild is NodeImpl) {
+            if (newChild.isInclusiveAncestorOf(this)) {
+                throw DOMException(
+                    DOMException.HIERARCHY_REQUEST_ERR,
+                    "new child is an ancestor"
+                )
             }
-            // From what I understand from https://developer.mozilla.org/en-US/docs/Web/API/Node.insertBefore
-            // a null or undefined refChild will cause the new child to be appended at the end of the list
-            // otherwise, this function will throw an exception if refChild is not found in the child list
-            val nl = this.nodeList
-            val idx =
-                if (refChild == null) nl.size else (nl.indexOf(refChild))
-            if (idx == -1) {
-                throw DOMException(DOMException.NOT_FOUND_ERR, "refChild not found")
-            }
-            nl.add(idx, newChild as NodeModel)
         }
+        // From what I understand from https://developer.mozilla.org/en-US/docs/Web/API/Node.insertBefore
+        // a null or undefined refChild will cause the new child to be appended at the end of the list
+        // otherwise, this function will throw an exception if refChild is not found in the child list
+        val nl = this.nodeList
+        val idx =
+            if (refChild == null) nl.size else (nl.indexOf(refChild))
+        if (idx == -1) {
+            throw DOMException(DOMException.NOT_FOUND_ERR, "refChild not found")
+        }
+        nl.add(idx, newChild as NodeModel)
+
 
         return newChild
     }
 
-
-    @Throws(DOMException::class)
-    protected fun insertAt(newChild: Node?, idx: Int): Node? {
-        synchronized(this.treeLock) {
-            nodes().add(idx, newChild!! as NodeModel)
-        }
-        return newChild
-    }
 
     @Throws(DOMException::class)
     override fun replaceChild(newChild: Node?, oldChild: Node?): Node? {
-        synchronized(this.treeLock) {
-            if (this.isInclusiveAncestorOf(newChild)) {
-                throw DOMException(
-                    DOMException.HIERARCHY_REQUEST_ERR,
-                    "newChild is already a child of the node"
-                )
-            }
-            if ((newChild is NodeImpl) && newChild.isInclusiveAncestorOf(this)) {
-                throw DOMException(
-                    DOMException.HIERARCHY_REQUEST_ERR,
-                    "Trying to set an ancestor element as a child."
-                )
-            }
 
-            val nl = this.nodeList
-            val idx = nl.indexOf(oldChild)
-            if (idx == -1) {
-                throw DOMException(DOMException.NOT_FOUND_ERR, "oldChild not found")
-            }
-            nl.set(idx, newChild!! as NodeModel)
-
-
+        if (this.isInclusiveAncestorOf(newChild)) {
+            throw DOMException(
+                DOMException.HIERARCHY_REQUEST_ERR,
+                "newChild is already a child of the node"
+            )
         }
+        if ((newChild is NodeImpl) && newChild.isInclusiveAncestorOf(this)) {
+            throw DOMException(
+                DOMException.HIERARCHY_REQUEST_ERR,
+                "Trying to set an ancestor element as a child."
+            )
+        }
+
+        val nl = this.nodeList
+        val idx = nl.indexOf(oldChild)
+        if (idx == -1) {
+            throw DOMException(DOMException.NOT_FOUND_ERR, "oldChild not found")
+        }
+        nl.set(idx, newChild!! as NodeModel)
+
+
+
 
 
         return newChild
@@ -331,26 +298,19 @@ abstract class NodeImpl(doc: Document?) : NodeModel {
 
     @Throws(DOMException::class)
     override fun removeChild(oldChild: Node?): Node? {
-        synchronized(this.treeLock) {
-            if (!nodeList.remove(oldChild)) {
-                throw DOMException(DOMException.NOT_FOUND_ERR, "oldChild not found")
-            }
+
+        if (!nodeList.remove(oldChild)) {
+            throw DOMException(DOMException.NOT_FOUND_ERR, "oldChild not found")
         }
+
         return oldChild
     }
 
 
-    @Throws(DOMException::class)
-    fun removeChildAt(index: Int): Node {
-        synchronized(this.treeLock) {
-            return nodeList.removeAt(index)
-        }
-    }
-
     override fun hasChildNodes(): Boolean {
-        synchronized(this.treeLock) {
-            return nodeList.isNotEmpty()
-        }
+
+        return nodeList.isNotEmpty()
+
     }
 
     override fun getBaseURI(): String? {
@@ -359,62 +319,62 @@ abstract class NodeImpl(doc: Document?) : NodeModel {
     }
 
     override fun getChildNodes(): NodeList {
-        synchronized(this.treeLock) {
-            val nl = this.nodeList
-            return NodeListImpl(nl.toList())
-        }
+
+        val nl = this.nodeList
+        return NodeListImpl(nl.toList())
+
     }
 
     override fun getFirstChild(): Node? {
-        synchronized(this.treeLock) {
-            return nodes().first()
-        }
+
+        return nodes().first()
+
     }
 
     override fun getLastChild(): Node? {
-        synchronized(this.treeLock) {
-            return this.nodeList.last()
-        }
+
+        return this.nodeList.last()
+
     }
 
     private fun getPreviousTo(node: Node?): Node? {
-        synchronized(this.treeLock) {
-            val nl = this.nodeList
-            val idx = nl.indexOf(node)
-            if (idx == -1) {
-                throw DOMException(DOMException.NOT_FOUND_ERR, "node not found")
-            }
-            try {
-                return nl[idx - 1]
-            } catch (_: Throwable) {
-                return null
-            }
+
+        val nl = this.nodeList
+        val idx = nl.indexOf(node)
+        if (idx == -1) {
+            throw DOMException(DOMException.NOT_FOUND_ERR, "node not found")
         }
+        try {
+            return nl[idx - 1]
+        } catch (_: Throwable) {
+            return null
+        }
+
     }
 
     private fun getNextTo(node: Node?): Node? {
-        synchronized(this.treeLock) {
-            val nl = this.nodeList
-            val idx = nl.indexOf(node)
-            if (idx == -1) {
-                throw DOMException(DOMException.NOT_FOUND_ERR, "node not found")
-            }
-            try {
-                return nl[idx + 1]
-            } catch (_: IndexOutOfBoundsException) {
-                return null
-            }
+
+        val nl = this.nodeList
+        val idx = nl.indexOf(node)
+        if (idx == -1) {
+            throw DOMException(DOMException.NOT_FOUND_ERR, "node not found")
         }
+        try {
+            return nl[idx + 1]
+        } catch (_: IndexOutOfBoundsException) {
+            return null
+        }
+
     }
 
     override fun getPreviousSibling(): Node? {
-        val parent = this.nodeParent as NodeImpl?
-        return if (parent == null) null else parent.getPreviousTo(this)
+        val parent = this.parentNode as NodeImpl?
+        return parent?.getPreviousTo(this)
     }
 
     override fun getNextSibling(): Node? {
-        val parent = this.nodeParent as NodeImpl?
-        return if (parent == null) null else parent.getNextTo(this)
+        val parent = this.parentNode as NodeImpl?
+        return parent?.getNextTo(this)
     }
 
     override fun getFeature(feature: String?, version: String?): Any? {
@@ -423,25 +383,11 @@ abstract class NodeImpl(doc: Document?) : NodeModel {
     }
 
     override fun setUserData(key: String, data: Any?, handler: UserDataHandler?): Any? {
-        // here we spent some effort preventing our maps from growing too much
-        synchronized(this) {
-            if (handler != null) {
-                this.userDataHandlers.remove(key)
-                this.userDataHandlers.put(key, handler)
-            }
-
-            return if (data != null) {
-                userData.put(key, data)
-            } else {
-                userData.remove(key)
-            }
-        }
+        TODO("not implemented yet")
     }
 
     override fun getUserData(key: String?): Any? {
-        synchronized(this) {
-            return userData[key]
-        }
+        TODO("not implemented yet")
     }
 
     override fun hasAttributes(): Boolean {
@@ -453,62 +399,50 @@ abstract class NodeImpl(doc: Document?) : NodeModel {
     }
 
     override fun getPrefix(): String? {
-        return this.prefix
+        TODO("Not supported yet")
     }
 
-    @Throws(DOMException::class)
     override fun setPrefix(prefix: String?) {
-        this.prefix = prefix
+        TODO("Not supported yet")
     }
 
-    //abstract override fun getNodeType(): Short
 
-    /**
-     * Gets the text content of this node and its descendents.
-     */
     @Throws(DOMException::class)
     override fun getTextContent(): String? {
         val sb = StringBuffer()
-        synchronized(this.treeLock) {
-            val nl = this.nodeList
-            val i = nl.iterator()
-            while (i.hasNext()) {
-                val node = i.next()
-                val type = node.nodeType
-                when (type) {
-                    Node.CDATA_SECTION_NODE, Node.TEXT_NODE, Node.ELEMENT_NODE -> {
-                        val textContent = node.textContent
-                        if (textContent != null) {
-                            sb.append(textContent)
-                        }
-                    }
 
-                    else -> {}
+        val nl = this.nodeList
+        val i = nl.iterator()
+        while (i.hasNext()) {
+            val node = i.next()
+            val type = node.nodeType
+            when (type) {
+                Node.CDATA_SECTION_NODE, Node.TEXT_NODE, Node.ELEMENT_NODE -> {
+                    val textContent = node.textContent
+                    if (textContent != null) {
+                        sb.append(textContent)
+                    }
                 }
+
+                else -> {}
             }
         }
+
         return sb.toString()
     }
 
 
     override fun setTextContent(textContent: String) {
-        synchronized(this.treeLock) {
-            this.removeChildrenImpl(TextFilter())
-            if ("" != textContent) {
-                val t = TextImpl(ownerDocument!!, textContent)
-                t.setParentImpl(this)
 
-                this.nodeList.add(t)
-            }
+        this.removeChildrenImpl(TextFilter())
+        if ("" != textContent) {
+            val t = TextImpl(ownerDocument!!, textContent)
+            t.parent = (this)
+
+            this.nodeList.add(t)
         }
 
 
-    }
-
-    protected fun removeChildren(filter: NodeFilter) {
-        synchronized(this.treeLock) {
-            this.removeChildrenImpl(filter)
-        }
     }
 
     protected fun removeChildrenImpl(filter: NodeFilter) {
@@ -524,100 +458,100 @@ abstract class NodeImpl(doc: Document?) : NodeModel {
     }
 
     fun insertAfter(newChild: Node?, refChild: Node?): Node? {
-        synchronized(this.treeLock) {
-            val nl = this.nodeList
-            val idx = nl.indexOf(refChild)
-            if (idx == -1) {
-                throw DOMException(DOMException.NOT_FOUND_ERR, "refChild not found")
-            }
-            nl.add(idx + 1, newChild!! as NodeModel)
 
+        val nl = this.nodeList
+        val idx = nl.indexOf(refChild)
+        if (idx == -1) {
+            throw DOMException(DOMException.NOT_FOUND_ERR, "refChild not found")
         }
+        nl.add(idx + 1, newChild!! as NodeModel)
+
+
 
         return newChild
     }
 
     fun replaceAdjacentTextNodes(node: Text, textContent: String?): Text {
 
-        synchronized(this.treeLock) {
-            val nl = this.nodeList
-            val idx = nl.indexOf(node as NodeModel)
-            if (idx == -1) {
-                throw DOMException(DOMException.NOT_FOUND_ERR, "Node not a child")
-            }
-            var firstIdx = idx
-            val toDelete: MutableList<Any?> = LinkedList<Any?>()
-            run {
-                var adjIdx = idx
-                while (--adjIdx >= 0) {
-                    val child: Any? = this.nodeList[adjIdx]
-                    if (child is Text) {
-                        firstIdx = adjIdx
-                        toDelete.add(child)
-                    }
-                }
-            }
-            val length = this.nodeList.size
+
+        val nl = this.nodeList
+        val idx = nl.indexOf(node as NodeModel)
+        if (idx == -1) {
+            throw DOMException(DOMException.NOT_FOUND_ERR, "Node not a child")
+        }
+        var firstIdx = idx
+        val toDelete: MutableList<Any?> = LinkedList<Any?>()
+        run {
             var adjIdx = idx
-            while (++adjIdx < length) {
-                val child: Any? = this.nodeList.get(adjIdx)
+            while (--adjIdx >= 0) {
+                val child: Any? = this.nodeList[adjIdx]
                 if (child is Text) {
+                    firstIdx = adjIdx
                     toDelete.add(child)
                 }
             }
-            this.nodeList.removeAll(toDelete)
-            val textNode = TextImpl(ownerDocument!!, textContent!!)
-            textNode.setParentImpl(this)
-            this.nodeList.add(firstIdx, textNode)
-            return textNode
         }
+        val length = this.nodeList.size
+        var adjIdx = idx
+        while (++adjIdx < length) {
+            val child: Any? = this.nodeList[adjIdx]
+            if (child is Text) {
+                toDelete.add(child)
+            }
+        }
+        this.nodeList.removeAll(toDelete)
+        val textNode = TextImpl(ownerDocument!!, textContent!!)
+        textNode.parent = (this)
+        this.nodeList.add(firstIdx, textNode)
+        return textNode
+
 
     }
 
     fun replaceAdjacentTextNodes(node: Text): Text {
 
-        synchronized(this.treeLock) {
-            val nl = this.nodeList
-            val idx = nl.indexOf(node as NodeModel)
-            if (idx == -1) {
-                throw DOMException(DOMException.NOT_FOUND_ERR, "Node not a child")
-            }
-            val textBuffer = StringBuffer()
-            var firstIdx = idx
-            val toDelete: MutableList<Any?> = LinkedList<Any?>()
-            run {
-                var adjIdx = idx
-                while (--adjIdx >= 0) {
-                    val child: Any? = this.nodeList[adjIdx]
-                    if (child is Text) {
-                        firstIdx = adjIdx
-                        toDelete.add(child)
-                        textBuffer.append(child.nodeValue)
-                    }
-                }
-            }
-            val length = this.nodeList.size
+
+        val nl = this.nodeList
+        val idx = nl.indexOf(node as NodeModel)
+        if (idx == -1) {
+            throw DOMException(DOMException.NOT_FOUND_ERR, "Node not a child")
+        }
+        val textBuffer = StringBuffer()
+        var firstIdx = idx
+        val toDelete: MutableList<Any?> = LinkedList<Any?>()
+        run {
             var adjIdx = idx
-            while (++adjIdx < length) {
-                val child: Any? = this.nodeList.get(adjIdx)
+            while (--adjIdx >= 0) {
+                val child: Any? = this.nodeList[adjIdx]
                 if (child is Text) {
+                    firstIdx = adjIdx
                     toDelete.add(child)
                     textBuffer.append(child.nodeValue)
                 }
             }
-            this.nodeList.removeAll(toDelete)
-            val textNode = TextImpl(ownerDocument!!, textBuffer.toString())
-
-            textNode.setParentImpl(this)
-            this.nodeList.add(firstIdx, textNode)
-            return textNode
         }
+        val length = this.nodeList.size
+        var adjIdx = idx
+        while (++adjIdx < length) {
+            val child: Any? = this.nodeList.get(adjIdx)
+            if (child is Text) {
+                toDelete.add(child)
+                textBuffer.append(child.nodeValue)
+            }
+        }
+        this.nodeList.removeAll(toDelete)
+        val textNode = TextImpl(ownerDocument!!, textBuffer.toString())
+
+        textNode.parent = (this)
+        this.nodeList.add(firstIdx, textNode)
+        return textNode
+
 
     }
 
     override fun getParentNode(): Node? {
         // Should it be synchronized? Could have side-effects.
-        return this.nodeParent
+        return this.parent
     }
 
     override fun isSameNode(other: Node?): Boolean {
@@ -651,39 +585,29 @@ abstract class NodeImpl(doc: Document?) : NodeModel {
     }
 
     override fun normalize() {
-        synchronized(this.treeLock) {
-            val nl = this.nodeList
-            nl.iterator()
-            val textNodes: MutableList<Node> = LinkedList<Node>()
-            var prevText = false
-            nodes().forEach { nodeModel ->
-                val child = nodeModel
-                if (child.nodeType == Node.TEXT_NODE) {
-                    if (!prevText) {
-                        prevText = true
-                        textNodes.add(child)
-                    }
-                } else {
-                    prevText = false
+
+        val nl = this.nodeList
+        nl.iterator()
+        val textNodes: MutableList<Node> = LinkedList<Node>()
+        var prevText = false
+        nodes().forEach { nodeModel ->
+            val child = nodeModel
+            if (child.nodeType == Node.TEXT_NODE) {
+                if (!prevText) {
+                    prevText = true
+                    textNodes.add(child)
                 }
-            }
-            nodes().forEach { nodeModel ->
-                val text = nodeModel as Text
-                this.replaceAdjacentTextNodes(text)
+            } else {
+                prevText = false
             }
         }
+        nodes().forEach { nodeModel ->
+            val text = nodeModel as Text
+            this.replaceAdjacentTextNodes(text)
+        }
+
     }
 
-
-    override fun toString(): String {
-        return this.nodeName
-    }
-
-
-    fun setParentImpl(parent: Node?) {
-        // Call holding treeLock.
-        this.nodeParent = parent
-    }
 
     open fun getDocumentURL(): URL? {
         val doc: Any? = this.document
@@ -694,17 +618,4 @@ abstract class NodeImpl(doc: Document?) : NodeModel {
         }
     }
 
-    open fun warn(message: String?, err: Throwable?) {
-        logger.log(Level.WARNING, message, err)
-    }
-
-    open fun warn(message: String?) {
-        logger.log(Level.WARNING, message)
-    }
-
-
-    companion object {
-        @JvmStatic
-        protected val logger: Logger = Logger.getLogger(NodeImpl::class.java.name)
-    }
 }

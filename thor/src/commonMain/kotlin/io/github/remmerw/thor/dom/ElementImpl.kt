@@ -88,7 +88,7 @@ open class ElementImpl(document: Document, private val type: ElementType) :
                 HtmlStyles.elementMatchCondition,
                 cachedRules
             )
-            val parent = this.nodeParent
+            val parent = this.parentNode
             if ((parent != null) && (parent is ElementImpl)) {
                 nodeData.inheritFrom(parent.getNodeData(psuedoElement))
                 nodeData.concretize()
@@ -109,9 +109,6 @@ open class ElementImpl(document: Document, private val type: ElementType) :
 
     override fun getAttributes(): NamedNodeMap {
         synchronized(this) {
-            // TODO: Check if NamedNodeMapImpl can be changed to dynamically query the attributes field
-            //       instead of keeping a reference to it. This will allow the NamedNodeMap to be live as well
-            //       as avoid allocating of a HashMap here when attributes are empty.
             return NamedNodeMapImpl(this, this.attributes)
         }
     }
@@ -169,24 +166,22 @@ open class ElementImpl(document: Document, private val type: ElementType) :
     override fun getElementsByTagName(classNames: String): NodeList {
         val matchesAll = "*" == classNames
         val descendents: MutableList<Node> = LinkedList<Node>()
-        synchronized(this.treeLock) {
 
 
-            this.nodes().forEach { nodeModel ->
-                val child = nodeModel
-                if (child is Element) {
-                    if (matchesAll || isTagName(child, classNames)) {
-                        descendents.add(child)
-                    }
-                    val sublist = child.getElementsByTagName(classNames)
-                    val length = sublist.length
-                    for (idx in 0..<length) {
-                        descendents.add(sublist.item(idx))
-                    }
+        this.nodes().forEach { nodeModel ->
+            val child = nodeModel
+            if (child is Element) {
+                if (matchesAll || isTagName(child, classNames)) {
+                    descendents.add(child)
+                }
+                val sublist = child.getElementsByTagName(classNames)
+                val length = sublist.length
+                for (idx in 0..<length) {
+                    descendents.add(sublist.item(idx))
                 }
             }
-
         }
+
         return NodeListImpl(descendents)
     }
 

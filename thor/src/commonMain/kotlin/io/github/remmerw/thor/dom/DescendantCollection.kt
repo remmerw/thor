@@ -14,7 +14,6 @@ interface Collection {
 open class DescendantHTMLCollection @JvmOverloads constructor(
     private val rootNode: NodeImpl,
     private val nodeFilter: NodeFilter?,
-    private val treeLock: Any,
     private val nestIntoMatchingNodes: Boolean = true
 ) : Collection {
 
@@ -48,21 +47,21 @@ open class DescendantHTMLCollection @JvmOverloads constructor(
     }
 
     override fun getLength(): Int {
-        synchronized(this.treeLock) {
-            this.ensurePopulatedImpl()
-            return this.itemsByIndex!!.size
-        }
+
+        this.ensurePopulatedImpl()
+        return this.itemsByIndex!!.size
+
     }
 
     override fun item(index: Int): Node? {
-        synchronized(this.treeLock) {
-            this.ensurePopulatedImpl()
-            return try {
-                this.itemsByIndex!!.get(index)
-            } catch (_: Throwable) {
-                null
-            }
+
+        this.ensurePopulatedImpl()
+        return try {
+            this.itemsByIndex!!.get(index)
+        } catch (_: Throwable) {
+            null
         }
+
     }
 
     // TODO: This is a quick hack. Need to support WEB-IDL Semantics. GH #67
@@ -75,10 +74,10 @@ open class DescendantHTMLCollection @JvmOverloads constructor(
 
 
     override fun namedItem(name: String): Node? {
-        synchronized(this.treeLock) {
-            this.ensurePopulatedImpl()
-            return this.itemsByName!!.get(name)
-        }
+
+        this.ensurePopulatedImpl()
+        return this.itemsByName!!.get(name)
+
     }
 
 }

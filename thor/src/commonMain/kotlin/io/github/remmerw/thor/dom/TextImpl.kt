@@ -20,14 +20,14 @@ open class TextImpl(document: Document, text: String = "") : CharacterDataImpl(d
 
     @Throws(DOMException::class)
     override fun replaceWholeText(content: String?): Text? {
-        val parent = this.nodeParent as NodeImpl
+        val parent = this.parentNode as NodeImpl
         return parent.replaceAdjacentTextNodes(this, content)
     }
 
 
     @Throws(DOMException::class)
     override fun splitText(offset: Int): Text? {
-        val parent = this.nodeParent as NodeImpl
+        val parent = this.parentNode as NodeImpl
         val t = this.text
         if ((offset < 0) || (offset > t.length)) {
             throw DOMException(DOMException.INDEX_SIZE_ERR, "Bad offset: $offset")
@@ -41,7 +41,7 @@ open class TextImpl(document: Document, text: String = "") : CharacterDataImpl(d
 
 
     override fun getWholeText(): String? {
-        val parent = this.nodeParent as NodeImpl
+        val parent = this.parentNode as NodeImpl
         return parent.getTextContent()
     }
 

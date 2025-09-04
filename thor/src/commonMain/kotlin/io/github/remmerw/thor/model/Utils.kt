@@ -1,9 +1,9 @@
 package io.github.remmerw.thor.model
 
 import io.github.remmerw.thor.core.Urls
+import io.github.remmerw.thor.dom.DocumentImpl
 import io.github.remmerw.thor.dom.ElementModel
 import io.github.remmerw.thor.dom.ElementType
-import io.github.remmerw.thor.dom.DocumentImpl
 import org.w3c.dom.Element
 import java.net.MalformedURLException
 import java.net.URL

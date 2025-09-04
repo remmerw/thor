@@ -1,7 +1,7 @@
 package io.github.remmerw.thor.parser
 
-import io.github.remmerw.thor.dom.DocumentTypeImpl
 import io.github.remmerw.thor.dom.DocumentImpl
+import io.github.remmerw.thor.dom.DocumentTypeImpl
 import org.w3c.dom.DOMException
 import org.w3c.dom.Document
 import org.w3c.dom.Element
@@ -89,7 +89,6 @@ class HtmlParser {
     fun parse(reader: LineNumberReader, parent: Node) {
 
         try {
-            parent.setUserData(MODIFYING_KEY, Boolean.TRUE, null)
             while (this.parseToken(
                     parent, reader, null,
                     LinkedList<String?>()
@@ -102,7 +101,6 @@ class HtmlParser {
                 ensureHeadElement(lastRootElement!!)
                 ensureBodyElement(lastRootElement!!)
             }
-            parent.setUserData(MODIFYING_KEY, Boolean.FALSE, null)
         }
 
     }
@@ -229,9 +227,11 @@ class HtmlParser {
                             val qName = doctypeMatcher.group(1)
                             val publicId = doctypeMatcher.group(2)
                             val systemId = doctypeMatcher.group(3)
-                            val doctype = DocumentTypeImpl(htmlDoc,
+                            val doctype = DocumentTypeImpl(
+                                htmlDoc,
                                 qName,
-                                publicId, systemId)
+                                publicId, systemId
+                            )
                             htmlDoc.setDoctype(doctype)
                             needRoot = false
                         }
@@ -258,7 +258,7 @@ class HtmlParser {
                     val localName: String =
                         (if (tagHasPrefix) normalTag.substring(localIndex + 1) else normalTag)
                     var element = doc.createElement(localName)
-                    element.setUserData(MODIFYING_KEY, Boolean.TRUE, null)
+
                     try {
                         if (!this.justReadTagEnd) {
                             while (this.readAttribute(reader, element)) {
@@ -396,7 +396,6 @@ class HtmlParser {
                                             ancestors.removeFirst()
                                             ancestors.addFirst(normalTag)
                                             // Switch element
-                                            element.setUserData(MODIFYING_KEY, Boolean.FALSE, null)
                                             // newElement should have been suspended.
                                             element = newElement
                                             // Add to parent
@@ -415,8 +414,7 @@ class HtmlParser {
                     } finally {
                         // This can inform elements to continue with notifications.
                         // It can also cause Javascript to be loaded / processed.
-                        // Update: Elements now use Document.addJob() to delay processing
-                        element.setUserData(MODIFYING_KEY, Boolean.FALSE, null)
+
                     }
                 }
             } finally {
