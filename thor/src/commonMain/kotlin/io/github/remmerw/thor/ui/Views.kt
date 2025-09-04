@@ -298,7 +298,7 @@ fun Link(
 ) {
     Nodes(nodeModel, stateModel, modifier)
 
-    Utils.navigate(nodeModel, stateModel)
+    //Utils.navigate(nodeModel, stateModel)
 }
 
 @Composable
@@ -309,7 +309,7 @@ fun A(
 ) {
     Nodes(nodeModel, stateModel, modifier)
 
-    Utils.navigate(nodeModel, stateModel)
+    //Utils.navigate(nodeModel, stateModel)
 
 
 }
