@@ -34,7 +34,7 @@ open class DescendantHTMLCollection @JvmOverloads constructor(
             for (i in 0..<size) {
                 val descNode = descendents!!.get(i)
                 if (descNode is ElementImpl) {
-                    val id = descNode.getId()
+                    val id = descNode.getAttribute("id")
                     if ((id != null) && (id.length != 0)) {
                         itemsByName.put(id, descNode)
                     }

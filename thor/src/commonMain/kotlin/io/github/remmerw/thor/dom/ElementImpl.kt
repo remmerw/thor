@@ -20,7 +20,7 @@ import org.w3c.dom.TypeInfo
 import java.util.LinkedList
 import java.util.Locale
 
-abstract class ElementImpl(private val type: ElementType) : NodeImpl(), ElementModel {
+open class ElementImpl(private val type: ElementType) : NodeImpl(), ElementModel {
 
     private val attributes = mutableStateMapOf<String, String>()
     private val properties = mutableStateMapOf<String, String>()
@@ -87,7 +87,7 @@ abstract class ElementImpl(private val type: ElementType) : NodeImpl(), ElementM
                 cachedRules
             )
             val parent = this.nodeParent
-            if ((parent != null) && (parent is HTMLElementModel)) {
+            if ((parent != null) && (parent is ElementImpl)) {
                 nodeData.inheritFrom(parent.getNodeData(psuedoElement))
                 nodeData.concretize()
             }
@@ -233,6 +233,7 @@ abstract class ElementImpl(private val type: ElementType) : NodeImpl(), ElementM
         throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Namespaces not supported")
     }
 
+
     @Throws(DOMException::class)
     override fun setAttribute(name: String, value: String?) {
         // Convert null to "null" : String.
@@ -328,8 +329,6 @@ abstract class ElementImpl(private val type: ElementType) : NodeImpl(), ElementM
 
         return oldValue
     }
-
-    abstract fun getId(): String?
 
 
     companion object {

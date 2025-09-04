@@ -458,7 +458,7 @@ class HTMLDocumentImpl(
         target: String,
         data: String?
     ): ProcessingInstruction {
-        val node = HTMLProcessingInstruction(target, data)
+        val node = ProcessingInstructionModel(target, data)
         node.setOwnerDocument(this)
         return node
     }

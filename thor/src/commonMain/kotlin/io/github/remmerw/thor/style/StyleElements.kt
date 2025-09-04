@@ -1,7 +1,7 @@
 package io.github.remmerw.thor.style
 
 import cz.vutbr.web.css.StyleSheet
-import io.github.remmerw.thor.dom.HTMLElementModel
+import io.github.remmerw.thor.dom.ElementImpl
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.w3c.dom.Node
@@ -16,7 +16,7 @@ import java.util.Vector
 object StyleElements {
     fun convertAttributesToStyles(node: Node): StyleSheet? {
         if (node.nodeType == Node.ELEMENT_NODE) {
-            val el = node as HTMLElementModel
+            val el = node as ElementImpl
             //Analyze HTML attributes
             var attrs = ""
             val tagName = el.tagName
@@ -39,7 +39,7 @@ object StyleElements {
         return null
     }
 
-    private fun getCanvasElementStyle(el: HTMLElementModel, attrs: String): String {
+    private fun getCanvasElementStyle(el: ElementImpl, attrs: String): String {
         var attrs = attrs
         val widthNode = el.attributes.getNamedItem("width")
         if (widthNode != null) {
@@ -58,7 +58,7 @@ object StyleElements {
         return attrs
     }
 
-    private fun getElementDimensionStyle(el: HTMLElementModel, attrs: String): String {
+    private fun getElementDimensionStyle(el: ElementImpl, attrs: String): String {
         var attrs = attrs
         val widthNode = el.attributes.getNamedItem("width")
         if (widthNode != null) {

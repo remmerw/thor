@@ -11,12 +11,12 @@ internal class ElementFactory private constructor() {
 
         try {
             val type = ElementType.valueOf(name.uppercase())
-            val element = HTMLElementModel(type)
+            val element = ElementImpl(type)
             element.setOwnerDocument(document) // todo document is parameter
             return element
         } catch (_: Throwable) {
             println("Not yet supported node $name")
-            val element = HTMLElementModel(ElementType.UNKNOWN)
+            val element = ElementImpl(ElementType.UNKNOWN)
             element.setOwnerDocument(document)
             return element
         }

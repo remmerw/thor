@@ -56,7 +56,7 @@ kotlin {
         commonTest {
             dependencies {
                 implementation(libs.kotlin.test)
-
+                implementation(libs.androidx.ui.test.junit4)
             }
         }
 

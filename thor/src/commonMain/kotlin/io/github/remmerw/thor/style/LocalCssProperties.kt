@@ -3,12 +3,12 @@ package io.github.remmerw.thor.style
 import cz.vutbr.web.css.NodeData
 import cz.vutbr.web.css.StyleSheet
 import cz.vutbr.web.domassign.DirectAnalyzer
-import io.github.remmerw.thor.dom.HTMLElementModel
+import io.github.remmerw.thor.dom.ElementImpl
 import org.w3c.dom.DOMException
 import org.w3c.dom.Element
 import java.util.Locale
 
-class LocalCssProperties(private val element: HTMLElementModel) :
+class LocalCssProperties(private val element: ElementImpl) :
     CssProperties(false) {
     @Throws(DOMException::class)
     override fun setAzimuth(azimuth: String?) {
