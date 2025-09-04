@@ -18,7 +18,7 @@ import java.util.LinkedList
 abstract class NodeImpl(doc: Document?) : NodeModel {
 
     private var document by mutableStateOf(doc)
-    private var nodeList = mutableStateListOf<NodeModel>()
+    private val nodeList = mutableStateListOf<NodeModel>()
 
     var parent by mutableStateOf<Node?>(null)
 

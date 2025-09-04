@@ -171,7 +171,7 @@ fun Html(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Text(nodeModel.nodeName)
+
     Nodes(nodeModel, stateModel, modifier)
 }
 
@@ -182,7 +182,7 @@ fun Dummy(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Text(nodeModel.nodeName)
+
     Nodes(nodeModel, stateModel, modifier)
 }
 
@@ -193,7 +193,7 @@ fun Font(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Text(nodeModel.nodeName)
+
     Nodes(nodeModel, stateModel, modifier)
 }
 
@@ -205,13 +205,11 @@ fun Img(
     modifier: Modifier
 ) {
     val isImageLoadingEnabled = remember { stateModel.isImageLoadingEnabled }
-    Text(nodeModel.nodeName)
+
 
     val attributes = remember { nodeModel.attributes() }
     val src = remember { attributes.getValue("src") }
 
-
-    println("redraw img $src")
     if (isImageLoadingEnabled) {
         AsyncImage(
             model = Utils.getFullURL(nodeModel, src).toExternalForm(),
@@ -231,7 +229,6 @@ fun Ul(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Text(nodeModel.nodeName)
     Nodes(nodeModel, stateModel, modifier)
 }
 
@@ -242,7 +239,6 @@ fun Blockquote(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Text(nodeModel.nodeName)
     Nodes(nodeModel, stateModel, modifier)
 }
 
@@ -252,7 +248,6 @@ fun Li(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Text(nodeModel.nodeName)
     Nodes(nodeModel, stateModel, modifier)
 }
 
@@ -262,9 +257,6 @@ fun Form(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Text(nodeModel.nodeName)
-
-
 
     Nodes(nodeModel, stateModel, modifier)
 }
@@ -275,7 +267,6 @@ fun Body(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Text(nodeModel.nodeName)
     Nodes(nodeModel, stateModel, modifier)
 }
 
@@ -286,7 +277,6 @@ fun Center(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Text(nodeModel.nodeName)
     Nodes(nodeModel, stateModel, modifier)
 }
 
@@ -296,7 +286,6 @@ fun Table(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Text(nodeModel.nodeName)
     Nodes(nodeModel, stateModel, modifier)
 }
 
@@ -307,7 +296,6 @@ fun Link(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Text(nodeModel.nodeName)
     Nodes(nodeModel, stateModel, modifier)
 
     Utils.navigate(nodeModel, stateModel)
@@ -319,7 +307,6 @@ fun A(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Text(nodeModel.nodeName)
     Nodes(nodeModel, stateModel, modifier)
 
     Utils.navigate(nodeModel, stateModel)
@@ -334,7 +321,6 @@ fun Tr(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Text(nodeModel.nodeName)
     Nodes(nodeModel, stateModel, modifier)
 }
 
@@ -345,7 +331,6 @@ fun Td(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Text(nodeModel.nodeName)
     Nodes(nodeModel, stateModel, modifier)
 }
 
@@ -355,7 +340,6 @@ fun Div(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Text(nodeModel.nodeName)
     Nodes(nodeModel, stateModel, modifier)
 }
 
@@ -365,7 +349,6 @@ fun Big(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Text(nodeModel.nodeName)
     Nodes(nodeModel, stateModel, modifier)
 }
 
@@ -375,6 +358,5 @@ fun Br(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Text(nodeModel.nodeName)
     Nodes(nodeModel, stateModel, modifier)
 }

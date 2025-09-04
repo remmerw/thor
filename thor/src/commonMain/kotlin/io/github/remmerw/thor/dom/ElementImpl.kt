@@ -21,7 +21,7 @@ import org.w3c.dom.TypeInfo
 import java.util.LinkedList
 import java.util.Locale
 
-open class ElementImpl(document: Document, private val type: ElementType) :
+class ElementImpl(document: Document, private val type: ElementType) :
     NodeImpl(document), ElementModel {
 
     private val attributes = mutableStateMapOf<String, String>()
