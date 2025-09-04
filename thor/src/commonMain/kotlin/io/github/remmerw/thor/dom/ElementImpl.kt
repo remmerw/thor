@@ -58,7 +58,7 @@ open class ElementImpl(private val type: ElementType) : NodeImpl(), ElementModel
 
         synchronized(this) {
 
-            val doc = this.document as HTMLDocumentImpl
+            val doc = this.document as DocumentImpl
 
 
             val ruleSets = ArrayList<RuleSet>(2)

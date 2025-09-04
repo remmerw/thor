@@ -4,7 +4,7 @@ import org.w3c.dom.DOMException
 import org.w3c.dom.Node.PROCESSING_INSTRUCTION_NODE
 import org.w3c.dom.ProcessingInstruction
 
-class ProcessingInstructionModel(
+class ProcessingInstructionImpl(
     private var target: String,
     private var data: String?
 ) : NodeImpl(),

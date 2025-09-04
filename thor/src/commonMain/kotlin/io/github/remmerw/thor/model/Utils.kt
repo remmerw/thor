@@ -3,7 +3,7 @@ package io.github.remmerw.thor.model
 import io.github.remmerw.thor.core.Urls
 import io.github.remmerw.thor.dom.ElementModel
 import io.github.remmerw.thor.dom.ElementType
-import io.github.remmerw.thor.dom.HTMLDocumentImpl
+import io.github.remmerw.thor.dom.DocumentImpl
 import org.w3c.dom.Element
 import java.net.MalformedURLException
 import java.net.URL
@@ -15,12 +15,12 @@ object Utils {
         return if (href == null) "" else Urls.removeControlCharacters(href)
     }
 
-    fun getBaseURI(doc: HTMLDocumentImpl): String? {
+    fun getBaseURI(doc: DocumentImpl): String? {
         val buri = doc.baseURI
         return if (buri == null) doc.documentURI else buri
     }
 
-    fun getFullURL(doc: HTMLDocumentImpl, uri: String): URL {
+    fun getFullURL(doc: DocumentImpl, uri: String): URL {
         try {
             val baseURI = getBaseURI(doc)
             val documentURL = if (baseURI == null) null else URL(baseURI)
@@ -33,7 +33,7 @@ object Utils {
     fun getFullURL(elementModel: Element, spec: String): URL {
         val doc: Any? = elementModel.ownerDocument
         val cleanSpec = Urls.encodeIllegalCharacters(spec)
-        return if (doc is HTMLDocumentImpl) {
+        return if (doc is DocumentImpl) {
             getFullURL(doc, cleanSpec)
         } else {
             URL(cleanSpec)

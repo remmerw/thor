@@ -7,7 +7,7 @@ internal class ElementFactory private constructor() {
 
 
     @Throws(DOMException::class)
-    fun createElement(document: HTMLDocumentImpl?, name: String): Element {
+    fun createElement(document: DocumentImpl?, name: String): Element {
 
         try {
             val type = ElementType.valueOf(name.uppercase())

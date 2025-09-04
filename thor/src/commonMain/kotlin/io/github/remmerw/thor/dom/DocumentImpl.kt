@@ -46,7 +46,7 @@ import java.util.logging.Level
 import kotlin.concurrent.Volatile
 
 
-class HTMLDocumentImpl(
+class DocumentImpl(
     private var reader: WritableLineReader? = null,
     private var documentURI: String? = null,
     private val contentType: String? = null
@@ -458,7 +458,7 @@ class HTMLDocumentImpl(
         target: String,
         data: String?
     ): ProcessingInstruction {
-        val node = ProcessingInstructionModel(target, data)
+        val node = ProcessingInstructionImpl(target, data)
         node.setOwnerDocument(this)
         return node
     }

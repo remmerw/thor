@@ -1,7 +1,7 @@
 package io.github.remmerw.thor.parser
 
 import io.github.remmerw.thor.dom.DocumentTypeImpl
-import io.github.remmerw.thor.dom.HTMLDocumentImpl
+import io.github.remmerw.thor.dom.DocumentImpl
 import org.w3c.dom.DOMException
 import org.w3c.dom.Document
 import org.w3c.dom.Element
@@ -185,7 +185,7 @@ class HtmlParser {
         ancestors: LinkedList<String?>
     ): Int {
         val doc = this.document
-        val htmlDoc = doc as HTMLDocumentImpl
+        val htmlDoc = doc as DocumentImpl
         val textSb = this.readUpToTagBegin(reader)
         if (textSb == null) {
             return TOKEN_EOD

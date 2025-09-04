@@ -25,7 +25,7 @@ class DOMImplementationImpl() : DOMImplementation {
         qualifiedName: String?,
         doctype: DocumentType?
     ): Document {
-        return HTMLDocumentImpl()
+        return DocumentImpl()
     }
 
     override fun getFeature(feature: String?, version: String): Any? {

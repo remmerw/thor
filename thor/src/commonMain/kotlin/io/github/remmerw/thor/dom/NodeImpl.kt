@@ -690,7 +690,7 @@ abstract class NodeImpl : NodeModel {
 
     open fun getDocumentURL(): URL? {
         val doc: Any? = this.document
-        return if (doc is HTMLDocumentImpl) {
+        return if (doc is DocumentImpl) {
             doc.getDocumentURL()
         } else {
             null
