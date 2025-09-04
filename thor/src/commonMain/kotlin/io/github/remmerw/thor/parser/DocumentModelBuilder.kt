@@ -4,7 +4,7 @@ import io.github.remmerw.thor.dom.HTMLDocumentImpl
 import org.w3c.dom.Document
 import java.io.InputStreamReader
 
-class DocumentModelBuilder()  {
+class DocumentModelBuilder() {
 
     fun parse(inputSource: InputSource): Document? {
         val document = this.createDocument(inputSource, "") as HTMLDocumentImpl

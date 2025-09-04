@@ -1,42 +1,56 @@
 package io.github.remmerw.thor.model
 
-import io.github.remmerw.thor.dom.HTMLAnchorElementModel
-import io.github.remmerw.thor.dom.HTMLLinkElementModel
+import io.github.remmerw.thor.core.Urls
+import io.github.remmerw.thor.dom.ElementModel
+import io.github.remmerw.thor.dom.Elements
+import io.github.remmerw.thor.dom.HTMLDocumentImpl
+import org.w3c.dom.Element
 import java.net.MalformedURLException
 import java.net.URL
 
 object Utils {
 
+    fun getHref(elementModel: ElementModel): String {
+        val href = elementModel.getAttribute("href")
+        return if (href == null) "" else Urls.removeControlCharacters(href)
+    }
 
-    fun navigate(anchor: HTMLAnchorElementModel, stateModel: StateModel) {
+    fun getBaseURI(doc: HTMLDocumentImpl): String? {
+        val buri = doc.baseURI
+        return if (buri == null) doc.documentURI else buri
+    }
 
-        val href = anchor.getHref()
-        if (href.startsWith("#")) {
-            // TODO: Scroll to the element. Issue #101
-        } else if (href.startsWith("javascript:")) {
-            val script = href.substring(11)
-            // evalInScope adds the JS task
-            println(script)
+    fun getFullURL(doc: HTMLDocumentImpl, uri: String): URL {
+        try {
+            val baseURI = getBaseURI(doc)
+            val documentURL = if (baseURI == null) null else URL(baseURI)
+            return Urls.createURL(documentURL, uri)
+        } catch (mfu: MalformedURLException) {
+            return URL(uri)
+        }
+    }
+
+    fun getFullURL(elementModel: Element, spec: String): URL {
+        val doc: Any? = elementModel.ownerDocument
+        val cleanSpec = Urls.encodeIllegalCharacters(spec)
+        return if (doc is HTMLDocumentImpl) {
+            getFullURL(doc, cleanSpec)
         } else {
-            val url = absoluteURL(anchor, stateModel)
-            if (url != null) {
-                val target = anchor.target
-                stateModel.linkClicked(url, target)
-            }
+            URL(cleanSpec)
         }
     }
 
 
     private fun absoluteURL(
-        anchor: HTMLAnchorElementModel,
+        anchor: ElementModel,
         stateModel: StateModel
     ): URL? {
-        val href = anchor.getHref()
+        val href = getHref(anchor)
         if (href.startsWith("javascript:")) {
             return null
         } else {
             try {
-                return anchor.getFullURL(href)
+                return getFullURL(anchor, href)
             } catch (mfu: MalformedURLException) {
                 stateModel.warn("Malformed URI: [" + href + "].", mfu)
             }
@@ -44,38 +58,41 @@ object Utils {
         return null
     }
 
-    fun navigate(link: HTMLLinkElementModel, stateModel: StateModel) {
+    fun navigate(elementModel: ElementModel, stateModel: StateModel) {
 
-        if (link.disabled) {
-            return
+        if (elementModel.nodeName == Elements.ANCHOR ||
+            elementModel.nodeName == Elements.A) {
+            val href = getHref(elementModel)
+            if (href.startsWith("#")) {
+                // TODO: Scroll to the element. Issue #101
+            } else if (href.startsWith("javascript:")) {
+                val script = href.substring(11)
+                // evalInScope adds the JS task
+                println(script)
+            } else {
+                val url = absoluteURL(elementModel, stateModel)
+                if (url != null) {
+                    val target = elementModel.getAttribute("target")
+                    stateModel.linkClicked(url, target)
+                }
+            }
         }
-        val href = link.getHref()
-        if (href.startsWith("#")) {
-            // TODO: Scroll to the element. Issue #101
-        } else if (href.startsWith("javascript:")) {
-            val script = href.substring(11)
-            // evalInScope adds the JS task
-            println(script)
-        } else {
-            val url = absoluteURL(link, stateModel)
-            if (url != null) {
-                val target = link.target
-                stateModel.linkClicked(url, target)
+        if (elementModel.nodeName == "LINK") {
+            val href = getHref(elementModel)
+            if (href.startsWith("#")) {
+                // TODO: Scroll to the element. Issue #101
+            } else if (href.startsWith("javascript:")) {
+                val script = href.substring(11)
+                // evalInScope adds the JS task
+                println(script)
+            } else {
+                val url = absoluteURL(elementModel, stateModel)
+                if (url != null) {
+                    val target = elementModel.getAttribute("target")
+                    stateModel.linkClicked(url, target)
+                }
             }
         }
     }
 
-    private fun absoluteURL(link: HTMLLinkElementModel, stateModel: StateModel): URL? {
-        val href = link.getHref()
-        if (href.startsWith("javascript:")) {
-            return null
-        } else {
-            try {
-                return link.getFullURL(href)
-            } catch (mfu: MalformedURLException) {
-                stateModel.warn("Malformed URI: [" + href + "].", mfu)
-            }
-        }
-        return null
-    }
 }

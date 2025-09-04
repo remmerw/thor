@@ -12,10 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import coil3.compose.AsyncImage
 import io.github.remmerw.thor.dom.DocumentModel
-import io.github.remmerw.thor.dom.HTMLAnchorElementModel
-import io.github.remmerw.thor.dom.HTMLFormElementModel
-import io.github.remmerw.thor.dom.HTMLImageElementModel
-import io.github.remmerw.thor.dom.HTMLLinkElementModel
+import io.github.remmerw.thor.dom.ElementModel
+import io.github.remmerw.thor.dom.Elements
 import io.github.remmerw.thor.dom.NodeModel
 import io.github.remmerw.thor.dom.TextModel
 import io.github.remmerw.thor.model.StateModel
@@ -80,7 +78,7 @@ fun Nodes(
                 }
 
                 "FORM" -> {
-                    Form(nodeModel as HTMLFormElementModel, stateModel, modifier)
+                    Form(nodeModel as ElementModel, stateModel, modifier)
                 }
 
                 "CENTER" -> {
@@ -100,11 +98,11 @@ fun Nodes(
                 }
 
                 "LINK" -> {
-                    Link(nodeModel as HTMLLinkElementModel, stateModel, modifier)
+                    Link(nodeModel as ElementModel, stateModel, modifier)
                 }
 
-                "A", "ANCHOR" -> {
-                    A(nodeModel as HTMLAnchorElementModel, stateModel, modifier)
+                Elements.A, Elements.ANCHOR -> {
+                    A(nodeModel as ElementModel, stateModel, modifier)
                 }
 
                 "LI" -> {
@@ -128,7 +126,7 @@ fun Nodes(
                 }
 
                 "IMG" -> {
-                    Img(nodeModel as HTMLImageElementModel, stateModel, modifier)
+                    Img(nodeModel as ElementModel, stateModel, modifier)
                 }
 
                 "BLOCKQUOTE" -> {
@@ -192,7 +190,7 @@ fun Font(
 
 @Composable
 fun Img(
-    nodeModel: HTMLImageElementModel,
+    nodeModel: ElementModel,
     stateModel: StateModel,
     modifier: Modifier
 ) {
@@ -201,13 +199,12 @@ fun Img(
 
     val attributes = remember { nodeModel.attributes() }
     val src = remember { attributes.getValue("src") }
-    val url = remember { nodeModel.getFullURL(src) }
 
 
     println("redraw img")
     if (isImageLoadingEnabled) {
         AsyncImage(
-            model = url.toExternalForm(),
+            model = Utils.getFullURL(nodeModel, src).toExternalForm(),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -216,7 +213,7 @@ fun Img(
     }
     Nodes(nodeModel, stateModel, modifier)
     println(nodeModel.baseURI)
-    println(nodeModel.src)
+
 }
 
 @Composable
@@ -252,7 +249,7 @@ fun Li(
 
 @Composable
 fun Form(
-    nodeModel: HTMLFormElementModel,
+    nodeModel: ElementModel,
     stateModel: StateModel,
     modifier: Modifier
 ) {
@@ -297,7 +294,7 @@ fun Table(
 
 @Composable
 fun Link(
-    nodeModel: HTMLLinkElementModel,
+    nodeModel: ElementModel,
     stateModel: StateModel,
     modifier: Modifier
 ) {
@@ -309,7 +306,7 @@ fun Link(
 
 @Composable
 fun A(
-    nodeModel: HTMLAnchorElementModel,
+    nodeModel: ElementModel,
     stateModel: StateModel,
     modifier: Modifier
 ) {

@@ -679,18 +679,6 @@ class HTMLDocumentImpl(
     }
 
 
-    @Throws(MalformedURLException::class)
-    override fun getFullURL(uri: String): URL {
-        try {
-            val baseURI = this.getBaseURI()
-            val documentURL = if (baseURI == null) null else URL(baseURI)
-            return Urls.createURL(documentURL, uri)
-        } catch (mfu: MalformedURLException) {
-            return URL(uri)
-        }
-    }
-
-
     override fun getURL(): String? {
         return this.documentURI
     }
@@ -756,21 +744,6 @@ class HTMLDocumentImpl(
         private var enabledJStyleSheets: MutableList<StyleSheet?>? = null
         val bridge: StyleSheetBridge = object : StyleSheetBridge {
             override fun notifyStyleSheetChanged(styleSheet: CSSStyleSheet) {
-                val ownerNode = styleSheet.ownerNode
-                if (ownerNode != null) {
-                    val disabled = styleSheet.disabled
-                    if (ownerNode is HTMLStyleElementModel) {
-                        if (ownerNode.disabled != disabled) {
-                            ownerNode.setDisabledImpl(disabled)
-                        }
-                    } else if (ownerNode is HTMLLinkElementModel) {
-                        if (ownerNode.disabled != disabled) {
-                            ownerNode.setDisabledInternal(disabled)
-                        }
-                    }
-                }
-                invalidateStyles()
-
             }
 
             override val docStyleSheets: MutableList<StyleSheetWrapper>?

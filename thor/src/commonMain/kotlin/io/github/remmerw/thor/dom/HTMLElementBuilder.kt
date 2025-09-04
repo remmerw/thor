@@ -86,13 +86,13 @@ abstract class HTMLElementBuilder {
 
     class Link : HTMLElementBuilder() {
         public override fun build(name: String): HTMLElementModel {
-            return HTMLLinkElementModel(name)
+            return HTMLElementModel(name)
         }
     }
 
     class Anchor : HTMLElementBuilder() {
         public override fun build(name: String): HTMLElementModel {
-            return HTMLAnchorElementModel(name)
+            return HTMLElementModel(name)
         }
     }
 

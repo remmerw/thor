@@ -20,13 +20,13 @@ interface NodeFilter {
 
     class LinkFilter : NodeFilter {
         override fun accept(node: Node): Boolean {
-            return node is HTMLLinkElementModel
+            return node.nodeName == Elements.LINK
         }
     }
 
     class AnchorFilter : NodeFilter {
         override fun accept(node: Node): Boolean {
-            return node is HTMLAnchorElementModel
+            return node.nodeName == Elements.ANCHOR ||  node.nodeName == Elements.A
         }
     }
 

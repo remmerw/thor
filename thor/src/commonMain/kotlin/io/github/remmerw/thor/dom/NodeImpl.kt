@@ -2,7 +2,6 @@ package io.github.remmerw.thor.dom
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import io.github.remmerw.thor.core.Urls
 import org.w3c.dom.DOMException
 import org.w3c.dom.Document
 import org.w3c.dom.NamedNodeMap
@@ -687,17 +686,6 @@ abstract class NodeImpl : NodeModel {
     fun setParentImpl(parent: Node?) {
         // Call holding treeLock.
         this.nodeParent = parent
-    }
-
-
-    open fun getFullURL(spec: String): URL {
-        val doc: Any? = this.document
-        val cleanSpec = Urls.encodeIllegalCharacters(spec)
-        return if (doc is HTMLDocumentImpl) {
-            doc.getFullURL(cleanSpec)
-        } else {
-            URL(cleanSpec)
-        }
     }
 
     open fun getDocumentURL(): URL? {
