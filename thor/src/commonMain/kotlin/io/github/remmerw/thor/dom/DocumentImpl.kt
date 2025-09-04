@@ -50,7 +50,7 @@ class DocumentImpl(
     private var reader: WritableLineReader? = null,
     private var documentURI: String? = null,
     private val contentType: String? = null
-) : NodeImpl(), DocumentModel {
+) : NodeImpl(null), DocumentModel {
 
     private val factory: ElementFactory
     private var documentURL: URL? = null
@@ -89,12 +89,7 @@ class DocumentImpl(
             logger.warning("HTMLDocumentImpl(): Document URI [" + documentURI + "] is malformed.")
         }
 
-        // TODO: This should be inside the try block above. That is, if there is a malformed URL, the below shouldn't be allowed.
-        //       It is currently being allowed to quickly bootstrap and run web-platform-tests.
-        //       One failure case is: The methods in DOMImplemenationImpl call those constructors which have null document URIs.
-        //       Such constructors should be ideally removed.
-        this.document = this
-        // Get Window object
+        this.setOwnerDocument(this)
 
     }
 
@@ -399,10 +394,11 @@ class DocumentImpl(
         return this.doctype
     }
 
-    fun setDoctype(doctype: DocumentType?) {
+    fun setDoctype(doctype: DocumentType) {
         this.doctype = doctype
-        isDocTypeXHTML = (doctype != null) && (doctype.name == "html")
-                && (doctype.publicId == XHTML_STRICT_PUBLIC_ID) && (doctype.systemId == XHTML_STRICT_SYS_ID)
+        isDocTypeXHTML = (doctype.name == "html")
+                && (doctype.publicId == XHTML_STRICT_PUBLIC_ID)
+                && (doctype.systemId == XHTML_STRICT_SYS_ID)
     }
 
     override fun getDocumentElement(): Element? {
@@ -435,21 +431,18 @@ class DocumentImpl(
     }
 
     override fun createTextNode(data: String): Text {
-        val node = TextImpl(data)
-        node.setOwnerDocument(this)
+        val node = TextImpl(this, data)
         return node
     }
 
     override fun createComment(data: String): Comment {
-        val node = CommentImpl(data)
-        node.setOwnerDocument(this)
+        val node = CommentImpl(this, data)
         return node
     }
 
     @Throws(DOMException::class)
     override fun createCDATASection(data: String): CDATASection {
-        val node = CDataSectionImpl(data)
-        node.setOwnerDocument(this)
+        val node = CDataSectionImpl(this, data)
         return node
     }
 
@@ -458,14 +451,13 @@ class DocumentImpl(
         target: String,
         data: String?
     ): ProcessingInstruction {
-        val node = ProcessingInstructionImpl(target, data)
-        node.setOwnerDocument(this)
+        val node = ProcessingInstructionImpl(this, target, data)
         return node
     }
 
     @Throws(DOMException::class)
     override fun createAttribute(name: String): Attr {
-        return AttrImpl(name)
+        return AttrImpl(this, name)
     }
 
     @Throws(DOMException::class)
@@ -608,7 +600,7 @@ class DocumentImpl(
     override fun getImplementation(): DOMImplementation {
         synchronized(this) {
             if (this.domImplementation == null) {
-                this.domImplementation = DOMImplementationImpl()
+                this.domImplementation = DOMImplementationImpl(this)
             }
             return this.domImplementation!!
         }

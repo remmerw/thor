@@ -24,15 +24,17 @@
 package io.github.remmerw.thor.dom
 
 import org.w3c.dom.DOMException
+import org.w3c.dom.Document
 import org.w3c.dom.DocumentType
 import org.w3c.dom.NamedNodeMap
 import org.w3c.dom.Node.DOCUMENT_TYPE_NODE
 
 class DocumentTypeImpl(
+    document: Document,
     private val qualifiedName: String,
     private val publicId: String?,
     private val systemId: String?
-) : NodeImpl(), DocumentType {
+) : NodeImpl(document), DocumentType {
     override fun getLocalName(): String? {
         return null
     }

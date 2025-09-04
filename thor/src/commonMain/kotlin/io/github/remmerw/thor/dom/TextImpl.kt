@@ -2,10 +2,12 @@ package io.github.remmerw.thor.dom
 
 import io.github.remmerw.thor.core.Strings
 import org.w3c.dom.DOMException
+import org.w3c.dom.Document
 import org.w3c.dom.Node.TEXT_NODE
 import org.w3c.dom.Text
 
-open class TextImpl(text: String = "") : CharacterDataImpl(), TextModel {
+open class TextImpl(document: Document, text: String = "") : CharacterDataImpl(document),
+    TextModel {
     init {
         textContent = text
     }
@@ -33,8 +35,7 @@ open class TextImpl(text: String = "") : CharacterDataImpl(), TextModel {
         val content1 = t.substring(0, offset)
         val content2 = t.substring(offset)
         this.text = content1
-        val newNode = TextImpl(content2)
-        newNode.setOwnerDocument(this.document)
+        val newNode = TextImpl(ownerDocument!!, content2)
         return parent.insertAfter(newNode, this) as Text?
     }
 

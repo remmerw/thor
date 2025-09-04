@@ -1,6 +1,9 @@
 package io.github.remmerw.thor.dom
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import org.w3c.dom.DOMException
 import org.w3c.dom.Document
@@ -15,17 +18,14 @@ import java.util.logging.Level
 import java.util.logging.Logger
 import kotlin.concurrent.Volatile
 
-abstract class NodeImpl : NodeModel {
+abstract class NodeImpl(doc: Document?) : NodeModel {
 
-
+    private var document by mutableStateOf(doc)
     private var nodeList = mutableStateListOf<NodeModel>()
 
     override fun nodes(): SnapshotStateList<NodeModel> {
         return nodeList
     }
-
-    @Volatile
-    protected var document: Document? = null
 
 
     override fun cloneNode(p0: Boolean): Node? {
@@ -212,17 +212,16 @@ abstract class NodeImpl : NodeModel {
     }
 
     override fun getOwnerDocument(): Document? {
-        return this.document
+        return document
     }
 
-    open fun setOwnerDocument(value: Document?) {
+    open fun setOwnerDocument(value: Document) {
         this.document = value
-        this.treeLock = if (value == null) this else value
+        this.treeLock = value
     }
 
-    open fun setOwnerDocument(value: Document?, deep: Boolean) {
-        this.document = value
-        this.treeLock = if (value == null) this else value
+    open fun setOwnerDocument(value: Document, deep: Boolean) {
+        setOwnerDocument(value)
         if (deep) {
             synchronized(this.treeLock) {
                 val nl = this.nodeList
@@ -496,8 +495,7 @@ abstract class NodeImpl : NodeModel {
         synchronized(this.treeLock) {
             this.removeChildrenImpl(TextFilter())
             if ("" != textContent) {
-                val t = TextImpl(textContent)
-                t.setOwnerDocument(this.document)
+                val t = TextImpl(ownerDocument!!, textContent)
                 t.setParentImpl(this)
 
                 this.nodeList.add(t)
@@ -568,8 +566,7 @@ abstract class NodeImpl : NodeModel {
                 }
             }
             this.nodeList.removeAll(toDelete)
-            val textNode = TextImpl(textContent!!)
-            textNode.setOwnerDocument(this.document)
+            val textNode = TextImpl(ownerDocument!!, textContent!!)
             textNode.setParentImpl(this)
             this.nodeList.add(firstIdx, textNode)
             return textNode
@@ -609,8 +606,8 @@ abstract class NodeImpl : NodeModel {
                 }
             }
             this.nodeList.removeAll(toDelete)
-            val textNode = TextImpl(textBuffer.toString())
-            textNode.setOwnerDocument(this.document)
+            val textNode = TextImpl(ownerDocument!!, textBuffer.toString())
+
             textNode.setParentImpl(this)
             this.nodeList.add(firstIdx, textNode)
             return textNode

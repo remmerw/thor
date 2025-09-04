@@ -29,7 +29,7 @@ import org.w3c.dom.Element
 import org.w3c.dom.NamedNodeMap
 import org.w3c.dom.Node
 
-class NamedNodeMapImpl(owner: Element?, attribs: MutableMap<String, String>) :
+class NamedNodeMapImpl(owner: Element, attribs: MutableMap<String, String>) :
     NamedNodeMap {
     // Note: class must be public for reflection to work.
     private val attributes: MutableMap<String, Node> = HashMap()

@@ -1,9 +1,10 @@
 package io.github.remmerw.thor.dom
 
 import org.w3c.dom.Comment
+import org.w3c.dom.Document
 import org.w3c.dom.Node.COMMENT_NODE
 
-class CommentImpl(text: String) : CharacterDataImpl(), Comment {
+class CommentImpl(document: Document, text: String) : CharacterDataImpl(document), Comment {
     init {
         textContent = text
     }

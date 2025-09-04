@@ -11,6 +11,7 @@ import io.github.remmerw.thor.style.CSSUtilities
 import io.github.remmerw.thor.style.StyleElements
 import org.w3c.dom.Attr
 import org.w3c.dom.DOMException
+import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.w3c.dom.NamedNodeMap
 import org.w3c.dom.Node
@@ -20,7 +21,8 @@ import org.w3c.dom.TypeInfo
 import java.util.LinkedList
 import java.util.Locale
 
-open class ElementImpl(private val type: ElementType) : NodeImpl(), ElementModel {
+open class ElementImpl(document: Document, private val type: ElementType) :
+    NodeImpl(document), ElementModel {
 
     private val attributes = mutableStateMapOf<String, String>()
     private val properties = mutableStateMapOf<String, String>()
@@ -58,7 +60,7 @@ open class ElementImpl(private val type: ElementType) : NodeImpl(), ElementModel
 
         synchronized(this) {
 
-            val doc = this.document as DocumentImpl
+            val doc = this.ownerDocument as DocumentImpl
 
 
             val ruleSets = ArrayList<RuleSet>(2)
@@ -140,7 +142,10 @@ open class ElementImpl(private val type: ElementType) : NodeImpl(), ElementModel
     }
 
     private fun getAttr(normalName: String, value: String?): Attr {
-        return AttrImpl(normalName, value, true, this, "id" == normalName)
+        return AttrImpl(
+            normalName, value,
+            true, this, "id" == normalName
+        )
     }
 
     override fun getAttributeNode(name: String): Attr? {

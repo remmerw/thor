@@ -7,17 +7,15 @@ internal class ElementFactory private constructor() {
 
 
     @Throws(DOMException::class)
-    fun createElement(document: DocumentImpl?, name: String): Element {
+    fun createElement(document: DocumentImpl, name: String): Element {
 
         try {
             val type = ElementType.valueOf(name.uppercase())
-            val element = ElementImpl(type)
-            element.setOwnerDocument(document) // todo document is parameter
+            val element = ElementImpl(document, type)
             return element
         } catch (_: Throwable) {
             println("Not yet supported node $name")
-            val element = ElementImpl(ElementType.UNKNOWN)
-            element.setOwnerDocument(document)
+            val element = ElementImpl(document, ElementType.UNKNOWN)
             return element
         }
     }

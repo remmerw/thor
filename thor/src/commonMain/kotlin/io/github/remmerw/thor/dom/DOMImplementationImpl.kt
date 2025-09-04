@@ -5,7 +5,7 @@ import org.w3c.dom.DOMImplementation
 import org.w3c.dom.Document
 import org.w3c.dom.DocumentType
 
-class DOMImplementationImpl() : DOMImplementation {
+class DOMImplementationImpl(private val document: Document) : DOMImplementation {
     override fun hasFeature(feature: String?, version: String): Boolean {
         return "HTML" == feature && ("2.0" <= version)
     }
@@ -16,7 +16,7 @@ class DOMImplementationImpl() : DOMImplementation {
         publicId: String?,
         systemId: String?
     ): DocumentType {
-        return DocumentTypeImpl(qualifiedName, publicId, systemId)
+        return DocumentTypeImpl(document, qualifiedName, publicId, systemId)
     }
 
     @Throws(DOMException::class)

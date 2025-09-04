@@ -4,8 +4,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import org.w3c.dom.DOMException
+import org.w3c.dom.Document
 
-abstract class CharacterDataImpl() : NodeImpl(), CharacterDataModel {
+abstract class CharacterDataImpl(document: Document) : NodeImpl(document), CharacterDataModel {
     var text: String by mutableStateOf("")
 
     override fun text(): String {
