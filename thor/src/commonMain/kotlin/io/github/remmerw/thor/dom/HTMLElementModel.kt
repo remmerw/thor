@@ -3,7 +3,7 @@ package io.github.remmerw.thor.dom
 import org.w3c.dom.html.HTMLElement
 import java.util.logging.Level
 
-open class HTMLElementModel(name: String) : ElementImpl(name), HTMLElement {
+open class HTMLElementModel(type: ElementType) : ElementImpl(type), HTMLElement {
 
     override fun getId(): String? {
         return this.getAttribute("id")

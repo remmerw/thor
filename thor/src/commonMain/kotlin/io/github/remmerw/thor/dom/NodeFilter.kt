@@ -8,31 +8,31 @@ interface NodeFilter {
 
     class ImageFilter : NodeFilter {
         override fun accept(node: Node): Boolean {
-            return "IMG".equals(node.nodeName, ignoreCase = true)
+            return node.nodeName == ElementType.IMG.name
         }
     }
 
     class AppletFilter : NodeFilter {
         override fun accept(node: Node): Boolean {
-            return "APPLET".equals(node.nodeName, ignoreCase = true)
+            return node.nodeName == ElementType.APPLET.name
         }
     }
 
     class LinkFilter : NodeFilter {
         override fun accept(node: Node): Boolean {
-            return node.nodeName == Elements.LINK
+            return node.nodeName == ElementType.LINK.name
         }
     }
 
     class AnchorFilter : NodeFilter {
         override fun accept(node: Node): Boolean {
-            return node.nodeName == Elements.ANCHOR ||  node.nodeName == Elements.A
+            return node.nodeName == ElementType.ANCHOR.name || node.nodeName == ElementType.A.name
         }
     }
 
     class FormFilter : NodeFilter {
         override fun accept(node: Node): Boolean {
-            return node is HTMLFormElementModel
+            return node.nodeName == ElementType.FORM.name
         }
     }
 

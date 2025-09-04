@@ -19,6 +19,7 @@ interface NodeModel : Node {
 interface ElementModel : NodeModel, Element {
     fun attributes(): SnapshotStateMap<String, String>
     fun properties(): SnapshotStateMap<String, String>
+    fun elementType(): ElementType
 }
 
 interface TextModel : Text, CharacterDataModel

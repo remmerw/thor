@@ -447,12 +447,7 @@ class HTMLDocumentImpl(
      * @see org.w3c.dom.Document#createDocumentFragment()
      */
     override fun createDocumentFragment(): DocumentFragment {
-        // TODO: According to documentation, when a document
-        // fragment is added to a node, its children are added,
-        // not itself.
-        val node = DocumentFragmentModel()
-        node.setOwnerDocument(this)
-        return node
+        TODO()
     }
 
     override fun createTextNode(data: String): Text {

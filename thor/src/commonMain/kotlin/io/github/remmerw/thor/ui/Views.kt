@@ -13,7 +13,7 @@ import androidx.compose.ui.layout.ContentScale
 import coil3.compose.AsyncImage
 import io.github.remmerw.thor.dom.DocumentModel
 import io.github.remmerw.thor.dom.ElementModel
-import io.github.remmerw.thor.dom.Elements
+import io.github.remmerw.thor.dom.ElementType
 import io.github.remmerw.thor.dom.NodeModel
 import io.github.remmerw.thor.dom.TextModel
 import io.github.remmerw.thor.model.StateModel
@@ -68,84 +68,89 @@ fun Nodes(
     if (nodeModels.isNotEmpty()) {
 
         nodeModels.forEach { nodeModel ->
-            when (nodeModel.nodeName.uppercase()) {
-                "BODY" -> {
-                    Body(nodeModel, stateModel, modifier)
-                }
 
-                "TABLE" -> {
-                    Table(nodeModel, stateModel, modifier)
-                }
+            if (nodeModel is TextModel) {
+                Chars(nodeModel, modifier)
+            } else if (nodeModel is ElementModel) {
 
-                "FORM" -> {
-                    Form(nodeModel as ElementModel, stateModel, modifier)
-                }
+                when (nodeModel.elementType()) {
+                    ElementType.BODY -> {
+                        Body(nodeModel, stateModel, modifier)
+                    }
 
-                "CENTER" -> {
-                    Center(nodeModel, stateModel, modifier)
-                }
+                    ElementType.TABLE -> {
+                        Table(nodeModel, stateModel, modifier)
+                    }
 
-                "DIV" -> {
-                    Div(nodeModel, stateModel, modifier)
-                }
+                    ElementType.FORM -> {
+                        Form(nodeModel, stateModel, modifier)
+                    }
 
-                "Big" -> {
-                    Big(nodeModel, stateModel, modifier)
-                }
+                    ElementType.CENTER -> {
+                        Center(nodeModel, stateModel, modifier)
+                    }
 
-                "FONT" -> {
-                    Font(nodeModel, stateModel, modifier)
-                }
+                    ElementType.DIV -> {
+                        Div(nodeModel, stateModel, modifier)
+                    }
 
-                "LINK" -> {
-                    Link(nodeModel as ElementModel, stateModel, modifier)
-                }
+                    ElementType.BIG -> {
+                        Big(nodeModel, stateModel, modifier)
+                    }
 
-                Elements.A, Elements.ANCHOR -> {
-                    A(nodeModel as ElementModel, stateModel, modifier)
-                }
+                    ElementType.FONT -> {
+                        Font(nodeModel, stateModel, modifier)
+                    }
 
-                "LI" -> {
-                    Li(nodeModel, stateModel, modifier)
-                }
+                    ElementType.LINK -> {
+                        Link(nodeModel, stateModel, modifier)
+                    }
 
-                "BR" -> {
-                    Br(nodeModel, stateModel, modifier)
-                }
+                    ElementType.A, ElementType.ANCHOR -> {
+                        A(nodeModel, stateModel, modifier)
+                    }
 
-                "UL" -> {
-                    Ul(nodeModel, stateModel, modifier)
-                }
+                    ElementType.LI -> {
+                        Li(nodeModel, stateModel, modifier)
+                    }
 
-                "TR" -> {
-                    Tr(nodeModel, stateModel, modifier)
-                }
+                    ElementType.BR -> {
+                        Br(nodeModel, stateModel, modifier)
+                    }
 
-                "TD" -> {
-                    Td(nodeModel, stateModel, modifier)
-                }
+                    ElementType.UL -> {
+                        Ul(nodeModel, stateModel, modifier)
+                    }
 
-                "IMG" -> {
-                    Img(nodeModel as ElementModel, stateModel, modifier)
-                }
+                    ElementType.TR -> {
+                        Tr(nodeModel, stateModel, modifier)
+                    }
 
-                "BLOCKQUOTE" -> {
-                    Blockquote(nodeModel, stateModel, modifier)
-                }
+                    ElementType.TD -> {
+                        Td(nodeModel, stateModel, modifier)
+                    }
 
-                "CHARS" -> {
-                    Chars(nodeModel as TextModel, modifier)
-                }
+                    ElementType.IMG -> {
+                        Img(nodeModel, stateModel, modifier)
+                    }
 
-                else -> {
-                    println(nodeModel.nodeName)
-                    Dummy(nodeModel, stateModel, modifier)
+                    ElementType.BLOCKQUOTE -> {
+                        Blockquote(nodeModel, stateModel, modifier)
+                    }
+
+                    else -> {
+                        println(nodeModel.nodeName)
+                        Dummy(nodeModel, stateModel, modifier)
+                    }
                 }
+            } else {
+                println("TODO")
             }
         }
-
     }
+
 }
+
 
 @Composable
 fun Chars(text: TextModel, modifier: Modifier) {

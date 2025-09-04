@@ -2,7 +2,7 @@ package io.github.remmerw.thor.model
 
 import io.github.remmerw.thor.core.Urls
 import io.github.remmerw.thor.dom.ElementModel
-import io.github.remmerw.thor.dom.Elements
+import io.github.remmerw.thor.dom.ElementType
 import io.github.remmerw.thor.dom.HTMLDocumentImpl
 import org.w3c.dom.Element
 import java.net.MalformedURLException
@@ -60,8 +60,9 @@ object Utils {
 
     fun navigate(elementModel: ElementModel, stateModel: StateModel) {
 
-        if (elementModel.nodeName == Elements.ANCHOR ||
-            elementModel.nodeName == Elements.A) {
+        if (elementModel.elementType() == ElementType.ANCHOR ||
+            elementModel.elementType() == ElementType.A
+        ) {
             val href = getHref(elementModel)
             if (href.startsWith("#")) {
                 // TODO: Scroll to the element. Issue #101
@@ -77,7 +78,7 @@ object Utils {
                 }
             }
         }
-        if (elementModel.nodeName == "LINK") {
+        if (elementModel.elementType() == ElementType.LINK) {
             val href = getHref(elementModel)
             if (href.startsWith("#")) {
                 // TODO: Scroll to the element. Issue #101

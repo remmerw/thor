@@ -20,7 +20,7 @@ import org.w3c.dom.TypeInfo
 import java.util.LinkedList
 import java.util.Locale
 
-abstract class ElementImpl(private val name: String) : NodeImpl(), ElementModel {
+abstract class ElementImpl(private val type: ElementType) : NodeImpl(), ElementModel {
 
     private val attributes = mutableStateMapOf<String, String>()
     private val properties = mutableStateMapOf<String, String>()
@@ -31,6 +31,10 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), ElementModel 
 
     override fun properties(): SnapshotStateMap<String, String> {
         return properties
+    }
+
+    override fun elementType(): ElementType {
+        return type
     }
 
     fun setProperty(name: String, value: String?) {
@@ -288,7 +292,7 @@ abstract class ElementImpl(private val name: String) : NodeImpl(), ElementModel 
 
 
     override fun getNodeName(): String {
-        return this.name
+        return this.type.name
     }
 
     override fun getNodeType(): Short {
