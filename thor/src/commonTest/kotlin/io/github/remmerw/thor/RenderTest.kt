@@ -5,6 +5,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.remmerw.thor.dom.DocumentImpl
 import io.github.remmerw.thor.model.StateModel
 import io.github.remmerw.thor.ui.HtmlViewer
+import io.ktor.http.Url
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -18,7 +19,7 @@ class RenderTest {
     @Test
     fun renderTest(): Unit = runBlocking(Dispatchers.IO) {
 
-        val url = "http://www.benjysbrain.com/"
+        val url = Url("http://www.benjysbrain.com/")
         val p = Render(url)
         val document = p.parsePage()
 

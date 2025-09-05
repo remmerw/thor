@@ -2,56 +2,23 @@ package io.github.remmerw.thor
 
 import io.github.remmerw.thor.dom.ElementImpl
 import io.github.remmerw.thor.parser.DocumentModelBuilder
+import io.ktor.http.Url
 import org.w3c.dom.Document
 import org.w3c.dom.Node
-import java.net.URI
 import java.net.URL
-import java.util.logging.Level
-import java.util.logging.Logger
 
-class Render(var url: String) {
-    // These variables can be used in subclasses and are created from
-    // url.  baseURL can be used to construct the absolute URL of the
-    // relative URL's in the page.  hostBase is just the http://host.com/
-    // part of the URL and can be used to construct the full URL of
-    // URLs in the page that are site relative, e.g., "/xyzzy.jpg".
-    // Variable host is set to the host part of url, e.g., host.com.
-    var baseURL: String? = null
-    var hostBase: String? = null
-    var host: String? = null
+class Render(var url: Url) {
 
 
-    /**
-     * Load the given URL using Cobra.  When the page is loaded,
-     * recurse on the DOM and call doElement()/doTagEnd() for
-     * each Element node.  Return false on error.
-     */
+
     fun parsePage(): Document {
-        // From Lobo forum.  Disable all logging.
-
-        Logger.getLogger("").level = Level.OFF
-
-        // Parse the URL and build baseURL and hostURL for use by doElement()
-        // and doTagEnd() ;
-        var uri: URI?
         var urlObj: URL?
         try {
-            uri = URI(url)
-            urlObj = URL(url)
+            urlObj = URL(url.toString())
         } catch (e: Exception) {
             println(e)
             throw e
         }
-
-        val path = uri.path
-
-        host = uri.host
-        var port = ""
-        if (uri.port != -1) port = uri.port.toString()
-        if (port != "") port = ":" + port
-
-        baseURL = "http://" + uri.host + port + path
-        hostBase = "http://" + uri.host + port
 
         // Open a connection to the HTML page and use Cobra to parse it.
         // Cobra does not return until page is loaded.
@@ -65,7 +32,7 @@ class Render(var url: String) {
             val document = dbi.parse(
 
                     inputStream,
-                    url,
+                    url.toString(),
                     "UTF-8"
 
             )!!
@@ -104,10 +71,7 @@ class Render(var url: String) {
         }
     }
 
-    /**
-     * Simple doElement to print the tag name of the Element.  Override
-     * to do something real.
-     */
+
     fun doElement(element: ElementImpl) {
         println("<" + element.tagName + ">")
 
@@ -115,22 +79,9 @@ class Render(var url: String) {
 
     }
 
-    /**
-     * Simple doTagEnd() to print the closing tag of the Element.
-     * Override to do something real.
-     */
     fun doTagEnd(element: ElementImpl) {
         println("</" + element.tagName + ">")
     }
 
-    companion object {
-        @JvmStatic
-        fun main(args: Array<String>) {
-            var url = "http://www.cnn.com/"
-            if (args.size == 1) url = args[0]
-            val p = Render(url)
-            p.parsePage()
-            System.exit(0)
-        }
-    }
+
 }
