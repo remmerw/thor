@@ -1,11 +1,10 @@
 package io.github.remmerw.thor.model
 
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
+import io.github.remmerw.thor.core.Urls
 import io.github.remmerw.thor.dom.DocumentImpl
 import io.github.remmerw.thor.dom.ElementImpl
 import io.github.remmerw.thor.dom.NodeImpl
@@ -18,7 +17,7 @@ import java.util.Optional
 class StateModel() : ViewModel() {
     var isImageLoadingEnabled: Boolean by mutableStateOf(true)
 
-    var documentModel: DocumentImpl? by mutableStateOf(null)
+    var document: DocumentImpl? by mutableStateOf(null)
 
     fun navigate(url: URL, target: String?) {
         TODO("Not yet implemented")
@@ -34,17 +33,17 @@ class StateModel() : ViewModel() {
     }
 
     fun node(node: NodeModel): Node? {
-        return documentModel?.node(node.uid())
+        return document?.node(node.uid())
     }
 
     fun childNodes(node: NodeModel?): List<NodeModel> {
-        if (documentModel == null) {
+        if (document == null) {
             return emptyList()
         }
         if(node == null){
             return emptyList()
         }
-        return documentModel!!.childNodes(node.uid()).map { node ->
+        return document!!.childNodes(node.uid()).map { node ->
             when (node) {
                 is ElementImpl -> ElementModel(node.uid(), node.nodeName)
                 is TextImpl -> TextModel(node.uid(), node.nodeName, node.textContent)
@@ -54,10 +53,10 @@ class StateModel() : ViewModel() {
     }
 
     fun childNodes(): List<NodeModel> {
-        if (documentModel == null) {
+        if (document == null) {
             return emptyList()
         }
-        return documentModel!!.nodes().map { node ->
+        return document!!.nodes().map { node ->
             when (node) {
                 is ElementImpl -> ElementModel(node.uid(), node.nodeName)
                 is TextImpl -> TextModel(node.uid(), node.nodeName, node.textContent)
@@ -67,14 +66,25 @@ class StateModel() : ViewModel() {
     }
 
     fun bodyNode(): NodeModel? {
-        if (documentModel == null) {
+        if (document == null) {
             return null
         }
-        val body = documentModel!!.getBody()
+        val body = document!!.getBody()
 
         return when (body) {
             is ElementImpl -> ElementModel(body.uid(), body.nodeName)
             else -> null
+        }
+    }
+
+
+    fun fullUri(spec: String): String {
+
+        val cleanSpec = Urls.encodeIllegalCharacters(spec)
+        return if (document != null) {
+            Utils.getFullURL(document!!, cleanSpec).toExternalForm()
+        } else {
+            URL(cleanSpec).toExternalForm()
         }
     }
 

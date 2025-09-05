@@ -9,6 +9,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import coil3.compose.AsyncImage
 import io.github.remmerw.thor.model.Type
 import io.github.remmerw.thor.model.ElementModel
 import io.github.remmerw.thor.model.NodeModel
@@ -208,16 +210,15 @@ fun Img(
 
     val src = remember { stateModel.attribute(nodeModel,"src") }
 
-    /*
     if (isImageLoadingEnabled && !src.isNullOrEmpty()) {
         AsyncImage(
-            model = Utils.getFullURL(nodeModel, src).toExternalForm(),
+            model = stateModel.fullUri(src),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()
         )
-    }*/
+    }
 
     Nodes(nodeModel, stateModel, modifier)
 

@@ -25,7 +25,7 @@ class RenderTest {
         composeTestRule.setContent {
 
             val stateModel: StateModel = viewModel { StateModel() }
-            stateModel.documentModel = document as DocumentImpl
+            stateModel.document = document as DocumentImpl
 
 
 
