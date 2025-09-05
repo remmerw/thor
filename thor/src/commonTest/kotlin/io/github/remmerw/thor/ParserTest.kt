@@ -27,6 +27,8 @@ class ParserTest {
             document.getForms().toString()
             document.getImages().toString()
             document.getLinks().toString()
+            document.getElementsByName("hello").toString()
+            document.getElementById("hello").toString()
             document.getDocumentUrl().toString()
             document.getDocumentHost().toString()
             document.inputEncoding

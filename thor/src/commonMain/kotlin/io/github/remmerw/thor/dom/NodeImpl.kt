@@ -305,7 +305,7 @@ abstract class NodeImpl(
 
     override fun getBaseURI(): String? {
         val document = this.document
-        return if (document == null) null else document.baseURI
+        return document?.baseURI
     }
 
     override fun getChildNodes(): NodeList {

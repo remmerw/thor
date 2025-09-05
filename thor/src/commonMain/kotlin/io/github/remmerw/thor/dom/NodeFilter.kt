@@ -44,6 +44,12 @@ interface NodeFilter {
         }
     }
 
+    class ElementIdFilter(private val id: String) : NodeFilter {
+        override fun accept(node: Node): Boolean {
+            return (node is Element) && this.id == node.getAttribute("id")
+        }
+    }
+
     class ElementFilter : NodeFilter {
         override fun accept(node: Node): Boolean {
             return node is Element

@@ -6,8 +6,6 @@ import org.w3c.dom.Node
 import java.io.LineNumberReader
 import java.io.Reader
 import java.util.LinkedList
-import java.util.logging.Level
-import java.util.logging.Logger
 
 internal class StopException(val element: Element) : Exception()
 class HtmlParser {
@@ -89,7 +87,6 @@ class HtmlParser {
 
     private fun ensureRootElement(parent: Node) {
         if (lastRootElement == null) {
-            // System.out.println("Inserting HTML");
             lastRootElement = document.createElement("HTML")
             parent.appendChild(lastRootElement)
         }
@@ -98,11 +95,9 @@ class HtmlParser {
     private fun ensureBodyAppendChild(parent: Node, child: Node) {
         var newParent: Node? = parent
         if (QUIRKS_MODE && needRoot) {
-            // final String nodeName = child.getNodeName();
             val nodeNameTU = child.nodeName.uppercase()
             if ("BODY" == nodeNameTU) {
                 lastBodyElement = child
-                // System.out.println("Found body elem: " + child);
             } else if ("HEAD" == nodeNameTU) {
                 lastHeadElement = child
             } else if ((child is Element) && (depthAtMost(parent, 2))) {
@@ -122,7 +117,6 @@ class HtmlParser {
 
     private fun ensureBodyElement(parent: Node) {
         if (lastBodyElement == null) {
-            // System.out.println("Inserting BODY");
             lastBodyElement = document.createElement("BODY")
             parent.appendChild(lastBodyElement)
         }
@@ -130,7 +124,6 @@ class HtmlParser {
 
     private fun ensureHeadElement(parent: Node) {
         if (lastHeadElement == null) {
-            // System.out.println("Inserting HEAD");
             lastHeadElement = document.createElement("HEAD")
             parent.appendChild(lastHeadElement)
         }
@@ -157,11 +150,7 @@ class HtmlParser {
                 safeAppendChild(parent, textNode)
             } catch (de: DOMException) {
                 if ((parent.nodeType != Node.DOCUMENT_NODE) || (de.code != DOMException.HIERARCHY_REQUEST_ERR)) {
-                    logger.log(
-                        Level.WARNING,
-                        "parseToken(): Unable to append child to " + parent + ".",
-                        de
-                    )
+                    debug("parseToken(): Unable to append child to $parent.")
                 }
             }
         }
@@ -242,7 +231,7 @@ class HtmlParser {
                                 if (einfo == null) ElementInfo.Companion.END_ELEMENT_REQUIRED else einfo.endElementType
                             if (endTagType != ElementInfo.Companion.END_ELEMENT_FORBIDDEN) {
                                 var childrenOk = einfo == null || einfo.childElementOk
-                                var newStopSet = if (einfo == null) null else einfo.stopTags
+                                var newStopSet = einfo?.stopTags
                                 if (newStopSet == null) {
                                     if (endTagType == ElementInfo.Companion.END_ELEMENT_OPTIONAL) {
                                         newStopSet = mutableSetOf(normalTag)
@@ -548,11 +537,7 @@ class HtmlParser {
                         parent.appendChild(textNode)
                     } catch (de: DOMException) {
                         if ((parent.nodeType != Node.DOCUMENT_NODE) || (de.code != DOMException.HIERARCHY_REQUEST_ERR)) {
-                            logger.log(
-                                Level.WARNING,
-                                "parseToken(): Unable to append child to " + parent + ".",
-                                de
-                            )
+                            debug("ERROR parseToken(): Unable to append child to $parent.")
                         }
                     }
                     if (chInt == -1) {
@@ -578,11 +563,7 @@ class HtmlParser {
                         parent.appendChild(textNode)
                     } catch (de: DOMException) {
                         if ((parent.nodeType != Node.DOCUMENT_NODE) || (de.code != DOMException.HIERARCHY_REQUEST_ERR)) {
-                            logger.log(
-                                Level.WARNING,
-                                "parseToken(): Unable to append child to " + parent + ".",
-                                de
-                            )
+                            debug("ERROR parseToken(): Unable to append child to $parent.")
                         }
                     }
                     if (chInt == -1) {
@@ -948,9 +929,6 @@ class HtmlParser {
 
     companion object {
 
-        private val logger: Logger = Logger.getLogger(HtmlParser::class.java.name)
-
-        // TODO: The quirks mode should go
         private const val QUIRKS_MODE = true
         private val ENTITIES: MutableMap<String?, Char?> = HashMap<String?, Char?>(256)
         private val ELEMENT_INFOS: MutableMap<String?, ElementInfo?> =
@@ -1474,8 +1452,8 @@ class HtmlParser {
                         } else {
                             decimal = number.toInt()
                         }
-                    } catch (nfe: NumberFormatException) {
-                        logger.log(Level.WARNING, "entityDecode()", nfe)
+                    } catch (_: NumberFormatException) {
+                        debug("ERROR: entityDecode()")
                         decimal = 0
                     }
                     sb.append(decimal.toChar())

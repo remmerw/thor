@@ -51,7 +51,7 @@ class DocumentImpl(
         this.setOwnerDocument(this)
     }
 
-    fun addNode(node: NodeImpl) {
+    internal fun addNode(node: NodeImpl) {
         allNodes.put(node.uid(), node)
 
         if (node is Element) {
@@ -61,7 +61,7 @@ class DocumentImpl(
         }
     }
 
-    fun removeNode(node: NodeImpl) {
+    internal fun removeNode(node: NodeImpl) {
         allNodes.remove(node.uid())
     }
 
@@ -129,6 +129,12 @@ class DocumentImpl(
     fun getForms(): Collection {
         synchronized(this) {
             return DescendantHTMLCollection(this, FormFilter())
+        }
+    }
+
+    fun getElementsByName(name: String): Collection {
+        synchronized(this) {
+            return DescendantHTMLCollection(this, NodeFilter.ElementNameFilter(name))
         }
     }
 
@@ -214,8 +220,7 @@ class DocumentImpl(
 
     @Throws(DOMException::class)
     override fun createCDATASection(data: String): CDATASection {
-        val node = CDataSectionImpl(this, nextUid(), data)
-        return node
+        return CDataSectionImpl(this, nextUid(), data)
     }
 
     @Throws(DOMException::class)
@@ -266,8 +271,14 @@ class DocumentImpl(
         TODO()
     }
 
-    override fun getElementById(elementId: String?): Element? {
-        TODO()
+    override fun getElementById(id: String): Element? {
+        synchronized(this) {
+            val list = DescendantHTMLCollection(this, NodeFilter.ElementIdFilter(id))
+            if (list.getLength() > 0) {
+                return list.item(0) as Element?
+            }
+            return null
+        }
     }
 
     override fun getInputEncoding(): String? {

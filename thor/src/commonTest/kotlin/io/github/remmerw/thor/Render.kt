@@ -57,8 +57,6 @@ class Render(var url: Url) {
             val num = nl.length
             for (i in 0..<num) doTree(nl.item(i))
 
-            // Process the end of this tag.
-            doTagEnd(node)
         }
     }
 
@@ -70,9 +68,7 @@ class Render(var url: Url) {
 
     }
 
-    fun doTagEnd(element: ElementImpl) {
-        println("</" + element.tagName + ">")
-    }
+
 
 
 }
