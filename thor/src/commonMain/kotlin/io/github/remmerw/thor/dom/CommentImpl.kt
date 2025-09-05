@@ -13,9 +13,4 @@ class CommentImpl(document: Document, uid: Long, text: String) :
         return null
     }
 
-    override fun textContent(): String {
-        // Not yet supported
-        return ""
-    }
-
 }

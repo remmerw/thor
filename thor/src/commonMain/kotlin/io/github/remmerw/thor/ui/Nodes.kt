@@ -1,7 +1,9 @@
 package io.github.remmerw.thor.ui
 
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import io.github.remmerw.thor.model.ElementModel
 import io.github.remmerw.thor.model.NodeModel
 import io.github.remmerw.thor.model.StateModel
@@ -13,11 +15,12 @@ import io.github.remmerw.thor.model.Type
 fun EvaluateNode(
     nodeModel: NodeModel,
     stateModel: StateModel,
-    modifier: Modifier
+    modifier: Modifier = Modifier,
+    style: TextStyle = LocalTextStyle.current
 ) {
     when (nodeModel) {
         is TextModel -> {
-            Chars(nodeModel, modifier)
+            Chars(nodeModel, modifier, style)
         }
 
         is ElementModel -> {

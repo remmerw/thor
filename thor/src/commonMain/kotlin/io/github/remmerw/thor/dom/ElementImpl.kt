@@ -41,19 +41,6 @@ class ElementImpl(document: Document, uid: Long, name: String) :
         }
     }
 
-    override fun textContent(): String {
-        val text = Buffer()
-        if (hasChildNodes()) {
-            // TODO attributes
-            text.writeText("<" + nodeName.lowercase() + ">")
-            textInner()
-            text.writeText("</" + nodeName.lowercase() + ">")
-        } else {
-            text.writeText("<" + nodeName.lowercase() + "/>")
-        }
-        return text.readString()
-    }
-
     override fun getAttribute(name: String): String? {
         val normalName: String = normalizeAttributeName(name)
         synchronized(this) {

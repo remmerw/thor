@@ -555,19 +555,6 @@ abstract class NodeImpl(
         TODO("Not yet implemented")
     }
 
-    abstract fun textContent(): String
-
-    fun textInner(): String {
-        val text = Buffer()
-        children.forEach { node ->
-            val content = node.textContent
-            if (content.isNotEmpty()) {
-                text.writeText(content)
-            }
-        }
-        return text.readString()
-    }
-
 
     companion object {
         const val ELEMENT_NODE: Short = 1

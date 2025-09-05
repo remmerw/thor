@@ -32,7 +32,4 @@ class CDataSectionImpl(document: Document, uid: Long, text: String) :
         TODO("Not yet implemented")
     }
 
-    override fun textContent(): String {
-        return text
-    }
 }

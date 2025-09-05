@@ -57,6 +57,7 @@ class Render(var url: Url) {
             val num = nl.length
             for (i in 0..<num) doTree(nl.item(i))
 
+            println("</" + node.tagName + ">")
         }
     }
 

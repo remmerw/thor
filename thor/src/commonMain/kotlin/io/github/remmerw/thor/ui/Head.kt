@@ -19,9 +19,10 @@ fun H6(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    val text by remember { mutableStateOf(stateModel.text(nodeModel)) }
+    Nodes(nodeModel, stateModel,
+        modifier = modifier.fillMaxWidth(),
+        style = MaterialTheme.typography.titleSmall)
 
-    Text(text = text, modifier = modifier.fillMaxWidth(), style = MaterialTheme.typography.titleSmall)
 }
 
 
@@ -31,9 +32,9 @@ fun H5(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    val text by remember { mutableStateOf(stateModel.text(nodeModel)) }
-
-    Text(text = text, modifier = modifier.fillMaxWidth(), style = MaterialTheme.typography.titleMedium)
+    Nodes(nodeModel, stateModel,
+        modifier = modifier.fillMaxWidth(),
+        style = MaterialTheme.typography.titleMedium)
 }
 
 @Composable
@@ -42,9 +43,9 @@ fun H4(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    val text by remember { mutableStateOf(stateModel.text(nodeModel)) }
-
-    Text(text = text, modifier = modifier.fillMaxWidth(), style = MaterialTheme.typography.titleLarge)
+    Nodes(nodeModel, stateModel,
+        modifier = modifier.fillMaxWidth(),
+        style = MaterialTheme.typography.titleMedium)
 }
 
 @Composable
@@ -53,9 +54,9 @@ fun H3(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    val text by remember { mutableStateOf(stateModel.text(nodeModel)) }
-
-    Text(text = text, modifier = modifier.fillMaxWidth(), style = MaterialTheme.typography.headlineMedium)
+    Nodes(nodeModel, stateModel,
+        modifier = modifier.fillMaxWidth(),
+        style = MaterialTheme.typography.headlineLarge)
 }
 
 
@@ -65,9 +66,11 @@ fun H2(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    val text by remember { mutableStateOf(stateModel.text(nodeModel)) }
+    Nodes(nodeModel, stateModel,
+        modifier = modifier.fillMaxWidth(),
+        style = MaterialTheme.typography.headlineMedium)
 
-    Text(text = text, modifier = modifier.fillMaxWidth(), style = MaterialTheme.typography.headlineMedium)
+
 }
 
 
@@ -77,7 +80,7 @@ fun H1(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    val text by remember { mutableStateOf(stateModel.text(nodeModel)) }
-
-    Text(text = text, modifier = modifier.fillMaxWidth(), style = MaterialTheme.typography.headlineLarge)
+    Nodes(nodeModel, stateModel,
+        modifier = modifier.fillMaxWidth(),
+        style = MaterialTheme.typography.headlineSmall)
 }

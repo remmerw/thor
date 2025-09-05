@@ -33,9 +33,6 @@ class StateModel() : ViewModel() {
     fun node(node: NodeModel): Node? {
         return document?.node(node.uid())
     }
-    fun text(node: NodeModel): String {
-        return document?.text(node.uid()) ?: ""
-    }
 
     fun childNodes(node: NodeModel?): List<NodeModel> {
         if (document == null) {

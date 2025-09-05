@@ -26,9 +26,6 @@ class DocumentTypeImpl(
         // nop
     }
 
-    override fun textContent(): String {
-        return "" // not yet supported
-    }
 
     override fun getName(): String {
         return this.qualifiedName

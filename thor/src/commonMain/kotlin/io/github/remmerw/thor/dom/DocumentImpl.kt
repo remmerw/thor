@@ -90,11 +90,6 @@ class DocumentImpl(
         // NOP, per spec
     }
 
-    override fun textContent(): String {
-        return textInner()
-    }
-
-
     fun getBody(): Element? {
         synchronized(this) {
             return this.body
@@ -359,11 +354,6 @@ class DocumentImpl(
 
     override fun setNodeValue(p0: String?) {
         TODO("Not yet implemented")
-    }
-
-
-    fun text(uid: Long): String {
-        return nodes[uid]?.textInner() ?: ""
     }
 
     fun childNodes(uid: Long): List<Node> {

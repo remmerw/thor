@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -12,7 +13,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextDecoration
 import coil3.compose.AsyncImage
 import io.github.remmerw.thor.model.ElementModel
 import io.github.remmerw.thor.model.NodeModel
@@ -56,7 +60,8 @@ fun HtmlViewer(
 fun Nodes(
     nodeModel: NodeModel,
     stateModel: StateModel,
-    modifier: Modifier
+    modifier: Modifier,
+    style: TextStyle = LocalTextStyle.current,
 ) {
 
     val nodeModels = remember { stateModel.childNodes(nodeModel) }
@@ -65,7 +70,7 @@ fun Nodes(
     if (nodeModels.isNotEmpty()) {
 
         nodeModels.forEach { nodeModel ->
-            EvaluateNode(nodeModel, stateModel, modifier)
+            EvaluateNode(nodeModel, stateModel, modifier, style)
         }
     }
 
@@ -73,10 +78,10 @@ fun Nodes(
 
 
 @Composable
-fun Chars(text: TextModel, modifier: Modifier) {
+fun Chars(text: TextModel, modifier: Modifier, style: TextStyle = LocalTextStyle.current) {
     val text by remember { mutableStateOf(text.text()) }
     if (text.isNotEmpty()) {
-        Text(text = text, modifier = modifier.fillMaxWidth())
+        Text(text = text, modifier = modifier, style = style)
     }
 
 }
@@ -225,9 +230,25 @@ fun Link(
 fun A(
     nodeModel: ElementModel,
     stateModel: StateModel,
-    modifier: Modifier
+    modifier: Modifier,
+    style: TextStyle = LocalTextStyle.current
 ) {
-    Nodes(nodeModel, stateModel, modifier)
+
+    val href by remember {
+        mutableStateOf(
+            stateModel.attribute(nodeModel, "href")
+        )
+    }
+
+    // todo this is wrong !!!
+    if (href != null) {
+        Text(text = href!!, modifier = modifier,
+            color = Color.Blue,
+            textDecoration = TextDecoration.Underline )
+    }
+
+
+    Nodes(nodeModel, stateModel, modifier, style)
 
     //Utils.navigate(nodeModel, stateModel)
 
