@@ -13,8 +13,6 @@ import java.io.Reader
 import java.util.LinkedList
 import java.util.logging.Level
 import java.util.logging.Logger
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 internal class StopException(val element: Element) : Exception()
 class HtmlParser {
@@ -206,11 +204,11 @@ class HtmlParser {
                         return TOKEN_COMMENT
                     } else if ("!DOCTYPE" == tag) {
                         val doctypeStr = this.parseEndOfTag(reader)
-                        val doctypeMatcher: Matcher = doctypePattern.matcher(doctypeStr)
-                        if (doctypeMatcher.matches()) {
-                            val qName = doctypeMatcher.group(1)
-                            val publicId = doctypeMatcher.group(2)
-                            val systemId = doctypeMatcher.group(3)
+                        doctypePattern.findAll(doctypeStr).forEach { doctypeMatcher ->
+                            val group = doctypeMatcher.groupValues
+                            val qName = group[1]
+                            val publicId = group[2]
+                            val systemId = group[3]
                             val doctype = DocumentTypeImpl(
                                 htmlDoc, htmlDoc.nextUid(),
                                 qName,
@@ -1036,8 +1034,8 @@ class HtmlParser {
             "MATHML",
             "FRAMESET"
         )
-        private val doctypePattern: Pattern =
-            Pattern.compile("(\\S+)\\s+PUBLIC\\s+\"([^\"]*)\"\\s+\"([^\"]*)\".*>")
+        private val doctypePattern =
+            Regex("(\\S+)\\s+PUBLIC\\s+\"([^\"]*)\"\\s+\"([^\"]*)\".*>")
 
         init {
             val entities: MutableMap<String?, Char?> = ENTITIES

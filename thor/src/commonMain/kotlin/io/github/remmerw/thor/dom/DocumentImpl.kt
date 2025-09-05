@@ -482,8 +482,6 @@ class DocumentImpl(
     }
 
 
-
-
     override fun getLocalName(): String? {
         // Always null for document
         return null
