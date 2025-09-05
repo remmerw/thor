@@ -29,7 +29,7 @@ class StateModel() : ViewModel() {
         err?.printStackTrace()
     }
 
-    fun attribute(node: NodeModel, attribute:String): String? {
+    fun attribute(node: NodeModel, attribute: String): String? {
         return (node(node) as Element?)?.getAttribute(attribute)
     }
 
@@ -37,31 +37,45 @@ class StateModel() : ViewModel() {
         return documentModel?.node(node.uid())
     }
 
-    fun childNodes(node: NodeModel): List<NodeModel> {
-        if(documentModel == null){
+    fun childNodes(node: NodeModel?): List<NodeModel> {
+        if (documentModel == null) {
             return emptyList()
         }
-
-       return documentModel!!.childNodes(node.uid()).map { node ->
-           when(node) {
-               is ElementImpl ->  ElementModel(node.uid(), node.nodeName)
-               is TextImpl ->  TextModel(node.uid(), node.nodeName, node.textContent)
-               else -> TodoModel((node as NodeImpl).uid(), node.nodeName)
-          }
-       }.toList()
-    }
-
-    fun childNodes(): List<NodeModel> {
-        if(documentModel == null){
+        if(node == null){
             return emptyList()
         }
-        return documentModel!!.nodes().map { node ->
-            when(node) {
-                is ElementImpl ->  ElementModel(node.uid(), node.nodeName)
-                is TextImpl ->  TextModel(node.uid(), node.nodeName, node.textContent)
+        return documentModel!!.childNodes(node.uid()).map { node ->
+            when (node) {
+                is ElementImpl -> ElementModel(node.uid(), node.nodeName)
+                is TextImpl -> TextModel(node.uid(), node.nodeName, node.textContent)
                 else -> TodoModel((node as NodeImpl).uid(), node.nodeName)
             }
         }.toList()
+    }
+
+    fun childNodes(): List<NodeModel> {
+        if (documentModel == null) {
+            return emptyList()
+        }
+        return documentModel!!.nodes().map { node ->
+            when (node) {
+                is ElementImpl -> ElementModel(node.uid(), node.nodeName)
+                is TextImpl -> TextModel(node.uid(), node.nodeName, node.textContent)
+                else -> TodoModel((node as NodeImpl).uid(), node.nodeName)
+            }
+        }.toList()
+    }
+
+    fun bodyNode(): NodeModel? {
+        if (documentModel == null) {
+            return null
+        }
+        val body = documentModel!!.getBody()
+
+        return when (body) {
+            is ElementImpl -> ElementModel(body.uid(), body.nodeName)
+            else -> null
+        }
     }
 
 

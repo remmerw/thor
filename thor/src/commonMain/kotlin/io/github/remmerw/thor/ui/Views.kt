@@ -1,5 +1,6 @@
 package io.github.remmerw.thor.ui
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -20,12 +21,13 @@ fun HtmlViewer(
     stateModel: StateModel
 ) {
     // val tasks by stateModel.tasks(pid).collectAsState(emptyList()) ->  Flow<List<Task>>
-    val nodeModels = remember { stateModel.childNodes() }
+    val bodyNode = remember {  stateModel.bodyNode() }
+    val nodeModels = remember { stateModel.childNodes(bodyNode) }
 
     Scaffold(
         content = { padding ->
             LazyColumn(
-                modifier = Modifier.padding(padding)
+                modifier = Modifier.padding(padding).fillMaxWidth()
             ) {
 
                 items(
@@ -33,16 +35,106 @@ fun HtmlViewer(
                     key = { element -> element.uid() }
                 ) { nodeModel ->
 
-                    when (nodeModel.name()) {
-                        "HTML" -> {
-                            Html(nodeModel, stateModel, modifier = Modifier)
-                        }
-                    }
+                    EvaluateNode(
+                        nodeModel = nodeModel,
+                        stateModel =stateModel,
+                        modifier = Modifier)
                 }
             }
 
         }
     )
+}
+
+@Composable
+fun EvaluateNode(nodeModel: NodeModel,
+                 stateModel: StateModel,
+                 modifier: Modifier){
+    when (nodeModel) {
+        is TextModel -> {
+            Chars(nodeModel, modifier)
+        }
+
+        is ElementModel -> {
+
+            when (nodeModel.name()) {
+                Type.HTML.name -> {
+                    Html(nodeModel, stateModel, modifier)
+                }
+                Type.BODY.name -> {
+                    Body(nodeModel, stateModel, modifier)
+                }
+
+                Type.TABLE.name -> {
+                    Table(nodeModel, stateModel, modifier)
+                }
+
+                Type.FORM.name -> {
+                    Form(nodeModel, stateModel, modifier)
+                }
+
+                Type.CENTER.name -> {
+                    Center(nodeModel, stateModel, modifier)
+                }
+
+                Type.DIV.name -> {
+                    Div(nodeModel, stateModel, modifier)
+                }
+
+                Type.BIG.name -> {
+                    Big(nodeModel, stateModel, modifier)
+                }
+
+                Type.FONT.name -> {
+                    Font(nodeModel, stateModel, modifier)
+                }
+
+                Type.LINK.name -> {
+                    Link(nodeModel, stateModel, modifier)
+                }
+
+                Type.A.name, Type.ANCHOR.name -> {
+                    A(nodeModel, stateModel, modifier)
+                }
+
+                Type.LI.name -> {
+                    Li(nodeModel, stateModel, modifier)
+                }
+
+                Type.BR.name -> {
+                    Br(nodeModel, stateModel, modifier)
+                }
+
+                Type.UL.name -> {
+                    Ul(nodeModel, stateModel, modifier)
+                }
+
+                Type.TR.name -> {
+                    Tr(nodeModel, stateModel, modifier)
+                }
+
+                Type.TD.name -> {
+                    Td(nodeModel, stateModel, modifier)
+                }
+
+                Type.IMG.name -> {
+                    Img(nodeModel, stateModel, modifier)
+                }
+
+                Type.BLOCKQUOTE.name -> {
+                    Blockquote(nodeModel, stateModel, modifier)
+                }
+
+                else -> {
+                    Dummy(nodeModel, stateModel, modifier)
+                }
+            }
+        }
+
+        else -> {
+            println("TODO")
+        }
+    }
 }
 
 @Composable
@@ -58,89 +150,7 @@ fun Nodes(
     if (nodeModels.isNotEmpty()) {
 
         nodeModels.forEach { nodeModel ->
-
-            when (nodeModel) {
-                is TextModel -> {
-                    Chars(nodeModel, modifier)
-                }
-
-                is ElementModel -> {
-
-                    when (nodeModel.name()) {
-                        Type.BODY.name -> {
-                            Body(nodeModel, stateModel, modifier)
-                        }
-
-                        Type.TABLE.name -> {
-                            Table(nodeModel, stateModel, modifier)
-                        }
-
-                        Type.FORM.name -> {
-                            Form(nodeModel, stateModel, modifier)
-                        }
-
-                        Type.CENTER.name -> {
-                            Center(nodeModel, stateModel, modifier)
-                        }
-
-                        Type.DIV.name -> {
-                            Div(nodeModel, stateModel, modifier)
-                        }
-
-                        Type.BIG.name -> {
-                            Big(nodeModel, stateModel, modifier)
-                        }
-
-                        Type.FONT.name -> {
-                            Font(nodeModel, stateModel, modifier)
-                        }
-
-                        Type.LINK.name -> {
-                            Link(nodeModel, stateModel, modifier)
-                        }
-
-                        Type.A.name, Type.ANCHOR.name -> {
-                            A(nodeModel, stateModel, modifier)
-                        }
-
-                        Type.LI.name -> {
-                            Li(nodeModel, stateModel, modifier)
-                        }
-
-                        Type.BR.name -> {
-                            Br(nodeModel, stateModel, modifier)
-                        }
-
-                        Type.UL.name -> {
-                            Ul(nodeModel, stateModel, modifier)
-                        }
-
-                        Type.TR.name -> {
-                            Tr(nodeModel, stateModel, modifier)
-                        }
-
-                        Type.TD.name -> {
-                            Td(nodeModel, stateModel, modifier)
-                        }
-
-                        Type.IMG.name -> {
-                            Img(nodeModel, stateModel, modifier)
-                        }
-
-                        Type.BLOCKQUOTE.name -> {
-                            Blockquote(nodeModel, stateModel, modifier)
-                        }
-
-                        else -> {
-                            Dummy(nodeModel, stateModel, modifier)
-                        }
-                    }
-                }
-
-                else -> {
-                    println("TODO")
-                }
-            }
+            EvaluateNode(nodeModel, stateModel, modifier)
         }
     }
 
@@ -151,7 +161,7 @@ fun Nodes(
 fun Chars(text: TextModel, modifier: Modifier) {
     val text = remember { text.text() }
 
-    Text(text = text, modifier = modifier)
+    Text(text = text, modifier = modifier.fillMaxWidth())
 
 }
 
