@@ -10,7 +10,7 @@ class ProcessingInstructionImpl(
     uid: Long,
     private var target: String,
     private var data: String?
-) : NodeImpl(document, uid),
+) : NodeImpl(document, uid, target),
     ProcessingInstruction, Cloneable {
 
 
@@ -18,9 +18,7 @@ class ProcessingInstructionImpl(
         return target
     }
 
-    override fun getNodeName(): String {
-        return target
-    }
+
 
     override fun getNodeType(): Short {
         return PROCESSING_INSTRUCTION_NODE

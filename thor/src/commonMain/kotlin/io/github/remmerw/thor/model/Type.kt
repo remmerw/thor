@@ -1,6 +1,7 @@
-package io.github.remmerw.thor.dom
+package io.github.remmerw.thor.model
 
-enum class ElementType {
+enum class Type {
+    UNKNOWN,  // all not known entities
     A, META, HEAD, B, TBODY, CAPTION, SMALL,
     LINK, ANCHOR, TABLE, TD,
     TH, TR, STYLE, IMG, SCRIPT, SPAN, Q,
@@ -8,5 +9,6 @@ enum class ElementType {
     BUTTON, TEXTAREA, SELECT, OPTION, FRAMESET, FRAME,
     IFRAME, UL, OL, LI, HR, BR, OBJECT, APPLET, EMBED, FONT,
     BASEFONT, H1, H2, H3, H4, H5, H6, CANVAS, HTML, TITLE, BASE,
-    UNKNOWN, CENTER, BIG
+    CENTER, BIG, SECTION, NAV, SVG, USE, SUMMARY,
+    DETAILS, HEADER, FOOTER, ARTICLE, NOSCRIPT
 }

@@ -2,6 +2,7 @@ package io.github.remmerw.thor
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.lifecycle.viewmodel.compose.viewModel
+import io.github.remmerw.thor.dom.DocumentImpl
 import io.github.remmerw.thor.model.StateModel
 import io.github.remmerw.thor.ui.HtmlViewer
 import kotlinx.coroutines.Dispatchers
@@ -24,9 +25,11 @@ class RenderTest {
         composeTestRule.setContent {
 
             val stateModel: StateModel = viewModel { StateModel() }
+            stateModel.documentModel = document as DocumentImpl
 
 
-            HtmlViewer(document, stateModel)
+
+            HtmlViewer(stateModel)
         }
 
 

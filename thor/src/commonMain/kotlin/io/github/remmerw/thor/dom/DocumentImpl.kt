@@ -25,6 +25,7 @@ import org.w3c.dom.Comment
 import org.w3c.dom.DOMConfiguration
 import org.w3c.dom.DOMException
 import org.w3c.dom.DOMImplementation
+import org.w3c.dom.Document
 import org.w3c.dom.DocumentFragment
 import org.w3c.dom.DocumentType
 import org.w3c.dom.Element
@@ -35,7 +36,6 @@ import org.w3c.dom.NodeList
 import org.w3c.dom.ProcessingInstruction
 import org.w3c.dom.Text
 import java.io.IOException
-import java.io.Reader
 import java.net.MalformedURLException
 import java.net.URL
 import kotlin.concurrent.Volatile
@@ -48,13 +48,14 @@ class DocumentImpl(
     private var reader: WritableLineReader? = null,
     private var documentURI: String? = null,
     private val contentType: String? = null
-) : NodeImpl(null, 0), DocumentModel {
+) : NodeImpl(null, 0, "#document"), Document {
 
     @OptIn(ExperimentalAtomicApi::class)
     private val uids = AtomicLong(0L)
 
     private val factory: ElementFactory
     private var documentURL: URL? = null
+    val allNodes: MutableMap<Long, NodeImpl> = mutableMapOf()
 
     @Volatile
     private var baseURI: String? = null
@@ -92,6 +93,16 @@ class DocumentImpl(
 
         this.setOwnerDocument(this)
 
+    }
+
+    fun addNode(node: NodeImpl) {
+        println("" + node.uid() + " " + node.nodeName)
+        allNodes.put(node.uid(), node)
+
+    }
+
+    fun removeNode(node: NodeImpl) {
+        allNodes.remove(node.uid())
     }
 
     @OptIn(ExperimentalAtomicApi::class)
@@ -310,8 +321,8 @@ class DocumentImpl(
     }
 
     override fun getDocumentElement(): Element? {
-        this.nodes().forEach { nodeModel ->
-            val node: Any? = nodeModel
+        this.nodes().forEach { node ->
+            val node: Any? = node
             if (node is Element) {
                 return node
             }
@@ -336,6 +347,7 @@ class DocumentImpl(
 
     override fun createTextNode(data: String): Text {
         val node = TextImpl(this, nextUid(), data)
+        this.addNode(node)
         return node
     }
 
@@ -490,7 +502,7 @@ class DocumentImpl(
     override fun normalizeDocument() {
         this.visitImpl(object : NodeVisitor {
             override fun visit(node: Node) {
-                node.normalize()
+                //node.normalize()
             }
         })
     }
@@ -514,10 +526,6 @@ class DocumentImpl(
     override fun getLocalName(): String? {
         // Always null for document
         return null
-    }
-
-    override fun getNodeName(): String {
-        return "#document"
     }
 
 
@@ -573,16 +581,14 @@ class DocumentImpl(
 
     }
 
-
-    private inner class LocalWritableLineReader : WritableLineReader {
-
-        constructor(reader: Reader) : super(reader)
-
-        @Throws(IOException::class)
-        override fun write(text: String?) {
-            super.write(text)
-        }
+    fun childNodes(uid: Long): List<Node> {
+        return allNodes[uid]?.nodes() ?: emptyList()
     }
+
+    fun node(uid: Long): Node? {
+        return allNodes[uid]
+    }
+
 
     companion object {
         val xhtmlMatcher: ElementMatcher = ElementMatcherSafeCS()

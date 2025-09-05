@@ -1,12 +1,11 @@
 package io.github.remmerw.thor.dom
 
-import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.snapshots.SnapshotStateMap
 import cz.vutbr.web.css.NodeData
 import cz.vutbr.web.css.RuleSet
 import cz.vutbr.web.css.Selector
 import cz.vutbr.web.css.StyleSheet
 import cz.vutbr.web.domassign.AnalyzerUtil
+import io.github.remmerw.thor.model.Type
 import io.github.remmerw.thor.style.CSSUtilities
 import io.github.remmerw.thor.style.StyleElements
 import org.w3c.dom.Attr
@@ -21,23 +20,21 @@ import org.w3c.dom.TypeInfo
 import java.util.LinkedList
 import java.util.Locale
 
-class ElementImpl(document: Document, uid: Long, private val type: ElementType) :
-    NodeImpl(document, uid), ElementModel {
+class ElementImpl(document: Document, uid: Long, name: String) :
+    NodeImpl(document, uid, name), Element {
 
-    private val attributes = mutableStateMapOf<String, String>()
-    private val properties = mutableStateMapOf<String, String>()
+    private val attributes = mutableMapOf<String, String>()
+    private val properties = mutableMapOf<String, String>()
 
-    override fun attributes(): SnapshotStateMap<String, String> {
+    fun attributes(): Map<String, String> {
         return attributes
     }
 
-    override fun properties(): SnapshotStateMap<String, String> {
+    fun properties(): Map<String, String> {
         return properties
     }
 
-    override fun elementType(): ElementType {
-        return type
-    }
+
 
     fun setProperty(name: String, value: String?) {
         if (value != null) {
@@ -168,8 +165,8 @@ class ElementImpl(document: Document, uid: Long, private val type: ElementType) 
         val descendents: MutableList<Node> = LinkedList<Node>()
 
 
-        this.nodes().forEach { nodeModel ->
-            val child = nodeModel
+        this.nodes().forEach { node ->
+            val child = node
             if (child is Element) {
                 if (matchesAll || isTagName(child, classNames)) {
                     descendents.add(child)
@@ -292,9 +289,7 @@ class ElementImpl(document: Document, uid: Long, private val type: ElementType) 
     }
 
 
-    override fun getNodeName(): String {
-        return this.type.name
-    }
+
 
     override fun getNodeType(): Short {
         return ELEMENT_NODE

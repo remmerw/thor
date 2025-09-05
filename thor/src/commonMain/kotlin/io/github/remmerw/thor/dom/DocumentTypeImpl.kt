@@ -11,15 +11,12 @@ class DocumentTypeImpl(
     private val qualifiedName: String,
     private val publicId: String?,
     private val systemId: String?
-) : NodeImpl(document, uid), DocumentType {
+) : NodeImpl(document, uid, "#document_type"), DocumentType {
 
     override fun getLocalName(): String? {
         return null
     }
 
-    override fun getNodeName(): String {
-        return this.name
-    }
 
     @Throws(DOMException::class)
     override fun getNodeValue(): String? {

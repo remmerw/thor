@@ -2,15 +2,14 @@ package io.github.remmerw.thor.model
 
 import io.github.remmerw.thor.core.Urls
 import io.github.remmerw.thor.dom.DocumentImpl
-import io.github.remmerw.thor.dom.ElementModel
-import io.github.remmerw.thor.dom.ElementType
+import io.github.remmerw.thor.dom.ElementImpl
 import org.w3c.dom.Element
 import java.net.MalformedURLException
 import java.net.URL
 
 object Utils {
 
-    fun getHref(elementModel: ElementModel): String {
+    fun getHref(elementModel: ElementImpl): String {
         val href = elementModel.getAttribute("href")
         return if (href == null) "" else Urls.removeControlCharacters(href)
     }
@@ -42,7 +41,7 @@ object Utils {
 
 
     private fun absoluteURL(
-        anchor: ElementModel,
+        anchor: ElementImpl,
         stateModel: StateModel
     ): URL? {
         val href = getHref(anchor)
@@ -58,10 +57,10 @@ object Utils {
         return null
     }
 
-    fun navigate(elementModel: ElementModel, stateModel: StateModel) {
+    fun navigate(elementModel: ElementImpl, stateModel: StateModel) {
 
-        if (elementModel.elementType() == ElementType.ANCHOR ||
-            elementModel.elementType() == ElementType.A
+        if (elementModel.nodeName == Type.ANCHOR.name ||
+            elementModel.nodeName == Type.A.name
         ) {
             val href = getHref(elementModel)
             if (href.startsWith("#")) {
@@ -78,7 +77,7 @@ object Utils {
                 }
             }
         }
-        if (elementModel.elementType() == ElementType.LINK) {
+        if (elementModel.nodeName == Type.LINK.name) {
             val href = getHref(elementModel)
             if (href.startsWith("#")) {
                 // TODO: Scroll to the element. Issue #101

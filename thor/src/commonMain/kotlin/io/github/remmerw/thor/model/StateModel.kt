@@ -1,16 +1,24 @@
 package io.github.remmerw.thor.model
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
-import io.github.remmerw.thor.dom.ElementModel
+import io.github.remmerw.thor.dom.DocumentImpl
+import io.github.remmerw.thor.dom.ElementImpl
+import io.github.remmerw.thor.dom.NodeImpl
+import io.github.remmerw.thor.dom.TextImpl
+import org.w3c.dom.Element
+import org.w3c.dom.Node
 import java.net.URL
 import java.util.Optional
 
 class StateModel() : ViewModel() {
     var isImageLoadingEnabled: Boolean by mutableStateOf(true)
 
+    var documentModel: DocumentImpl? by mutableStateOf(null)
 
     fun navigate(url: URL, target: String?) {
         TODO("Not yet implemented")
@@ -21,10 +29,42 @@ class StateModel() : ViewModel() {
         err?.printStackTrace()
     }
 
-
-    fun getAttribute(modelElement: ElementModel, attribute:String) : String {
-        return ""
+    fun attribute(node: NodeModel, attribute:String): String? {
+        return (node(node) as Element?)?.getAttribute(attribute)
     }
+
+    fun node(node: NodeModel): Node? {
+        return documentModel?.node(node.uid())
+    }
+
+    fun childNodes(node: NodeModel): List<NodeModel> {
+        if(documentModel == null){
+            return emptyList()
+        }
+
+       return documentModel!!.childNodes(node.uid()).map { node ->
+           when(node) {
+               is ElementImpl ->  ElementModel(node.uid(), node.nodeName)
+               is TextImpl ->  TextModel(node.uid(), node.nodeName, node.textContent)
+               else -> TodoModel((node as NodeImpl).uid(), node.nodeName)
+          }
+       }.toList()
+    }
+
+    fun childNodes(): List<NodeModel> {
+        if(documentModel == null){
+            return emptyList()
+        }
+        return documentModel!!.nodes().map { node ->
+            when(node) {
+                is ElementImpl ->  ElementModel(node.uid(), node.nodeName)
+                is TextImpl ->  TextModel(node.uid(), node.nodeName, node.textContent)
+                else -> TodoModel((node as NodeImpl).uid(), node.nodeName)
+            }
+        }.toList()
+    }
+
+
 
     fun linkClicked(
         url: URL,

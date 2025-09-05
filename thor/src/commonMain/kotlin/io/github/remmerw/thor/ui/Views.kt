@@ -1,34 +1,26 @@
 package io.github.remmerw.thor.ui
 
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import coil3.compose.AsyncImage
-import io.github.remmerw.thor.dom.DocumentModel
-import io.github.remmerw.thor.dom.ElementModel
-import io.github.remmerw.thor.dom.ElementType
-import io.github.remmerw.thor.dom.NodeModel
-import io.github.remmerw.thor.dom.TextModel
+import io.github.remmerw.thor.model.Type
+import io.github.remmerw.thor.model.ElementModel
+import io.github.remmerw.thor.model.NodeModel
 import io.github.remmerw.thor.model.StateModel
-import io.github.remmerw.thor.model.Utils
+import io.github.remmerw.thor.model.TextModel
 
 
 @Composable
 fun HtmlViewer(
-    documentModel: DocumentModel,
     stateModel: StateModel
 ) {
     // val tasks by stateModel.tasks(pid).collectAsState(emptyList()) ->  Flow<List<Task>>
-    val nodeModels = remember { documentModel.nodes() }
+    val nodeModels = remember { stateModel.childNodes() }
 
     Scaffold(
         content = { padding ->
@@ -41,7 +33,7 @@ fun HtmlViewer(
                     key = { element -> element.uid() }
                 ) { nodeModel ->
 
-                    when (nodeModel.nodeName.uppercase()) {
+                    when (nodeModel.name()) {
                         "HTML" -> {
                             Html(nodeModel, stateModel, modifier = Modifier)
                         }
@@ -60,7 +52,7 @@ fun Nodes(
     modifier: Modifier
 ) {
 
-    val nodeModels = remember { nodeModel.nodes() }
+    val nodeModels = remember { stateModel.childNodes(nodeModel) }
 
 
     if (nodeModels.isNotEmpty()) {
@@ -74,68 +66,68 @@ fun Nodes(
 
                 is ElementModel -> {
 
-                    when (nodeModel.elementType()) {
-                        ElementType.BODY -> {
+                    when (nodeModel.name()) {
+                        Type.BODY.name -> {
                             Body(nodeModel, stateModel, modifier)
                         }
 
-                        ElementType.TABLE -> {
+                        Type.TABLE.name -> {
                             Table(nodeModel, stateModel, modifier)
                         }
 
-                        ElementType.FORM -> {
+                        Type.FORM.name -> {
                             Form(nodeModel, stateModel, modifier)
                         }
 
-                        ElementType.CENTER -> {
+                        Type.CENTER.name -> {
                             Center(nodeModel, stateModel, modifier)
                         }
 
-                        ElementType.DIV -> {
+                        Type.DIV.name -> {
                             Div(nodeModel, stateModel, modifier)
                         }
 
-                        ElementType.BIG -> {
+                        Type.BIG.name -> {
                             Big(nodeModel, stateModel, modifier)
                         }
 
-                        ElementType.FONT -> {
+                        Type.FONT.name -> {
                             Font(nodeModel, stateModel, modifier)
                         }
 
-                        ElementType.LINK -> {
+                        Type.LINK.name -> {
                             Link(nodeModel, stateModel, modifier)
                         }
 
-                        ElementType.A, ElementType.ANCHOR -> {
+                        Type.A.name, Type.ANCHOR.name -> {
                             A(nodeModel, stateModel, modifier)
                         }
 
-                        ElementType.LI -> {
+                        Type.LI.name -> {
                             Li(nodeModel, stateModel, modifier)
                         }
 
-                        ElementType.BR -> {
+                        Type.BR.name -> {
                             Br(nodeModel, stateModel, modifier)
                         }
 
-                        ElementType.UL -> {
+                        Type.UL.name -> {
                             Ul(nodeModel, stateModel, modifier)
                         }
 
-                        ElementType.TR -> {
+                        Type.TR.name -> {
                             Tr(nodeModel, stateModel, modifier)
                         }
 
-                        ElementType.TD -> {
+                        Type.TD.name -> {
                             Td(nodeModel, stateModel, modifier)
                         }
 
-                        ElementType.IMG -> {
+                        Type.IMG.name -> {
                             Img(nodeModel, stateModel, modifier)
                         }
 
-                        ElementType.BLOCKQUOTE -> {
+                        Type.BLOCKQUOTE.name -> {
                             Blockquote(nodeModel, stateModel, modifier)
                         }
 
@@ -204,11 +196,10 @@ fun Img(
 ) {
     val isImageLoadingEnabled = remember { stateModel.isImageLoadingEnabled }
 
+    val src = remember { stateModel.attribute(nodeModel,"src") }
 
-    val attributes = remember { nodeModel.attributes() }
-    val src = remember { attributes.getValue("src") }
-
-    if (isImageLoadingEnabled) {
+    /*
+    if (isImageLoadingEnabled && !src.isNullOrEmpty()) {
         AsyncImage(
             model = Utils.getFullURL(nodeModel, src).toExternalForm(),
             contentDescription = null,
@@ -216,7 +207,8 @@ fun Img(
             modifier = Modifier
                 .fillMaxWidth()
         )
-    }
+    }*/
+
     Nodes(nodeModel, stateModel, modifier)
 
 }

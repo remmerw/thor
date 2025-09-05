@@ -1,10 +1,5 @@
 package io.github.remmerw.thor.dom
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import org.w3c.dom.DOMException
 import org.w3c.dom.Document
 import org.w3c.dom.NamedNodeMap
@@ -15,26 +10,30 @@ import org.w3c.dom.UserDataHandler
 import java.net.URL
 import java.util.LinkedList
 
-abstract class NodeImpl(doc: Document?, val uid: Long) : NodeModel {
+abstract class NodeImpl(var document: Document?,
+                        private val uid: Long,
+                        private val name: String) : Node {
 
-    private var document by mutableStateOf(doc)
-    private val nodeList = mutableStateListOf<NodeModel>()
+    private val nodes = mutableListOf<Node>()
 
-    var parent by mutableStateOf<Node?>(null)
+    var parent: Node? = null
 
     override fun getAttributes(): NamedNodeMap? {
         return null  // todo
     }
 
-    override fun nodes(): SnapshotStateList<NodeModel> {
-        return nodeList
+    override fun getNodeName(): String {
+        return this.name
+    }
+    fun nodes(): List<Node> {
+        return nodes
     }
 
     override fun cloneNode(p0: Boolean): Node? {
         TODO("Not yet implemented")
     }
 
-    override fun uid(): Long {
+    fun uid(): Long {
         return uid
     }
 
@@ -54,7 +53,7 @@ abstract class NodeImpl(doc: Document?, val uid: Long) : NodeModel {
                 )
             }
 
-            this.nodeList.add(newChild as NodeModel)
+            this.nodes.add(newChild as NodeImpl)
 
             if (newChild is ElementImpl) {
                 newChild.finish()
@@ -68,7 +67,7 @@ abstract class NodeImpl(doc: Document?, val uid: Long) : NodeModel {
 
 
     protected fun getNodeList(filter: NodeFilter): NodeList {
-        val collection: MutableList<Node> = mutableListOf()
+        val collection: MutableList<NodeImpl> = mutableListOf()
 
         this.appendChildrenToCollectionImpl(filter, collection)
 
@@ -93,7 +92,7 @@ abstract class NodeImpl(doc: Document?, val uid: Long) : NodeModel {
         al: ArrayList<NodeImpl>,
         nestIntoMatchingNodes: Boolean
     ) {
-        this.nodeList.forEach { node ->
+        this.nodes.forEach { node ->
             val n = node as NodeImpl
             if (filter.accept(n)) {
                 al.add(n)
@@ -108,11 +107,10 @@ abstract class NodeImpl(doc: Document?, val uid: Long) : NodeModel {
 
     private fun appendChildrenToCollectionImpl(
         filter: NodeFilter,
-        collection: MutableList<Node>
+        collection: MutableList<NodeImpl>
     ) {
-        nodeList.forEach { nodeModel ->
-            val node = nodeModel as NodeImpl
-            if (filter.accept(node)) {
+        nodes.forEach { node ->
+            if (filter.accept(node as NodeImpl)) {
                 collection.add(node)
             }
             node.appendChildrenToCollectionImpl(filter, collection)
@@ -127,7 +125,7 @@ abstract class NodeImpl(doc: Document?, val uid: Long) : NodeModel {
 
     fun getChildIndex(child: Node?): Int {
 
-        val nl = this.nodeList
+        val nl = this.nodes
         return nl.indexOf(child)
 
     }
@@ -195,7 +193,7 @@ abstract class NodeImpl(doc: Document?, val uid: Long) : NodeModel {
         setOwnerDocument(value)
         if (deep) {
 
-            val nl = this.nodeList
+            val nl = this.nodes
             val i: MutableIterator<Node?> = nl.iterator()
             while (i.hasNext()) {
                 val child = i.next() as NodeImpl
@@ -213,7 +211,7 @@ abstract class NodeImpl(doc: Document?, val uid: Long) : NodeModel {
         } catch (sve: StopVisitorException) {
             throw sve
         }
-        val nl = this.nodeList
+        val nl = this.nodes
         val i: MutableIterator<Node?> = nl.iterator()
         while (i.hasNext()) {
             val child = i.next() as NodeImpl
@@ -249,13 +247,13 @@ abstract class NodeImpl(doc: Document?, val uid: Long) : NodeModel {
         // From what I understand from https://developer.mozilla.org/en-US/docs/Web/API/Node.insertBefore
         // a null or undefined refChild will cause the new child to be appended at the end of the list
         // otherwise, this function will throw an exception if refChild is not found in the child list
-        val nl = this.nodeList
+        val nl = this.nodes
         val idx =
             if (refChild == null) nl.size else (nl.indexOf(refChild))
         if (idx == -1) {
             throw DOMException(DOMException.NOT_FOUND_ERR, "refChild not found")
         }
-        nl.add(idx, newChild as NodeModel)
+        nl.add(idx, newChild as NodeImpl)
 
 
         return newChild
@@ -278,12 +276,12 @@ abstract class NodeImpl(doc: Document?, val uid: Long) : NodeModel {
             )
         }
 
-        val nl = this.nodeList
+        val nl = this.nodes
         val idx = nl.indexOf(oldChild)
         if (idx == -1) {
             throw DOMException(DOMException.NOT_FOUND_ERR, "oldChild not found")
         }
-        nl.set(idx, newChild!! as NodeModel)
+        nl.set(idx, newChild!! as NodeImpl)
 
 
 
@@ -295,7 +293,7 @@ abstract class NodeImpl(doc: Document?, val uid: Long) : NodeModel {
     @Throws(DOMException::class)
     override fun removeChild(oldChild: Node?): Node? {
 
-        if (!nodeList.remove(oldChild)) {
+        if (!nodes.remove(oldChild)) {
             throw DOMException(DOMException.NOT_FOUND_ERR, "oldChild not found")
         }
 
@@ -305,7 +303,7 @@ abstract class NodeImpl(doc: Document?, val uid: Long) : NodeModel {
 
     override fun hasChildNodes(): Boolean {
 
-        return nodeList.isNotEmpty()
+        return nodes.isNotEmpty()
 
     }
 
@@ -316,7 +314,7 @@ abstract class NodeImpl(doc: Document?, val uid: Long) : NodeModel {
 
     override fun getChildNodes(): NodeList {
 
-        val nl = this.nodeList
+        val nl = this.nodes
         return NodeListImpl(nl.toList())
 
     }
@@ -329,13 +327,13 @@ abstract class NodeImpl(doc: Document?, val uid: Long) : NodeModel {
 
     override fun getLastChild(): Node? {
 
-        return this.nodeList.last()
+        return this.nodes.last()
 
     }
 
     private fun getPreviousTo(node: Node?): Node? {
 
-        val nl = this.nodeList
+        val nl = this.nodes
         val idx = nl.indexOf(node)
         if (idx == -1) {
             throw DOMException(DOMException.NOT_FOUND_ERR, "node not found")
@@ -350,7 +348,7 @@ abstract class NodeImpl(doc: Document?, val uid: Long) : NodeModel {
 
     private fun getNextTo(node: Node?): Node? {
 
-        val nl = this.nodeList
+        val nl = this.nodes
         val idx = nl.indexOf(node)
         if (idx == -1) {
             throw DOMException(DOMException.NOT_FOUND_ERR, "node not found")
@@ -407,7 +405,7 @@ abstract class NodeImpl(doc: Document?, val uid: Long) : NodeModel {
     override fun getTextContent(): String? {
         val sb = StringBuffer()
 
-        val nl = this.nodeList
+        val nl = this.nodes
         val i = nl.iterator()
         while (i.hasNext()) {
             val node = i.next()
@@ -439,14 +437,14 @@ abstract class NodeImpl(doc: Document?, val uid: Long) : NodeModel {
             )
             t.parent = (this)
 
-            this.nodeList.add(t)
+            this.nodes.add(t)
         }
 
 
     }
 
     protected fun removeChildrenImpl(filter: NodeFilter) {
-        val nl = this.nodeList
+        val nl = this.nodes
         val len = nl.size
         var i = len
         while (--i >= 0) {
@@ -459,12 +457,12 @@ abstract class NodeImpl(doc: Document?, val uid: Long) : NodeModel {
 
     fun insertAfter(newChild: Node?, refChild: Node?): Node? {
 
-        val nl = this.nodeList
+        val nl = this.nodes
         val idx = nl.indexOf(refChild)
         if (idx == -1) {
             throw DOMException(DOMException.NOT_FOUND_ERR, "refChild not found")
         }
-        nl.add(idx + 1, newChild!! as NodeModel)
+        nl.add(idx + 1, newChild!! as NodeImpl)
 
 
 
@@ -474,8 +472,8 @@ abstract class NodeImpl(doc: Document?, val uid: Long) : NodeModel {
     fun replaceAdjacentTextNodes(node: Text, textContent: String?): Text {
 
 
-        val nl = this.nodeList
-        val idx = nl.indexOf(node as NodeModel)
+        val nl = this.nodes
+        val idx = nl.indexOf(node as NodeImpl)
         if (idx == -1) {
             throw DOMException(DOMException.NOT_FOUND_ERR, "Node not a child")
         }
@@ -484,26 +482,26 @@ abstract class NodeImpl(doc: Document?, val uid: Long) : NodeModel {
         run {
             var adjIdx = idx
             while (--adjIdx >= 0) {
-                val child: Any? = this.nodeList[adjIdx]
+                val child: Any? = this.nodes[adjIdx]
                 if (child is Text) {
                     firstIdx = adjIdx
                     toDelete.add(child)
                 }
             }
         }
-        val length = this.nodeList.size
+        val length = this.nodes.size
         var adjIdx = idx
         while (++adjIdx < length) {
-            val child: Any? = this.nodeList[adjIdx]
+            val child: Any? = this.nodes[adjIdx]
             if (child is Text) {
                 toDelete.add(child)
             }
         }
-        this.nodeList.removeAll(toDelete)
+        this.nodes.removeAll(toDelete)
         val impl = ownerDocument!! as DocumentImpl
         val textNode = TextImpl(ownerDocument!!, impl.nextUid(), textContent!!)
         textNode.parent = (this)
-        this.nodeList.add(firstIdx, textNode)
+        this.nodes.add(firstIdx, textNode)
         return textNode
 
 
@@ -512,8 +510,8 @@ abstract class NodeImpl(doc: Document?, val uid: Long) : NodeModel {
     fun replaceAdjacentTextNodes(node: Text): Text {
 
 
-        val nl = this.nodeList
-        val idx = nl.indexOf(node as NodeModel)
+        val nl = this.nodes
+        val idx = nl.indexOf(node as NodeImpl)
         if (idx == -1) {
             throw DOMException(DOMException.NOT_FOUND_ERR, "Node not a child")
         }
@@ -523,7 +521,7 @@ abstract class NodeImpl(doc: Document?, val uid: Long) : NodeModel {
         run {
             var adjIdx = idx
             while (--adjIdx >= 0) {
-                val child: Any? = this.nodeList[adjIdx]
+                val child: Any? = this.nodes[adjIdx]
                 if (child is Text) {
                     firstIdx = adjIdx
                     toDelete.add(child)
@@ -531,16 +529,16 @@ abstract class NodeImpl(doc: Document?, val uid: Long) : NodeModel {
                 }
             }
         }
-        val length = this.nodeList.size
+        val length = this.nodes.size
         var adjIdx = idx
         while (++adjIdx < length) {
-            val child: Any? = this.nodeList.get(adjIdx)
+            val child: Any? = this.nodes.get(adjIdx)
             if (child is Text) {
                 toDelete.add(child)
                 textBuffer.append(child.nodeValue)
             }
         }
-        this.nodeList.removeAll(toDelete)
+        this.nodes.removeAll(toDelete)
         val impl = ownerDocument!! as DocumentImpl
         val textNode = TextImpl(
             ownerDocument!!, impl.nextUid(),
@@ -548,7 +546,7 @@ abstract class NodeImpl(doc: Document?, val uid: Long) : NodeModel {
         )
 
         textNode.parent = (this)
-        this.nodeList.add(firstIdx, textNode)
+        this.nodes.add(firstIdx, textNode)
         return textNode
 
 
@@ -578,7 +576,7 @@ abstract class NodeImpl(doc: Document?, val uid: Long) : NodeModel {
     override fun isEqualNode(arg: Node?): Boolean {
         return (arg is NodeImpl) && (this.nodeType == arg.nodeType) && this.nodeName == arg.nodeName
                 && this.nodeValue == arg.nodeValue && this.localName == arg.localName
-                && this.nodeList == arg.nodeList && this.equalAttributes(arg)
+                && this.nodes == arg.nodes && this.equalAttributes(arg)
     }
 
     override fun isDefaultNamespace(namespaceURI: String?): Boolean {
@@ -591,12 +589,12 @@ abstract class NodeImpl(doc: Document?, val uid: Long) : NodeModel {
 
     override fun normalize() {
 
-        val nl = this.nodeList
+        val nl = this.nodes
         nl.iterator()
         val textNodes: MutableList<Node> = LinkedList<Node>()
         var prevText = false
-        nodes().forEach { nodeModel ->
-            val child = nodeModel
+        nodes().forEach { node ->
+            val child = node
             if (child.nodeType == Node.TEXT_NODE) {
                 if (!prevText) {
                     prevText = true
@@ -606,8 +604,8 @@ abstract class NodeImpl(doc: Document?, val uid: Long) : NodeModel {
                 prevText = false
             }
         }
-        nodes().forEach { nodeModel ->
-            val text = nodeModel as Text
+        nodes().forEach { node ->
+            val text = node as Text
             this.replaceAdjacentTextNodes(text)
         }
 
@@ -625,3 +623,4 @@ abstract class NodeImpl(doc: Document?, val uid: Long) : NodeModel {
 
 
 }
+

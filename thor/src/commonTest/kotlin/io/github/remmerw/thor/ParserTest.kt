@@ -1,5 +1,7 @@
 package io.github.remmerw.thor
 
+import io.github.remmerw.thor.dom.DocumentImpl
+import io.github.remmerw.thor.dom.NodeImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test

@@ -1,18 +1,13 @@
 package io.github.remmerw.thor.dom
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import org.w3c.dom.CharacterData
 import org.w3c.dom.DOMException
 import org.w3c.dom.Document
 
-abstract class CharacterDataImpl(document: Document, uid: Long) : NodeImpl(document, uid),
-    CharacterDataModel {
-    var text: String by mutableStateOf("")
+abstract class CharacterDataImpl(document: Document, uid: Long, name:String) : NodeImpl(document, uid, name),
+    CharacterData {
+    private var text: String = ""
 
-    override fun text(): String {
-        return text
-    }
 
     override fun getTextContent(): String {
         return this.text

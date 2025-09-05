@@ -5,17 +5,13 @@ import org.w3c.dom.Document
 import org.w3c.dom.Node.COMMENT_NODE
 
 class CommentImpl(document: Document, uid: Long, text: String) :
-    CharacterDataImpl(document, uid), Comment {
+    CharacterDataImpl(document, uid, "#comment"), Comment {
     init {
         textContent = text
     }
 
     override fun getLocalName(): String? {
         return null
-    }
-
-    override fun getNodeName(): String {
-        return "#comment"
     }
 
     override fun getNodeValue(): String? {

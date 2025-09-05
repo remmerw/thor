@@ -8,7 +8,7 @@ import org.w3c.dom.Node.ATTRIBUTE_NODE
 import org.w3c.dom.TypeInfo
 
 class AttrImpl : NodeImpl, Attr {
-    private val name: String
+
     private val specified: Boolean
     private val ownerElement: Element?
     private var value: String?
@@ -20,8 +20,7 @@ class AttrImpl : NodeImpl, Attr {
         specified: Boolean,
         owner: Element,
         isId: Boolean
-    ) : super(owner.ownerDocument!!, (owner.ownerDocument!! as DocumentImpl).nextUid()) {
-        this.name = name
+    ) : super(owner.ownerDocument!!, (owner.ownerDocument!! as DocumentImpl).nextUid(), name) {
         this.value = value
         this.specified = specified
         this.ownerElement = owner
@@ -29,8 +28,7 @@ class AttrImpl : NodeImpl, Attr {
     }
 
 
-    constructor(document: Document, uid: Long, name: String) : super(document, uid) {
-        this.name = name
+    constructor(document: Document, uid: Long, name: String) : super(document, uid, name) {
         this.value = ""
         this.specified = false
         this.ownerElement = null

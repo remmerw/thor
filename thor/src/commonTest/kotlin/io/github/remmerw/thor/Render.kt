@@ -1,9 +1,9 @@
 package io.github.remmerw.thor
 
-import io.github.remmerw.thor.dom.DocumentModel
-import io.github.remmerw.thor.dom.ElementModel
+import io.github.remmerw.thor.dom.ElementImpl
 import io.github.remmerw.thor.parser.DocumentModelBuilder
 import io.github.remmerw.thor.parser.InputSource
+import org.w3c.dom.Document
 import org.w3c.dom.Node
 import java.net.URI
 import java.net.URL
@@ -27,7 +27,7 @@ class Render(var url: String) {
      * recurse on the DOM and call doElement()/doTagEnd() for
      * each Element node.  Return false on error.
      */
-    fun parsePage(): DocumentModel {
+    fun parsePage(): Document {
         // From Lobo forum.  Disable all logging.
 
         Logger.getLogger("").level = Level.OFF
@@ -72,9 +72,9 @@ class Render(var url: String) {
             )!!
 
             // Do a recursive traversal on the top-level DOM node.
-            val ex = document.documentElement
-            doTree(ex)
-            return document as DocumentModel
+            document.documentElement
+            // doTree(ex)
+            return document
         } catch (e: Exception) {
             e.printStackTrace()
             println("parsePage($url):  $e")
@@ -90,14 +90,13 @@ class Render(var url: String) {
      * are tags contained inside the parent tag.
      */
     fun doTree(node: Node?) {
-        if (node is ElementModel) {
+        if (node is ElementImpl) {
             // Visit tag.
 
             doElement(node)
 
             // Visit all the children, i.e., tags contained in this tag.
             val nl = node.childNodes
-            if (nl == null) return
             val num = nl.length
             for (i in 0..<num) doTree(nl.item(i))
 
@@ -110,7 +109,7 @@ class Render(var url: String) {
      * Simple doElement to print the tag name of the Element.  Override
      * to do something real.
      */
-    fun doElement(element: ElementModel) {
+    fun doElement(element: ElementImpl) {
         println("<" + element.tagName + ">")
 
         println("Attributes : " + element.attributes().toString())
@@ -123,7 +122,7 @@ class Render(var url: String) {
      * Simple doTagEnd() to print the closing tag of the Element.
      * Override to do something real.
      */
-    fun doTagEnd(element: ElementModel) {
+    fun doTagEnd(element: ElementImpl) {
         println("</" + element.tagName + ">")
     }
 
