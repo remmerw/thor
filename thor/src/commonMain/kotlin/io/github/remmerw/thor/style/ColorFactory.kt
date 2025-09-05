@@ -1,15 +1,12 @@
 package io.github.remmerw.thor.style
 
 import androidx.compose.ui.graphics.Color
-import java.util.Locale
 import java.util.StringTokenizer
 import java.util.logging.Level
 import java.util.logging.Logger
 import kotlin.math.min
 
-/**
- * @author J. H. S.
- */
+
 class ColorFactory private constructor() {
     private val colorMap: MutableMap<String, Color> = HashMap(256)
 
@@ -172,7 +169,7 @@ class ColorFactory private constructor() {
         if (colorSpec.startsWith("#")) {
             return true
         }
-        val normalSpec = colorSpec.lowercase(Locale.getDefault())
+        val normalSpec = colorSpec.lowercase()
         if (normalSpec.startsWith(RGB_START)) {
             return true
         }
@@ -182,7 +179,7 @@ class ColorFactory private constructor() {
     }
 
     fun getColor(colorSpec: String): Color? {
-        val normalSpec = colorSpec.lowercase(Locale.getDefault())
+        val normalSpec = colorSpec.lowercase()
         synchronized(this) {
             var color = colorMap.get(normalSpec)
             if (color == null) {

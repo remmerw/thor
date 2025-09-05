@@ -35,8 +35,6 @@ import org.w3c.dom.Node.DOCUMENT_NODE
 import org.w3c.dom.NodeList
 import org.w3c.dom.ProcessingInstruction
 import org.w3c.dom.Text
-import java.io.IOException
-import java.net.MalformedURLException
 import java.net.URL
 import kotlin.concurrent.Volatile
 import kotlin.concurrent.atomics.AtomicLong
@@ -138,10 +136,10 @@ class DocumentImpl(
 
                 // this is a full url if it parses
                 this.baseURI = value
-            } catch (mfe: MalformedURLException) {
+            } catch (_: Throwable) {
                 try {
                     Urls.createURL(documentURL, value)
-                } catch (mfe2: MalformedURLException) {
+                } catch (mfe2: Throwable) {
                     throw IllegalArgumentException(mfe2)
                 }
             }
@@ -507,7 +505,7 @@ class DocumentImpl(
     override fun normalizeDocument() {
         this.visitImpl(object : NodeVisitor {
             override fun visit(node: Node) {
-                //node.normalize()
+                node.normalize()
             }
         })
     }
@@ -619,7 +617,7 @@ class DocumentImpl(
                     .parse(cssdata, null, null, CSSParserFactory.SourceType.EMBEDDED, null)
                 newsheet.origin = origin
                 return newsheet
-            } catch (e: IOException) {
+            } catch (e: Throwable) {
                 throw RuntimeException(e)
             } catch (e: CSSException) {
                 throw RuntimeException(e)

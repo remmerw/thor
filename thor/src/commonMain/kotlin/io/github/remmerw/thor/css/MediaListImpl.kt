@@ -3,19 +3,18 @@ package io.github.remmerw.thor.css
 import cz.vutbr.web.css.MediaQuery
 import org.w3c.dom.DOMException
 import org.w3c.dom.stylesheets.MediaList
-import java.util.Collections
 
 internal class MediaListImpl : MediaList {
     private val containingStyleSheet: StyleSheetWrapper
-    private val mediaList: MutableList<String?>
+    private val mediaList: MutableList<String>
 
-    constructor(mediaListStr: String?, containingStyleSheet: StyleSheetWrapper) {
+    constructor(mediaListStr: String, containingStyleSheet: StyleSheetWrapper) {
         this.mediaList = splitMediaList(mediaListStr)
         this.containingStyleSheet = containingStyleSheet
     }
 
     constructor(mediaQueries: MutableList<MediaQuery>, containingStyleSheet: StyleSheetWrapper) {
-        val mediaList: MutableList<String?> = ArrayList<String?>()
+        val mediaList: MutableList<String> = ArrayList()
         for (mediaQuery in mediaQueries) {
             mediaList.add(mediaQuery.type)
         }
@@ -42,30 +41,29 @@ internal class MediaListImpl : MediaList {
     }
 
     override fun item(index: Int): String? {
-        return this.mediaList.get(index)
+        return this.mediaList[index]
     }
 
     @Throws(DOMException::class)
-    override fun deleteMedium(oldMedium: String?) {
+    override fun deleteMedium(oldMedium: String) {
         this.mediaList.remove(oldMedium)
         this.containingStyleSheet.informChanged()
     }
 
     @Throws(DOMException::class)
-    override fun appendMedium(newMedium: String?) {
+    override fun appendMedium(newMedium: String) {
         this.mediaList.add(newMedium)
         this.containingStyleSheet.informChanged()
     }
 
-    private fun splitMediaList(mediaListStr: String?): MutableList<String?> {
-        if ((mediaListStr != null) && (mediaListStr.length > 0)) {
-            val mediaArray: Array<String?> =
+    private fun splitMediaList(mediaListStr: String): MutableList<String> {
+        if (mediaListStr.isNotEmpty()) {
+            val mediaArray: Array<String> =
                 mediaListStr.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-            val mediaList: MutableList<String?> = ArrayList<String?>()
-            Collections.addAll<String?>(mediaList, *mediaArray)
-            return mediaList
+
+            return mediaArray.toMutableList()
         }
-        return ArrayList<String?>()
+        return mutableListOf()
     }
 
     override fun toString(): String {

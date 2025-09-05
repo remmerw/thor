@@ -1,25 +1,9 @@
 package io.github.remmerw.thor.core
 
-import java.io.UnsupportedEncodingException
-import java.nio.charset.StandardCharsets
-import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
 import kotlin.math.max
 
 object Strings {
-    val EMPTY_ARRAY: Array<String?> = arrayOfNulls<String>(0)
-    private val MESSAGE_DIGEST: MessageDigest
-    private const val HEX_CHARS = "0123456789ABCDEF"
 
-    init {
-        val md: MessageDigest
-        try {
-            md = MessageDigest.getInstance("MD5")
-        } catch (err: NoSuchAlgorithmException) {
-            throw IllegalStateException()
-        }
-        MESSAGE_DIGEST = md
-    }
 
     fun compareVersions(version1: String?, version2: String?, startsWithDigits: Boolean): Int {
         if (version1 == null) {
@@ -181,37 +165,6 @@ object Strings {
         return buf.toString()
     }
 
-    fun getMD5(source: String): String {
-        val bytes: ByteArray?
-        bytes = source.toByteArray(StandardCharsets.UTF_8)
-        val result: ByteArray
-        synchronized(MESSAGE_DIGEST) {
-            MESSAGE_DIGEST.update(bytes)
-            result = MESSAGE_DIGEST.digest()
-        }
-        val resChars = CharArray(32)
-        val len = result.size
-        for (i in 0..<len) {
-            val b = result[i]
-            val lo4 = b.toInt() and 0x0F
-            val hi4 = (b.toInt() and 0xF0) shr 4
-            resChars[i * 2] = HEX_CHARS.get(hi4)
-            resChars[(i * 2) + 1] = HEX_CHARS.get(lo4)
-        }
-        return String(resChars)
-    }
-
-    @Throws(UnsupportedEncodingException::class)
-    fun getHash32(source: String): String {
-        val md5 = getMD5(source)
-        return md5.substring(0, 8)
-    }
-
-    @Throws(UnsupportedEncodingException::class)
-    fun getHash64(source: String): String {
-        val md5 = getMD5(source)
-        return md5.substring(0, 16)
-    }
 
     fun countChars(text: String, ch: Char): Int {
         val len = text.length
@@ -224,40 +177,7 @@ object Strings {
         return count
     }
 
-    // public static boolean isTrimmable(char ch) {
-    // switch(ch) {
-    // case ' ':
-    // case '\t':
-    // case '\r':
-    // case '\n':
-    // return true;
-    // }
-    // return false;
-    // }
-    //
-    // /**
-    // * Trims blanks, line breaks and tabs.
-    // * @param text
-    // * @return
-    // */
-    // public static String trim(String text) {
-    // int len = text.length();
-    // int startIdx;
-    // for(startIdx = 0; startIdx < len; startIdx++) {
-    // char ch = text.charAt(startIdx);
-    // if(!isTrimmable(ch)) {
-    // break;
-    // }
-    // }
-    // int endIdx;
-    // for(endIdx = len; --endIdx > startIdx; ) {
-    // char ch = text.charAt(endIdx);
-    // if(!isTrimmable(ch)) {
-    // break;
-    // }
-    // }
-    // return text.substring(startIdx, endIdx + 1);
-    // }
+
     /**
      * Removes the double-quotes at the beginning and end of a string. If input
      * string doesn't have the double-quote character at beginning or end, it is
@@ -311,7 +231,7 @@ object Strings {
         if (word != null) {
             wordList.add(word.toString())
         }
-        return wordList.toArray<String?>(EMPTY_ARRAY)
+        return wordList.toTypedArray()
     }
 
     fun truncate(text: String?, maxLength: Int): String? {

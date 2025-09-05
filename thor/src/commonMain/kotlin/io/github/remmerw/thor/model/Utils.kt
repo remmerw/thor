@@ -4,7 +4,6 @@ import io.github.remmerw.thor.core.Urls
 import io.github.remmerw.thor.dom.DocumentImpl
 import io.github.remmerw.thor.dom.ElementImpl
 import org.w3c.dom.Element
-import java.net.MalformedURLException
 import java.net.URL
 
 object Utils {
@@ -24,7 +23,7 @@ object Utils {
             val baseURI = getBaseURI(doc)
             val documentURL = if (baseURI == null) null else URL(baseURI)
             return Urls.createURL(documentURL, uri)
-        } catch (mfu: MalformedURLException) {
+        } catch (_: Throwable) {
             return URL(uri)
         }
     }
@@ -50,8 +49,8 @@ object Utils {
         } else {
             try {
                 return getFullURL(anchor, href)
-            } catch (mfu: MalformedURLException) {
-                stateModel.warn("Malformed URI: [" + href + "].", mfu)
+            } catch (throwable: Throwable) {
+                stateModel.warn("Malformed URI: [" + href + "].", throwable)
             }
         }
         return null

@@ -2,11 +2,8 @@ package io.github.remmerw.thor.style
 
 import cz.vutbr.web.css.StyleSheet
 import io.github.remmerw.thor.dom.ElementImpl
-import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.w3c.dom.Node
-import java.util.Locale
-import java.util.Vector
 
 /**
  * Borrowed from CSSBox HTMLNorm.java This class provides a mechanism of
@@ -78,7 +75,7 @@ object StyleElements {
             value.toInt()
 
             return value + "px"
-        } catch (e: NumberFormatException) {
+        } catch (_: NumberFormatException) {
             return value
         }
     }
@@ -96,7 +93,7 @@ object StyleElements {
             }
         }
         if (el.attributes.getNamedItem("frame") != null) {
-            frame = el.getAttribute("frame").lowercase(Locale.getDefault())
+            frame = el.getAttribute("frame").lowercase()
         }
 
         if (border != "0") {
@@ -185,75 +182,5 @@ object StyleElements {
         return template.replace("@".toRegex(), dir)
     }
 
-    //======== Normalize the dom =============================
-    /**
-     * Provides a cleanup of a HTML DOM tree according to the HTML syntax
-     * restrictions. Currently, following actions are implemented:
-     *
-     *  * Table cleanup
-     *
-     *  * elements that are not acceptable within a table are moved before the table
-     *
-     *
-     *
-     *
-     * @param doc the processed DOM Document.
-     */
-    fun normalizeHTMLTree(doc: Document) {
-        //normalize tables
-        val tables = doc.getElementsByTagName("table")
-        for (i in 0..<tables.length) {
-            val nodes = Vector<Node>()
-            recursiveFindBadNodesInTable(tables.item(i), null, nodes)
-            for (n in nodes) {
-                moveSubtreeBefore(n, tables.item(i))
-            }
-        }
-    }
 
-    /**
-     * Finds all the nodes in a table that cannot be contained in the table
-     * according to the HTML syntax.
-     *
-     * @param n        table root
-     * @param cellroot last cell root
-     * @param nodes    resulting list of nodes
-     */
-    private fun recursiveFindBadNodesInTable(n: Node, cellroot: Node?, nodes: Vector<Node>) {
-        var cell = cellroot
-
-        if (n.nodeType == Node.ELEMENT_NODE) {
-            val tag = n.nodeName.lowercase(Locale.getDefault())
-            if (tag == "table") {
-                if (cell != null) { //do not enter nested tables
-                    return
-                }
-            } else if (tag == "tbody" || tag == "thead" || tag == "tfoot"
-                || tag == "tr" || tag == "col" || tag == "colgroup"
-            ) {
-            } else if (tag == "td" || tag == "th" || tag == "caption") {
-                cell = n
-            } else { //other elements
-                if (cell == null) {
-                    nodes.add(n)
-                    return
-                }
-            }
-        } else if (n.nodeType == Node.TEXT_NODE) { //other nodes
-            if ((cell == null) && (n.nodeValue.trim { it <= ' ' }.length > 0)) {
-                nodes.add(n)
-                return
-            }
-        }
-
-        val child = n.childNodes
-        for (i in 0..<child.length) {
-            recursiveFindBadNodesInTable(child.item(i), cell, nodes)
-        }
-    }
-
-    private fun moveSubtreeBefore(root: Node, ref: Node) {
-        root.parentNode.removeChild(root)
-        ref.parentNode.insertBefore(root, ref)
-    }
 }

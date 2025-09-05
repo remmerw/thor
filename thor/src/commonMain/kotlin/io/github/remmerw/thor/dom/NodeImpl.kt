@@ -8,7 +8,6 @@ import org.w3c.dom.NodeList
 import org.w3c.dom.Text
 import org.w3c.dom.UserDataHandler
 import java.net.URL
-import java.util.LinkedList
 
 abstract class NodeImpl(
     var document: Document?,
@@ -481,7 +480,7 @@ abstract class NodeImpl(
             throw DOMException(DOMException.NOT_FOUND_ERR, "Node not a child")
         }
         var firstIdx = idx
-        val toDelete: MutableList<Any?> = LinkedList<Any?>()
+        val toDelete: MutableList<Text> = mutableListOf()
         run {
             var adjIdx = idx
             while (--adjIdx >= 0) {
@@ -520,7 +519,7 @@ abstract class NodeImpl(
         }
         val textBuffer = StringBuffer()
         var firstIdx = idx
-        val toDelete: MutableList<Any?> = LinkedList<Any?>()
+        val toDelete: MutableList<Text> = mutableListOf()
         run {
             var adjIdx = idx
             while (--adjIdx >= 0) {
@@ -565,7 +564,7 @@ abstract class NodeImpl(
     }
 
     override fun isSupported(feature: String?, version: String): Boolean {
-        return ("HTML" == feature && (version.compareTo("4.01") <= 0))
+        return ("HTML" == feature && (version <= "4.01"))
     }
 
     override fun lookupNamespaceURI(prefix: String?): String? {
@@ -594,7 +593,7 @@ abstract class NodeImpl(
 
         val nl = this.nodes
         nl.iterator()
-        val textNodes: MutableList<Node> = LinkedList<Node>()
+        val textNodes: MutableList<Node> = mutableListOf()
         var prevText = false
         nodes().forEach { node ->
             val child = node

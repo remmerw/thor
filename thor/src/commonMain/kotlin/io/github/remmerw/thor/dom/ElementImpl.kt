@@ -16,8 +16,6 @@ import org.w3c.dom.Node
 import org.w3c.dom.Node.ELEMENT_NODE
 import org.w3c.dom.NodeList
 import org.w3c.dom.TypeInfo
-import java.util.LinkedList
-import java.util.Locale
 
 class ElementImpl(document: Document, uid: Long, name: String) :
     NodeImpl(document, uid, name), Element {
@@ -160,7 +158,7 @@ class ElementImpl(document: Document, uid: Long, name: String) :
 
     override fun getElementsByTagName(classNames: String): NodeList {
         val matchesAll = "*" == classNames
-        val descendents: MutableList<Node> = LinkedList<Node>()
+        val descendents: MutableList<Node> = mutableListOf()
 
 
         this.nodes().forEach { node ->
@@ -192,7 +190,7 @@ class ElementImpl(document: Document, uid: Long, name: String) :
     override fun getTagName(): String {
         // In HTML, tag names are supposed to be returned in upper-case, but in XHTML they are returned in original case
         // as per https://developer.mozilla.org/en-US/docs/Web/API/Element.tagName
-        return this.nodeName.uppercase(Locale.getDefault())
+        return this.nodeName.uppercase()
     }
 
     override fun hasAttribute(name: String): Boolean {
@@ -327,9 +325,8 @@ class ElementImpl(document: Document, uid: Long, name: String) :
             return node.nodeName.equals(name, ignoreCase = true)
         }
 
-        @JvmStatic
         protected fun normalizeAttributeName(name: String): String {
-            return name.lowercase(Locale.getDefault())
+            return name.lowercase()
         }
     }
 }

@@ -6,7 +6,6 @@ import org.w3c.dom.DOMException
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.w3c.dom.Node
-import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.io.LineNumberReader
@@ -50,8 +49,8 @@ class HtmlParser {
     }
 
 
-    private fun shouldDecodeEntities(einfo: ElementInfo?): Boolean {
-        return isXML || (einfo == null || einfo.decodeEntities)
+    private fun shouldDecodeEntities(info: ElementInfo?): Boolean {
+        return isXML || (info == null || info.decodeEntities)
     }
 
 
@@ -522,13 +521,7 @@ class HtmlParser {
         return TOKEN_EOD
     }
 
-    /**
-     * The reader offset should be
-     *
-     * @param reader
-     * @return
-     */
-    @Throws(IOException::class)
+
     private fun readTag(parent: Node, reader: LineNumberReader): String {
         val sb = StringBuffer()
         var chInt: Int
@@ -664,7 +657,7 @@ class HtmlParser {
         return tag
     }
 
-    @Throws(IOException::class)
+
     private fun passEndOfComment(reader: LineNumberReader): StringBuffer {
         if (this.justReadTagEnd) {
             return StringBuffer(0)
@@ -734,7 +727,7 @@ class HtmlParser {
         return sb
     }
 
-    @Throws(IOException::class)
+
     private fun parseEndOfTag(reader: Reader): String {
         if (this.justReadTagEnd) {
             return ""
@@ -762,7 +755,7 @@ class HtmlParser {
         return result.toString()
     }
 
-    @Throws(IOException::class)
+
     private fun passEndOfTag(reader: Reader) {
         if (this.justReadTagEnd) {
             return
@@ -787,7 +780,7 @@ class HtmlParser {
         }
     }
 
-    @Throws(IOException::class)
+
     private fun readProcessingInstruction(reader: LineNumberReader): StringBuffer {
         val pidata = StringBuffer()
         if (this.justReadTagEnd) {
@@ -1454,7 +1447,7 @@ class HtmlParser {
             }
         }
 
-        @Throws(IOException::class)
+
         private fun readCData(reader: LineNumberReader, sb: StringBuffer) {
             var next = reader.read()
 
@@ -1488,7 +1481,7 @@ class HtmlParser {
                 var ich = -1
                 try {
                     ich = reader.read()
-                } catch (e: IOException) {
+                } catch (_: Throwable) {
                     break
                 }
                 if (ich >= 0) {

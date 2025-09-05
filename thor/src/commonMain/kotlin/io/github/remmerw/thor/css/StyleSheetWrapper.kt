@@ -22,7 +22,7 @@ import kotlin.concurrent.Volatile
  */
 class StyleSheetWrapper internal constructor(
     @JvmField @field:Volatile var styleSheet: StyleSheet?,
-    private val mediaStr: String?,
+    private val mediaStr: String,
     private val href: String?,
     private var ownerNode: Node?,
     private val parentStyleSheet: CSSStyleSheet?,
@@ -57,7 +57,7 @@ class StyleSheetWrapper internal constructor(
      * dynamically get data from the caller.
      */
     constructor(
-        jStyleSheet: StyleSheet?, mediaStr: String?, href: String?,
+        jStyleSheet: StyleSheet?, mediaStr: String, href: String?,
         parentStyleSheet: CSSStyleSheet?, bridge: StyleSheetBridge
     ) : this(jStyleSheet, mediaStr, href, null, parentStyleSheet, null, null, bridge)
 
@@ -91,7 +91,7 @@ class StyleSheetWrapper internal constructor(
      * dynamically get data from the caller.
      */
     constructor(
-        jStyleSheet: StyleSheet?, mediaStr: String?, href: String?, type: String?,
+        jStyleSheet: StyleSheet?, mediaStr: String, href: String?, type: String?,
         title: String?, ownerNode: Node?, bridge: StyleSheetBridge
     ) : this(jStyleSheet, mediaStr, href, ownerNode, null, type, title, bridge)
 

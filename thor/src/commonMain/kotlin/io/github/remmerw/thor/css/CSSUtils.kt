@@ -1,32 +1,27 @@
 package io.github.remmerw.thor.css
 
-import cz.vutbr.web.css.CSSException
 import cz.vutbr.web.css.CSSFactory
 import cz.vutbr.web.css.CombinedSelector
 import cz.vutbr.web.css.RuleSet
 import cz.vutbr.web.css.StyleSheet
 import org.w3c.dom.DOMException
-import java.io.IOException
-import java.util.Arrays
 
 internal object CSSUtils {
     fun parse(css: String?): StyleSheet {
         try {
             return CSSFactory.parse(css)
-        } catch (e: IOException) {
-            throw DOMException(DOMException.SYNTAX_ERR, "")
-        } catch (e: CSSException) {
+        } catch (_: Throwable) {
             throw DOMException(DOMException.SYNTAX_ERR, "")
         }
     }
 
-    fun createCombinedSelectors(selectorText: String?): MutableList<CombinedSelector?> {
-        val jSheet = parse(selectorText + "{}")
+    fun createCombinedSelectors(selectorText: String?): List<CombinedSelector> {
+        val jSheet = parse("$selectorText{}")
         if (jSheet.isNotEmpty()) {
-            val ruleSet = jSheet.get(0) as RuleSet
-            return Arrays.asList<CombinedSelector?>(*ruleSet.selectors)
+            val ruleSet = jSheet[0] as RuleSet
+            return ruleSet.selectors.toList()
         }
-        return ArrayList<CombinedSelector?>()
+        return emptyList()
     }
 
     fun removeBrackets(str: String): String {

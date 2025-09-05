@@ -12,7 +12,6 @@ import io.github.remmerw.thor.dom.TextImpl
 import org.w3c.dom.Element
 import org.w3c.dom.Node
 import java.net.URL
-import java.util.Optional
 
 class StateModel() : ViewModel() {
     var isImageLoadingEnabled: Boolean by mutableStateOf(true)
@@ -96,31 +95,6 @@ class StateModel() : ViewModel() {
         println("TODO linkClicked $url")
     }
 
-
-    fun alert(message: String?) {
-        TODO("Not yet implemented")
-    }
-
-    fun back() {
-        TODO("Not yet implemented")
-    }
-
-    fun blur() {
-        TODO("Not yet implemented")
-    }
-
-    fun close() {
-        TODO("Not yet implemented")
-    }
-
-    fun confirm(message: String?): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    fun focus() {
-        TODO("Not yet implemented")
-    }
-
     fun open(
         absoluteUrl: String?,
         windowName: String?,
@@ -139,73 +113,5 @@ class StateModel() : ViewModel() {
         TODO("Not yet implemented")
     }
 
-    fun prompt(message: String?, inputDefault: String?): String? {
-        TODO("Not yet implemented")
-    }
 
-    fun scroll(x: Int, y: Int) {
-        TODO("Not yet implemented")
-    }
-
-    fun scrollBy(x: Int, y: Int) {
-        TODO("Not yet implemented")
-    }
-
-    fun resizeTo(width: Int, height: Int) {
-        TODO("Not yet implemented")
-    }
-
-    fun resizeBy(byWidth: Int, byHeight: Int) {
-        TODO("Not yet implemented")
-    }
-
-    fun isClosed(): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    fun defaultStatus(): String? {
-        TODO("Not yet implemented")
-    }
-
-    fun name(): String? {
-        TODO("Not yet implemented")
-    }
-
-
-    fun status(): String? {
-        TODO("Not yet implemented")
-    }
-
-
-    fun reload() {
-        TODO("Not yet implemented")
-    }
-
-    fun historyLength(): Int {
-        TODO("Not yet implemented")
-    }
-
-    fun currentURL(): String? {
-        TODO("Not yet implemented")
-    }
-
-    fun nextURL(): Optional<String>? {
-        TODO("Not yet implemented")
-    }
-
-    fun previousURL(): Optional<String>? {
-        TODO("Not yet implemented")
-    }
-
-    fun forward() {
-        TODO("Not yet implemented")
-    }
-
-    fun moveInHistory(offset: Int) {
-        TODO("Not yet implemented")
-    }
-
-    fun goToHistoryURL(url: String?) {
-        TODO("Not yet implemented")
-    }
 }

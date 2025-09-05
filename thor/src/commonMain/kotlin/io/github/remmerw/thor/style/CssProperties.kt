@@ -5,7 +5,6 @@ import cz.vutbr.web.css.NodeData
 import cz.vutbr.web.csskit.TermURIImpl
 import io.github.remmerw.thor.core.Urls
 import org.w3c.dom.css.CSS2Properties
-import java.net.MalformedURLException
 import java.net.URL
 
 abstract class CssProperties(
@@ -46,7 +45,7 @@ abstract class CssProperties(
             var finalUrl: URL? = null
             try {
                 finalUrl = Urls.createURL(t.getBase(), t.getValue())
-            } catch (e: MalformedURLException) {
+            } catch (e: Throwable) {
                 e.printStackTrace()
             }
             quotedUri = if (finalUrl == null) null else finalUrl.toString()

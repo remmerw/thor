@@ -6,7 +6,6 @@ import cz.vutbr.web.domassign.DirectAnalyzer
 import io.github.remmerw.thor.dom.ElementImpl
 import org.w3c.dom.DOMException
 import org.w3c.dom.Element
-import java.util.Locale
 
 class LocalCssProperties(private val element: ElementImpl) :
     CssProperties(false) {
@@ -639,7 +638,7 @@ class LocalCssProperties(private val element: ElementImpl) :
             val sb = StringBuilder()
             val inlineStyle = ele.getAttribute("style")
             if ((inlineStyle != null) && (inlineStyle.length > 0)) {
-                val propertyNameLC = propertyName.lowercase(Locale.getDefault())
+                val propertyNameLC = propertyName.lowercase()
                 val styleDeclarations =
                     inlineStyle.split(";".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
                 for (styleDeclaration in styleDeclarations) {
@@ -648,7 +647,7 @@ class LocalCssProperties(private val element: ElementImpl) :
                             .toTypedArray()
                     if (nameValue.size == 2) {
                         val oldPropertyName =
-                            nameValue[0].lowercase(Locale.getDefault()).trim { it <= ' ' }
+                            nameValue[0].lowercase().trim { it <= ' ' }
                         if (!(oldPropertyName == propertyNameLC)) {
                             sb.append(styleDeclaration + ";")
                         }
