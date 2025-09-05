@@ -12,12 +12,10 @@ import java.io.LineNumberReader
 import java.io.Reader
 import java.util.LinkedList
 import java.util.Locale
-import java.util.function.Consumer
 import java.util.logging.Level
 import java.util.logging.Logger
 import java.util.regex.Matcher
 import java.util.regex.Pattern
-import kotlin.math.min
 
 internal class StopException(val element: Element) : Exception()
 class HtmlParser {
@@ -1407,26 +1405,6 @@ class HtmlParser {
             return einfo == null || einfo.decodeEntities
         }
 
-        @Suppress("unused")
-        private fun dumpTree(parent: Node) {
-            Nodes.forEachNode(parent, Consumer { node: Node? ->
-                var depth = 0
-                var p = node!!.parentNode
-                while (p != null) {
-                    p = p.parentNode
-                    depth++
-                }
-                for (i in 0..<depth) {
-                    print(". ")
-                }
-                val textContent = node.textContent
-                println(
-                    node.nodeName + ":    " + node.javaClass.simpleName + " : " + textContent.substring(
-                        0,
-                        min(5, textContent.length)
-                    ).trim { it <= ' ' })
-            })
-        }
 
         private fun hasAncestorTag(node: Node?, tag: String): Boolean {
             if (node == null) {
