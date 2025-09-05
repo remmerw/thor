@@ -1,6 +1,5 @@
 package io.github.remmerw.thor.dom
 
-import org.w3c.dom.DOMException
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.w3c.dom.Node
@@ -171,7 +170,7 @@ class HtmlParser {
             if (tag == null) {
                 return TOKEN_EOD
             }
-            var normalTag: String? = if (htmlDoc.isXML) tag else tag.uppercase()
+            var normalTag: String? = if (htmlDoc.isXML()) tag else tag.uppercase()
             try {
                 if (tag.startsWith("!")) {
                     if ("!--" == tag) {

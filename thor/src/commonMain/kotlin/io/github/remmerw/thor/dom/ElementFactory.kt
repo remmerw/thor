@@ -1,6 +1,5 @@
 package io.github.remmerw.thor.dom
 
-import org.w3c.dom.DOMException
 import org.w3c.dom.Element
 
 internal class ElementFactory private constructor() {

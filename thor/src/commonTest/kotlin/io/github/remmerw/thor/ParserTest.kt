@@ -11,11 +11,35 @@ class ParserTest {
     @Test
     fun parserTest(): Unit = runBlocking(Dispatchers.IO) {
 
-        //val url = Url("http://www.benjysbrain.com/")
-        val url = Url("https://www.welt.de/")
-        val p = Render(url)
-        val document = p.parsePage()
-        assertNotNull(document)
+        val urls = listOf("http://www.benjysbrain.com/",
+            "https://www.welt.de/",
+            "https://www.spiegel.de/",
+            "https://www.handelsblatt.de/",
+            "https://www.zeit.de/")
+
+        urls.forEach { url ->
+            val p = Render(Url(url))
+            val document = p.parsePage()
+            assertNotNull(document)
+
+            document.getAnchors().toString()
+            document.getApplets().toString()
+            document.getForms().toString()
+            document.getImages().toString()
+            document.getLinks().toString()
+            document.getDocumentUrl().toString()
+            document.getDocumentHost().toString()
+            document.inputEncoding
+            document.getBody().toString()
+            document.xmlVersion
+            document.xmlEncoding
+            document.xmlVersion
+            document.isXML()
+
+            println("done $url")
+
+        }
+
 
 
     }

@@ -1,7 +1,6 @@
 package io.github.remmerw.thor.dom
 
 import org.w3c.dom.Attr
-import org.w3c.dom.DOMException
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.w3c.dom.NamedNodeMap
@@ -19,9 +18,7 @@ class ElementImpl(document: Document, uid: Long, name: String) :
     }
 
     override fun getAttributes(): NamedNodeMap {
-        synchronized(this) {
-            return NamedNodeMapImpl(this, this.attributes)
-        }
+        TODO()
     }
 
     override fun hasAttributes(): Boolean {
@@ -50,10 +47,7 @@ class ElementImpl(document: Document, uid: Long, name: String) :
     }
 
     private fun getAttr(normalName: String, value: String?): Attr {
-        return AttrImpl(
-            normalName, value,
-            true, this, "id" == normalName
-        )
+        TODO()
     }
 
     override fun getAttributeNode(name: String): Attr? {

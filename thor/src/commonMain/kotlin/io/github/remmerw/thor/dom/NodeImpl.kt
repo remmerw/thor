@@ -1,6 +1,5 @@
 package io.github.remmerw.thor.dom
 
-import org.w3c.dom.DOMException
 import org.w3c.dom.Document
 import org.w3c.dom.NamedNodeMap
 import org.w3c.dom.Node
@@ -16,7 +15,7 @@ abstract class NodeImpl(
 
     private val nodes = mutableListOf<Node>()
 
-    var parent: Node? = null
+    protected var parent: Node? = null
 
     override fun getAttributes(): NamedNodeMap? {
         return null  // todo
@@ -115,12 +114,12 @@ abstract class NodeImpl(
     }
 
 
-    fun nodeIndex(): Int {
+    protected fun nodeIndex(): Int {
         val parent = this.parentNode as NodeImpl?
         return parent?.getChildIndex(this) ?: -1
     }
 
-    fun getChildIndex(child: Node?): Int {
+    protected fun getChildIndex(child: Node?): Int {
 
         val nl = this.nodes
         return nl.indexOf(child)
@@ -181,12 +180,12 @@ abstract class NodeImpl(
         return document
     }
 
-    open fun setOwnerDocument(value: Document) {
+    protected fun setOwnerDocument(value: Document) {
         this.document = value
 
     }
 
-    open fun setOwnerDocument(value: Document, deep: Boolean) {
+    fun setOwnerDocument(value: Document, deep: Boolean) {
         setOwnerDocument(value)
         if (deep) {
 
@@ -200,7 +199,7 @@ abstract class NodeImpl(
         }
     }
 
-    fun visitImpl(visitor: NodeVisitor) {
+    protected fun visitImpl(visitor: NodeVisitor) {
 
         visitor.visit(this)
 
@@ -212,7 +211,7 @@ abstract class NodeImpl(
         }
     }
 
-    fun visit(visitor: NodeVisitor) {
+    protected fun visit(visitor: NodeVisitor) {
 
         this.visitImpl(visitor)
 
@@ -271,10 +270,6 @@ abstract class NodeImpl(
         }
         nl.set(idx, newChild!! as NodeImpl)
 
-
-
-
-
         return newChild
     }
 
@@ -326,10 +321,10 @@ abstract class NodeImpl(
         if (idx == -1) {
             throw DOMException(DOMException.NOT_FOUND_ERR, "node not found")
         }
-        try {
-            return nl[idx - 1]
+        return try {
+            nl[idx - 1]
         } catch (_: Throwable) {
-            return null
+            null
         }
 
     }
@@ -341,10 +336,10 @@ abstract class NodeImpl(
         if (idx == -1) {
             throw DOMException(DOMException.NOT_FOUND_ERR, "node not found")
         }
-        try {
-            return nl[idx + 1]
-        } catch (_: IndexOutOfBoundsException) {
-            return null
+        return try {
+            nl[idx + 1]
+        } catch (_: Throwable) {
+            null
         }
 
     }
@@ -495,7 +490,7 @@ abstract class NodeImpl(
 
     }
 
-    fun replaceAdjacentTextNodes(node: Text): Text {
+    protected fun replaceAdjacentTextNodes(node: Text): Text {
 
 
         val nl = this.nodes
@@ -541,7 +536,6 @@ abstract class NodeImpl(
     }
 
     override fun getParentNode(): Node? {
-        // Should it be synchronized? Could have side-effects.
         return this.parent
     }
 
@@ -573,6 +567,10 @@ abstract class NodeImpl(
 
     override fun lookupPrefix(namespaceURI: String?): String? {
         return null
+    }
+
+    override fun toString(): String {
+        return "$nodeName($uid)"
     }
 
     override fun normalize() {

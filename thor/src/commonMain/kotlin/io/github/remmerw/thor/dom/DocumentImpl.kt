@@ -2,7 +2,6 @@ package io.github.remmerw.thor.dom
 
 import io.github.remmerw.thor.dom.NodeFilter.AnchorFilter
 import io.github.remmerw.thor.dom.NodeFilter.AppletFilter
-import io.github.remmerw.thor.dom.NodeFilter.ElementNameFilter
 import io.github.remmerw.thor.dom.NodeFilter.FormFilter
 import io.github.remmerw.thor.dom.NodeFilter.LinkFilter
 import io.github.remmerw.thor.dom.NodeFilter.TagNameFilter
@@ -11,7 +10,6 @@ import org.w3c.dom.Attr
 import org.w3c.dom.CDATASection
 import org.w3c.dom.Comment
 import org.w3c.dom.DOMConfiguration
-import org.w3c.dom.DOMException
 import org.w3c.dom.DOMImplementation
 import org.w3c.dom.Document
 import org.w3c.dom.DocumentFragment
@@ -38,18 +36,13 @@ class DocumentImpl(
     @OptIn(ExperimentalAtomicApi::class)
     private val uids = AtomicLong(0L)
 
-    private val factory: ElementFactory
-    private var documentURL: Url? = null
-    val allNodes: MutableMap<Long, NodeImpl> = mutableMapOf()
-
+    private val factory: ElementFactory = ElementFactory.Companion.instance
+    private var documentUrl: Url? = null
+    private val allNodes: MutableMap<Long, NodeImpl> = mutableMapOf()
     private var title: String? = null
     private var referrer: String? = null
     private var domain: String? = null
-    private var images: Collection? = null
-    private var applets: Collection? = null
-    private var links: Collection? = null
-    private var forms: Collection? = null
-    private var anchors: Collection? = null
+
     private var doctype: DocumentType? = null
     private var isDocTypeXHTML = false
     private var inputEncoding: String? = null
@@ -57,16 +50,14 @@ class DocumentImpl(
     private var xmlStandalone = false
     private var xmlVersion: String? = null
     private var strictErrorChecking = true
-    private var domConfig: DOMConfiguration? = null
     private var body: Element? = null
 
 
     init {
-        this.factory = ElementFactory.Companion.instance
         try {
             val docURL = Url(documentURI)
 
-            this.documentURL = docURL
+            this.documentUrl = docURL
             this.domain = docURL.host
         } catch (throwable: Throwable) {
             throwable.printStackTrace()
@@ -77,7 +68,6 @@ class DocumentImpl(
     }
 
     fun addNode(node: NodeImpl) {
-        println("" + node.uid() + " " + node.nodeName)
         allNodes.put(node.uid(), node)
 
         if (node is Element) {
@@ -96,15 +86,14 @@ class DocumentImpl(
         return uids.incrementAndFetch()
     }
 
-    fun getDocumentURL(): Url? {
-        return documentURL
+    fun getDocumentUrl(): Url? {
+        return documentUrl
     }
 
-    val documentHost: String?
-        get() {
-            val docUrl = this.getDocumentURL()
-            return if (docUrl == null) null else docUrl.host
-        }
+    fun getDocumentHost(): String? {
+        val docUrl = this.getDocumentUrl()
+        return docUrl?.host
+    }
 
 
     override fun getBaseURI(): String? {
@@ -165,48 +154,32 @@ class DocumentImpl(
 
     fun getImages(): Collection {
         synchronized(this) {
-            if (this.images == null) {
-                this.images =
-                    DescendantHTMLCollection(this, NodeFilter.ImageFilter())
-            }
-            return this.images!!
+            return DescendantHTMLCollection(this, NodeFilter.ImageFilter())
         }
     }
 
     fun getApplets(): Collection {
         synchronized(this) {
-            if (this.applets == null) {
-                // TODO: Should include OBJECTs that are applets?
-                this.applets = DescendantHTMLCollection(this, AppletFilter())
-            }
-            return this.applets!!
+            return DescendantHTMLCollection(this, AppletFilter())
+
         }
     }
 
     fun getLinks(): Collection {
         synchronized(this) {
-            if (this.links == null) {
-                this.links = DescendantHTMLCollection(this, LinkFilter())
-            }
-            return this.links!!
+            return DescendantHTMLCollection(this, LinkFilter())
         }
     }
 
     fun getForms(): Collection {
         synchronized(this) {
-            if (this.forms == null) {
-                this.forms = DescendantHTMLCollection(this, FormFilter())
-            }
-            return this.forms!!
+            return DescendantHTMLCollection(this, FormFilter())
         }
     }
 
     fun getAnchors(): Collection {
         synchronized(this) {
-            if (this.anchors == null) {
-                this.anchors = DescendantHTMLCollection(this, AnchorFilter())
-            }
-            return this.anchors!!
+            return DescendantHTMLCollection(this, AnchorFilter())
         }
     }
 
@@ -220,7 +193,7 @@ class DocumentImpl(
         if (reader != null) {
             try {
                 val parser = HtmlParser(
-                    this, this.isXML, true
+                    this, this.isXML(), true
                 )
                 parser.parse(reader)
 
@@ -234,17 +207,10 @@ class DocumentImpl(
     }
 
 
-    val isXML: Boolean
-        get() = isDocTypeXHTML || "application/xhtml+xml" == contentType
-
-
-    /**
-     * Gets the collection of elements whose `name` attribute is
-     * `elementName`.
-     */
-    fun getElementsByName(elementName: String): NodeList? {
-        return this.getNodeList(ElementNameFilter(elementName))
+    fun isXML(): Boolean {
+        return isDocTypeXHTML || "application/xhtml+xml" == contentType
     }
+
 
     override fun getDoctype(): DocumentType? {
         return this.doctype
@@ -277,11 +243,6 @@ class DocumentImpl(
         return this.factory.createElement(this, tagName)
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.w3c.dom.Document#createDocumentFragment()
-     */
     override fun createDocumentFragment(): DocumentFragment {
         TODO()
     }
@@ -315,22 +276,17 @@ class DocumentImpl(
         return node
     }
 
-    @Throws(DOMException::class)
+
     override fun createAttribute(name: String): Attr {
-        return AttrImpl(this, nextUid(), name)
+        TODO()
     }
 
-    @Throws(DOMException::class)
+
     override fun createEntityReference(name: String?): EntityReference? {
-        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "HTML document")
+        TODO()
     }
 
-    /**
-     * Gets all elements that match the given tag name.
-     *
-     * @param classNames The element tag name or an asterisk character (*) to match all
-     * elements.
-     */
+
     override fun getElementsByTagName(classNames: String): NodeList {
         if ("*" == classNames) {
             return this.getNodeList(NodeFilter.ElementFilter())
@@ -339,39 +295,21 @@ class DocumentImpl(
         }
     }
 
-    @Throws(DOMException::class)
     override fun importNode(importedNode: Node?, deep: Boolean): Node? {
-        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not implemented")
+        TODO()
     }
 
-    @Throws(DOMException::class)
+
     override fun createElementNS(namespaceURI: String?, qualifiedName: String): Element? {
-        if (namespaceURI == null || (namespaceURI.trim { it <= ' ' }.length == 0) || "http://www.w3.org/1999/xhtml".equals(
-                namespaceURI,
-                ignoreCase = true
-            )
-        ) {
-            return createElement(qualifiedName)
-        } else if ("http://www.w3.org/2000/svg".equals(namespaceURI, ignoreCase = true)) {
-            // TODO: This is a plug
-            return createElement(qualifiedName)
-        }
-        println("unhandled request to create element in NS: " + namespaceURI + " with tag: " + qualifiedName)
-        return null
-        // TODO
-        // throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "Not implemented: createElementNS");
+        TODO()
     }
 
-    @Throws(DOMException::class)
     override fun createAttributeNS(namespaceURI: String?, qualifiedName: String?): Attr? {
-        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not implemented: createAttributeNS")
+        TODO()
     }
 
     override fun getElementsByTagNameNS(namespaceURI: String?, localName: String?): NodeList? {
-        throw DOMException(
-            DOMException.NOT_SUPPORTED_ERR,
-            "Not implemented: getElementsByTagNameNS"
-        )
+        TODO()
     }
 
     override fun getElementById(elementId: String?): Element? {
@@ -417,7 +355,6 @@ class DocumentImpl(
     }
 
     override fun setDocumentURI(documentURI: String) {
-        // TODO: Security considerations? Chaging documentURL?
         this.documentURI = documentURI
     }
 
@@ -432,12 +369,7 @@ class DocumentImpl(
     }
 
     override fun getDomConfig(): DOMConfiguration {
-        synchronized(this) {
-            if (this.domConfig == null) {
-                this.domConfig = DOMConfigurationImpl()
-            }
-            return this.domConfig!!
-        }
+        TODO()
     }
 
     override fun normalizeDocument() {
@@ -450,15 +382,13 @@ class DocumentImpl(
 
     @Throws(DOMException::class)
     override fun renameNode(n: Node?, namespaceURI: String?, qualifiedName: String?): Node? {
-        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "No renaming")
+        TODO()
     }
-
 
     override fun getLocalName(): String? {
         // Always null for document
         return null
     }
-
 
     override fun getNodeType(): Short {
         return DOCUMENT_NODE

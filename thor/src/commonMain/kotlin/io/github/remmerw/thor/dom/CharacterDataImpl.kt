@@ -1,7 +1,6 @@
 package io.github.remmerw.thor.dom
 
 import org.w3c.dom.CharacterData
-import org.w3c.dom.DOMException
 import org.w3c.dom.Document
 
 abstract class CharacterDataImpl(document: Document, uid: Long, name: String) :

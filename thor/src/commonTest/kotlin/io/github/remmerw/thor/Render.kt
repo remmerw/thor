@@ -1,5 +1,6 @@
 package io.github.remmerw.thor
 
+import io.github.remmerw.thor.dom.DocumentImpl
 import io.github.remmerw.thor.dom.ElementImpl
 import io.github.remmerw.thor.dom.DocumentModelBuilder
 import io.ktor.http.Url
@@ -11,7 +12,7 @@ class Render(var url: Url) {
 
 
 
-    fun parsePage(): Document {
+    fun parsePage(): DocumentImpl {
         var urlObj: URL?
         try {
             urlObj = URL(url.toString())
