@@ -1,7 +1,6 @@
 [versions]
 agp = "8.13.0"
 core = "1.7.0"
-jstyleparser = "4.0.1"
 kotlin = "2.2.10"
 compose-multiplatform = "1.8.2"
 lifecycle = "2.9.3"
@@ -15,7 +14,6 @@ androidx-core = { module = "androidx.test:core", version.ref = "core" }
 androidx-runner = { module = "androidx.test:runner", version.ref = "core" }
 androidx-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "ui-test-junit4" }
 androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "ui-test-junit4" }
-jstyleparser = { module = "net.sf.cssbox:jstyleparser", version.ref = "jstyleparser" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlinx-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version = "0.8.0" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }

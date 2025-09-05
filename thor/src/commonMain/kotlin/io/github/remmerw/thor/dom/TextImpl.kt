@@ -1,6 +1,5 @@
 package io.github.remmerw.thor.dom
 
-import io.github.remmerw.thor.core.Strings
 import org.w3c.dom.DOMException
 import org.w3c.dom.Document
 import org.w3c.dom.Node.TEXT_NODE
@@ -65,10 +64,4 @@ open class TextImpl(document: Document, uid: Long, text: String = "") :
         this.textContent = nodeValue
     }
 
-
-    override fun toString(): String {
-        val text = this.textContent
-        val textLength = text.length
-        return "#text[length=" + textLength + ",value=\"" + Strings.truncate(text, 64)
-    }
 }

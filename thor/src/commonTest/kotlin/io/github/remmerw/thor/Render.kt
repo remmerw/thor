@@ -114,8 +114,6 @@ class Render(var url: String) {
 
         println("Attributes : " + element.attributes().toString())
 
-        println("Properties : " + element.properties().toString())
-
     }
 
     /**

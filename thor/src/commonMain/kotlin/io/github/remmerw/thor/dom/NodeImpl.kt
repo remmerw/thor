@@ -57,10 +57,6 @@ abstract class NodeImpl(
 
             this.nodes.add(newChild as NodeImpl)
 
-            if (newChild is ElementImpl) {
-                newChild.finish()
-            }
-
             return newChild
         } else {
             throw DOMException(DOMException.INVALID_ACCESS_ERR, "Trying to append a null child!")

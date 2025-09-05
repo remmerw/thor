@@ -11,7 +11,7 @@ interface Collection {
     fun namedItem(name: String): Node?
 }
 
-open class DescendantHTMLCollection @JvmOverloads constructor(
+open class DescendantHTMLCollection(
     private val rootNode: NodeImpl,
     private val nodeFilter: NodeFilter?,
     private val nestIntoMatchingNodes: Boolean = true
@@ -31,14 +31,14 @@ open class DescendantHTMLCollection @JvmOverloads constructor(
             val itemsByName: MutableMap<String?, ElementImpl?> = HashMap((size * 3) / 2)
             this.itemsByName = itemsByName
             for (i in 0..<size) {
-                val descNode = descendents!!.get(i)
+                val descNode = descendents[i]
                 if (descNode is ElementImpl) {
                     val id = descNode.getAttribute("id")
-                    if ((id != null) && (id.length != 0)) {
+                    if ((id != null) && (id.isNotEmpty())) {
                         itemsByName.put(id, descNode)
                     }
                     val name = descNode.getAttribute("name")
-                    if ((name != null) && (name.length != 0) && (name != id)) {
+                    if ((name != null) && (name.isNotEmpty()) && (name != id)) {
                         itemsByName.put(name, descNode)
                     }
                 }
@@ -57,26 +57,18 @@ open class DescendantHTMLCollection @JvmOverloads constructor(
 
         this.ensurePopulatedImpl()
         return try {
-            this.itemsByIndex!!.get(index)
+            this.itemsByIndex!![index]
         } catch (_: Throwable) {
             null
         }
 
     }
 
-    // TODO: This is a quick hack. Need to support WEB-IDL Semantics. GH #67
-    fun item(obj: Any?): Node? {
-        if (obj is Int) {
-            return item(obj)
-        }
-        return item(0)
-    }
-
 
     override fun namedItem(name: String): Node? {
 
         this.ensurePopulatedImpl()
-        return this.itemsByName!!.get(name)
+        return this.itemsByName!![name]
 
     }
 

@@ -38,9 +38,6 @@ kotlin {
                 implementation(libs.kotlin.stdlib)
                 implementation(libs.kotlinx.io.core)
 
-                
-                implementation(libs.jstyleparser)
-
                 implementation(libs.lifecycle)
                 implementation(compose.runtime)
                 implementation(compose.foundation)

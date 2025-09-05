@@ -1,6 +1,5 @@
 package io.github.remmerw.thor.model
 
-import io.github.remmerw.thor.core.Urls
 import io.github.remmerw.thor.dom.DocumentImpl
 import io.github.remmerw.thor.dom.ElementImpl
 import org.w3c.dom.Element

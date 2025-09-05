@@ -1,15 +1,5 @@
 package io.github.remmerw.thor.dom
 
-import cz.vutbr.web.css.CSSException
-import cz.vutbr.web.css.ElementMatcher
-import cz.vutbr.web.css.MediaSpec
-import cz.vutbr.web.css.StyleSheet
-import cz.vutbr.web.csskit.ElementMatcherSafeCS
-import cz.vutbr.web.csskit.ElementMatcherSafeStd
-import cz.vutbr.web.csskit.antlr4.CSSParserFactory
-import cz.vutbr.web.domassign.Analyzer
-import cz.vutbr.web.domassign.AnalyzerUtil
-import io.github.remmerw.thor.core.Urls
 import io.github.remmerw.thor.dom.NodeFilter.AnchorFilter
 import io.github.remmerw.thor.dom.NodeFilter.AppletFilter
 import io.github.remmerw.thor.dom.NodeFilter.ElementNameFilter
@@ -18,7 +8,6 @@ import io.github.remmerw.thor.dom.NodeFilter.LinkFilter
 import io.github.remmerw.thor.dom.NodeFilter.TagNameFilter
 import io.github.remmerw.thor.parser.HtmlParser
 import io.github.remmerw.thor.parser.WritableLineReader
-import io.github.remmerw.thor.style.CSSNorm
 import org.w3c.dom.Attr
 import org.w3c.dom.CDATASection
 import org.w3c.dom.Comment
@@ -36,7 +25,6 @@ import org.w3c.dom.NodeList
 import org.w3c.dom.ProcessingInstruction
 import org.w3c.dom.Text
 import java.net.URL
-import kotlin.concurrent.Volatile
 import kotlin.concurrent.atomics.AtomicLong
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.concurrent.atomics.incrementAndFetch
@@ -55,8 +43,6 @@ class DocumentImpl(
     private var documentURL: URL? = null
     val allNodes: MutableMap<Long, NodeImpl> = mutableMapOf()
 
-    @Volatile
-    private var baseURI: String? = null
     private var title: String? = null
     private var referrer: String? = null
     private var domain: String? = null
@@ -75,7 +61,6 @@ class DocumentImpl(
     private var domConfig: DOMConfiguration? = null
     private var domImplementation: DOMImplementation? = null
     private var body: Element? = null
-    private var classifiedRules: Analyzer.Holder? = null
 
 
     init {
@@ -125,27 +110,7 @@ class DocumentImpl(
 
 
     override fun getBaseURI(): String? {
-        val buri = this.baseURI
-        return if (buri == null) this.documentURI else buri
-    }
-
-    fun setBaseURI(value: String?) {
-        if (value != null) {
-            try {
-                URL(value)
-
-                // this is a full url if it parses
-                this.baseURI = value
-            } catch (_: Throwable) {
-                try {
-                    Urls.createURL(documentURL, value)
-                } catch (mfe2: Throwable) {
-                    throw IllegalArgumentException(mfe2)
-                }
-            }
-        } else {
-            this.baseURI = null
-        }
+        return this.documentURI
     }
 
     @Throws(DOMException::class)
@@ -277,11 +242,8 @@ class DocumentImpl(
     fun load() {
 
         this.title = null
-        this.setBaseURI(null)
-
 
         val reader = this.reader
-
 
         if (reader != null) {
             try {
@@ -562,28 +524,6 @@ class DocumentImpl(
     }
 
 
-    private fun updateStyleRules() {
-        if (classifiedRules == null) {
-            val jSheets: MutableList<StyleSheet?> = ArrayList()
-            jSheets.add(if (this.isXML) recommendedStyleXML else recommendedStyle)
-            jSheets.add(if (this.isXML) userAgentStyleXML else userAgentStyle)
-            classifiedRules = AnalyzerUtil.getClassifiedRules(jSheets, MediaSpec("screen"))
-        }
-    }
-
-    val matcher: ElementMatcher
-        get() = if (this.isXML) xhtmlMatcher else stdMatcher
-
-
-    fun getClassifiedRules(): Analyzer.Holder? {
-
-        if (classifiedRules == null) {
-            updateStyleRules()
-        }
-        return classifiedRules
-
-    }
-
     fun childNodes(uid: Long): List<Node> {
         return allNodes[uid]?.nodes() ?: emptyList()
     }
@@ -594,34 +534,10 @@ class DocumentImpl(
 
 
     companion object {
-        val xhtmlMatcher: ElementMatcher = ElementMatcherSafeCS()
-        val stdMatcher: ElementMatcher = ElementMatcherSafeStd()
+
         private const val XHTML_STRICT_PUBLIC_ID = "-//W3C//DTD XHTML 1.0 Strict//EN"
         private const val XHTML_STRICT_SYS_ID = "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
-        private val recommendedStyle: StyleSheet =
-            parseStyle(CSSNorm.stdStyleSheet(), StyleSheet.Origin.AGENT, false)
-        private val userAgentStyle: StyleSheet =
-            parseStyle(CSSNorm.userStyleSheet(), StyleSheet.Origin.AGENT, false)
-        private val recommendedStyleXML: StyleSheet =
-            parseStyle(CSSNorm.stdStyleSheet(), StyleSheet.Origin.AGENT, true)
-        private val userAgentStyleXML: StyleSheet =
-            parseStyle(CSSNorm.userStyleSheet(), StyleSheet.Origin.AGENT, true)
 
-        private fun parseStyle(
-            cssdata: String?,
-            origin: StyleSheet.Origin?,
-            isXML: Boolean
-        ): StyleSheet {
-            try {
-                val newsheet = CSSParserFactory.getInstance()
-                    .parse(cssdata, null, null, CSSParserFactory.SourceType.EMBEDDED, null)
-                newsheet.origin = origin
-                return newsheet
-            } catch (e: Throwable) {
-                throw RuntimeException(e)
-            } catch (e: CSSException) {
-                throw RuntimeException(e)
-            }
-        }
+
     }
 }

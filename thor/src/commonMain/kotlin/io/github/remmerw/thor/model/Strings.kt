@@ -1,63 +1,8 @@
-package io.github.remmerw.thor.core
+package io.github.remmerw.thor.model
 
 import kotlin.math.max
 
 object Strings {
-
-
-    fun compareVersions(version1: String?, version2: String?, startsWithDigits: Boolean): Int {
-        if (version1 == null) {
-            return if (version2 == null) 0 else -1
-        } else if (version2 == null) {
-            return +1
-        }
-        if (startsWithDigits) {
-            val v1prefix = leadingDigits(version1)
-            val v2prefix = leadingDigits(version2)
-            if (v1prefix.length == 0) {
-                if (v2prefix.length == 0) {
-                    return 0
-                }
-                return -1
-            } else if (v2prefix.length == 0) {
-                return +1
-            }
-            var diff: Int
-            try {
-                diff = v1prefix.toInt() - v2prefix.toInt()
-            } catch (nfe: NumberFormatException) {
-                diff = 0
-            }
-            if (diff == 0) {
-                return compareVersions(
-                    version1.substring(v1prefix.length),
-                    version2.substring(v2prefix.length),
-                    false
-                )
-            }
-            return diff
-        } else {
-            val v1prefix = leadingNonDigits(version1)
-            val v2prefix = leadingNonDigits(version2)
-            if (v1prefix.length == 0) {
-                if (v2prefix.length == 0) {
-                    return 0
-                }
-                return -1
-            } else if (v2prefix.length == 0) {
-                return +1
-            }
-            val diff = v1prefix.compareTo(v2prefix)
-            if (diff == 0) {
-                return compareVersions(
-                    version1.substring(v1prefix.length),
-                    version2.substring(v2prefix.length),
-                    true
-                )
-            }
-            return diff
-        }
-    }
 
     fun leadingDigits(text: String): String {
         val length = text.length
@@ -144,24 +89,6 @@ object Strings {
             }
         }
         buf.append('"')
-        return buf.toString()
-    }
-
-    fun getJavaIdentifier(candidateID: String): String {
-        val len = candidateID.length
-        val buf = StringBuffer()
-        for (i in 0..<len) {
-            val ch = candidateID.get(i)
-            val good =
-                if (i == 0) Character.isJavaIdentifierStart(ch) else Character.isJavaIdentifierPart(
-                    ch
-                )
-            if (good) {
-                buf.append(ch)
-            } else {
-                buf.append('_')
-            }
-        }
         return buf.toString()
     }
 

@@ -1,4 +1,4 @@
-package io.github.remmerw.thor.core
+package io.github.remmerw.thor.model
 
 import java.net.URL
 
