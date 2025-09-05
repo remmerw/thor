@@ -2,7 +2,6 @@ package io.github.remmerw.thor
 
 import io.github.remmerw.thor.dom.ElementImpl
 import io.github.remmerw.thor.parser.DocumentModelBuilder
-import io.github.remmerw.thor.parser.InputSource
 import org.w3c.dom.Document
 import org.w3c.dom.Node
 import java.net.URI
@@ -64,11 +63,11 @@ class Render(var url: String) {
 
             val dbi = DocumentModelBuilder()
             val document = dbi.parse(
-                InputSource(
+
                     inputStream,
                     url,
-                    "ISO-8859-1"
-                )
+                    "UTF-8"
+
             )!!
 
             // Do a recursive traversal on the top-level DOM node.

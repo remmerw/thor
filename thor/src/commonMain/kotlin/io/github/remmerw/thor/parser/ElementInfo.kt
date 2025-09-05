@@ -3,7 +3,7 @@ package io.github.remmerw.thor.parser
 internal class ElementInfo {
     val endElementType: Int
     val childElementOk: Boolean
-    val stopTags: MutableSet<String?>?
+    val stopTags: MutableSet<String>?
     val noScriptElement: Boolean
     val decodeEntities: Boolean
 
@@ -23,7 +23,7 @@ internal class ElementInfo {
      * @param ok
      * @param type
      */
-    constructor(ok: Boolean, type: Int, stopTags: MutableSet<String?>?) {
+    constructor(ok: Boolean, type: Int, stopTags: MutableSet<String>?) {
         this.childElementOk = ok
         this.endElementType = type
         this.stopTags = stopTags
@@ -31,7 +31,7 @@ internal class ElementInfo {
         this.decodeEntities = true
     }
 
-    constructor(ok: Boolean, type: Int, stopTags: MutableSet<String?>?, noScriptElement: Boolean) {
+    constructor(ok: Boolean, type: Int, stopTags: MutableSet<String>?, noScriptElement: Boolean) {
         this.childElementOk = ok
         this.endElementType = type
         this.stopTags = stopTags

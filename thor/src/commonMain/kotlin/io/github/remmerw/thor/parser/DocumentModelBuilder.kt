@@ -2,24 +2,20 @@ package io.github.remmerw.thor.parser
 
 import io.github.remmerw.thor.dom.DocumentImpl
 import org.w3c.dom.Document
+import java.io.InputStream
 import java.io.InputStreamReader
 
 class DocumentModelBuilder() {
 
-    fun parse(inputSource: InputSource): Document? {
-        val document = this.createDocument(inputSource, "") as DocumentImpl
+    fun parse(byteStream: InputStream, uri: String, charset: String): Document? {
+        val document = this.createDocument(byteStream, uri, charset) as DocumentImpl
         document.load()
         return document
     }
 
-    fun createDocument(inputSource: InputSource, contentType: String?): Document {
-        val charset = inputSource.charset
-        val uri = inputSource.uri
-
-        val inputStream = inputSource.byteStream
-        val wis = WritableLineReader(InputStreamReader(inputStream, charset))
-
-        val document = DocumentImpl(wis, uri, contentType)
+    fun createDocument(byteStream: InputStream, uri: String, charset: String): Document {
+        val wis = WritableLineReader(InputStreamReader(byteStream, charset))
+        val document = DocumentImpl(wis, uri, charset)
         return document
     }
 

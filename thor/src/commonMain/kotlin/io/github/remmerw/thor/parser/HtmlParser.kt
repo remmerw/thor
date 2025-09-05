@@ -73,7 +73,7 @@ class HtmlParser {
         try {
             while (this.parseToken(
                     parent, reader, null,
-                    LinkedList<String?>()
+                    LinkedList<String>()
                 ) != TOKEN_EOD
             ) {
             }
@@ -125,7 +125,7 @@ class HtmlParser {
             } else if ("HEAD" == nodeNameTU) {
                 lastHeadElement = child
             } else if ((child is Element) && (depthAtMost(parent, 2))) {
-                val dontNeedBody = elementsThatDontNeedBodyElement.contains( nodeNameTU)
+                val dontNeedBody = elementsThatDontNeedBodyElement.contains(nodeNameTU)
                 val dontNeedHead = elementsThatDontNeedHeadElement.contains(nodeNameTU)
                 if ((!hasAncestorTag(parent, "BODY")) && (!dontNeedBody)) {
                     ensureBodyElement(parent)
@@ -159,8 +159,8 @@ class HtmlParser {
     private fun parseToken(
         parent: Node,
         reader: LineNumberReader,
-        stopTags: MutableSet<String?>?,
-        ancestors: LinkedList<String?>
+        stopTags: MutableSet<String>?,
+        ancestors: LinkedList<String>
     ): Int {
         val doc = this.document
         val htmlDoc = doc as DocumentImpl
@@ -264,12 +264,12 @@ class HtmlParser {
                                 var newStopSet = if (einfo == null) null else einfo.stopTags
                                 if (newStopSet == null) {
                                     if (endTagType == ElementInfo.Companion.END_ELEMENT_OPTIONAL) {
-                                        newStopSet = mutableSetOf<String?>(normalTag)
+                                        newStopSet = mutableSetOf(normalTag)
                                     }
                                 }
                                 if (stopTags != null) {
                                     if (newStopSet != null) {
-                                        val newStopSet2: MutableSet<String?> = HashSet<String?>()
+                                        val newStopSet2: MutableSet<String> = HashSet()
                                         newStopSet2.addAll(stopTags)
                                         newStopSet2.addAll(newStopSet)
                                         newStopSet = newStopSet2
@@ -363,12 +363,11 @@ class HtmlParser {
                                             newStopSet = if (einfo == null) null else einfo.stopTags
                                             if (newStopSet == null) {
                                                 if (endTagType == ElementInfo.Companion.END_ELEMENT_OPTIONAL) {
-                                                    newStopSet = mutableSetOf<String?>(normalTag)
+                                                    newStopSet = mutableSetOf(normalTag)
                                                 }
                                             }
                                             if ((stopTags != null) && (newStopSet != null)) {
-                                                val newStopSet2: MutableSet<String?> =
-                                                    HashSet<String?>()
+                                                val newStopSet2: MutableSet<String> = HashSet()
                                                 newStopSet2.addAll(stopTags)
                                                 newStopSet2.addAll(newStopSet)
                                                 newStopSet = newStopSet2
@@ -1327,14 +1326,14 @@ class HtmlParser {
             val onlyTextDE = ElementInfo(false, ElementInfo.Companion.END_ELEMENT_REQUIRED, true)
             val onlyText = ElementInfo(false, ElementInfo.Companion.END_ELEMENT_REQUIRED, false)
 
-            val tableCellStopElements: MutableSet<String?> = HashSet<String?>()
+            val tableCellStopElements: MutableSet<String> = HashSet() // todo optimize
             tableCellStopElements.add("TH")
             tableCellStopElements.add("TD")
             tableCellStopElements.add("TR")
             val tableCellElement =
                 ElementInfo(true, ElementInfo.Companion.END_ELEMENT_OPTIONAL, tableCellStopElements)
 
-            val headStopElements: MutableSet<String?> = HashSet<String?>()
+            val headStopElements: MutableSet<String> = HashSet()
             headStopElements.add("BODY")
             headStopElements.add("DIV")
             headStopElements.add("SPAN")
@@ -1342,13 +1341,13 @@ class HtmlParser {
             val headElement =
                 ElementInfo(true, ElementInfo.Companion.END_ELEMENT_OPTIONAL, headStopElements)
 
-            val optionStopElements: MutableSet<String?> = HashSet<String?>()
+            val optionStopElements: MutableSet<String> = HashSet()
             optionStopElements.add("OPTION")
             optionStopElements.add("SELECT")
             val optionElement =
                 ElementInfo(true, ElementInfo.Companion.END_ELEMENT_OPTIONAL, optionStopElements)
 
-            val paragraphStopElements: MutableSet<String?> = HashSet<String?>()
+            val paragraphStopElements: MutableSet<String> = HashSet()
             paragraphStopElements.add("P")
             paragraphStopElements.add("DIV")
             paragraphStopElements.add("TABLE")
