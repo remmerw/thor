@@ -11,7 +11,6 @@ import java.io.InputStreamReader
 import java.io.LineNumberReader
 import java.io.Reader
 import java.util.LinkedList
-import java.util.Locale
 import java.util.logging.Level
 import java.util.logging.Logger
 import java.util.regex.Matcher
@@ -121,7 +120,7 @@ class HtmlParser {
         var newParent: Node? = parent
         if (QUIRKS_MODE && needRoot) {
             // final String nodeName = child.getNodeName();
-            val nodeNameTU = child.nodeName.uppercase(Locale.getDefault())
+            val nodeNameTU = child.nodeName.uppercase()
             if ("BODY" == nodeNameTU) {
                 lastBodyElement = child
                 // System.out.println("Found body elem: " + child);
@@ -194,7 +193,7 @@ class HtmlParser {
             if (tag == null) {
                 return TOKEN_EOD
             }
-            var normalTag: String? = if (htmlDoc.isXML) tag else tag.uppercase(Locale.getDefault())
+            var normalTag: String? = if (htmlDoc.isXML) tag else tag.uppercase()
             try {
                 if (tag.startsWith("!")) {
                     if ("!--" == tag) {
@@ -261,7 +260,7 @@ class HtmlParser {
                         safeAppendChild(parent, element)
                         if (!this.justReadEmptyElement) {
                             var einfo: ElementInfo? =
-                                ELEMENT_INFOS.get(localName.uppercase(Locale.getDefault()))
+                                ELEMENT_INFOS.get(localName.uppercase())
                             var endTagType =
                                 if (einfo == null) ElementInfo.Companion.END_ELEMENT_REQUIRED else einfo.endElementType
                             if (endTagType != ElementInfo.Companion.END_ELEMENT_FORBIDDEN) {
@@ -328,7 +327,7 @@ class HtmlParser {
                                                 } else {
                                                     val closeTagInfo: ElementInfo? =
                                                         ELEMENT_INFOS.get(
-                                                            normalLastTag!!.uppercase(Locale.getDefault())
+                                                            normalLastTag!!.uppercase()
                                                         )
                                                     if ((closeTagInfo == null) || (closeTagInfo.endElementType != ElementInfo.Companion.END_ELEMENT_FORBIDDEN)) {
                                                         // TODO: Rather inefficient algorithm, but it's
@@ -354,7 +353,7 @@ class HtmlParser {
                                             // newElement does not have a parent.
                                             val newElement = se.element!!
                                             tag = newElement.tagName
-                                            normalTag = tag.uppercase(Locale.getDefault())
+                                            normalTag = tag.uppercase()
                                             // If a subelement throws StopException with
                                             // a tag matching the current stop tag, the exception
                                             // is rethrown (e.g. <TR><TD>blah<TR><TD>blah)
@@ -1401,7 +1400,7 @@ class HtmlParser {
         }
 
         fun isDecodeEntities(elementName: String): Boolean {
-            val einfo: ElementInfo? = ELEMENT_INFOS.get(elementName.uppercase(Locale.getDefault()))
+            val einfo: ElementInfo? = ELEMENT_INFOS.get(elementName.uppercase())
             return einfo == null || einfo.decodeEntities
         }
 
@@ -1503,7 +1502,7 @@ class HtmlParser {
                 }
                 val spec = rawText.substring(ampIdx + 1, colonIdx)
                 if (spec.startsWith("#")) {
-                    val number = spec.substring(1).lowercase(Locale.getDefault())
+                    val number = spec.substring(1).lowercase()
                     var decimal: Int
                     try {
                         if (number.startsWith("x")) {
@@ -1534,7 +1533,7 @@ class HtmlParser {
             // TODO: Declared entities
             var c: Char? = ENTITIES.get(spec)
             if (c == null) {
-                val specTL = spec.lowercase(Locale.getDefault())
+                val specTL = spec.lowercase()
                 c = ENTITIES.get(specTL)
                 if (c == null) {
                     return -1
