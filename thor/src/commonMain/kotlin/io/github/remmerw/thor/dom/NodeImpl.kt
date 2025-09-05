@@ -336,7 +336,8 @@ abstract class NodeImpl(
         }
         return try {
             nl[idx - 1]
-        } catch (_: Throwable) {
+        } catch (throwable: Throwable) {
+            debug(throwable)
             null
         }
 
@@ -351,7 +352,8 @@ abstract class NodeImpl(
         }
         return try {
             nl[idx + 1]
-        } catch (_: Throwable) {
+        } catch (throwable: Throwable) {
+            debug(throwable)
             null
         }
 
