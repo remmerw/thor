@@ -4,6 +4,7 @@ import io.github.remmerw.thor.dom.DocumentImpl
 import org.w3c.dom.Document
 import java.io.InputStream
 import java.io.InputStreamReader
+import java.io.LineNumberReader
 
 class DocumentModelBuilder() {
 
@@ -14,7 +15,7 @@ class DocumentModelBuilder() {
     }
 
     fun createDocument(byteStream: InputStream, uri: String, charset: String): Document {
-        val wis = WritableLineReader(InputStreamReader(byteStream, charset))
+        val wis = LineNumberReader(InputStreamReader(byteStream, charset))
         val document = DocumentImpl(wis, uri, charset)
         return document
     }

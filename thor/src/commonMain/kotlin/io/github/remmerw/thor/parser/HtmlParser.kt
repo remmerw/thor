@@ -6,8 +6,6 @@ import org.w3c.dom.DOMException
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.w3c.dom.Node
-import java.io.InputStream
-import java.io.InputStreamReader
 import java.io.LineNumberReader
 import java.io.Reader
 import java.util.LinkedList
@@ -43,30 +41,16 @@ class HtmlParser {
         this.needRoot = needRoot
     }
 
-
     private fun shouldDecodeEntities(info: ElementInfo?): Boolean {
         return isXML || (info == null || info.decodeEntities)
     }
 
-
-    fun parse(inputStream: InputStream, charset: String = "ISO-8859-1") {
-        val reader = WritableLineReader(InputStreamReader(inputStream, charset))
-        this.parse(reader)
-    }
-
-
-    fun parse(reader: Reader) {
-        this.parse(LineNumberReader(reader))
-    }
 
     fun parse(reader: LineNumberReader) {
         val doc = this.document
         this.parse(reader, doc)
     }
 
-    fun parse(reader: Reader, parent: Node) {
-        this.parse(LineNumberReader(reader), parent)
-    }
 
     fun parse(reader: LineNumberReader, parent: Node) {
 

@@ -7,7 +7,6 @@ import io.github.remmerw.thor.dom.NodeFilter.FormFilter
 import io.github.remmerw.thor.dom.NodeFilter.LinkFilter
 import io.github.remmerw.thor.dom.NodeFilter.TagNameFilter
 import io.github.remmerw.thor.parser.HtmlParser
-import io.github.remmerw.thor.parser.WritableLineReader
 import io.ktor.http.Url
 import org.w3c.dom.Attr
 import org.w3c.dom.CDATASection
@@ -25,13 +24,14 @@ import org.w3c.dom.Node.DOCUMENT_NODE
 import org.w3c.dom.NodeList
 import org.w3c.dom.ProcessingInstruction
 import org.w3c.dom.Text
+import java.io.LineNumberReader
 import kotlin.concurrent.atomics.AtomicLong
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.concurrent.atomics.incrementAndFetch
 
 
 class DocumentImpl(
-    private var reader: WritableLineReader? = null,
+    private var reader: LineNumberReader? = null,
     private var documentURI: String,
     private val contentType: String? = null
 ) : NodeImpl(null, 0, "#document"), Document {
