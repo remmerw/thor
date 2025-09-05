@@ -7,6 +7,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -23,7 +25,7 @@ fun HtmlViewer(
     stateModel: StateModel
 ) {
     // val tasks by stateModel.tasks(pid).collectAsState(emptyList()) ->  Flow<List<Task>>
-    val bodyNode = remember {  stateModel.bodyNode() }
+    val bodyNode by remember {  mutableStateOf(stateModel.bodyNode()) }
     val nodeModels = remember { stateModel.childNodes(bodyNode) }
 
     Scaffold(
@@ -161,9 +163,10 @@ fun Nodes(
 
 @Composable
 fun Chars(text: TextModel, modifier: Modifier) {
-    val text = remember { text.text() }
-
-    Text(text = text, modifier = modifier.fillMaxWidth())
+    val text by remember { mutableStateOf(text.text()) }
+    if(text.isNotEmpty()) {
+        Text(text = text, modifier = modifier.fillMaxWidth())
+    }
 
 }
 
@@ -208,11 +211,12 @@ fun Img(
 ) {
     val isImageLoadingEnabled = remember { stateModel.isImageLoadingEnabled }
 
-    val src = remember { stateModel.attribute(nodeModel,"src") }
+    val src by remember { mutableStateOf(
+        stateModel.attribute(nodeModel,"src")) }
 
     if (isImageLoadingEnabled && !src.isNullOrEmpty()) {
         AsyncImage(
-            model = stateModel.fullUri(src),
+            model = stateModel.fullUri(src!!),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
