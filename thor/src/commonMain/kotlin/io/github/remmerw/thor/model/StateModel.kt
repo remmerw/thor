@@ -8,16 +8,16 @@ import io.github.remmerw.thor.dom.DocumentImpl
 import io.github.remmerw.thor.dom.ElementImpl
 import io.github.remmerw.thor.dom.NodeImpl
 import io.github.remmerw.thor.dom.TextImpl
+import io.ktor.http.Url
 import org.w3c.dom.Element
 import org.w3c.dom.Node
-import java.net.URL
 
 class StateModel() : ViewModel() {
     var isImageLoadingEnabled: Boolean by mutableStateOf(true)
 
     var document: DocumentImpl? by mutableStateOf(null)
 
-    fun navigate(url: URL, target: String?) {
+    fun navigate(url: Url, target: String?) {
         TODO("Not yet implemented")
     }
 
@@ -80,37 +80,18 @@ class StateModel() : ViewModel() {
 
         val cleanSpec = Urls.encodeIllegalCharacters(spec)
         return if (document != null) {
-            Utils.getFullURL(document!!, cleanSpec).toExternalForm()
+            Utils.getFullURL(document!!, cleanSpec).toString()
         } else {
-            URL(cleanSpec).toExternalForm()
+            Url(cleanSpec).toString()
         }
     }
 
 
     fun linkClicked(
-        url: URL,
+        url: Url,
         target: String?
     ) {
         println("TODO linkClicked $url")
     }
-
-    fun open(
-        absoluteUrl: String?,
-        windowName: String?,
-        windowFeatures: String?,
-        replace: Boolean
-    ) {
-        TODO("Not yet implemented")
-    }
-
-    fun open(
-        url: URL,
-        windowName: String?,
-        windowFeatures: String?,
-        replace: Boolean
-    ) {
-        TODO("Not yet implemented")
-    }
-
 
 }

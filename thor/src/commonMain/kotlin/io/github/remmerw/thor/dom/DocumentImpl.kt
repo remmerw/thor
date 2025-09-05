@@ -8,6 +8,7 @@ import io.github.remmerw.thor.dom.NodeFilter.LinkFilter
 import io.github.remmerw.thor.dom.NodeFilter.TagNameFilter
 import io.github.remmerw.thor.parser.HtmlParser
 import io.github.remmerw.thor.parser.WritableLineReader
+import io.ktor.http.Url
 import org.w3c.dom.Attr
 import org.w3c.dom.CDATASection
 import org.w3c.dom.Comment
@@ -24,7 +25,6 @@ import org.w3c.dom.Node.DOCUMENT_NODE
 import org.w3c.dom.NodeList
 import org.w3c.dom.ProcessingInstruction
 import org.w3c.dom.Text
-import java.net.URL
 import kotlin.concurrent.atomics.AtomicLong
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.concurrent.atomics.incrementAndFetch
@@ -32,7 +32,7 @@ import kotlin.concurrent.atomics.incrementAndFetch
 
 class DocumentImpl(
     private var reader: WritableLineReader? = null,
-    private var documentURI: String? = null,
+    private var documentURI: String,
     private val contentType: String? = null
 ) : NodeImpl(null, 0, "#document"), Document {
 
@@ -40,7 +40,7 @@ class DocumentImpl(
     private val uids = AtomicLong(0L)
 
     private val factory: ElementFactory
-    private var documentURL: URL? = null
+    private var documentURL: Url? = null
     val allNodes: MutableMap<Long, NodeImpl> = mutableMapOf()
 
     private var title: String? = null
@@ -66,7 +66,7 @@ class DocumentImpl(
     init {
         this.factory = ElementFactory.Companion.instance
         try {
-            val docURL = URL(documentURI)
+            val docURL = Url(documentURI)
 
             this.documentURL = docURL
             this.domain = docURL.host
@@ -98,7 +98,7 @@ class DocumentImpl(
         return uids.incrementAndFetch()
     }
 
-    override fun getDocumentURL(): URL? {
+    fun getDocumentURL(): Url? {
         return documentURL
     }
 
@@ -276,6 +276,10 @@ class DocumentImpl(
 
     override fun getDoctype(): DocumentType? {
         return this.doctype
+    }
+
+    override fun getImplementation(): DOMImplementation? {
+        TODO("Not yet implemented")
     }
 
     fun setDoctype(doctype: DocumentType) {
@@ -478,14 +482,6 @@ class DocumentImpl(
     }
 
 
-    override fun getImplementation(): DOMImplementation {
-        synchronized(this) {
-            if (this.domImplementation == null) {
-                this.domImplementation = DOMImplementationImpl(this)
-            }
-            return this.domImplementation!!
-        }
-    }
 
 
     override fun getLocalName(): String? {

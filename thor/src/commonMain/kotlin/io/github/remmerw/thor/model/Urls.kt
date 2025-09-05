@@ -1,11 +1,11 @@
 package io.github.remmerw.thor.model
 
-import java.net.URL
+import io.ktor.http.Url
 
 object Urls {
 
-    fun createURL(baseUrl: URL?, relativeUrl: String): URL {
-        return URL(baseUrl, relativeUrl)
+    fun createURL(baseUrl: Url?, relativeUrl: String): Url {
+        return Url(baseUrl.toString() + relativeUrl)
     }
 
     /**

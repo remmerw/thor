@@ -2,8 +2,8 @@ package io.github.remmerw.thor.model
 
 import io.github.remmerw.thor.dom.DocumentImpl
 import io.github.remmerw.thor.dom.ElementImpl
+import io.ktor.http.Url
 import org.w3c.dom.Element
-import java.net.URL
 
 object Utils {
 
@@ -17,23 +17,23 @@ object Utils {
         return if (buri == null) doc.documentURI else buri
     }
 
-    fun getFullURL(doc: DocumentImpl, uri: String): URL {
+    fun getFullURL(doc: DocumentImpl, uri: String): Url {
         try {
             val baseURI = getBaseURI(doc)
-            val documentURL = if (baseURI == null) null else URL(baseURI)
+            val documentURL = if (baseURI == null) null else Url(baseURI)
             return Urls.createURL(documentURL, uri)
         } catch (_: Throwable) {
-            return URL(uri)
+            return Url(uri)
         }
     }
 
-    fun getFullURL(elementModel: Element, spec: String): URL {
+    fun getFullURL(elementModel: Element, spec: String): Url {
         val doc: Any? = elementModel.ownerDocument
         val cleanSpec = Urls.encodeIllegalCharacters(spec)
         return if (doc is DocumentImpl) {
             getFullURL(doc, cleanSpec)
         } else {
-            URL(cleanSpec)
+            Url(cleanSpec)
         }
     }
 
@@ -41,7 +41,7 @@ object Utils {
     private fun absoluteURL(
         anchor: ElementImpl,
         stateModel: StateModel
-    ): URL? {
+    ): Url? {
         val href = getHref(anchor)
         if (href.startsWith("javascript:")) {
             return null

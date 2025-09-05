@@ -7,7 +7,6 @@ import org.w3c.dom.Node
 import org.w3c.dom.NodeList
 import org.w3c.dom.Text
 import org.w3c.dom.UserDataHandler
-import java.net.URL
 
 abstract class NodeImpl(
     var document: Document?,
@@ -608,17 +607,5 @@ abstract class NodeImpl(
         }
 
     }
-
-
-    open fun getDocumentURL(): URL? {
-        val doc: Any? = this.document
-        return if (doc is DocumentImpl) {
-            doc.getDocumentURL()
-        } else {
-            null
-        }
-    }
-
-
 }
 
