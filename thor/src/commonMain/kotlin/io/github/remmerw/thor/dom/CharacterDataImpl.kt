@@ -4,7 +4,8 @@ import org.w3c.dom.CharacterData
 import org.w3c.dom.DOMException
 import org.w3c.dom.Document
 
-abstract class CharacterDataImpl(document: Document, uid: Long, name:String) : NodeImpl(document, uid, name),
+abstract class CharacterDataImpl(document: Document, uid: Long, name: String) :
+    NodeImpl(document, uid, name),
     CharacterData {
     private var text: String = ""
 

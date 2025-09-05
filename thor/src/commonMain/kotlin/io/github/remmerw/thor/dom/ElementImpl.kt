@@ -5,7 +5,6 @@ import cz.vutbr.web.css.RuleSet
 import cz.vutbr.web.css.Selector
 import cz.vutbr.web.css.StyleSheet
 import cz.vutbr.web.domassign.AnalyzerUtil
-import io.github.remmerw.thor.model.Type
 import io.github.remmerw.thor.style.CSSUtilities
 import io.github.remmerw.thor.style.StyleElements
 import org.w3c.dom.Attr
@@ -33,7 +32,6 @@ class ElementImpl(document: Document, uid: Long, name: String) :
     fun properties(): Map<String, String> {
         return properties
     }
-
 
 
     fun setProperty(name: String, value: String?) {
@@ -287,8 +285,6 @@ class ElementImpl(document: Document, uid: Long, name: String) :
     override fun getLocalName(): String? {
         return this.nodeName
     }
-
-
 
 
     override fun getNodeType(): Short {

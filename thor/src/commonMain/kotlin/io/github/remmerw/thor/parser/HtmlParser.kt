@@ -11,7 +11,6 @@ import java.io.InputStream
 import java.io.InputStreamReader
 import java.io.LineNumberReader
 import java.io.Reader
-import java.lang.Boolean
 import java.util.LinkedList
 import java.util.Locale
 import java.util.function.Consumer
@@ -19,31 +18,20 @@ import java.util.logging.Level
 import java.util.logging.Logger
 import java.util.regex.Matcher
 import java.util.regex.Pattern
-import kotlin.Char
-import kotlin.CharArray
-import kotlin.Exception
-import kotlin.Int
-import kotlin.NumberFormatException
-import kotlin.String
-import kotlin.Suppress
-import kotlin.Throws
-import kotlin.also
-import kotlin.arrayOf
-import kotlin.code
 import kotlin.math.min
 
 internal class StopException(val element: Element) : Exception()
 class HtmlParser {
     private val document: Document
-    private val isXML: kotlin.Boolean
+    private val isXML: Boolean
     private var lastRootElement: Node? = null
     private var lastHeadElement: Node? = null
     private var lastBodyElement: Node? = null
-    private var needRoot: kotlin.Boolean
+    private var needRoot: Boolean
     private var normalLastTag: String? = null
     private var justReadTagBegin = false
     private var justReadTagEnd = false
-    private val isScriptingEnabled: kotlin.Boolean = false
+    private val isScriptingEnabled: Boolean = false
 
     /**
      * Only set when readAttribute returns false.
@@ -53,8 +41,8 @@ class HtmlParser {
 
     constructor(
         document: Document,
-        isXML: kotlin.Boolean,
-        needRoot: kotlin.Boolean
+        isXML: Boolean,
+        needRoot: Boolean
     ) {
         this.document = document
         this.isXML = isXML
@@ -62,7 +50,7 @@ class HtmlParser {
     }
 
 
-    private fun shouldDecodeEntities(einfo: ElementInfo?): kotlin.Boolean {
+    private fun shouldDecodeEntities(einfo: ElementInfo?): Boolean {
         return isXML || (einfo == null || einfo.decodeEntities)
     }
 
@@ -454,8 +442,8 @@ class HtmlParser {
 
     private fun parseForEndTag(
         parent: Node, reader: LineNumberReader, tagName: String?,
-        addTextNode: kotlin.Boolean,
-        decodeEntities: kotlin.Boolean
+        addTextNode: Boolean,
+        decodeEntities: Boolean
     ): Int {
         val doc = this.document
         var intCh: Int
@@ -817,7 +805,7 @@ class HtmlParser {
     }
 
 
-    private fun readAttribute(reader: LineNumberReader, element: Element): kotlin.Boolean {
+    private fun readAttribute(reader: LineNumberReader, element: Element): Boolean {
         if (this.justReadTagEnd) {
             return false
         }
@@ -1421,7 +1409,7 @@ class HtmlParser {
             // TODO: Keep adding tags here
         }
 
-        fun isDecodeEntities(elementName: String): kotlin.Boolean {
+        fun isDecodeEntities(elementName: String): Boolean {
             val einfo: ElementInfo? = ELEMENT_INFOS.get(elementName.uppercase(Locale.getDefault()))
             return einfo == null || einfo.decodeEntities
         }
@@ -1447,7 +1435,7 @@ class HtmlParser {
             })
         }
 
-        private fun hasAncestorTag(node: Node?, tag: String): kotlin.Boolean {
+        private fun hasAncestorTag(node: Node?, tag: String): Boolean {
             if (node == null) {
                 return false
             } else if (tag.equals(node.nodeName, ignoreCase = true)) {
@@ -1457,7 +1445,7 @@ class HtmlParser {
             }
         }
 
-        private fun depthAtMost(n: Node, maxDepth: Int): kotlin.Boolean {
+        private fun depthAtMost(n: Node, maxDepth: Int): Boolean {
             if (maxDepth <= 0) {
                 return false
             } else {

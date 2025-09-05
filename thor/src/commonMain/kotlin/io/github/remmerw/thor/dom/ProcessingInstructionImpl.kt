@@ -19,7 +19,6 @@ class ProcessingInstructionImpl(
     }
 
 
-
     override fun getNodeType(): Short {
         return PROCESSING_INSTRUCTION_NODE
     }

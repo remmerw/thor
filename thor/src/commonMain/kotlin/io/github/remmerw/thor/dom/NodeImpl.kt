@@ -10,9 +10,11 @@ import org.w3c.dom.UserDataHandler
 import java.net.URL
 import java.util.LinkedList
 
-abstract class NodeImpl(var document: Document?,
-                        private val uid: Long,
-                        private val name: String) : Node {
+abstract class NodeImpl(
+    var document: Document?,
+    private val uid: Long,
+    private val name: String
+) : Node {
 
     private val nodes = mutableListOf<Node>()
 
@@ -25,6 +27,7 @@ abstract class NodeImpl(var document: Document?,
     override fun getNodeName(): String {
         return this.name
     }
+
     fun nodes(): List<Node> {
         return nodes
     }

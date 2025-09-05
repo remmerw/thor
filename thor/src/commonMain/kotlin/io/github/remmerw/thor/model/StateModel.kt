@@ -40,7 +40,7 @@ class StateModel() : ViewModel() {
         if (document == null) {
             return emptyList()
         }
-        if(node == null){
+        if (node == null) {
             return emptyList()
         }
         return document!!.childNodes(node.uid()).map { node ->
@@ -87,7 +87,6 @@ class StateModel() : ViewModel() {
             URL(cleanSpec).toExternalForm()
         }
     }
-
 
 
     fun linkClicked(

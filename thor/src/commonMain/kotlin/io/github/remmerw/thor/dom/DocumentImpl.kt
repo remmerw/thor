@@ -99,7 +99,7 @@ class DocumentImpl(
         println("" + node.uid() + " " + node.nodeName)
         allNodes.put(node.uid(), node)
 
-        if(node is Element) {
+        if (node is Element) {
             if (node.nodeName == "BODY") {
                 setBody(node)
             }

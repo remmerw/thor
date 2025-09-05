@@ -13,11 +13,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import coil3.compose.AsyncImage
-import io.github.remmerw.thor.model.Type
 import io.github.remmerw.thor.model.ElementModel
 import io.github.remmerw.thor.model.NodeModel
 import io.github.remmerw.thor.model.StateModel
 import io.github.remmerw.thor.model.TextModel
+import io.github.remmerw.thor.model.Type
 
 
 @Composable
@@ -25,7 +25,7 @@ fun HtmlViewer(
     stateModel: StateModel
 ) {
     // val tasks by stateModel.tasks(pid).collectAsState(emptyList()) ->  Flow<List<Task>>
-    val bodyNode by remember {  mutableStateOf(stateModel.bodyNode()) }
+    val bodyNode by remember { mutableStateOf(stateModel.bodyNode()) }
     val nodeModels = remember { stateModel.childNodes(bodyNode) }
 
     Scaffold(
@@ -41,8 +41,9 @@ fun HtmlViewer(
 
                     EvaluateNode(
                         nodeModel = nodeModel,
-                        stateModel =stateModel,
-                        modifier = Modifier)
+                        stateModel = stateModel,
+                        modifier = Modifier
+                    )
                 }
             }
 
@@ -51,9 +52,11 @@ fun HtmlViewer(
 }
 
 @Composable
-fun EvaluateNode(nodeModel: NodeModel,
-                 stateModel: StateModel,
-                 modifier: Modifier){
+fun EvaluateNode(
+    nodeModel: NodeModel,
+    stateModel: StateModel,
+    modifier: Modifier
+) {
     when (nodeModel) {
         is TextModel -> {
             Chars(nodeModel, modifier)
@@ -65,6 +68,7 @@ fun EvaluateNode(nodeModel: NodeModel,
                 Type.HTML.name -> {
                     Html(nodeModel, stateModel, modifier)
                 }
+
                 Type.BODY.name -> {
                     Body(nodeModel, stateModel, modifier)
                 }
@@ -164,7 +168,7 @@ fun Nodes(
 @Composable
 fun Chars(text: TextModel, modifier: Modifier) {
     val text by remember { mutableStateOf(text.text()) }
-    if(text.isNotEmpty()) {
+    if (text.isNotEmpty()) {
         Text(text = text, modifier = modifier.fillMaxWidth())
     }
 
@@ -211,8 +215,11 @@ fun Img(
 ) {
     val isImageLoadingEnabled = remember { stateModel.isImageLoadingEnabled }
 
-    val src by remember { mutableStateOf(
-        stateModel.attribute(nodeModel,"src")) }
+    val src by remember {
+        mutableStateOf(
+            stateModel.attribute(nodeModel, "src")
+        )
+    }
 
     if (isImageLoadingEnabled && !src.isNullOrEmpty()) {
         AsyncImage(

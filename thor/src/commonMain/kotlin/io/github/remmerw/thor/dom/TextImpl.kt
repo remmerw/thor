@@ -66,7 +66,6 @@ open class TextImpl(document: Document, uid: Long, text: String = "") :
     }
 
 
-
     override fun toString(): String {
         val text = this.textContent
         val textLength = text.length
