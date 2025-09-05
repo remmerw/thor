@@ -239,11 +239,11 @@ class ElementImpl(document: Document, uid: Long, name: String) :
 
 
     companion object {
-        protected fun isTagName(node: Node, name: String?): Boolean {
+        private fun isTagName(node: Node, name: String?): Boolean {
             return node.nodeName.equals(name, ignoreCase = true)
         }
 
-        protected fun normalizeAttributeName(name: String): String {
+        private fun normalizeAttributeName(name: String): String {
             return name.lowercase()
         }
     }

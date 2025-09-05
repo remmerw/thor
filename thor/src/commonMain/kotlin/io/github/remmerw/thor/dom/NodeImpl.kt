@@ -201,23 +201,14 @@ abstract class NodeImpl(
     }
 
     fun visitImpl(visitor: NodeVisitor) {
-        try {
-            visitor.visit(this)
-        } catch (_: SkipVisitorException) {
-            return
-        } catch (sve: StopVisitorException) {
-            throw sve
-        }
+
+        visitor.visit(this)
+
         val nl = this.nodes
         val i: MutableIterator<Node?> = nl.iterator()
         while (i.hasNext()) {
             val child = i.next() as NodeImpl
-            try {
-                // Call with child's synchronization
-                child.visit(visitor)
-            } catch (sve: StopVisitorException) {
-                throw sve
-            }
+            child.visit(visitor)
         }
     }
 

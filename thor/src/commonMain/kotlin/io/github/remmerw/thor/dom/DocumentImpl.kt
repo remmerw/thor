@@ -59,7 +59,6 @@ class DocumentImpl(
     private var xmlVersion: String? = null
     private var strictErrorChecking = true
     private var domConfig: DOMConfiguration? = null
-    private var domImplementation: DOMImplementation? = null
     private var body: Element? = null
 
 
@@ -210,32 +209,6 @@ class DocumentImpl(
             }
             return this.anchors!!
         }
-    }
-
-    fun getCookie(): String? {
-        // Justification: A caller (e.g. Google Analytics script)
-        // might want to get cookies from the parent document.
-        // If the caller has access to the document, it appears
-        // they should be able to get cookies on that document.
-        // Note that this Document instance cannot be created
-        // with an arbitrary URL.
-
-        // cookies not supported
-
-        return null
-    }
-
-    @Throws(DOMException::class)
-    fun setCookie(cookie: String?) {
-        // Justification: A caller (e.g. Google Analytics script)
-        // might want to set cookies on the parent document.
-        // If the caller has access to the document, it appears
-        // they should be able to set cookies on that document.
-        // Note that this Document instance cannot be created
-        // with an arbitrary URL.
-
-        // cookies not supported
-
     }
 
 

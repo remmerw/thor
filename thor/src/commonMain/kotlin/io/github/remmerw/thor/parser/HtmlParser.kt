@@ -950,13 +950,7 @@ class HtmlParser {
     }
 
     companion object {
-        /**
-         * A node `UserData` key used to tell nodes that their content may
-         * be about to be modified. Elements could use this to temporarily suspend
-         * notifications. The value set will be either `Boolean.TRUE` or
-         * `Boolean.FALSE`.
-         */
-        const val MODIFYING_KEY: String = "cobra.suspend"
+
         private val logger: Logger = Logger.getLogger(HtmlParser::class.java.name)
 
         // TODO: The quirks mode should go
@@ -1377,19 +1371,14 @@ class HtmlParser {
             // TODO: Keep adding tags here
         }
 
-        fun isDecodeEntities(elementName: String): Boolean {
-            val einfo: ElementInfo? = ELEMENT_INFOS.get(elementName.uppercase())
-            return einfo == null || einfo.decodeEntities
-        }
-
 
         private fun hasAncestorTag(node: Node?, tag: String): Boolean {
-            if (node == null) {
-                return false
+            return if (node == null) {
+                false
             } else if (tag.equals(node.nodeName, ignoreCase = true)) {
-                return true
+                true
             } else {
-                return hasAncestorTag(node.parentNode, tag)
+                hasAncestorTag(node.parentNode, tag)
             }
         }
 
