@@ -36,7 +36,7 @@ class DocumentImpl(
     private val uids = AtomicLong(0L)
     private val factory: ElementFactory = ElementFactory.Companion.instance
     private var documentUrl: Url? = null
-    private val allNodes: MutableMap<Long, NodeImpl> = mutableMapOf()
+    private val nodes: MutableMap<Long, NodeImpl> = mutableMapOf()
     private var doctype: DocumentType? = null
     private var isDocTypeXHTML = false
     private var inputEncoding: String? = null
@@ -52,17 +52,13 @@ class DocumentImpl(
     }
 
     internal fun addNode(node: NodeImpl) {
-        allNodes.put(node.uid(), node)
+        nodes.put(node.uid(), node)
 
         if (node is Element) {
             if (node.nodeName == "BODY") {
                 setBody(node)
             }
         }
-    }
-
-    internal fun removeNode(node: NodeImpl) {
-        allNodes.remove(node.uid())
     }
 
     @OptIn(ExperimentalAtomicApi::class)
@@ -92,6 +88,10 @@ class DocumentImpl(
     @Throws(DOMException::class)
     override fun setTextContent(textContent: String) {
         // NOP, per spec
+    }
+
+    override fun textContent(): String {
+        return textInner()
     }
 
 
@@ -188,7 +188,7 @@ class DocumentImpl(
     }
 
     override fun getDocumentElement(): Element? {
-        this.nodes().forEach { node ->
+        this.children().forEach { node ->
             val node: Any? = node
             if (node is Element) {
                 return node
@@ -208,9 +208,7 @@ class DocumentImpl(
     }
 
     override fun createTextNode(data: String): Text {
-        val node = TextImpl(this, nextUid(), data)
-        this.addNode(node)
-        return node
+        return TextImpl(this, nextUid(), data)
     }
 
     override fun createComment(data: String): Comment {
@@ -228,11 +226,10 @@ class DocumentImpl(
         target: String,
         data: String?
     ): ProcessingInstruction {
-        val node = ProcessingInstructionImpl(
+        return ProcessingInstructionImpl(
             this, nextUid(),
             target, data
         )
-        return node
     }
 
 
@@ -247,10 +244,10 @@ class DocumentImpl(
 
 
     override fun getElementsByTagName(classNames: String): NodeList {
-        if ("*" == classNames) {
-            return this.getNodeList(NodeFilter.ElementFilter())
+        return if ("*" == classNames) {
+            this.getNodeList(NodeFilter.ElementFilter())
         } else {
-            return this.getNodeList(TagNameFilter(classNames))
+            this.getNodeList(TagNameFilter(classNames))
         }
     }
 
@@ -338,12 +335,9 @@ class DocumentImpl(
     }
 
     override fun normalizeDocument() {
-        this.visitImpl(object : NodeVisitor {
-            override fun visit(node: Node) {
-                node.normalize()
-            }
-        })
+        TODO("Not yet implemented")
     }
+
 
     @Throws(DOMException::class)
     override fun renameNode(n: Node?, namespaceURI: String?, qualifiedName: String?): Node? {
@@ -362,25 +356,22 @@ class DocumentImpl(
         return null
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.xamjwg.html.domimpl.NodeImpl#setNodeValue(java.lang.String)
-     */
-    @Throws(DOMException::class)
-    override fun setNodeValue(nodeValue: String?) {
-        throw DOMException(
-            DOMException.INVALID_MODIFICATION_ERR,
-            "Cannot set node value of document"
-        )
+
+    override fun setNodeValue(p0: String?) {
+        TODO("Not yet implemented")
+    }
+
+
+    fun text(uid: Long): String {
+        return nodes[uid]?.textInner() ?: ""
     }
 
     fun childNodes(uid: Long): List<Node> {
-        return allNodes[uid]?.nodes() ?: emptyList()
+        return nodes[uid]?.children() ?: emptyList()
     }
 
     fun node(uid: Long): Node? {
-        return allNodes[uid]
+        return nodes[uid]
     }
 
     companion object {

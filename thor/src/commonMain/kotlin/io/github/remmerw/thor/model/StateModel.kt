@@ -33,6 +33,9 @@ class StateModel() : ViewModel() {
     fun node(node: NodeModel): Node? {
         return document?.node(node.uid())
     }
+    fun text(node: NodeModel): String {
+        return document?.text(node.uid()) ?: ""
+    }
 
     fun childNodes(node: NodeModel?): List<NodeModel> {
         if (document == null) {
@@ -54,7 +57,7 @@ class StateModel() : ViewModel() {
         if (document == null) {
             return emptyList()
         }
-        return document!!.nodes().map { node ->
+        return document!!.children().map { node ->
             when (node) {
                 is ElementImpl -> ElementModel(node.uid(), node.nodeName)
                 is TextImpl -> TextModel(node.uid(), node.nodeName, node.textContent)

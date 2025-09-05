@@ -30,4 +30,8 @@ class ProcessingInstructionImpl(
         return target
     }
 
+    override fun textContent(): String {
+        return "" // not yet supported
+    }
+
 }

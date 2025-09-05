@@ -8,9 +8,7 @@ internal class ElementFactory private constructor() {
     @Throws(DOMException::class)
     fun createElement(document: DocumentImpl, name: String): Element {
         val uid = document.nextUid()
-        val element = ElementImpl(document, uid, name.uppercase())
-        document.addNode(element)
-        return element
+        return ElementImpl(document, uid, name.uppercase())
     }
 
     companion object {

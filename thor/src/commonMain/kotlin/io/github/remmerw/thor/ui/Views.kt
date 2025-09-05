@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -73,6 +74,9 @@ fun EvaluateNode(
                     Body(nodeModel, stateModel, modifier)
                 }
 
+                Type.H4.name -> {
+                    H4(nodeModel, stateModel, modifier)
+                }
                 Type.TABLE.name -> {
                     Table(nodeModel, stateModel, modifier)
                 }
@@ -184,6 +188,17 @@ fun Html(
     Nodes(nodeModel, stateModel, modifier)
 }
 
+
+@Composable
+fun H4(
+    nodeModel: NodeModel,
+    stateModel: StateModel,
+    modifier: Modifier
+) {
+    val text by remember { mutableStateOf(stateModel.text(nodeModel)) }
+
+    Text(text = text, modifier = modifier.fillMaxWidth(), style = MaterialTheme.typography.titleLarge)
+}
 
 @Composable
 fun Dummy(

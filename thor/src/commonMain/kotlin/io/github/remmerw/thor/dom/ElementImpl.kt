@@ -1,5 +1,8 @@
 package io.github.remmerw.thor.dom
 
+import io.ktor.utils.io.core.writeText
+import kotlinx.io.Buffer
+import kotlinx.io.readString
 import org.w3c.dom.Attr
 import org.w3c.dom.Document
 import org.w3c.dom.Element
@@ -38,6 +41,19 @@ class ElementImpl(document: Document, uid: Long, name: String) :
         }
     }
 
+    override fun textContent(): String {
+        val text = Buffer()
+        if (hasChildNodes()) {
+            // TODO attributes
+            text.writeText("<" + nodeName.lowercase() + ">")
+            textInner()
+            text.writeText("</" + nodeName.lowercase() + ">")
+        } else {
+            text.writeText("<" + nodeName.lowercase() + "/>")
+        }
+        return text.readString()
+    }
+
     override fun getAttribute(name: String): String? {
         val normalName: String = normalizeAttributeName(name)
         synchronized(this) {
@@ -72,7 +88,7 @@ class ElementImpl(document: Document, uid: Long, name: String) :
         val descendents: MutableList<Node> = mutableListOf()
 
 
-        this.nodes().forEach { node ->
+        this.children().forEach { node ->
             val child = node
             if (child is Element) {
                 if (matchesAll || isTagName(child, classNames)) {

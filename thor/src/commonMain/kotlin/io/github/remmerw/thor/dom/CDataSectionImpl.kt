@@ -31,4 +31,8 @@ class CDataSectionImpl(document: Document, uid: Long, text: String) :
     override fun replaceWholeText(p0: String?): Text? {
         TODO("Not yet implemented")
     }
+
+    override fun textContent(): String {
+        return text
+    }
 }

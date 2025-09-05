@@ -45,5 +45,8 @@ open class TextImpl(document: Document, uid: Long, text: String = "") :
         return null
     }
 
+    override fun textContent(): String {
+        return text
+    }
 
 }
