@@ -125,10 +125,8 @@ class HtmlParser {
             } else if ("HEAD" == nodeNameTU) {
                 lastHeadElement = child
             } else if ((child is Element) && (depthAtMost(parent, 2))) {
-                val dontNeedBody =
-                    ArrayUtilities.contains<String?>(elementsThatDontNeedBodyElement, nodeNameTU)
-                val dontNeedHead =
-                    ArrayUtilities.contains<String?>(elementsThatDontNeedHeadElement, nodeNameTU)
+                val dontNeedBody = elementsThatDontNeedBodyElement.contains( nodeNameTU)
+                val dontNeedHead = elementsThatDontNeedHeadElement.contains(nodeNameTU)
                 if ((!hasAncestorTag(parent, "BODY")) && (!dontNeedBody)) {
                     ensureBodyElement(parent)
                     newParent = lastBodyElement
@@ -900,7 +898,6 @@ class HtmlParser {
             }
             val ch = chInt.toChar()
             if ((openQuote != -1) && (ch.code == openQuote)) {
-                lastCharSlash = false
                 if (attributeName != null) {
                     val attributeNameStr = attributeName.toString()
                     if (attributeValue == null) {
@@ -1004,7 +1001,7 @@ class HtmlParser {
       "MATHML"
     };
     */
-        private val elementsThatDontNeedBodyElement = arrayOf<String?>( // TODO: More tags
+        private val elementsThatDontNeedBodyElement = listOf( // TODO: More tags
             "HTML",
             "HEAD",
             "META",
@@ -1014,7 +1011,7 @@ class HtmlParser {
             "STYLE",
             "FRAMESET"
         )
-        private val elementsThatDontNeedHeadElement = arrayOf<String?>( // TODO: More tags
+        private val elementsThatDontNeedHeadElement = listOf( // TODO: More tags
             "HTML",
             "P",
             "DIV",
