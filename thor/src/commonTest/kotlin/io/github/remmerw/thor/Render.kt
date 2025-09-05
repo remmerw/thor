@@ -2,14 +2,12 @@ package io.github.remmerw.thor
 
 import io.github.remmerw.thor.dom.DocumentImpl
 import io.github.remmerw.thor.dom.ElementImpl
-import io.github.remmerw.thor.dom.DocumentModelBuilder
+import io.github.remmerw.thor.dom.parseDocument
 import io.ktor.http.Url
-import org.w3c.dom.Document
 import org.w3c.dom.Node
 import java.net.URL
 
 class Render(var url: Url) {
-
 
 
     fun parsePage(): DocumentImpl {
@@ -17,7 +15,7 @@ class Render(var url: Url) {
         try {
             urlObj = URL(url.toString())
         } catch (e: Exception) {
-            println(e)
+            e.printStackTrace()
             throw e
         }
 
@@ -29,18 +27,10 @@ class Render(var url: Url) {
             requireNotNull(inputStream)
 
 
-            val dbi = DocumentModelBuilder()
-            val document = dbi.parse(
-
-                    inputStream,
-                    url.toString(),
-                    "UTF-8"
-
-            )!!
+            val document = parseDocument(inputStream, url, "UTF-8")
 
             // Do a recursive traversal on the top-level DOM node.
-            document.documentElement
-            // doTree(ex)
+            doTree( document.documentElement)
             return document
         } catch (e: Exception) {
             e.printStackTrace()

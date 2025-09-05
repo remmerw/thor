@@ -10,7 +10,8 @@ import org.w3c.dom.UserDataHandler
 abstract class NodeImpl(
     var document: Document?,
     private val uid: Long,
-    private val name: String
+    private val name: String,
+    private val type: Short
 ) : Node {
 
     private val nodes = mutableListOf<Node>()
@@ -18,11 +19,23 @@ abstract class NodeImpl(
     protected var parent: Node? = null
 
     override fun getAttributes(): NamedNodeMap? {
-        return null  // todo
+        TODO()
     }
 
     override fun getNodeName(): String {
         return this.name
+    }
+
+    override fun getNodeValue(): String? {
+        TODO("Not yet implemented")
+    }
+
+    override fun setNodeValue(p0: String?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getNodeType(): Short {
+        return type
     }
 
     fun nodes(): List<Node> {
@@ -595,6 +608,27 @@ abstract class NodeImpl(
             this.replaceAdjacentTextNodes(text)
         }
 
+    }
+
+    companion object {
+        const val ELEMENT_NODE: Short = 1
+        const val ATTRIBUTE_NODE: Short = 2
+        const val TEXT_NODE: Short = 3
+        const val CDATA_SECTION_NODE: Short = 4
+        const val ENTITY_REFERENCE_NODE: Short = 5
+        const val ENTITY_NODE: Short = 6
+        const val PROCESSING_INSTRUCTION_NODE: Short = 7
+        const val COMMENT_NODE: Short = 8
+        const val DOCUMENT_NODE: Short = 9
+        const val DOCUMENT_TYPE_NODE: Short = 10
+        const val DOCUMENT_FRAGMENT_NODE: Short = 11
+        const val NOTATION_NODE: Short = 12
+        const val DOCUMENT_POSITION_DISCONNECTED: Short = 1
+        const val DOCUMENT_POSITION_PRECEDING: Short = 2
+        const val DOCUMENT_POSITION_FOLLOWING: Short = 4
+        const val DOCUMENT_POSITION_CONTAINS: Short = 8
+        const val DOCUMENT_POSITION_CONTAINED_BY: Short = 16
+        const val DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC: Short = 32
     }
 }
 

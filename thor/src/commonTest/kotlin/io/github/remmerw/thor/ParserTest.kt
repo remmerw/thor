@@ -36,7 +36,7 @@ class ParserTest {
             document.xmlVersion
             document.isXML()
 
-            println("done $url")
+            println("done " + document.documentURI)
 
         }
 

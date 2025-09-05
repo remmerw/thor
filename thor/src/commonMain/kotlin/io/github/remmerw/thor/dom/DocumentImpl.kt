@@ -17,7 +17,6 @@ import org.w3c.dom.DocumentType
 import org.w3c.dom.Element
 import org.w3c.dom.EntityReference
 import org.w3c.dom.Node
-import org.w3c.dom.Node.DOCUMENT_NODE
 import org.w3c.dom.NodeList
 import org.w3c.dom.ProcessingInstruction
 import org.w3c.dom.Text
@@ -29,20 +28,15 @@ import kotlin.concurrent.atomics.incrementAndFetch
 
 class DocumentImpl(
     private var reader: LineNumberReader? = null,
-    private var documentURI: String,
+    private var documentURI: Url,
     private val contentType: String? = null
-) : NodeImpl(null, 0, "#document"), Document {
+) : NodeImpl(null, 0, "#document", DOCUMENT_NODE), Document {
 
     @OptIn(ExperimentalAtomicApi::class)
     private val uids = AtomicLong(0L)
-
     private val factory: ElementFactory = ElementFactory.Companion.instance
     private var documentUrl: Url? = null
     private val allNodes: MutableMap<Long, NodeImpl> = mutableMapOf()
-    private var title: String? = null
-    private var referrer: String? = null
-    private var domain: String? = null
-
     private var doctype: DocumentType? = null
     private var isDocTypeXHTML = false
     private var inputEncoding: String? = null
@@ -54,17 +48,7 @@ class DocumentImpl(
 
 
     init {
-        try {
-            val docURL = Url(documentURI)
-
-            this.documentUrl = docURL
-            this.domain = docURL.host
-        } catch (throwable: Throwable) {
-            throwable.printStackTrace()
-        }
-
         this.setOwnerDocument(this)
-
     }
 
     fun addNode(node: NodeImpl) {
@@ -97,7 +81,7 @@ class DocumentImpl(
 
 
     override fun getBaseURI(): String? {
-        return this.documentURI
+        return this.documentURI.toString()
     }
 
     @Throws(DOMException::class)
@@ -110,35 +94,6 @@ class DocumentImpl(
         // NOP, per spec
     }
 
-    fun getTitle(): String? {
-        return title
-    }
-
-
-    fun setTitle(title: String?) {
-        this.title = title
-    }
-
-    fun getReferrer(): String? {
-        return this.referrer
-    }
-
-    fun setReferrer(value: String?) {
-        this.referrer = value
-    }
-
-    fun getDomain(): String? {
-        return this.domain
-    }
-
-    fun setDomain(domain: String) {
-        val oldDomain = this.domain
-        if ((oldDomain != null)) {
-            this.domain = domain
-        } else {
-            throw SecurityException("Cannot set domain to '" + domain + "' when current domain is '" + oldDomain + "'")
-        }
-    }
 
     fun getBody(): Element? {
         synchronized(this) {
@@ -186,7 +141,6 @@ class DocumentImpl(
 
     fun load() {
 
-        this.title = null
 
         val reader = this.reader
 
@@ -351,11 +305,11 @@ class DocumentImpl(
     }
 
     override fun getDocumentURI(): String? {
-        return this.documentURI
+        return this.documentURI.toString()
     }
 
     override fun setDocumentURI(documentURI: String) {
-        this.documentURI = documentURI
+        TODO()
     }
 
     @Throws(DOMException::class)
@@ -390,10 +344,6 @@ class DocumentImpl(
         return null
     }
 
-    override fun getNodeType(): Short {
-        return DOCUMENT_NODE
-    }
-
 
     @Throws(DOMException::class)
     override fun getNodeValue(): String? {
@@ -414,12 +364,6 @@ class DocumentImpl(
         )
     }
 
-
-    fun getURL(): String? {
-        return this.documentURI
-    }
-
-
     fun childNodes(uid: Long): List<Node> {
         return allNodes[uid]?.nodes() ?: emptyList()
     }
@@ -428,12 +372,8 @@ class DocumentImpl(
         return allNodes[uid]
     }
 
-
     companion object {
-
         private const val XHTML_STRICT_PUBLIC_ID = "-//W3C//DTD XHTML 1.0 Strict//EN"
         private const val XHTML_STRICT_SYS_ID = "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
-
-
     }
 }

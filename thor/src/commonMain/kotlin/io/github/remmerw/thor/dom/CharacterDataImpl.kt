@@ -3,10 +3,15 @@ package io.github.remmerw.thor.dom
 import org.w3c.dom.CharacterData
 import org.w3c.dom.Document
 
-abstract class CharacterDataImpl(document: Document, uid: Long, name: String) :
-    NodeImpl(document, uid, name),
+abstract class CharacterDataImpl(
+    document: Document,
+    uid: Long,
+    name: String,
+    type: Short,
+    var text: String = ""
+) :
+    NodeImpl(document, uid, name, type),
     CharacterData {
-    private var text: String = ""
 
 
     override fun getTextContent(): String {

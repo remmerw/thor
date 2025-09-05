@@ -3,14 +3,13 @@ package io.github.remmerw.thor.dom
 import org.w3c.dom.Document
 import org.w3c.dom.DocumentType
 import org.w3c.dom.NamedNodeMap
-import org.w3c.dom.Node.DOCUMENT_TYPE_NODE
 
 class DocumentTypeImpl(
     document: Document, uid: Long,
     private val qualifiedName: String,
     private val publicId: String?,
     private val systemId: String?
-) : NodeImpl(document, uid, "#document_type"), DocumentType {
+) : NodeImpl(document, uid, "#document_type", DOCUMENT_TYPE_NODE), DocumentType {
 
     override fun getLocalName(): String? {
         return null
@@ -25,10 +24,6 @@ class DocumentTypeImpl(
     @Throws(DOMException::class)
     override fun setNodeValue(nodeValue: String?) {
         // nop
-    }
-
-    override fun getNodeType(): Short {
-        return DOCUMENT_TYPE_NODE
     }
 
     override fun getName(): String {

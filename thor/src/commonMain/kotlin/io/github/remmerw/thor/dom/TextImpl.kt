@@ -1,14 +1,10 @@
 package io.github.remmerw.thor.dom
 
 import org.w3c.dom.Document
-import org.w3c.dom.Node.TEXT_NODE
 import org.w3c.dom.Text
 
 open class TextImpl(document: Document, uid: Long, text: String = "") :
-    CharacterDataImpl(document, uid, "#text"), Text {
-    init {
-        textContent = text
-    }
+    CharacterDataImpl(document, uid, "#text", TEXT_NODE, text), Text {
 
     override fun isElementContentWhitespace(): Boolean {
         val t = this.textContent
@@ -49,18 +45,5 @@ open class TextImpl(document: Document, uid: Long, text: String = "") :
         return null
     }
 
-
-    override fun getNodeType(): Short {
-        return TEXT_NODE
-    }
-
-    @Throws(DOMException::class)
-    override fun getNodeValue(): String {
-        return this.textContent
-    }
-
-    override fun setNodeValue(nodeValue: String) {
-        this.textContent = nodeValue
-    }
 
 }

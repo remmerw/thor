@@ -5,12 +5,11 @@ import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.w3c.dom.NamedNodeMap
 import org.w3c.dom.Node
-import org.w3c.dom.Node.ELEMENT_NODE
 import org.w3c.dom.NodeList
 import org.w3c.dom.TypeInfo
 
 class ElementImpl(document: Document, uid: Long, name: String) :
-    NodeImpl(document, uid, name), Element {
+    NodeImpl(document, uid, name, ELEMENT_NODE), Element {
     private val attributes = mutableMapOf<String, String>()
 
     fun attributes(): Map<String, String> {
@@ -194,11 +193,6 @@ class ElementImpl(document: Document, uid: Long, name: String) :
 
     override fun getLocalName(): String? {
         return this.nodeName
-    }
-
-
-    override fun getNodeType(): Short {
-        return ELEMENT_NODE
     }
 
 
