@@ -1,7 +1,5 @@
-package io.github.remmerw.thor.parser
+package io.github.remmerw.thor.dom
 
-import io.github.remmerw.thor.dom.DocumentImpl
-import io.github.remmerw.thor.dom.DocumentTypeImpl
 import org.w3c.dom.DOMException
 import org.w3c.dom.Document
 import org.w3c.dom.Element

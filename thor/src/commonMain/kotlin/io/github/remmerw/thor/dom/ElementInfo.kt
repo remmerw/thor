@@ -1,4 +1,4 @@
-package io.github.remmerw.thor.parser
+package io.github.remmerw.thor.dom
 
 internal class ElementInfo {
     val endElementType: Int

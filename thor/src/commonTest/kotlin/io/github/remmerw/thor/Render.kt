@@ -1,7 +1,7 @@
 package io.github.remmerw.thor
 
 import io.github.remmerw.thor.dom.ElementImpl
-import io.github.remmerw.thor.parser.DocumentModelBuilder
+import io.github.remmerw.thor.dom.DocumentModelBuilder
 import io.ktor.http.Url
 import org.w3c.dom.Document
 import org.w3c.dom.Node

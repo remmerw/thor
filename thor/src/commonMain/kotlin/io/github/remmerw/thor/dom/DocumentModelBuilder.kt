@@ -1,6 +1,5 @@
-package io.github.remmerw.thor.parser
+package io.github.remmerw.thor.dom
 
-import io.github.remmerw.thor.dom.DocumentImpl
 import org.w3c.dom.Document
 import java.io.InputStream
 import java.io.InputStreamReader

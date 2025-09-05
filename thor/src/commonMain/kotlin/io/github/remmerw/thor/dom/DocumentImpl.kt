@@ -6,7 +6,6 @@ import io.github.remmerw.thor.dom.NodeFilter.ElementNameFilter
 import io.github.remmerw.thor.dom.NodeFilter.FormFilter
 import io.github.remmerw.thor.dom.NodeFilter.LinkFilter
 import io.github.remmerw.thor.dom.NodeFilter.TagNameFilter
-import io.github.remmerw.thor.parser.HtmlParser
 import io.ktor.http.Url
 import org.w3c.dom.Attr
 import org.w3c.dom.CDATASection
