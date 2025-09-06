@@ -1,8 +1,5 @@
 package io.github.remmerw.thor.dom
 
-import io.ktor.utils.io.core.writeText
-import kotlinx.io.Buffer
-import kotlinx.io.readString
 import org.w3c.dom.Document
 import org.w3c.dom.NamedNodeMap
 import org.w3c.dom.Node

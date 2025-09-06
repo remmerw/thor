@@ -18,10 +18,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import coil3.compose.AsyncImage
-import io.github.remmerw.thor.model.ElementModel
-import io.github.remmerw.thor.model.NodeModel
+import io.github.remmerw.thor.dom.Entity
 import io.github.remmerw.thor.model.StateModel
-import io.github.remmerw.thor.model.TextModel
 
 
 @Composable
@@ -40,11 +38,11 @@ fun HtmlViewer(
 
                 items(
                     items = nodeModels,
-                    key = { element -> element.uid() }
+                    key = { element -> element.uid }
                 ) { nodeModel ->
                     FlowRow {
-                        EvaluateNode(
-                            nodeModel = nodeModel,
+                        EvaluateEntity(
+                            entity = nodeModel,
                             stateModel = stateModel,
                             modifier = Modifier
                         )
@@ -58,7 +56,7 @@ fun HtmlViewer(
 
 @Composable
 fun Nodes(
-    nodeModel: NodeModel,
+    nodeModel: Entity,
     stateModel: StateModel,
     modifier: Modifier,
     style: TextStyle = LocalTextStyle.current,
@@ -70,7 +68,7 @@ fun Nodes(
     if (nodeModels.isNotEmpty()) {
 
         nodeModels.forEach { nodeModel ->
-            EvaluateNode(nodeModel, stateModel, modifier, style)
+            EvaluateEntity(nodeModel, stateModel, modifier, style)
         }
     }
 
@@ -78,8 +76,13 @@ fun Nodes(
 
 
 @Composable
-fun Chars(text: TextModel, modifier: Modifier, style: TextStyle = LocalTextStyle.current) {
-    val text by remember { mutableStateOf(text.text()) }
+fun Chars(
+    entity: Entity,
+    stateModel: StateModel,
+    modifier: Modifier,
+    style: TextStyle = LocalTextStyle.current
+) {
+    val text by remember { mutableStateOf(stateModel.text(entity)) }
     if (text.isNotEmpty()) {
         Text(text = text, modifier = modifier, style = style)
     }
@@ -88,7 +91,7 @@ fun Chars(text: TextModel, modifier: Modifier, style: TextStyle = LocalTextStyle
 
 @Composable
 fun Html(
-    nodeModel: NodeModel,
+    nodeModel: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
@@ -97,10 +100,9 @@ fun Html(
 }
 
 
-
 @Composable
 fun Dummy(
-    nodeModel: NodeModel,
+    nodeModel: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
@@ -111,7 +113,7 @@ fun Dummy(
 
 @Composable
 fun Font(
-    nodeModel: NodeModel,
+    nodeModel: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
@@ -122,7 +124,7 @@ fun Font(
 
 @Composable
 fun Img(
-    nodeModel: ElementModel,
+    nodeModel: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
@@ -150,7 +152,7 @@ fun Img(
 
 @Composable
 fun Ul(
-    nodeModel: NodeModel,
+    nodeModel: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
@@ -160,7 +162,7 @@ fun Ul(
 
 @Composable
 fun Blockquote(
-    nodeModel: NodeModel,
+    nodeModel: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
@@ -169,7 +171,7 @@ fun Blockquote(
 
 @Composable
 fun Li(
-    nodeModel: NodeModel,
+    nodeModel: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
@@ -178,7 +180,7 @@ fun Li(
 
 @Composable
 fun Form(
-    nodeModel: ElementModel,
+    nodeModel: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
@@ -188,7 +190,7 @@ fun Form(
 
 @Composable
 fun Body(
-    nodeModel: NodeModel,
+    nodeModel: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
@@ -198,7 +200,7 @@ fun Body(
 
 @Composable
 fun Center(
-    nodeModel: NodeModel,
+    nodeModel: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
@@ -207,7 +209,7 @@ fun Center(
 
 @Composable
 fun Table(
-    nodeModel: NodeModel,
+    nodeModel: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
@@ -217,7 +219,7 @@ fun Table(
 
 @Composable
 fun Link(
-    nodeModel: ElementModel,
+    nodeModel: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
@@ -228,7 +230,7 @@ fun Link(
 
 @Composable
 fun A(
-    nodeModel: ElementModel,
+    nodeModel: Entity,
     stateModel: StateModel,
     modifier: Modifier,
     style: TextStyle = LocalTextStyle.current
@@ -242,9 +244,11 @@ fun A(
 
     // todo this is wrong !!!
     if (href != null) {
-        Text(text = href!!, modifier = modifier,
+        Text(
+            text = href!!, modifier = modifier,
             color = Color.Blue,
-            textDecoration = TextDecoration.Underline )
+            textDecoration = TextDecoration.Underline
+        )
     }
 
 
@@ -258,7 +262,7 @@ fun A(
 
 @Composable
 fun Tr(
-    nodeModel: NodeModel,
+    nodeModel: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
@@ -268,7 +272,7 @@ fun Tr(
 
 @Composable
 fun Td(
-    nodeModel: NodeModel,
+    nodeModel: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
@@ -277,7 +281,7 @@ fun Td(
 
 @Composable
 fun Div(
-    nodeModel: NodeModel,
+    nodeModel: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
@@ -286,7 +290,7 @@ fun Div(
 
 @Composable
 fun Big(
-    nodeModel: NodeModel,
+    nodeModel: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
@@ -295,7 +299,7 @@ fun Big(
 
 @Composable
 fun Br(
-    nodeModel: NodeModel,
+    nodeModel: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {

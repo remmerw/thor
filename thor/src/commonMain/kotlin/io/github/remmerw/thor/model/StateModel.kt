@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import io.github.remmerw.thor.dom.DocumentImpl
 import io.github.remmerw.thor.dom.ElementImpl
+import io.github.remmerw.thor.dom.Entity
 import io.github.remmerw.thor.dom.NodeImpl
 import io.github.remmerw.thor.dom.TextImpl
 import io.ktor.http.Url
@@ -26,53 +27,46 @@ class StateModel() : ViewModel() {
         err?.printStackTrace()
     }
 
-    fun attribute(node: NodeModel, attribute: String): String? {
-        return (node(node) as Element?)?.getAttribute(attribute)
+    fun attribute(entity: Entity, attribute: String): String? {
+        return (node(entity) as Element?)?.getAttribute(attribute)
     }
 
-    fun node(node: NodeModel): Node? {
-        return document?.node(node.uid())
+    fun node(node: Entity): Node? {
+        return document?.node(node.uid)
     }
 
-    fun childNodes(node: NodeModel?): List<NodeModel> {
+    fun text(entity: Entity): String {
+        if (document == null) {
+            return ""
+        }
+        return (document!!.node(entity.uid) as TextImpl).text
+    }
+
+    fun childNodes(entity: Entity?): List<Entity> {
         if (document == null) {
             return emptyList()
         }
-        if (node == null) {
+        if (entity == null) {
             return emptyList()
         }
-        return document!!.childNodes(node.uid()).map { node ->
-            when (node) {
-                is ElementImpl -> ElementModel(node.uid(), node.nodeName)
-                is TextImpl -> TextModel(node.uid(), node.nodeName, node.textContent)
-                else -> TodoModel((node as NodeImpl).uid(), node.nodeName)
-            }
+        return document!!.childNodes(entity.uid).map { node ->
+            node as NodeImpl
+            println(node.nodeName)
+            Entity(node.uid(), node.nodeName)
         }.toList()
     }
 
-    fun childNodes(): List<NodeModel> {
-        if (document == null) {
-            return emptyList()
-        }
-        return document!!.children().map { node ->
-            when (node) {
-                is ElementImpl -> ElementModel(node.uid(), node.nodeName)
-                is TextImpl -> TextModel(node.uid(), node.nodeName, node.textContent)
-                else -> TodoModel((node as NodeImpl).uid(), node.nodeName)
-            }
-        }.toList()
-    }
 
-    fun bodyNode(): NodeModel? {
+    fun bodyNode(): Entity? {
         if (document == null) {
             return null
         }
         val body = document!!.getBody()
-
-        return when (body) {
-            is ElementImpl -> ElementModel(body.uid(), body.nodeName)
-            else -> null
+        if (body != null) {
+            body as ElementImpl
+            return Entity(body.uid(), body.nodeName)
         }
+        return null
     }
 
 

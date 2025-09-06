@@ -2,73 +2,78 @@ package io.github.remmerw.thor.ui
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import io.github.remmerw.thor.model.NodeModel
+import io.github.remmerw.thor.dom.Entity
 import io.github.remmerw.thor.model.StateModel
-
 
 
 @Composable
 fun H6(
-    nodeModel: NodeModel,
+    nodeModel: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Nodes(nodeModel, stateModel,
+    Nodes(
+        nodeModel, stateModel,
         modifier = modifier.fillMaxWidth(),
-        style = MaterialTheme.typography.titleSmall)
+        style = MaterialTheme.typography.titleSmall
+    )
 
 }
 
 
 @Composable
 fun H5(
-    nodeModel: NodeModel,
+    entity: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Nodes(nodeModel, stateModel,
+    Nodes(
+        entity, stateModel,
         modifier = modifier.fillMaxWidth(),
-        style = MaterialTheme.typography.titleMedium)
+        style = MaterialTheme.typography.titleMedium
+    )
 }
 
 @Composable
 fun H4(
-    nodeModel: NodeModel,
+    nodeModel: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Nodes(nodeModel, stateModel,
+    Nodes(
+        nodeModel, stateModel,
         modifier = modifier.fillMaxWidth(),
-        style = MaterialTheme.typography.titleMedium)
+        style = MaterialTheme.typography.titleMedium
+    )
 }
 
 @Composable
 fun H3(
-    nodeModel: NodeModel,
+    entity: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Nodes(nodeModel, stateModel,
+    Nodes(
+        entity, stateModel,
         modifier = modifier.fillMaxWidth(),
-        style = MaterialTheme.typography.headlineLarge)
+        style = MaterialTheme.typography.headlineLarge
+    )
 }
 
 
 @Composable
 fun H2(
-    nodeModel: NodeModel,
+    entity: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Nodes(nodeModel, stateModel,
+    Nodes(
+        entity, stateModel,
         modifier = modifier.fillMaxWidth(),
-        style = MaterialTheme.typography.headlineMedium)
+        style = MaterialTheme.typography.headlineMedium
+    )
 
 
 }
@@ -76,11 +81,13 @@ fun H2(
 
 @Composable
 fun H1(
-    nodeModel: NodeModel,
+    entity: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Nodes(nodeModel, stateModel,
+    Nodes(
+        entity, stateModel,
         modifier = modifier.fillMaxWidth(),
-        style = MaterialTheme.typography.headlineSmall)
+        style = MaterialTheme.typography.headlineSmall
+    )
 }
