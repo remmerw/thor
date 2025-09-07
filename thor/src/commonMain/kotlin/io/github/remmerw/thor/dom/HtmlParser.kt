@@ -66,7 +66,7 @@ class HtmlParser {
     private fun safeAppendChild(parent: Node, child: Node) {
         var newParent: Node? = parent
         if (QUIRKS_MODE && needRoot) {
-            val nodeName = child.getNodeName()
+            val nodeName = child.name
             if ("HTML".equals(nodeName, ignoreCase = true)) {
                 lastRootElement = child
             } else if ((child is Element) && (depthAtMost(parent, 1)) && (!hasAncestorTag(
@@ -84,7 +84,7 @@ class HtmlParser {
 
     private fun ensureRootElement(parent: Node) {
         if (lastRootElement == null) {
-            lastRootElement = document.createElement("HTML")
+            lastRootElement = document.createElement(parent, "HTML")
             parent.appendChild(lastRootElement!!)
         }
     }
@@ -92,7 +92,7 @@ class HtmlParser {
     private fun ensureBodyAppendChild(parent: Node, child: Node) {
         var newParent: Node? = parent
         if (QUIRKS_MODE && needRoot) {
-            val nodeNameTU = child.getNodeName().uppercase()
+            val nodeNameTU = child.name.uppercase()
             if ("BODY" == nodeNameTU) {
                 lastBodyElement = child
             } else if ("HEAD" == nodeNameTU) {
@@ -114,14 +114,14 @@ class HtmlParser {
 
     private fun ensureBodyElement(parent: Node) {
         if (lastBodyElement == null) {
-            lastBodyElement = document.createElement("BODY")
+            lastBodyElement = document.createElement(parent, "BODY")
             parent.appendChild(lastBodyElement!!)
         }
     }
 
     private fun ensureHeadElement(parent: Node) {
         if (lastHeadElement == null) {
-            lastHeadElement = document.createElement("HEAD")
+            lastHeadElement = document.createElement(parent, "HEAD")
             parent.appendChild(lastHeadElement!!)
         }
     }
@@ -134,22 +134,15 @@ class HtmlParser {
         ancestors: LinkedList<String>
     ): Int {
         val doc = this.document
-        val htmlDoc = doc as Document
+        val htmlDoc = doc
         val textSb = this.readUpToTagBegin(reader)
         if (textSb == null) {
             return TOKEN_EOD
         }
-        if (textSb.length != 0) {
-            // int textLine = reader.getLineNumber();
+        if (textSb.isNotEmpty()) {
             val decText: StringBuffer = entityDecode(textSb)
-            val textNode: Node = doc.createTextNode(decText.toString())
-            try {
-                safeAppendChild(parent, textNode)
-            } catch (de: DOMException) {
-                if ((parent.getNodeType() != Node.DOCUMENT_NODE) || (de.code != DOMException.HIERARCHY_REQUEST_ERR)) {
-                    debug("parseToken(): Unable to append child to $parent.")
-                }
-            }
+            val textNode: Node = doc.createTextNode(parent, decText.toString())
+            safeAppendChild(parent, textNode)
         }
         if (this.justReadTagBegin) {
             var tag = this.readTag(parent, reader)
@@ -160,11 +153,10 @@ class HtmlParser {
             try {
                 if (tag.startsWith("!")) {
                     if ("!--" == tag) {
-                        // int commentLine = reader.getLineNumber();
                         val comment = this.passEndOfComment(reader)
                         val decText: StringBuffer = entityDecode(comment)
 
-                        safeAppendChild(parent, doc.createComment(decText.toString()))
+                        safeAppendChild(parent, doc.createComment(parent, decText.toString()))
 
                         return TOKEN_COMMENT
                     } else if ("!DOCTYPE" == tag) {
@@ -175,7 +167,7 @@ class HtmlParser {
                             val publicId = group[2]
                             val systemId = group[3]
                             val doctype = DocumentType(
-                                htmlDoc, htmlDoc.nextUid(),
+                                htmlDoc, parent, htmlDoc.nextUid(),
                                 qName,
                                 publicId, systemId
                             )
@@ -196,7 +188,11 @@ class HtmlParser {
                     tag = tag.substring(1)
                     val data = readProcessingInstruction(reader)
 
-                    safeAppendChild(parent, doc.createProcessingInstruction(tag, data.toString()))
+                    safeAppendChild(
+                        parent, doc.createProcessingInstruction(
+                            parent, tag, data.toString()
+                        )
+                    )
 
                     return TOKEN_FULL_ELEMENT
                 } else {
@@ -204,7 +200,7 @@ class HtmlParser {
                     val tagHasPrefix = localIndex > 0
                     val localName: String =
                         (if (tagHasPrefix) normalTag.substring(localIndex + 1) else normalTag)
-                    var element = doc.createElement(localName)
+                    var element = doc.createElement(parent, localName)
 
                     try {
                         if (!this.justReadTagEnd) {
@@ -315,7 +311,7 @@ class HtmlParser {
                                         } catch (se: StopException) {
                                             // newElement does not have a parent.
                                             val newElement = se.element!!
-                                            tag = newElement.getNodeName()
+                                            tag = newElement.name
                                             normalTag = tag.uppercase()
                                             // If a subelement throws StopException with
                                             // a tag matching the current stop tag, the exception
@@ -429,7 +425,7 @@ class HtmlParser {
                                         }
                                         val text = sb.toString()
                                         if (text.length != 0) {
-                                            val textNode: Node = doc.createTextNode(text)
+                                            val textNode: Node = doc.createTextNode(parent, text)
                                             safeAppendChild(parent, textNode)
                                         }
                                     }
@@ -473,7 +469,7 @@ class HtmlParser {
             }
             val text = sb.toString()
             if (text.length != 0) {
-                val textNode: Node = doc.createTextNode(text)
+                val textNode: Node = doc.createTextNode(parent, text)
                 safeAppendChild(parent, textNode)
             }
         }
@@ -529,14 +525,9 @@ class HtmlParser {
                         ltText.append('<')
                     }
                     val doc = this.document
-                    val textNode: Node = doc.createTextNode(ltText.toString())
-                    try {
-                        parent.appendChild(textNode)
-                    } catch (de: DOMException) {
-                        if ((parent.getNodeType() != Node.DOCUMENT_NODE) || (de.code != DOMException.HIERARCHY_REQUEST_ERR)) {
-                            debug("ERROR parseToken(): Unable to append child to $parent.")
-                        }
-                    }
+                    val textNode: Node = doc.createTextNode(parent, ltText.toString())
+                    parent.appendChild(textNode)
+
                     if (chInt == -1) {
                         cont = false
                     } else {
@@ -555,14 +546,8 @@ class HtmlParser {
                         ltText.append(ch)
                     }
                     val doc = this.document
-                    val textNode: Node = doc.createTextNode(ltText.toString())
-                    try {
-                        parent.appendChild(textNode)
-                    } catch (de: DOMException) {
-                        if ((parent.getNodeType() != Node.DOCUMENT_NODE) || (de.code != DOMException.HIERARCHY_REQUEST_ERR)) {
-                            debug("ERROR parseToken(): Unable to append child to $parent.")
-                        }
-                    }
+                    val textNode: Node = doc.createTextNode(parent, ltText.toString())
+                    parent.appendChild(textNode)
                     if (chInt == -1) {
                         cont = false
                     } else {
@@ -875,7 +860,7 @@ class HtmlParser {
                 if (attributeName != null) {
                     val attributeNameStr = attributeName.toString()
                     if (attributeValue == null) {
-                        element.setAttribute(attributeNameStr, null)
+                        element.setAttribute(attributeNameStr, "")
                     } else {
                         val actualAttributeValue: StringBuffer = entityDecode(attributeValue)
                         element.setAttribute(attributeNameStr, actualAttributeValue.toString())
@@ -890,7 +875,7 @@ class HtmlParser {
                 if (attributeName != null) {
                     val attributeNameStr = attributeName.toString()
                     if (attributeValue == null) {
-                        element.setAttribute(attributeNameStr, null)
+                        element.setAttribute(attributeNameStr, "")
                     } else {
                         val actualAttributeValue: StringBuffer = entityDecode(attributeValue)
                         element.setAttribute(attributeNameStr, actualAttributeValue.toString())
@@ -915,7 +900,7 @@ class HtmlParser {
         if (attributeName != null) {
             val attributeNameStr = attributeName.toString()
             if (attributeValue == null) {
-                element.setAttribute(attributeNameStr, null)
+                element.setAttribute(attributeNameStr, "")
             } else {
                 val actualAttributeValue: StringBuffer = entityDecode(attributeValue)
                 element.setAttribute(attributeNameStr, actualAttributeValue.toString())
@@ -1347,10 +1332,10 @@ class HtmlParser {
         private fun hasAncestorTag(node: Node?, tag: String): Boolean {
             return if (node == null) {
                 false
-            } else if (tag.equals(node.getNodeName(), ignoreCase = true)) {
+            } else if (tag.equals(node.name, ignoreCase = true)) {
                 true
             } else {
-                hasAncestorTag(node.getParentNode(), tag)
+                hasAncestorTag(node.parent, tag)
             }
         }
 
@@ -1358,7 +1343,7 @@ class HtmlParser {
             if (maxDepth <= 0) {
                 return false
             } else {
-                val parent = n.getParentNode()
+                val parent = n.parent
                 return parent == null || depthAtMost(parent, maxDepth - 1)
             }
         }

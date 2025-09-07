@@ -58,15 +58,17 @@ class Render(var url: Url) {
             }
 
 
-            println("</" + node.getTagName() + ">")
+            println("</" + node.name + ">")
         }
     }
 
 
     fun doElement(element: Element) {
-        println("<" + element.getTagName() + ">")
+        println("<" + element.name + ">")
 
-        println("Attributes : " + element.attributes().toString())
+        if(element.hasAttributes()) {
+            println("Attributes : " + element.attributes().toString())
+        }
 
     }
 

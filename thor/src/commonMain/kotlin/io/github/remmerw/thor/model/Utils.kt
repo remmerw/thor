@@ -24,7 +24,7 @@ object Utils {
     }
 
     fun getFullURL(elementModel: Element, spec: String): Url {
-        val doc: Any? = elementModel.getOwnerDocument()
+        val doc: Any? = elementModel.getDocumentOwner()
         val cleanSpec = Urls.encodeIllegalCharacters(spec)
         return if (doc is Document) {
             getFullURL(doc, cleanSpec)
@@ -53,8 +53,8 @@ object Utils {
 
     fun navigate(elementModel: Element, stateModel: StateModel) {
 
-        if (elementModel.getNodeName() == Type.ANCHOR.name ||
-            elementModel.getNodeName() == Type.A.name
+        if (elementModel.name == Type.ANCHOR.name ||
+            elementModel.name == Type.A.name
         ) {
             val href = getHref(elementModel)
             if (href.startsWith("#")) {
@@ -71,7 +71,7 @@ object Utils {
                 }
             }
         }
-        if (elementModel.getNodeName() == Type.LINK.name) {
+        if (elementModel.name == Type.LINK.name) {
             val href = getHref(elementModel)
             if (href.startsWith("#")) {
                 // TODO: Scroll to the element. Issue #101

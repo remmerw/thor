@@ -10,17 +10,15 @@ import kotlin.concurrent.atomics.incrementAndFetch
 class Document(
     private var reader: LineNumberReader,
     private val documentUri: String
-) : Node(null, 0, "#document", DOCUMENT_NODE) {
+) : Node(null, null, 0, "#document", DOCUMENT_NODE) {
 
     @OptIn(ExperimentalAtomicApi::class)
     private val uids = AtomicLong(0L)
-    private val factory: ElementFactory = ElementFactory.Companion.instance
 
     private val nodes: MutableMap<Long, Node> = mutableMapOf()
     private var doctype: DocumentType? = null
     private var isDocTypeXHTML = false
     private var xmlEncoding: String? = null
-    private var xmlStandalone = false
 
 
     init {
@@ -29,7 +27,7 @@ class Document(
     }
 
     internal fun addNode(node: Node) {
-        nodes.put(node.uid(), node)
+        nodes.put(node.uid, node)
     }
 
     @OptIn(ExperimentalAtomicApi::class)
@@ -87,30 +85,33 @@ class Document(
 
     }
 
-    @Throws(DOMException::class)
-    fun createElement(tagName: String): Element {
-        return this.factory.createElement(this, tagName)
+    fun createElement(parent: Node, name: String): Element {
+        val uid = this.nextUid()
+        return Element(this, parent, uid, name.uppercase())
     }
 
 
-    fun createTextNode(data: String): Text {
-        return Text(this, nextUid(), data)
+    fun createTextNode(parent: Node, data: String): Text {
+        return Text(this, parent, nextUid(), data)
     }
 
-    fun createComment(data: String): Comment {
-        val node = Comment(this, nextUid(), data)
-        return node
+    fun createComment(parent: Node, data: String): Comment {
+        return Comment(this, parent, nextUid(), data)
     }
 
     // todo
-    fun createCDATASection(data: String): CDataSection {
-        return CDataSection(this, nextUid(), data)
+    fun createCDATASection(parent: Node, data: String): CDataSection {
+        return CDataSection(this, parent, nextUid(), data)
     }
 
-    @Throws(DOMException::class)
-    fun createProcessingInstruction(target: String, data: String): ProcessingInstruction {
+
+    fun createProcessingInstruction(
+        parent: Node,
+        target: String,
+        data: String
+    ): ProcessingInstruction {
         return ProcessingInstruction(
-            this, nextUid(),
+            this, parent, nextUid(),
             target, data
         )
     }
@@ -119,21 +120,11 @@ class Document(
         return this.xmlEncoding
     }
 
-    fun getXmlStandalone(): Boolean {
-        return this.xmlStandalone
-    }
-
-    // todo
-    fun setXmlStandalone(xmlStandalone: Boolean) {
-        this.xmlStandalone = xmlStandalone
-    }
-
-
     fun getDocumentURI(): String? {
-        return this.documentUri.toString()
+        return this.documentUri
     }
 
-    fun childNodes(uid: Long): List<Node> {
+    fun children(uid: Long): List<Node> {
         return nodes[uid]?.children() ?: emptyList()
     }
 
@@ -145,8 +136,4 @@ class Document(
         return (nodes[entity.uid] as Text).data
     }
 
-    companion object {
-        private const val XHTML_STRICT_PUBLIC_ID = "-//W3C//DTD XHTML 1.0 Strict//EN"
-        private const val XHTML_STRICT_SYS_ID = "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
-    }
 }

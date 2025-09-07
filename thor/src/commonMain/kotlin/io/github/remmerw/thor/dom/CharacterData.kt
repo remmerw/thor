@@ -4,12 +4,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 abstract class CharacterData(
     document: Document,
+    parent: Node,
     uid: Long,
     name: String,
     type: Short,
     var text: String = ""
 ) :
-    Node(document, uid, name, type) {
+    Node(document, parent, uid, name, type) {
 
     val data = MutableStateFlow(text)
 
@@ -23,6 +24,6 @@ abstract class CharacterData(
             someText = someText.substring(0, 29) + "..."
         }
         val length = someText.length
-        return this.getNodeName() + "[length=" + length + ",text=" + someText + "]"
+        return this.name + "[length=" + length + ",text=" + someText + "]"
     }
 }

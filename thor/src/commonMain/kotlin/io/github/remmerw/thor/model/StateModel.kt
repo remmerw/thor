@@ -67,10 +67,9 @@ class StateModel() : ViewModel() {
         if (entity == null) {
             return emptyList()
         }
-        return document!!.childNodes(entity.uid).map { node ->
-            node as Node
-            println(node.getNodeName())
-            Entity(node.uid(), node.getNodeName())
+        return document!!.children(entity.uid).map { node ->
+            println(node.name)
+            node.entity()
         }.toList()
     }
 

@@ -25,8 +25,8 @@ class ParserTest {
             document.getDoctype().toString()
             document.getBaseUri()
 
+
             document.getXmlEncoding()
-            document.getXmlStandalone()
             document.isXML()
 
             println("done " + document.getDocumentURI())
