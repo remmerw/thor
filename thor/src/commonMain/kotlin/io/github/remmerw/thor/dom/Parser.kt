@@ -32,12 +32,12 @@ class HtmlParser {
     }
 
 
-    fun parse(source: Source) {
+    suspend fun parse(source: Source) {
         parse(source, model)
     }
 
 
-    fun parse(source: Source, parent: Node) {
+    suspend fun parse(source: Source, parent: Node) {
         while (this.parseToken(
                 parent, source, null,
                 ArrayDeque()
@@ -46,12 +46,12 @@ class HtmlParser {
         }
     }
 
-    private fun safeAppendChild(parent: Node, child: Node) {
+    private suspend fun safeAppendChild(parent: Node, child: Node) {
         parent.appendChild(child)
     }
 
 
-    private fun parseToken(
+    private suspend fun parseToken(
         parent: Node,
         source: Source,
         stopTags: MutableSet<String>?,
@@ -64,7 +64,7 @@ class HtmlParser {
         }
         if (textSb.isNotEmpty()) {
             val decText: StringBuffer = entityDecode(textSb)
-            val textNode: Node = doc.createTextNode(decText.toString())
+            val textNode: Node = doc.createText(decText.toString())
             safeAppendChild(parent, textNode)
         }
         if (this.justReadTagBegin) {
@@ -75,36 +75,42 @@ class HtmlParser {
             var normalTag: String? = if (isDocTypeXHTML) tag else tag.uppercase()
             try {
                 if (tag.startsWith("!")) {
-                    if ("!--" == tag) {
-                        val comment = this.passEndOfComment(source)
-                        val decText: StringBuffer = entityDecode(comment)
+                    when (tag) {
+                        "!--" -> {
+                            val comment = this.passEndOfComment(source)
+                            val decText: StringBuffer = entityDecode(comment)
 
-                        safeAppendChild(parent, doc.createComment(decText.toString()))
+                            safeAppendChild(parent, doc.createComment(decText.toString()))
 
-                        return TOKEN_COMMENT
-                    } else if ("!DOCTYPE" == tag) {
-                        val doctypeStr = this.parseEndOfTag(source)
-                        doctypePattern.findAll(doctypeStr).forEach { doctypeMatcher ->
-                            val group = doctypeMatcher.groupValues
-                            val qName = group[1]
-                            val publicId = group[2]
-                            val systemId = group[3]
-                            val doctype = DocumentType(
-                                doc,
-                                doc.nextUid(),
-                                qName,
-                                publicId,
-                                systemId
-                            )
-                            doc.setDoctype(doctype)
-                            isDocTypeXHTML = (doctype.name == "html")
-                                    && (doctype.publicId == XHTML_STRICT_PUBLIC_ID)
-                                    && (doctype.systemId == XHTML_STRICT_SYS_ID)
+                            return TOKEN_COMMENT
                         }
-                        return TOKEN_BAD
-                    } else {
-                        passEndOfTag(source)
-                        return TOKEN_BAD
+
+                        "!DOCTYPE" -> {
+                            val doctypeStr = this.parseEndOfTag(source)
+                            doctypePattern.findAll(doctypeStr).forEach { doctypeMatcher ->
+                                val group = doctypeMatcher.groupValues
+                                val qName = group[1]
+                                val publicId = group[2]
+                                val systemId = group[3]
+                                val doctype = DocumentType(
+                                    doc,
+                                    doc.nextUid(),
+                                    qName,
+                                    publicId,
+                                    systemId
+                                )
+                                doc.setDoctype(doctype)
+                                isDocTypeXHTML = (doctype.name == "html")
+                                        && (doctype.publicId == XHTML_STRICT_PUBLIC_ID)
+                                        && (doctype.systemId == XHTML_STRICT_SYS_ID)
+                            }
+                            return TOKEN_BAD
+                        }
+
+                        else -> {
+                            passEndOfTag(source)
+                            return TOKEN_BAD
+                        }
                     }
                 } else if (tag.startsWith("/")) {
                     tag = tag.substring(1)
@@ -320,7 +326,7 @@ class HtmlParser {
         return sb
     }
 
-    private fun parseForEndTag(
+    private suspend fun parseForEndTag(
         parent: Node, reader: Source, tagName: String?,
         addTextNode: Boolean,
         decodeEntities: Boolean
@@ -351,7 +357,7 @@ class HtmlParser {
                                         }
                                         val text = sb.toString()
                                         if (text.isNotEmpty()) {
-                                            val textNode: Node = doc.createTextNode(text)
+                                            val textNode: Node = doc.createText(text)
                                             safeAppendChild(parent, textNode)
                                         }
                                     }
@@ -395,7 +401,7 @@ class HtmlParser {
             }
             val text = sb.toString()
             if (text.isNotEmpty()) {
-                val textNode: Node = doc.createTextNode(text)
+                val textNode: Node = doc.createText(text)
                 safeAppendChild(parent, textNode)
             }
         }
@@ -403,7 +409,7 @@ class HtmlParser {
     }
 
 
-    private fun readTag(parent: Node, reader: Source): String {
+    private suspend fun readTag(parent: Node, reader: Source): String {
         val sb = StringBuffer()
         var chInt: Int
         chInt = reader.readCodePointValue()
@@ -451,7 +457,7 @@ class HtmlParser {
                         ltText.append('<')
                     }
                     val doc = this.model
-                    val textNode: Node = doc.createTextNode(ltText.toString())
+                    val textNode: Node = doc.createText(ltText.toString())
                     parent.appendChild(textNode)
 
                     if (chInt == -1) {
@@ -472,7 +478,7 @@ class HtmlParser {
                         ltText.append(ch)
                     }
                     val doc = this.model
-                    val textNode: Node = doc.createTextNode(ltText.toString())
+                    val textNode: Node = doc.createText(ltText.toString())
                     parent.appendChild(textNode)
                     if (chInt == -1) {
                         cont = false
@@ -660,7 +666,7 @@ class HtmlParser {
     }
 
 
-    private fun readAttribute(reader: Source, element: Element): Boolean {
+    private suspend fun readAttribute(reader: Source, element: Element): Boolean {
         if (this.justReadTagEnd) {
             return false
         }
@@ -742,17 +748,23 @@ class HtmlParser {
             } else if (Character.isWhitespace(ch)) {
                 lastCharSlash = false
             } else {
-                if (ch == '"') {
-                    openQuote = '"'.code
-                } else if (ch == '\'') {
-                    openQuote = '\''.code
-                } else {
-                    openQuote = -1
-                    attributeValue = StringBuffer(6)
-                    if (lastCharSlash) {
-                        attributeValue.append('/')
+                when (ch) {
+                    '"' -> {
+                        openQuote = '"'.code
                     }
-                    attributeValue.append(ch)
+
+                    '\'' -> {
+                        openQuote = '\''.code
+                    }
+
+                    else -> {
+                        openQuote = -1
+                        attributeValue = StringBuffer(6)
+                        if (lastCharSlash) {
+                            attributeValue.append('/')
+                        }
+                        attributeValue.append(ch)
+                    }
                 }
                 lastCharSlash = false
                 break
@@ -836,9 +848,9 @@ class HtmlParser {
     }
 
     companion object {
-        private val ENTITIES: MutableMap<String?, Char?> = HashMap<String?, Char?>(256)
-        private val ELEMENT_INFOS: MutableMap<String?, ElementInfo?> =
-            HashMap<String?, ElementInfo?>(35)
+        private val ENTITIES: MutableMap<String, Char> = HashMap<String, Char>(256)
+        private val ELEMENT_INFOS: MutableMap<String, ElementInfo> =
+            HashMap<String, ElementInfo>(35)
         private const val TOKEN_EOD = 0
         private const val TOKEN_COMMENT = 1
         private const val TOKEN_TEXT = 2
@@ -851,7 +863,7 @@ class HtmlParser {
             Regex("(\\S+)\\s+PUBLIC\\s+\"([^\"]*)\"\\s+\"([^\"]*)\".*>")
 
         init {
-            val entities: MutableMap<String?, Char?> = ENTITIES
+            val entities: MutableMap<String, Char> = ENTITIES
             entities.put("amp", '&')
             entities.put("lt", '<')
             entities.put("gt", '>')
@@ -1130,7 +1142,7 @@ class HtmlParser {
             entities.put("circ", (710.toChar()))
             entities.put("tilde", (732.toChar()))
 
-            val elementInfos: MutableMap<String?, ElementInfo?> = ELEMENT_INFOS
+            val elementInfos: MutableMap<String, ElementInfo> = ELEMENT_INFOS
 
             elementInfos.put(
                 "NOSCRIPT",

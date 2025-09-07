@@ -11,11 +11,13 @@ class ParserTest {
     @Test
     fun parserTest(): Unit = runBlocking(Dispatchers.IO) {
 
-        val urls = listOf("http://www.benjysbrain.com/",
+        val urls = listOf(
+            "http://www.benjysbrain.com/",
             "https://www.welt.de/",
             "https://www.spiegel.de/",
             "https://www.handelsblatt.de/",
-            "https://www.zeit.de/")
+            "https://www.zeit.de/"
+        )
 
         urls.forEach { url ->
             val p = Render(Url(url))
@@ -27,7 +29,6 @@ class ParserTest {
 
             println("Done $url")
         }
-
 
 
     }

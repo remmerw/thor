@@ -19,13 +19,26 @@ internal class Element(model: Model, uid: Long, name: String) : Node(model, uid,
     }
 
 
-    // todo test
-    internal fun removeAttribute(name: String) {
-        attributes.value.remove(name.lowercase()) // todo fix
+    internal suspend fun removeAttribute(name: String, emit: Boolean = false) {
+        if (emit) {
+            val map = attributes.value.toMutableMap()
+            val exists = map.remove(name.lowercase())
+            if (exists != null) {
+                attributes.emit(map)
+            }
+        } else {
+            attributes.value.remove(name.lowercase())
+        }
     }
 
-    fun setAttribute(name: String, value: String) {
-        attributes.value.put(name.lowercase(), value)  // todo fix
+    suspend fun setAttribute(name: String, value: String, emit: Boolean = false) {
+        if (emit) {
+            val map = attributes.value.toMutableMap()
+            map.put(name.lowercase(), value)
+            attributes.emit(map)
+        } else {
+            attributes.value.put(name.lowercase(), value)
+        }
     }
 
     override fun debug() {

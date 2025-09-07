@@ -34,23 +34,23 @@ class Model() : Node(null, 0, "#document") {
     }
 
 
-    fun getDoctype(): DocumentType? {
+    internal fun getDoctype(): DocumentType? {
         return this.doctype
     }
 
 
-    fun setDoctype(doctype: DocumentType) {
+    internal fun setDoctype(doctype: DocumentType) {
         this.doctype = doctype
 
     }
 
     internal fun createElement(name: String): Element {
         val uid = this.nextUid()
-        return Element(this, uid, name.uppercase())
+        return Element(this, uid, name)
     }
 
 
-    internal fun createTextNode(data: String): Text {
+    internal fun createText(data: String): Text {
         return Text(this, nextUid(), data)
     }
 
@@ -70,6 +70,38 @@ class Model() : Node(null, 0, "#document") {
         return ProcessingInstruction(
             this, nextUid(), name, data
         )
+    }
+
+
+    suspend fun removeAttribute(entity: Entity, name: String) {
+        (nodes[entity.uid]!! as Element).removeAttribute(name, true)
+    }
+
+    fun getAttribute(entity: Entity, name: String): String? {
+        return (nodes[entity.uid]!! as Element).getAttribute(name)
+    }
+
+    suspend fun setAttribute(entity: Entity, name: String, value: String) {
+        require(entity != entity()) { "Model does not have attributes" }
+        (nodes[entity.uid]!! as Element).setAttribute(name, value, true)
+    }
+
+    suspend fun createEntity(
+        name: String, parent: Entity = entity(),
+        attributes: Map<String, String> = mapOf()
+    ): Entity {
+        val child = createElement(name)
+        attributes.entries.forEach { (key, value) ->
+            child.setAttribute(key, value, false)
+        }
+        nodes[parent.uid]!!.appendChild(child, true)
+        return child.entity()
+    }
+
+    suspend fun removeEntity(parent: Entity = entity(), entity: Entity) {
+        val child = nodes[entity.uid]!!
+        nodes[parent.uid]!!.removeChild(child, true)
+        nodes.remove(entity.uid)
     }
 
     fun children(entity: Entity): StateFlow<List<Entity>> {

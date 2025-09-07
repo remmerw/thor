@@ -17,8 +17,26 @@ abstract class Node(
     val children = MutableStateFlow(mutableListOf<Entity>())
 
 
-    internal fun appendChild(newChild: Node) {
-        this.children.value.add(newChild.entity()) // todo fix
+    internal suspend fun appendChild(child: Node, emit: Boolean = false) {
+        if (emit) {
+            val list = this.children.value.toMutableList()
+            list.add(child.entity())
+            this.children.emit(list)
+        } else {
+            this.children.value.add(child.entity())
+        }
+    }
+
+    internal suspend fun removeChild(child: Node, emit: Boolean = false) {
+        if (emit) {
+            val list = this.children.value.toMutableList()
+            val exists = list.remove(child.entity())
+            if (exists) {
+                this.children.emit(list)
+            }
+        } else {
+            this.children.value.add(child.entity())
+        }
     }
 
     internal fun setModel(value: Model) {

@@ -11,9 +11,13 @@ fun createModel(): Model {
     return Model()
 }
 
-fun attachToModel(source: Source, model: Model) {
-    val parser = HtmlParser(model = model, isXML = false)
-    parser.parse(source)
+suspend fun attachToModel(source: Source, model: Model) {
+    try {
+        val parser = HtmlParser(model = model, isXML = false)
+        parser.parse(source)
+    } catch (throwable: Throwable) {
+        debug(throwable)
+    }
 }
 
 

@@ -10,7 +10,7 @@ import java.net.URL
 class Render(var url: Url) {
 
 
-    fun parse(model: Model) {
+    suspend fun parse(model: Model) {
         var urlObj: URL?
         try {
             urlObj = URL(url.toString())
@@ -26,7 +26,7 @@ class Render(var url: Url) {
             val inputStream = connection.getInputStream()
             requireNotNull(inputStream)
 
-            attachToModel(  inputStream.asSource().buffered(), model)
+            attachToModel(inputStream.asSource().buffered(), model)
         } catch (e: Exception) {
             e.printStackTrace()
             println("parsePage($url):  $e")
