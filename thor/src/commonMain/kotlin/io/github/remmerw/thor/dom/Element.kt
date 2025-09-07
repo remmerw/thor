@@ -10,21 +10,10 @@ class Element(document: Document, uid: Long, name: String) :
     }
 
 
+    // todo
     fun hasAttributes(): Boolean {
         synchronized(this) {
             return !attributes.isEmpty()
-        }
-    }
-
-    override fun equalAttributes(arg: Node?): Boolean {
-        if (arg is Element) {
-            synchronized(this) {
-                val attrs1: MutableMap<String, String> = this.attributes
-                val attrs2: MutableMap<String, String> = arg.attributes
-                return attrs1 == attrs2
-            }
-        } else {
-            return false
         }
     }
 
@@ -33,11 +22,6 @@ class Element(document: Document, uid: Long, name: String) :
         synchronized(this) {
             return attributes[normalName]
         }
-    }
-
-    @Throws(DOMException::class)
-    fun getAttributeNS(namespaceURI: String?, localName: String?): String {
-        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Namespaces not supported")
     }
 
 

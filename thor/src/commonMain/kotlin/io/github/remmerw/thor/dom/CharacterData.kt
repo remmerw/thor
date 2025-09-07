@@ -13,12 +13,12 @@ abstract class CharacterData(
 
     val data = MutableStateFlow(text)
 
-    fun getTextContent(): String {
+    fun getData(): String {
         return data.value
     }
 
     override fun toString(): String {
-        var someText = this.getTextContent()
+        var someText = this.getData()
         if (someText.length > 32) {
             someText = someText.substring(0, 29) + "..."
         }

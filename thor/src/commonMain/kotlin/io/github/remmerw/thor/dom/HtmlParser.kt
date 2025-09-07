@@ -85,7 +85,7 @@ class HtmlParser {
     private fun ensureRootElement(parent: Node) {
         if (lastRootElement == null) {
             lastRootElement = document.createElement("HTML")
-            parent.appendChild(lastRootElement)
+            parent.appendChild(lastRootElement!!)
         }
     }
 
@@ -115,14 +115,14 @@ class HtmlParser {
     private fun ensureBodyElement(parent: Node) {
         if (lastBodyElement == null) {
             lastBodyElement = document.createElement("BODY")
-            parent.appendChild(lastBodyElement)
+            parent.appendChild(lastBodyElement!!)
         }
     }
 
     private fun ensureHeadElement(parent: Node) {
         if (lastHeadElement == null) {
             lastHeadElement = document.createElement("HEAD")
-            parent.appendChild(lastHeadElement)
+            parent.appendChild(lastHeadElement!!)
         }
     }
 
