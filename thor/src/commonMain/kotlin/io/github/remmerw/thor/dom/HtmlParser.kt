@@ -1,8 +1,5 @@
 package io.github.remmerw.thor.dom
 
-import org.w3c.dom.Document
-import org.w3c.dom.Element
-import org.w3c.dom.Node
 import java.io.LineNumberReader
 import java.io.Reader
 import java.util.LinkedList
@@ -69,7 +66,7 @@ class HtmlParser {
     private fun safeAppendChild(parent: Node, child: Node) {
         var newParent: Node? = parent
         if (QUIRKS_MODE && needRoot) {
-            val nodeName = child.nodeName
+            val nodeName = child.getNodeName()
             if ("HTML".equals(nodeName, ignoreCase = true)) {
                 lastRootElement = child
             } else if ((child is Element) && (depthAtMost(parent, 1)) && (!hasAncestorTag(
@@ -95,7 +92,7 @@ class HtmlParser {
     private fun ensureBodyAppendChild(parent: Node, child: Node) {
         var newParent: Node? = parent
         if (QUIRKS_MODE && needRoot) {
-            val nodeNameTU = child.nodeName.uppercase()
+            val nodeNameTU = child.getNodeName().uppercase()
             if ("BODY" == nodeNameTU) {
                 lastBodyElement = child
             } else if ("HEAD" == nodeNameTU) {
@@ -137,7 +134,7 @@ class HtmlParser {
         ancestors: LinkedList<String>
     ): Int {
         val doc = this.document
-        val htmlDoc = doc as DocumentImpl
+        val htmlDoc = doc as Document
         val textSb = this.readUpToTagBegin(reader)
         if (textSb == null) {
             return TOKEN_EOD
@@ -149,7 +146,7 @@ class HtmlParser {
             try {
                 safeAppendChild(parent, textNode)
             } catch (de: DOMException) {
-                if ((parent.nodeType != Node.DOCUMENT_NODE) || (de.code != DOMException.HIERARCHY_REQUEST_ERR)) {
+                if ((parent.getNodeType() != Node.DOCUMENT_NODE) || (de.code != DOMException.HIERARCHY_REQUEST_ERR)) {
                     debug("parseToken(): Unable to append child to $parent.")
                 }
             }
@@ -177,7 +174,7 @@ class HtmlParser {
                             val qName = group[1]
                             val publicId = group[2]
                             val systemId = group[3]
-                            val doctype = DocumentTypeImpl(
+                            val doctype = DocumentType(
                                 htmlDoc, htmlDoc.nextUid(),
                                 qName,
                                 publicId, systemId
@@ -318,7 +315,7 @@ class HtmlParser {
                                         } catch (se: StopException) {
                                             // newElement does not have a parent.
                                             val newElement = se.element!!
-                                            tag = newElement.tagName
+                                            tag = newElement.getNodeName()
                                             normalTag = tag.uppercase()
                                             // If a subelement throws StopException with
                                             // a tag matching the current stop tag, the exception
@@ -536,7 +533,7 @@ class HtmlParser {
                     try {
                         parent.appendChild(textNode)
                     } catch (de: DOMException) {
-                        if ((parent.nodeType != Node.DOCUMENT_NODE) || (de.code != DOMException.HIERARCHY_REQUEST_ERR)) {
+                        if ((parent.getNodeType() != Node.DOCUMENT_NODE) || (de.code != DOMException.HIERARCHY_REQUEST_ERR)) {
                             debug("ERROR parseToken(): Unable to append child to $parent.")
                         }
                     }
@@ -562,7 +559,7 @@ class HtmlParser {
                     try {
                         parent.appendChild(textNode)
                     } catch (de: DOMException) {
-                        if ((parent.nodeType != Node.DOCUMENT_NODE) || (de.code != DOMException.HIERARCHY_REQUEST_ERR)) {
+                        if ((parent.getNodeType() != Node.DOCUMENT_NODE) || (de.code != DOMException.HIERARCHY_REQUEST_ERR)) {
                             debug("ERROR parseToken(): Unable to append child to $parent.")
                         }
                     }
@@ -1350,10 +1347,10 @@ class HtmlParser {
         private fun hasAncestorTag(node: Node?, tag: String): Boolean {
             return if (node == null) {
                 false
-            } else if (tag.equals(node.nodeName, ignoreCase = true)) {
+            } else if (tag.equals(node.getNodeName(), ignoreCase = true)) {
                 true
             } else {
-                hasAncestorTag(node.parentNode, tag)
+                hasAncestorTag(node.getParentNode(), tag)
             }
         }
 
@@ -1361,7 +1358,7 @@ class HtmlParser {
             if (maxDepth <= 0) {
                 return false
             } else {
-                val parent = n.parentNode
+                val parent = n.getParentNode()
                 return parent == null || depthAtMost(parent, maxDepth - 1)
             }
         }

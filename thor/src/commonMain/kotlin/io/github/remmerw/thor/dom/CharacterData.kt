@@ -1,18 +1,15 @@
 package io.github.remmerw.thor.dom
 
 import kotlinx.coroutines.flow.MutableStateFlow
-import org.w3c.dom.CharacterData
-import org.w3c.dom.Document
 
-abstract class CharacterDataImpl(
+abstract class CharacterData(
     document: Document,
     uid: Long,
     name: String,
     type: Short,
     var text: String = ""
 ) :
-    NodeImpl(document, uid, name, type),
-    CharacterData {
+    Node(document, uid, name, type) {
 
     val wurst = MutableStateFlow(text)
 
@@ -26,12 +23,12 @@ abstract class CharacterDataImpl(
 
 
     @Throws(DOMException::class)
-    override fun appendData(arg: String) {
+    fun appendData(arg: String) {
         this.text += arg
     }
 
     @Throws(DOMException::class)
-    override fun deleteData(offset: Int, count: Int) {
+    fun deleteData(offset: Int, count: Int) {
         val buffer = StringBuffer(this.text)
         val result = buffer.delete(offset, offset + count)
         this.text = result.toString()
@@ -39,36 +36,36 @@ abstract class CharacterDataImpl(
     }
 
     @Throws(DOMException::class)
-    override fun getData(): String {
+    fun getData(): String {
         return this.text
     }
 
     @Throws(DOMException::class)
-    override fun setData(data: String) {
+    fun setData(data: String) {
         this.text = data
 
     }
 
-    override fun getLength(): Int {
+    fun getLength(): Int {
         return this.text.length
     }
 
     @Throws(DOMException::class)
-    override fun insertData(offset: Int, arg: String?) {
+    fun insertData(offset: Int, arg: String?) {
         val buffer = StringBuffer(this.text)
         val result = buffer.insert(offset, arg)
         this.text = result.toString()
     }
 
     @Throws(DOMException::class)
-    override fun replaceData(offset: Int, count: Int, arg: String) {
+    fun replaceData(offset: Int, count: Int, arg: String) {
         val buffer = StringBuffer(this.text)
         val result = buffer.replace(offset, offset + count, arg)
         this.text = result.toString()
     }
 
     @Throws(DOMException::class)
-    override fun substringData(offset: Int, count: Int): String {
+    fun substringData(offset: Int, count: Int): String {
         return this.text.substring(offset, offset + count)
     }
 
@@ -78,6 +75,6 @@ abstract class CharacterDataImpl(
             someText = someText.substring(0, 29) + "..."
         }
         val length = someText.length
-        return this.nodeName + "[length=" + length + ",text=" + someText + "]"
+        return this.getNodeName() + "[length=" + length + ",text=" + someText + "]"
     }
 }

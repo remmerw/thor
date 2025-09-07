@@ -1,16 +1,16 @@
 package io.github.remmerw.thor
 
-import io.github.remmerw.thor.dom.DocumentImpl
-import io.github.remmerw.thor.dom.ElementImpl
+import io.github.remmerw.thor.dom.Document
+import io.github.remmerw.thor.dom.Element
+import io.github.remmerw.thor.dom.Node
 import io.github.remmerw.thor.dom.parseDocument
 import io.ktor.http.Url
-import org.w3c.dom.Node
 import java.net.URL
 
 class Render(var url: Url) {
 
 
-    fun parsePage(): DocumentImpl {
+    fun parsePage(): Document {
         var urlObj: URL?
         try {
             urlObj = URL(url.toString())
@@ -30,7 +30,7 @@ class Render(var url: Url) {
             val document = parseDocument(inputStream, url, "UTF-8")
 
             // Do a recursive traversal on the top-level DOM node.
-            doTree( document.documentElement)
+            doTree( document.getDocumentElement())
             return document
         } catch (e: Exception) {
             e.printStackTrace()
@@ -47,23 +47,24 @@ class Render(var url: Url) {
      * are tags contained inside the parent tag.
      */
     fun doTree(node: Node?) {
-        if (node is ElementImpl) {
+        if (node is Element) {
             // Visit tag.
 
             doElement(node)
 
             // Visit all the children, i.e., tags contained in this tag.
-            val nl = node.childNodes
-            val num = nl.length
-            for (i in 0..<num) doTree(nl.item(i))
+           node.children().forEach { node ->
+                doTree(node)
+            }
 
-            println("</" + node.tagName + ">")
+
+            println("</" + node.getTagName() + ">")
         }
     }
 
 
-    fun doElement(element: ElementImpl) {
-        println("<" + element.tagName + ">")
+    fun doElement(element: Element) {
+        println("<" + element.getTagName() + ">")
 
         println("Attributes : " + element.attributes().toString())
 

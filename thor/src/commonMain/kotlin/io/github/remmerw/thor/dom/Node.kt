@@ -1,21 +1,15 @@
 package io.github.remmerw.thor.dom
 
-import org.w3c.dom.Document
-import org.w3c.dom.NamedNodeMap
-import org.w3c.dom.Node
-import org.w3c.dom.NodeList
-import org.w3c.dom.Text
-import org.w3c.dom.UserDataHandler
 
-abstract class NodeImpl(
+abstract class Node(
     var document: Document?,
     private val uid: Long,
-    private val name: String,
+    val name: String,
     private val type: Short
-) : Node {
+) {
     init {
-        if (document is DocumentImpl) {
-            (document as DocumentImpl).addNode(this)
+        if (document is Document) {
+            (document as Document).addNode(this)
         }
     }
 
@@ -23,23 +17,20 @@ abstract class NodeImpl(
 
     protected var parent: Node? = null
 
-    override fun getAttributes(): NamedNodeMap? {
-        TODO()
-    }
 
-    override fun getNodeName(): String {
+    fun getNodeName(): String {
         return this.name
     }
 
-    override fun getNodeValue(): String? {
+    open fun getNodeValue(): String? {
         TODO("Not yet implemented")
     }
 
-    override fun setNodeValue(p0: String?) {
+    fun setNodeValue(p0: String?) {
         TODO("Not yet implemented")
     }
 
-    override fun getNodeType(): Short {
+    fun getNodeType(): Short {
         return type
     }
 
@@ -47,7 +38,7 @@ abstract class NodeImpl(
         return children
     }
 
-    override fun cloneNode(p0: Boolean): Node? {
+    fun cloneNode(p0: Boolean): Node? {
         TODO("Not yet implemented")
     }
 
@@ -56,22 +47,22 @@ abstract class NodeImpl(
     }
 
     @Throws(DOMException::class)
-    override fun appendChild(newChild: Node?): Node {
+    fun appendChild(newChild: Node?): Node {
         if (newChild != null) {
 
             if (isInclusiveAncestorOf(newChild)) {
-                val prevParent = newChild.parentNode
-                if (prevParent is NodeImpl) {
+                val prevParent = newChild.getParentNode()
+                if (prevParent is Node) {
                     prevParent.removeChild(newChild)
                 }
-            } else if ((newChild is NodeImpl) && newChild.isInclusiveAncestorOf(this)) {
+            } else if ((newChild is Node) && newChild.isInclusiveAncestorOf(this)) {
                 throw DOMException(
                     DOMException.HIERARCHY_REQUEST_ERR,
                     "Trying to append an ancestor element."
                 )
             }
 
-            this.children.add(newChild as NodeImpl)
+            this.children.add(newChild as Node)
 
             return newChild
         } else {
@@ -80,20 +71,11 @@ abstract class NodeImpl(
     }
 
 
-    protected fun getNodeList(filter: NodeFilter): NodeList {
-        val collection: MutableList<NodeImpl> = mutableListOf()
-
-        this.appendChildrenToCollectionImpl(filter, collection)
-
-        return NodeListImpl(collection.toList())
-    }
-
-
     fun getDescendants(
         filter: NodeFilter,
         nestIntoMatchingNodes: Boolean
-    ): ArrayList<NodeImpl> {
-        val al = ArrayList<NodeImpl>()
+    ): ArrayList<Node> {
+        val al = ArrayList<Node>()
 
         this.extractDescendantsArrayImpl(filter, al, nestIntoMatchingNodes) // todo
 
@@ -103,17 +85,17 @@ abstract class NodeImpl(
 
     private fun extractDescendantsArrayImpl(
         filter: NodeFilter,
-        al: ArrayList<NodeImpl>,
+        al: ArrayList<Node>,
         nestIntoMatchingNodes: Boolean
     ) {
         this.children.forEach { node ->
-            val n = node as NodeImpl
+            val n = node
             if (filter.accept(n)) {
                 al.add(n)
                 if (nestIntoMatchingNodes) {
                     n.extractDescendantsArrayImpl(filter, al, nestIntoMatchingNodes)
                 }
-            } else if (n.nodeType == Node.ELEMENT_NODE) {
+            } else if (n.getNodeType() == ELEMENT_NODE) {
                 n.extractDescendantsArrayImpl(filter, al, nestIntoMatchingNodes)
             }
         }
@@ -121,10 +103,10 @@ abstract class NodeImpl(
 
     private fun appendChildrenToCollectionImpl(
         filter: NodeFilter,
-        collection: MutableList<NodeImpl>
+        collection: MutableList<Node>
     ) {
         children.forEach { node ->
-            if (filter.accept(node as NodeImpl)) {
+            if (filter.accept(node)) {
                 collection.add(node)
             }
             node.appendChildrenToCollectionImpl(filter, collection)
@@ -133,7 +115,7 @@ abstract class NodeImpl(
 
 
     protected fun nodeIndex(): Int {
-        val parent = this.parentNode as NodeImpl?
+        val parent = this.getParentNode()
         return parent?.getChildIndex(this) ?: -1
     }
 
@@ -146,7 +128,7 @@ abstract class NodeImpl(
 
 
     private fun isAncestorOf(other: Node): Boolean {
-        val parent = other.parentNode as NodeImpl?
+        val parent = other.getParentNode()
         return if (parent === this) {
             true
         } else if (parent == null) {
@@ -167,34 +149,34 @@ abstract class NodeImpl(
     }
 
     @Throws(DOMException::class)
-    override fun compareDocumentPosition(other: Node?): Short {
-        val parent = this.parentNode
-        if (other !is NodeImpl) {
+    fun compareDocumentPosition(other: Node?): Short {
+        val parent = this.getParentNode()
+        if (other !is Node) {
             throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Unknwon node implementation")
         }
-        if ((parent != null) && (parent === other.parentNode)) {
+        if ((parent != null) && (parent === other.getParentNode())) {
             val thisIndex = this.nodeIndex()
             val otherIndex =
                 other.nodeIndex()
             if ((thisIndex == -1) || (otherIndex == -1)) {
-                return Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
+                return DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
             }
             if (thisIndex < otherIndex) {
-                return Node.DOCUMENT_POSITION_FOLLOWING
+                return DOCUMENT_POSITION_FOLLOWING
             } else {
-                return Node.DOCUMENT_POSITION_PRECEDING
+                return DOCUMENT_POSITION_PRECEDING
             }
         } else if (this.isAncestorOf(other)) {
-            return Node.DOCUMENT_POSITION_CONTAINED_BY
+            return DOCUMENT_POSITION_CONTAINED_BY
         } else if (other.isAncestorOf(this)) {
-            return Node.DOCUMENT_POSITION_CONTAINS
+            return DOCUMENT_POSITION_CONTAINS
         } else {
-            return Node.DOCUMENT_POSITION_DISCONNECTED
+            return DOCUMENT_POSITION_DISCONNECTED
         }
     }
 
 
-    override fun getOwnerDocument(): Document? {
+    fun getOwnerDocument(): Document? {
         return document
     }
 
@@ -210,7 +192,7 @@ abstract class NodeImpl(
             val nl = this.children
             val i: MutableIterator<Node?> = nl.iterator()
             while (i.hasNext()) {
-                val child = i.next() as NodeImpl
+                val child = i.next() as Node
                 child.setOwnerDocument(value, deep)
             }
 
@@ -224,7 +206,7 @@ abstract class NodeImpl(
         val nl = this.children
         val i: MutableIterator<Node?> = nl.iterator()
         while (i.hasNext()) {
-            val child = i.next() as NodeImpl
+            val child = i.next() as Node
             child.visit(visitor)
         }
     }
@@ -239,9 +221,9 @@ abstract class NodeImpl(
     // This is a changed and better version of the above. It gives the same number of pass / failures on http://web-platform.test:8000/dom/nodes/Node-insertBefore.html
     // Pass 2: FAIL: 24
     @Throws(DOMException::class)
-    override fun insertBefore(newChild: Node, refChild: Node?): Node {
+    fun insertBefore(newChild: Node, refChild: Node?): Node {
 
-        if (newChild is NodeImpl) {
+        if (newChild is Node) {
             if (newChild.isInclusiveAncestorOf(this)) {
                 throw DOMException(
                     DOMException.HIERARCHY_REQUEST_ERR,
@@ -258,7 +240,7 @@ abstract class NodeImpl(
         if (idx == -1) {
             throw DOMException(DOMException.NOT_FOUND_ERR, "refChild not found")
         }
-        nl.add(idx, newChild as NodeImpl)
+        nl.add(idx, newChild as Node)
 
 
         return newChild
@@ -266,7 +248,7 @@ abstract class NodeImpl(
 
 
     @Throws(DOMException::class)
-    override fun replaceChild(newChild: Node?, oldChild: Node?): Node? {
+    fun replaceChild(newChild: Node?, oldChild: Node?): Node? {
 
         if (this.isInclusiveAncestorOf(newChild)) {
             throw DOMException(
@@ -274,7 +256,7 @@ abstract class NodeImpl(
                 "newChild is already a child of the node"
             )
         }
-        if ((newChild is NodeImpl) && newChild.isInclusiveAncestorOf(this)) {
+        if ((newChild is Node) && newChild.isInclusiveAncestorOf(this)) {
             throw DOMException(
                 DOMException.HIERARCHY_REQUEST_ERR,
                 "Trying to set an ancestor element as a child."
@@ -286,13 +268,13 @@ abstract class NodeImpl(
         if (idx == -1) {
             throw DOMException(DOMException.NOT_FOUND_ERR, "oldChild not found")
         }
-        nl.set(idx, newChild!! as NodeImpl)
+        nl.set(idx, newChild!! as Node)
 
         return newChild
     }
 
     @Throws(DOMException::class)
-    override fun removeChild(oldChild: Node?): Node? {
+    fun removeChild(oldChild: Node?): Node? {
 
         if (!children.remove(oldChild)) {
             throw DOMException(DOMException.NOT_FOUND_ERR, "oldChild not found")
@@ -302,31 +284,31 @@ abstract class NodeImpl(
     }
 
 
-    override fun hasChildNodes(): Boolean {
+    fun hasChildNodes(): Boolean {
 
         return children.isNotEmpty()
 
     }
 
-    override fun getBaseURI(): String? {
+    open fun getBaseURI(): String? {
         val document = this.document
-        return document?.baseURI
+        return document?.getBaseURI()
     }
 
-    override fun getChildNodes(): NodeList {
+    fun getChildNodes(): NodeList {
 
         val nl = this.children
-        return NodeListImpl(nl.toList())
+        return NodeList(nl.toList())
 
     }
 
-    override fun getFirstChild(): Node? {
+    fun getFirstChild(): Node? {
 
         return children().first()
 
     }
 
-    override fun getLastChild(): Node? {
+    fun getLastChild(): Node? {
 
         return this.children.last()
 
@@ -364,58 +346,51 @@ abstract class NodeImpl(
 
     }
 
-    override fun getPreviousSibling(): Node? {
-        val parent = this.parentNode as NodeImpl?
+    fun getPreviousSibling(): Node? {
+        val parent = this.getParentNode()
         return parent?.getPreviousTo(this)
     }
 
-    override fun getNextSibling(): Node? {
-        val parent = this.parentNode as NodeImpl?
+    fun getNextSibling(): Node? {
+        val parent = this.getParentNode()
         return parent?.getNextTo(this)
     }
 
-    override fun getFeature(feature: String?, version: String?): Any? {
+    fun getFeature(feature: String?, version: String?): Any? {
         // TODO What should this do?
         return null
     }
 
-    override fun setUserData(key: String, data: Any?, handler: UserDataHandler?): Any? {
-        TODO("not implemented yet")
-    }
 
-    override fun getUserData(key: String?): Any? {
-        TODO("not implemented yet")
-    }
-
-    override fun hasAttributes(): Boolean {
+    open fun hasAttributes(): Boolean {
         return false
     }
 
-    override fun getNamespaceURI(): String? {
+    fun getNamespaceURI(): String? {
         return null
     }
 
-    override fun getPrefix(): String? {
+    fun getPrefix(): String? {
         TODO("Not supported yet")
     }
 
-    override fun setPrefix(prefix: String?) {
+    fun setPrefix(prefix: String?) {
         TODO("Not supported yet")
     }
 
 
     @Throws(DOMException::class)
-    override fun getTextContent(): String? {
+    open fun getTextContent(): String? {
         val sb = StringBuffer()
 
         val nl = this.children
         val i = nl.iterator()
         while (i.hasNext()) {
             val node = i.next()
-            val type = node.nodeType
+            val type = node.getNodeType()
             when (type) {
-                Node.CDATA_SECTION_NODE, Node.TEXT_NODE, Node.ELEMENT_NODE -> {
-                    val textContent = node.textContent
+                CDATA_SECTION_NODE, TEXT_NODE, ELEMENT_NODE -> {
+                    val textContent = node.getTextContent()
                     if (textContent != null) {
                         sb.append(textContent)
                     }
@@ -429,13 +404,13 @@ abstract class NodeImpl(
     }
 
 
-    override fun setTextContent(textContent: String) {
+    open fun setTextContent(textContent: String) {
 
         this.removeChildrenImpl(TextFilter())
         if ("" != textContent) {
-            val impl = ownerDocument!! as DocumentImpl
-            val t = TextImpl(
-                ownerDocument!!,
+            val impl = getOwnerDocument()!!
+            val t = Text(
+                impl,
                 impl.nextUid(), textContent
             )
             t.parent = (this)
@@ -465,64 +440,27 @@ abstract class NodeImpl(
         if (idx == -1) {
             throw DOMException(DOMException.NOT_FOUND_ERR, "refChild not found")
         }
-        nl.add(idx + 1, newChild!! as NodeImpl)
+        nl.add(idx + 1, newChild!!)
 
 
 
         return newChild
     }
 
-    fun replaceAdjacentTextNodes(node: Text, textContent: String?): Text {
 
-
-        val nl = this.children
-        val idx = nl.indexOf(node as NodeImpl)
-        if (idx == -1) {
-            throw DOMException(DOMException.NOT_FOUND_ERR, "Node not a child")
-        }
-        var firstIdx = idx
-        val toDelete: MutableList<Text> = mutableListOf()
-        run {
-            var adjIdx = idx
-            while (--adjIdx >= 0) {
-                val child: Any? = this.children[adjIdx]
-                if (child is Text) {
-                    firstIdx = adjIdx
-                    toDelete.add(child)
-                }
-            }
-        }
-        val length = this.children.size
-        var adjIdx = idx
-        while (++adjIdx < length) {
-            val child: Any? = this.children[adjIdx]
-            if (child is Text) {
-                toDelete.add(child)
-            }
-        }
-        this.children.removeAll(toDelete)
-        val impl = ownerDocument!! as DocumentImpl
-        val textNode = TextImpl(ownerDocument!!, impl.nextUid(), textContent!!)
-        textNode.parent = (this)
-        this.children.add(firstIdx, textNode)
-        return textNode
-
-
-    }
-
-    override fun getParentNode(): Node? {
+    fun getParentNode(): Node? {
         return this.parent
     }
 
-    override fun isSameNode(other: Node?): Boolean {
+    fun isSameNode(other: Node?): Boolean {
         return this === other
     }
 
-    override fun isSupported(feature: String?, version: String): Boolean {
+    fun isSupported(feature: String?, version: String): Boolean {
         return ("HTML" == feature && (version <= "4.01"))
     }
 
-    override fun lookupNamespaceURI(prefix: String?): String? {
+    fun lookupNamespaceURI(prefix: String?): String? {
         return null
     }
 
@@ -530,17 +468,11 @@ abstract class NodeImpl(
         return false
     }
 
-    override fun isEqualNode(arg: Node?): Boolean {
-        return (arg is NodeImpl) && (this.nodeType == arg.nodeType) && this.nodeName == arg.nodeName
-                && this.nodeValue == arg.nodeValue && this.localName == arg.localName
-                && this.children == arg.children && this.equalAttributes(arg)
-    }
-
-    override fun isDefaultNamespace(namespaceURI: String?): Boolean {
+    fun isDefaultNamespace(namespaceURI: String?): Boolean {
         return namespaceURI == null
     }
 
-    override fun lookupPrefix(namespaceURI: String?): String? {
+    fun lookupPrefix(namespaceURI: String?): String? {
         return null
     }
 
@@ -549,11 +481,7 @@ abstract class NodeImpl(
     }
 
     override fun toString(): String {
-        return "$nodeName($uid)"
-    }
-
-    override fun normalize() {
-        TODO("Not yet implemented")
+        return "$name($uid)"
     }
 
 

@@ -6,9 +6,9 @@ import java.io.InputStreamReader
 import java.io.LineNumberReader
 
 
-fun parseDocument(byteStream: InputStream, url: Url, charset: String): DocumentImpl {
+fun parseDocument(byteStream: InputStream, url: Url, charset: String): Document {
     val reader = LineNumberReader(InputStreamReader(byteStream, charset))
-    val document = DocumentImpl(reader, url, charset)
+    val document = Document(reader, url, charset)
     document.load()
     return document
 }

@@ -1,23 +1,22 @@
 package io.github.remmerw.thor.model
 
-import io.github.remmerw.thor.dom.DocumentImpl
-import io.github.remmerw.thor.dom.ElementImpl
+import io.github.remmerw.thor.dom.Document
+import io.github.remmerw.thor.dom.Element
 import io.ktor.http.Url
-import org.w3c.dom.Element
 
 object Utils {
 
-    fun getHref(elementModel: ElementImpl): String {
+    fun getHref(elementModel: Element): String {
         val href = elementModel.getAttribute("href")
         return if (href == null) "" else Urls.removeControlCharacters(href)
     }
 
-    fun getBaseURI(doc: DocumentImpl): String? {
-        val buri = doc.baseURI
-        return if (buri == null) doc.documentURI else buri
+    fun getBaseURI(doc: Document): String? {
+        val buri = doc.getBaseURI()
+        return if (buri == null) doc.getDocumentURI() else buri
     }
 
-    fun getFullURL(doc: DocumentImpl, uri: String): Url {
+    fun getFullURL(doc: Document, uri: String): Url {
         try {
             val baseURI = getBaseURI(doc)
             val documentURL = if (baseURI == null) null else Url(baseURI)
@@ -28,9 +27,9 @@ object Utils {
     }
 
     fun getFullURL(elementModel: Element, spec: String): Url {
-        val doc: Any? = elementModel.ownerDocument
+        val doc: Any? = elementModel.getOwnerDocument()
         val cleanSpec = Urls.encodeIllegalCharacters(spec)
-        return if (doc is DocumentImpl) {
+        return if (doc is Document) {
             getFullURL(doc, cleanSpec)
         } else {
             Url(cleanSpec)
@@ -39,7 +38,7 @@ object Utils {
 
 
     private fun absoluteURL(
-        anchor: ElementImpl,
+        anchor: Element,
         stateModel: StateModel
     ): Url? {
         val href = getHref(anchor)
@@ -55,10 +54,10 @@ object Utils {
         return null
     }
 
-    fun navigate(elementModel: ElementImpl, stateModel: StateModel) {
+    fun navigate(elementModel: Element, stateModel: StateModel) {
 
-        if (elementModel.nodeName == Type.ANCHOR.name ||
-            elementModel.nodeName == Type.A.name
+        if (elementModel.getNodeName() == Type.ANCHOR.name ||
+            elementModel.getNodeName() == Type.A.name
         ) {
             val href = getHref(elementModel)
             if (href.startsWith("#")) {
@@ -75,7 +74,7 @@ object Utils {
                 }
             }
         }
-        if (elementModel.nodeName == Type.LINK.name) {
+        if (elementModel.getNodeName() == Type.LINK.name) {
             val href = getHref(elementModel)
             if (href.startsWith("#")) {
                 // TODO: Scroll to the element. Issue #101

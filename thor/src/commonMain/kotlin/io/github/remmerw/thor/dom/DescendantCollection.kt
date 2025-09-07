@@ -1,7 +1,5 @@
 package io.github.remmerw.thor.dom
 
-import org.w3c.dom.Node
-
 
 interface Collection {
     fun getLength(): Int
@@ -12,14 +10,14 @@ interface Collection {
 }
 
 open class DescendantHTMLCollection(
-    private val rootNode: NodeImpl,
+    private val rootNode: Node,
     private val nodeFilter: NodeFilter?,
     private val nestIntoMatchingNodes: Boolean = true
 ) : Collection { // TODO cleanup
 
 
-    private var itemsByName: MutableMap<String?, ElementImpl?>? = null
-    private var itemsByIndex: MutableList<NodeImpl>? = null
+    private var itemsByName: MutableMap<String?, Element?>? = null
+    private var itemsByIndex: MutableList<Node>? = null
 
 
     private fun ensurePopulatedImpl() {
@@ -28,11 +26,11 @@ open class DescendantHTMLCollection(
                 this.rootNode.getDescendants(this.nodeFilter!!, this.nestIntoMatchingNodes)
             this.itemsByIndex = descendents
             val size = descendents.size
-            val itemsByName: MutableMap<String?, ElementImpl?> = HashMap((size * 3) / 2)
+            val itemsByName: MutableMap<String?, Element?> = HashMap((size * 3) / 2)
             this.itemsByName = itemsByName
             for (i in 0..<size) {
                 val descNode = descendents[i]
-                if (descNode is ElementImpl) {
+                if (descNode is Element) {
                     val id = descNode.getAttribute("id")
                     if ((id != null) && (id.isNotEmpty())) {
                         itemsByName.put(id, descNode)

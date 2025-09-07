@@ -23,16 +23,15 @@ class ParserTest {
             assertNotNull(document)
 
             document.getElementsByName("hello").toString()
-            document.getElementById("hello").toString()
             document.getDocumentUrl().toString()
             document.getDocumentHost().toString()
-            document.inputEncoding
-            document.xmlVersion
-            document.xmlEncoding
-            document.xmlVersion
+            document.getInputEncoding()
+            document.getXmlVersion()
+            document.getXmlEncoding()
+            document.getXmlStandalone()
             document.isXML()
 
-            println("done " + document.documentURI)
+            println("done " + document.getDocumentURI())
 
         }
 

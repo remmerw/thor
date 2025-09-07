@@ -5,25 +5,24 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.remmerw.thor.dom.DocumentImpl
+import io.github.remmerw.thor.dom.Document
+import io.github.remmerw.thor.dom.Element
 import io.github.remmerw.thor.dom.Entity
-import io.github.remmerw.thor.dom.NodeImpl
-import io.github.remmerw.thor.dom.TextImpl
+import io.github.remmerw.thor.dom.Node
+import io.github.remmerw.thor.dom.Text
 import io.ktor.http.Url
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import org.w3c.dom.Element
-import org.w3c.dom.Node
 
 class StateModel() : ViewModel() {
     var isImageLoadingEnabled: Boolean by mutableStateOf(true)
 
-    private var document: DocumentImpl? = null
+    private var document: Document? = null
 
     val entity = MutableStateFlow<Entity?>(null)
 
-    fun setDocument(documentImpl: DocumentImpl) {
+    fun setDocument(documentImpl: Document) {
         viewModelScope.launch {
             document = documentImpl
             println(documentImpl.entity())
@@ -52,7 +51,7 @@ class StateModel() : ViewModel() {
         if (document == null) {
             return ""
         }
-        return (document!!.node(entity.uid) as TextImpl).text
+        return (document!!.node(entity.uid) as Text).text
     }
 
 
@@ -69,9 +68,9 @@ class StateModel() : ViewModel() {
             return emptyList()
         }
         return document!!.childNodes(entity.uid).map { node ->
-            node as NodeImpl
-            println(node.nodeName)
-            Entity(node.uid(), node.nodeName)
+            node as Node
+            println(node.getNodeName())
+            Entity(node.uid(), node.getNodeName())
         }.toList()
     }
 
