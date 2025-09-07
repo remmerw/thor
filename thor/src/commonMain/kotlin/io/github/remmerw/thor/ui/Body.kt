@@ -23,10 +23,10 @@ fun Body(
         items(
             items = entities,
             key = { element -> element.uid }
-        ) { nodeModel ->
+        ) { entity ->
             FlowRow {
                 EvaluateEntity(
-                    entity = nodeModel,
+                    entity = entity,
                     stateModel = stateModel,
                     modifier = Modifier
                 )

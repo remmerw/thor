@@ -10,12 +10,12 @@ import io.github.remmerw.thor.model.StateModel
 
 @Composable
 fun H6(
-    nodeModel: Entity,
+    entity: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
     Nodes(
-        nodeModel, stateModel,
+        entity, stateModel,
         modifier = modifier.fillMaxWidth(),
         style = MaterialTheme.typography.titleSmall
     )
@@ -38,12 +38,12 @@ fun H5(
 
 @Composable
 fun H4(
-    nodeModel: Entity,
+    entity: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
     Nodes(
-        nodeModel, stateModel,
+        entity, stateModel,
         modifier = modifier.fillMaxWidth(),
         style = MaterialTheme.typography.titleMedium
     )
