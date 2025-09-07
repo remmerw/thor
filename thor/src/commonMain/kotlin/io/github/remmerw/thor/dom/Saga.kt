@@ -8,14 +8,20 @@ const val XHTML_STRICT_PUBLIC_ID = "-//W3C//DTD XHTML 1.0 Strict//EN"
 const val XHTML_STRICT_SYS_ID = "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
 
 
-fun parseDocument(byteStream: InputStream, charset: String): Model {
-    val reader = LineNumberReader(InputStreamReader(byteStream, charset))
-    val model = Model()
+fun createModel(): Model {
+    return Model()
+}
+
+fun parseModel(
+    model: Model = createModel(),
+    inputStream: InputStream,
+    charset: String
+): Model {
+    val reader = LineNumberReader(InputStreamReader(inputStream, charset))
     reader.use { reader ->
         val parser = HtmlParser(
             model = model,
-            isXML = false,
-            needRoot = true
+            isXML = false
         )
         parser.parse(reader)
     }

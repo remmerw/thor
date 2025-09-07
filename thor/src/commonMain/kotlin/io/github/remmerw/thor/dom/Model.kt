@@ -10,10 +10,8 @@ class Model() : Node(null, null, 0, "#document") {
 
     @OptIn(ExperimentalAtomicApi::class)
     private val uids = AtomicLong(0L)
-
     private val nodes: MutableMap<Long, Node> = mutableMapOf()
     private var doctype: DocumentType? = null
-    private var isDocTypeXHTML = false
 
 
     init {
@@ -35,10 +33,6 @@ class Model() : Node(null, null, 0, "#document") {
         return nodes[entity.uid]!!
     }
 
-    fun isXML(): Boolean {
-        return isDocTypeXHTML
-    }
-
 
     fun getDoctype(): DocumentType? {
         return this.doctype
@@ -47,9 +41,7 @@ class Model() : Node(null, null, 0, "#document") {
 
     fun setDoctype(doctype: DocumentType) {
         this.doctype = doctype
-        isDocTypeXHTML = (doctype.name == "html")
-                && (doctype.publicId == XHTML_STRICT_PUBLIC_ID)
-                && (doctype.systemId == XHTML_STRICT_SYS_ID)
+
     }
 
     fun getDocumentElement(): Element? {

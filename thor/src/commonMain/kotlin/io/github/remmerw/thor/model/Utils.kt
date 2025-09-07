@@ -36,7 +36,7 @@ object Utils {
         } else {
             try {
 
-                return getFullURL2(stateModel.documentUri!! , href)
+                return getFullURL2(stateModel.documentUri!!, href)
             } catch (throwable: Throwable) {
                 stateModel.warn("Malformed URI: [" + href + "].", throwable)
             }

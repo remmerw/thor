@@ -2,6 +2,7 @@ package io.github.remmerw.thor
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.lifecycle.viewmodel.compose.viewModel
+import io.github.remmerw.thor.dom.createModel
 import io.github.remmerw.thor.model.StateModel
 import io.github.remmerw.thor.ui.HtmlViewer
 import io.ktor.http.Url
@@ -19,14 +20,16 @@ class RenderTest {
     fun renderTest(): Unit = runBlocking(Dispatchers.IO) {
 
         val url = Url("http://www.benjysbrain.com/")
-        val p = Render(url)
-        val document = p.parsePage()
 
+        val p = Render(url)
+        val model = createModel()
+        p.parse(model)
         composeTestRule.setContent {
 
             val stateModel: StateModel = viewModel { StateModel() }
+
             stateModel.documentUri = url.toString()
-            stateModel.setDocument(document)
+            stateModel.setModel(model)
 
 
             HtmlViewer(stateModel)

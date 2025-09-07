@@ -8,14 +8,11 @@ internal class StopException(val element: Element) : Exception()
 class HtmlParser {
     private val model: Model
     private val isXML: Boolean
-    private var lastRootElement: Node? = null
-    private var lastHeadElement: Node? = null
-    private var lastBodyElement: Node? = null
-    private var needRoot: Boolean
     private var normalLastTag: String? = null
     private var justReadTagBegin = false
     private var justReadTagEnd = false
     private val isScriptingEnabled: Boolean = false
+    private var isDocTypeXHTML = false
 
     /**
      * Only set when readAttribute returns false.
@@ -25,12 +22,10 @@ class HtmlParser {
 
     constructor(
         model: Model,
-        isXML: Boolean,
-        needRoot: Boolean
+        isXML: Boolean
     ) {
         this.model = model
         this.isXML = isXML
-        this.needRoot = needRoot
     }
 
     private fun shouldDecodeEntities(info: ElementInfo?): Boolean {
@@ -45,85 +40,16 @@ class HtmlParser {
 
 
     fun parse(reader: LineNumberReader, parent: Node) {
-
-        try {
-            while (this.parseToken(
-                    parent, reader, null,
-                    LinkedList<String>()
-                ) != TOKEN_EOD
-            ) {
-            }
-        } finally {
-            if (QUIRKS_MODE && needRoot) {
-                ensureRootElement(parent)
-                ensureHeadElement(lastRootElement!!)
-                ensureBodyElement(lastRootElement!!)
-            }
+        while (this.parseToken(
+                parent, reader, null,
+                LinkedList<String>()
+            ) != TOKEN_EOD
+        ) {
         }
-
     }
 
     private fun safeAppendChild(parent: Node, child: Node) {
-        var newParent: Node? = parent
-        if (QUIRKS_MODE && needRoot) {
-            val nodeName = child.name
-            if ("HTML".equals(nodeName, ignoreCase = true)) {
-                lastRootElement = child
-            } else if ((child is Element) && (depthAtMost(parent, 1)) && (!hasAncestorTag(
-                    parent,
-                    "HTML"
-                ))
-            ) {
-                ensureRootElement(parent)
-                newParent = lastRootElement
-            }
-        }
-
-        ensureBodyAppendChild(newParent!!, child)
-    }
-
-    private fun ensureRootElement(parent: Node) {
-        if (lastRootElement == null) {
-            lastRootElement = model.createElement(parent, "HTML")
-            parent.appendChild(lastRootElement!!)
-        }
-    }
-
-    private fun ensureBodyAppendChild(parent: Node, child: Node) {
-        var newParent: Node? = parent
-        if (QUIRKS_MODE && needRoot) {
-            val nodeNameTU = child.name.uppercase()
-            if ("BODY" == nodeNameTU) {
-                lastBodyElement = child
-            } else if ("HEAD" == nodeNameTU) {
-                lastHeadElement = child
-            } else if ((child is Element) && (depthAtMost(parent, 2))) {
-                val dontNeedBody = elementsThatDontNeedBodyElement.contains(nodeNameTU)
-                val dontNeedHead = elementsThatDontNeedHeadElement.contains(nodeNameTU)
-                if ((!hasAncestorTag(parent, "BODY")) && (!dontNeedBody)) {
-                    ensureBodyElement(parent)
-                    newParent = lastBodyElement
-                } else if ((!hasAncestorTag(parent, "HEAD")) && (!dontNeedHead)) {
-                    ensureHeadElement(parent)
-                    newParent = lastHeadElement
-                }
-            }
-        }
-        newParent!!.appendChild(child)
-    }
-
-    private fun ensureBodyElement(parent: Node) {
-        if (lastBodyElement == null) {
-            lastBodyElement = model.createElement(parent, "BODY")
-            parent.appendChild(lastBodyElement!!)
-        }
-    }
-
-    private fun ensureHeadElement(parent: Node) {
-        if (lastHeadElement == null) {
-            lastHeadElement = model.createElement(parent, "HEAD")
-            parent.appendChild(lastHeadElement!!)
-        }
+        parent.appendChild(child)
     }
 
 
@@ -134,7 +60,6 @@ class HtmlParser {
         ancestors: LinkedList<String>
     ): Int {
         val doc = this.model
-        val htmlDoc = doc
         val textSb = this.readUpToTagBegin(reader)
         if (textSb == null) {
             return TOKEN_EOD
@@ -149,7 +74,7 @@ class HtmlParser {
             if (tag == null) {
                 return TOKEN_EOD
             }
-            var normalTag: String? = if (htmlDoc.isXML()) tag else tag.uppercase()
+            var normalTag: String? = if (isDocTypeXHTML) tag else tag.uppercase()
             try {
                 if (tag.startsWith("!")) {
                     if ("!--" == tag) {
@@ -167,14 +92,16 @@ class HtmlParser {
                             val publicId = group[2]
                             val systemId = group[3]
                             val doctype = DocumentType(
-                                htmlDoc, parent,
-                                htmlDoc.nextUid(),
+                                doc, parent,
+                                doc.nextUid(),
                                 qName,
                                 publicId,
                                 systemId
                             )
-                            htmlDoc.setDoctype(doctype)
-                            needRoot = false
+                            doc.setDoctype(doctype)
+                            isDocTypeXHTML = (doctype.name == "html")
+                                    && (doctype.publicId == XHTML_STRICT_PUBLIC_ID)
+                                    && (doctype.systemId == XHTML_STRICT_SYS_ID)
                         }
                         return TOKEN_BAD
                     } else {
@@ -221,9 +148,9 @@ class HtmlParser {
                         safeAppendChild(parent, element)
                         if (!this.justReadEmptyElement) {
                             var einfo: ElementInfo? =
-                                ELEMENT_INFOS.get(localName.uppercase())
+                                ELEMENT_INFOS[localName.uppercase()]
                             var endTagType =
-                                if (einfo == null) ElementInfo.Companion.END_ELEMENT_REQUIRED else einfo.endElementType
+                                einfo?.endElementType ?: ElementInfo.Companion.END_ELEMENT_REQUIRED
                             if (endTagType != ElementInfo.Companion.END_ELEMENT_FORBIDDEN) {
                                 var childrenOk = einfo == null || einfo.childElementOk
                                 var newStopSet = einfo?.stopTags
@@ -287,9 +214,7 @@ class HtmlParser {
                                                     return TOKEN_FULL_ELEMENT
                                                 } else {
                                                     val closeTagInfo: ElementInfo? =
-                                                        ELEMENT_INFOS.get(
-                                                            normalLastTag!!.uppercase()
-                                                        )
+                                                        ELEMENT_INFOS[normalLastTag!!.uppercase()]
                                                     if ((closeTagInfo == null) || (closeTagInfo.endElementType != ElementInfo.Companion.END_ELEMENT_FORBIDDEN)) {
                                                         // TODO: Rather inefficient algorithm, but it's
                                                         // probably executed infrequently?
@@ -321,11 +246,12 @@ class HtmlParser {
                                             if ((stopTags != null) && stopTags.contains(normalTag)) {
                                                 throw se
                                             }
-                                            einfo = ELEMENT_INFOS.get(normalTag)
+                                            einfo = ELEMENT_INFOS[normalTag]
                                             endTagType =
-                                                if (einfo == null) ElementInfo.Companion.END_ELEMENT_REQUIRED else einfo.endElementType
+                                                einfo?.endElementType
+                                                    ?: ElementInfo.Companion.END_ELEMENT_REQUIRED
                                             childrenOk = einfo == null || einfo.childElementOk
-                                            newStopSet = if (einfo == null) null else einfo.stopTags
+                                            newStopSet = einfo?.stopTags
                                             if (newStopSet == null) {
                                                 if (endTagType == ElementInfo.Companion.END_ELEMENT_OPTIONAL) {
                                                     newStopSet = mutableSetOf(normalTag)
@@ -426,7 +352,7 @@ class HtmlParser {
                                             sb = entityDecode(sb)
                                         }
                                         val text = sb.toString()
-                                        if (text.length != 0) {
+                                        if (text.isNotEmpty()) {
                                             val textNode: Node = doc.createTextNode(parent, text)
                                             safeAppendChild(parent, textNode)
                                         }
@@ -470,7 +396,7 @@ class HtmlParser {
                 sb = entityDecode(sb)
             }
             val text = sb.toString()
-            if (text.length != 0) {
+            if (text.isNotEmpty()) {
                 val textNode: Node = doc.createTextNode(parent, text)
                 safeAppendChild(parent, textNode)
             }
@@ -658,7 +584,7 @@ class HtmlParser {
                 sb.append(ch)
             }
         }
-        if (sb.length > 0) {
+        if (sb.isNotEmpty()) {
             this.justReadTagBegin = false
             this.justReadTagEnd = false
         }
@@ -749,7 +675,7 @@ class HtmlParser {
         while (true) {
             val chInt = reader.read()
             if (chInt == -1) {
-                if ((attributeName != null) && (attributeName.length != 0)) {
+                if ((attributeName != null) && (attributeName.isNotEmpty())) {
                     val attributeNameStr = attributeName.toString()
                     element.setAttribute(attributeNameStr, attributeNameStr)
                     attributeName.setLength(0)
@@ -765,7 +691,7 @@ class HtmlParser {
                 blankFound = false
                 break
             } else if (ch == '>') {
-                if ((attributeName != null) && (attributeName.length != 0)) {
+                if ((attributeName != null) && (attributeName.isNotEmpty())) {
                     val attributeNameStr = attributeName.toString()
                     element.setAttribute(attributeNameStr, attributeNameStr)
                 }
@@ -783,7 +709,7 @@ class HtmlParser {
                 lastCharSlash = false
                 if (blankFound) {
                     blankFound = false
-                    if ((attributeName != null) && (attributeName.length != 0)) {
+                    if ((attributeName != null) && (attributeName.isNotEmpty())) {
                         val attributeNameStr = attributeName.toString()
                         element.setAttribute(attributeNameStr, attributeNameStr)
                         attributeName.setLength(0)
@@ -805,7 +731,7 @@ class HtmlParser {
             }
             val ch = chInt.toChar()
             if (ch == '>') {
-                if ((attributeName != null) && (attributeName.length != 0)) {
+                if ((attributeName != null) && (attributeName.isNotEmpty())) {
                     val attributeNameStr = attributeName.toString()
                     element.setAttribute(attributeNameStr, attributeNameStr)
                 }
@@ -912,8 +838,6 @@ class HtmlParser {
     }
 
     companion object {
-
-        private const val QUIRKS_MODE = true
         private val ENTITIES: MutableMap<String?, Char?> = HashMap<String?, Char?>(256)
         private val ELEMENT_INFOS: MutableMap<String?, ElementInfo?> =
             HashMap<String?, ElementInfo?>(35)
@@ -925,48 +849,6 @@ class HtmlParser {
         private const val TOKEN_FULL_ELEMENT = 5
         private const val TOKEN_BAD = 6
 
-        /*
-    private final static String[] elementsThatNeedBodyElement = {
-      // TODO: More tags
-      "P",
-      "DIV",
-      "SPAN",
-      "UL",
-      "LI",
-      "TABLE",
-      "MATHML"
-    };
-    */
-        private val elementsThatDontNeedBodyElement = listOf( // TODO: More tags
-            "HTML",
-            "HEAD",
-            "META",
-            "TITLE",
-            "LINK",
-            "SCRIPT",
-            "STYLE",
-            "FRAMESET"
-        )
-        private val elementsThatDontNeedHeadElement = listOf( // TODO: More tags
-            "HTML",
-            "P",
-            "DIV",
-            "SPAN",
-            "UL",
-            "OL",
-            "LI",
-            "A",
-            "IMG",
-            "IFRAME",
-            "TABLE",
-            "TBODY",
-            "THEAD",
-            "TR",
-            "TH",
-            "TD",
-            "MATHML",
-            "FRAMESET"
-        )
         private val doctypePattern =
             Regex("(\\S+)\\s+PUBLIC\\s+\"([^\"]*)\"\\s+\"([^\"]*)\".*>")
 
@@ -1341,15 +1223,6 @@ class HtmlParser {
             }
         }
 
-        private fun depthAtMost(n: Node, maxDepth: Int): Boolean {
-            if (maxDepth <= 0) {
-                return false
-            } else {
-                val parent = n.parent
-                return parent == null || depthAtMost(parent, maxDepth - 1)
-            }
-        }
-
 
         private fun readCData(reader: LineNumberReader, sb: StringBuffer) {
             var next = reader.read()
@@ -1395,10 +1268,10 @@ class HtmlParser {
                 }
             }
 
-            if (i == 0) {
-                return null
+            return if (i == 0) {
+                null
             } else {
-                return String(chars, 0, i)
+                String(chars, 0, i)
             }
         }
 
@@ -1431,10 +1304,10 @@ class HtmlParser {
                     val number = spec.substring(1).lowercase()
                     var decimal: Int
                     try {
-                        if (number.startsWith("x")) {
-                            decimal = number.substring(1).toInt(16)
+                        decimal = if (number.startsWith("x")) {
+                            number.substring(1).toInt(16)
                         } else {
-                            decimal = number.toInt()
+                            number.toInt()
                         }
                     } catch (_: NumberFormatException) {
                         debug("ERROR: entityDecode()")

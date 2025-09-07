@@ -1,5 +1,6 @@
 package io.github.remmerw.thor
 
+import io.github.remmerw.thor.dom.createModel
 import io.ktor.http.Url
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -19,11 +20,10 @@ class ParserTest {
 
         urls.forEach { url ->
             val p = Render(Url(url))
-            val document = p.parsePage()
-            assertNotNull(document)
+            val model = createModel()
+            p.parse(model)
 
-            document.getDoctype().toString()
-            document.isXML()
+            model.getDoctype().toString()
 
             println("Done $url")
         }

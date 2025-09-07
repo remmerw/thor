@@ -5,8 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.remmerw.thor.dom.Model
 import io.github.remmerw.thor.dom.Entity
+import io.github.remmerw.thor.dom.Model
 import io.ktor.http.Url
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,16 +14,15 @@ import kotlinx.coroutines.launch
 
 class StateModel() : ViewModel() {
     var isImageLoadingEnabled: Boolean by mutableStateOf(true)
-    var documentUri:String? = null
+    var documentUri: String? = null
     private var model: Model? = null
 
     val entity = MutableStateFlow<Entity?>(null)
 
-    fun setDocument(modelImpl: Model) {
+    fun setModel(model: Model) {
         viewModelScope.launch {
-            model = modelImpl
-            println(modelImpl.entity())
-            entity.emit(modelImpl.entity())
+            println(model.entity())
+            entity.emit(model.entity())
         }
     }
 

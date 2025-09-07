@@ -3,14 +3,14 @@ package io.github.remmerw.thor
 import io.github.remmerw.thor.dom.Model
 import io.github.remmerw.thor.dom.Element
 import io.github.remmerw.thor.dom.Node
-import io.github.remmerw.thor.dom.parseDocument
+import io.github.remmerw.thor.dom.parseModel
 import io.ktor.http.Url
 import java.net.URL
 
 class Render(var url: Url) {
 
 
-    fun parsePage(): Model {
+    fun parse(model: Model) {
         var urlObj: URL?
         try {
             urlObj = URL(url.toString())
@@ -27,11 +27,10 @@ class Render(var url: Url) {
             requireNotNull(inputStream)
 
 
-            val document = parseDocument(inputStream, "UTF-8")
+            val document = parseModel( model, inputStream, "UTF-8")
 
             // Do a recursive traversal on the top-level DOM node.
             doTree( document.getDocumentElement()!!)
-            return document
         } catch (e: Exception) {
             e.printStackTrace()
             println("parsePage($url):  $e")
