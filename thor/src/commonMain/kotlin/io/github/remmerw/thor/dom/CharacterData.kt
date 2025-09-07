@@ -3,13 +3,13 @@ package io.github.remmerw.thor.dom
 import kotlinx.coroutines.flow.MutableStateFlow
 
 abstract class CharacterData(
-    document: Document,
+    model: Model,
     parent: Node,
     uid: Long,
     name: String,
     text: String
 ) :
-    Node(document, parent, uid, name) {
+    Node(model, parent, uid, name) {
 
     val data = MutableStateFlow(text)
 

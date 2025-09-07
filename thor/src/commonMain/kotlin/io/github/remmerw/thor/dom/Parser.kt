@@ -6,7 +6,7 @@ import java.util.LinkedList
 
 internal class StopException(val element: Element) : Exception()
 class HtmlParser {
-    private val document: Document
+    private val model: Model
     private val isXML: Boolean
     private var lastRootElement: Node? = null
     private var lastHeadElement: Node? = null
@@ -24,11 +24,11 @@ class HtmlParser {
 
 
     constructor(
-        document: Document,
+        model: Model,
         isXML: Boolean,
         needRoot: Boolean
     ) {
-        this.document = document
+        this.model = model
         this.isXML = isXML
         this.needRoot = needRoot
     }
@@ -39,7 +39,7 @@ class HtmlParser {
 
 
     fun parse(reader: LineNumberReader) {
-        val doc = this.document
+        val doc = this.model
         this.parse(reader, doc)
     }
 
@@ -84,7 +84,7 @@ class HtmlParser {
 
     private fun ensureRootElement(parent: Node) {
         if (lastRootElement == null) {
-            lastRootElement = document.createElement(parent, "HTML")
+            lastRootElement = model.createElement(parent, "HTML")
             parent.appendChild(lastRootElement!!)
         }
     }
@@ -114,14 +114,14 @@ class HtmlParser {
 
     private fun ensureBodyElement(parent: Node) {
         if (lastBodyElement == null) {
-            lastBodyElement = document.createElement(parent, "BODY")
+            lastBodyElement = model.createElement(parent, "BODY")
             parent.appendChild(lastBodyElement!!)
         }
     }
 
     private fun ensureHeadElement(parent: Node) {
         if (lastHeadElement == null) {
-            lastHeadElement = document.createElement(parent, "HEAD")
+            lastHeadElement = model.createElement(parent, "HEAD")
             parent.appendChild(lastHeadElement!!)
         }
     }
@@ -133,7 +133,7 @@ class HtmlParser {
         stopTags: MutableSet<String>?,
         ancestors: LinkedList<String>
     ): Int {
-        val doc = this.document
+        val doc = this.model
         val htmlDoc = doc
         val textSb = this.readUpToTagBegin(reader)
         if (textSb == null) {
@@ -401,7 +401,7 @@ class HtmlParser {
         addTextNode: Boolean,
         decodeEntities: Boolean
     ): Int {
-        val doc = this.document
+        val doc = this.model
         var intCh: Int
         var sb = StringBuffer()
         while ((reader.read().also { intCh = it }) != -1) {
@@ -526,7 +526,7 @@ class HtmlParser {
                     while ((reader.read().also { chInt = it }) == '<'.code) {
                         ltText.append('<')
                     }
-                    val doc = this.document
+                    val doc = this.model
                     val textNode: Node = doc.createTextNode(parent, ltText.toString())
                     parent.appendChild(textNode)
 
@@ -547,7 +547,7 @@ class HtmlParser {
                         }
                         ltText.append(ch)
                     }
-                    val doc = this.document
+                    val doc = this.model
                     val textNode: Node = doc.createTextNode(parent, ltText.toString())
                     parent.appendChild(textNode)
                     if (chInt == -1) {

@@ -1,16 +1,12 @@
 package io.github.remmerw.thor.dom
 
 import kotlinx.coroutines.flow.StateFlow
-import java.io.LineNumberReader
 import kotlin.concurrent.atomics.AtomicLong
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.concurrent.atomics.incrementAndFetch
 
 
-class Document(
-    private val reader: LineNumberReader,
-    private val documentUri: String
-) : Node(null, null, 0, "#document") {
+class Model() : Node(null, null, 0, "#document") {
 
     @OptIn(ExperimentalAtomicApi::class)
     private val uids = AtomicLong(0L)
@@ -18,7 +14,6 @@ class Document(
     private val nodes: MutableMap<Long, Node> = mutableMapOf()
     private var doctype: DocumentType? = null
     private var isDocTypeXHTML = false
-    private var xmlEncoding: String? = null
 
 
     init {
@@ -35,24 +30,10 @@ class Document(
         return uids.incrementAndFetch()
     }
 
-    fun getBaseUri(): String {
-        return this.documentUri
-    }
 
     internal fun node(entity: Entity): Node {
         return nodes[entity.uid]!!
     }
-
-
-    fun load() {
-        reader.use { reader ->
-            val parser = HtmlParser(
-                this, this.isXML(), true
-            )
-            parser.parse(reader)
-        }
-    }
-
 
     fun isXML(): Boolean {
         return isDocTypeXHTML
@@ -110,14 +91,6 @@ class Document(
         return ProcessingInstruction(
             this, parent, nextUid(), name, data
         )
-    }
-
-    fun getXmlEncoding(): String? {
-        return this.xmlEncoding
-    }
-
-    fun getDocumentURI(): String? {
-        return this.documentUri
     }
 
     fun children(entity: Entity): StateFlow<List<Entity>> {

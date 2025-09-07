@@ -4,14 +4,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 
 abstract class Node(
-    var document: Document?,
+    var model: Model?,
     val parent: Node?,
     val uid: Long,
     val name: String
 ) {
     init {
-        if (document is Document) {
-            (document as Document).addNode(this)
+        if (model is Model) {
+            (model as Model).addNode(this)
         }
     }
 
@@ -19,7 +19,7 @@ abstract class Node(
 
     fun children(): List<Node> {
         return children.value.map { entity ->
-            document!!.node(entity)
+            model!!.node(entity)
         }
     }
 
@@ -28,12 +28,12 @@ abstract class Node(
         this.children.value.add(newChild.entity()) // todo fix
     }
 
-    fun getDocumentOwner(): Document {
-        return document!!
+    fun getDocumentOwner(): Model {
+        return model!!
     }
 
-    internal fun setOwnerDocument(value: Document) {
-        this.document = value
+    internal fun setOwnerDocument(value: Model) {
+        this.model = value
     }
 
 

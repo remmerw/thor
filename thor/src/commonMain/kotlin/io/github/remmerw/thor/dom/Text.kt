@@ -1,5 +1,5 @@
 package io.github.remmerw.thor.dom
 
 
-open class Text(document: Document, parent: Node, uid: Long, text: String) :
-    CharacterData(document, parent, uid, "#text", text)
+open class Text(model: Model, parent: Node, uid: Long, text: String) :
+    CharacterData(model, parent, uid, "#text", text)

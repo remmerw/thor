@@ -25,6 +25,7 @@ class RenderTest {
         composeTestRule.setContent {
 
             val stateModel: StateModel = viewModel { StateModel() }
+            stateModel.documentUri = url.toString()
             stateModel.setDocument(document)
 
 

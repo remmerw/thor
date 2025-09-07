@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.remmerw.thor.dom.Document
+import io.github.remmerw.thor.dom.Model
 import io.github.remmerw.thor.dom.Entity
 import io.ktor.http.Url
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,16 +14,16 @@ import kotlinx.coroutines.launch
 
 class StateModel() : ViewModel() {
     var isImageLoadingEnabled: Boolean by mutableStateOf(true)
-
-    private var document: Document? = null
+    var documentUri:String? = null
+    private var model: Model? = null
 
     val entity = MutableStateFlow<Entity?>(null)
 
-    fun setDocument(documentImpl: Document) {
+    fun setDocument(modelImpl: Model) {
         viewModelScope.launch {
-            document = documentImpl
-            println(documentImpl.entity())
-            entity.emit(documentImpl.entity())
+            model = modelImpl
+            println(modelImpl.entity())
+            entity.emit(modelImpl.entity())
         }
     }
 
@@ -37,22 +37,22 @@ class StateModel() : ViewModel() {
     }
 
     fun attributes(entity: Entity): StateFlow<Map<String, String>> {
-        return document!!.attributes(entity)
+        return model!!.attributes(entity)
     }
 
     fun data(entity: Entity): StateFlow<String> {
-        return document!!.data(entity)
+        return model!!.data(entity)
     }
 
     fun children(entity: Entity): StateFlow<List<Entity>> {
-        return document!!.children(entity)
+        return model!!.children(entity)
     }
 
     fun fullUri(spec: String): String {
 
         val cleanSpec = Urls.encodeIllegalCharacters(spec)
-        return if (document != null) {
-            Utils.getFullURL(document!!, cleanSpec).toString()
+        return if (model != null) {
+            Utils.getFullURL(documentUri!!, cleanSpec).toString()
         } else {
             Url(cleanSpec).toString()
         }

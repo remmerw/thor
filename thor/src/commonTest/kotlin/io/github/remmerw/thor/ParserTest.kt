@@ -23,14 +23,9 @@ class ParserTest {
             assertNotNull(document)
 
             document.getDoctype().toString()
-            document.getBaseUri()
-
-
-            document.getXmlEncoding()
             document.isXML()
 
-            println("done " + document.getDocumentURI())
-
+            println("Done $url")
         }
 
 

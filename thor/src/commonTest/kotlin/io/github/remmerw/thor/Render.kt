@@ -1,8 +1,7 @@
 package io.github.remmerw.thor
 
-import io.github.remmerw.thor.dom.Document
+import io.github.remmerw.thor.dom.Model
 import io.github.remmerw.thor.dom.Element
-import io.github.remmerw.thor.dom.Entity
 import io.github.remmerw.thor.dom.Node
 import io.github.remmerw.thor.dom.parseDocument
 import io.ktor.http.Url
@@ -11,7 +10,7 @@ import java.net.URL
 class Render(var url: Url) {
 
 
-    fun parsePage(): Document {
+    fun parsePage(): Model {
         var urlObj: URL?
         try {
             urlObj = URL(url.toString())
@@ -28,7 +27,7 @@ class Render(var url: Url) {
             requireNotNull(inputStream)
 
 
-            val document = parseDocument(inputStream, url, "UTF-8")
+            val document = parseDocument(inputStream, "UTF-8")
 
             // Do a recursive traversal on the top-level DOM node.
             doTree( document.getDocumentElement()!!)

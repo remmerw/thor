@@ -3,8 +3,8 @@ package io.github.remmerw.thor.dom
 import kotlinx.coroutines.flow.MutableStateFlow
 
 
-class Element(document: Document, parent: Node, uid: Long, name: String) :
-    Node(document, parent, uid, name) {
+class Element(model: Model, parent: Node, uid: Long, name: String) :
+    Node(model, parent, uid, name) {
     val attributes = MutableStateFlow(mutableMapOf<String, String>())
 
     fun attributes(): Map<String, String> {

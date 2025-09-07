@@ -1,6 +1,5 @@
 package io.github.remmerw.thor.model
 
-import io.github.remmerw.thor.dom.Document
 import io.github.remmerw.thor.dom.Element
 import io.ktor.http.Url
 
@@ -12,9 +11,8 @@ object Utils {
     }
 
 
-    fun getFullURL(doc: Document, uri: String): Url {
+    fun getFullURL(baseURI: String, uri: String): Url {
         try {
-            val baseURI = doc.getBaseUri()
             val documentURL = Url(baseURI)
             return Urls.createURL(documentURL, uri)
         } catch (_: Throwable) {
@@ -22,14 +20,9 @@ object Utils {
         }
     }
 
-    fun getFullURL(elementModel: Element, spec: String): Url {
-        val doc: Any? = elementModel.getDocumentOwner()
+    fun getFullURL2(baseURI: String, spec: String): Url {
         val cleanSpec = Urls.encodeIllegalCharacters(spec)
-        return if (doc is Document) {
-            getFullURL(doc, cleanSpec)
-        } else {
-            Url(cleanSpec)
-        }
+        return getFullURL(baseURI, cleanSpec)
     }
 
 
@@ -42,7 +35,8 @@ object Utils {
             return null
         } else {
             try {
-                return getFullURL(anchor, href)
+
+                return getFullURL2(stateModel.documentUri!! , href)
             } catch (throwable: Throwable) {
                 stateModel.warn("Malformed URI: [" + href + "].", throwable)
             }
