@@ -1,7 +1,7 @@
 package io.github.remmerw.thor.dom
 
-import java.io.LineNumberReader
-import java.io.Reader
+import kotlinx.io.Source
+import kotlinx.io.readCodePointValue
 import java.util.LinkedList
 
 internal class StopException(val element: Element) : Exception()
@@ -33,14 +33,14 @@ class HtmlParser {
     }
 
 
-    fun parse(reader: LineNumberReader) {
-        parse(reader, model)
+    fun parse(source: Source) {
+        parse(source, model)
     }
 
 
-    fun parse(reader: LineNumberReader, parent: Node) {
+    fun parse(source: Source, parent: Node) {
         while (this.parseToken(
-                parent, reader, null,
+                parent, source, null,
                 LinkedList<String>()
             ) != TOKEN_EOD
         ) {
@@ -54,12 +54,12 @@ class HtmlParser {
 
     private fun parseToken(
         parent: Node,
-        reader: LineNumberReader,
+        source: Source,
         stopTags: MutableSet<String>?,
         ancestors: LinkedList<String>
     ): Int {
         val doc = this.model
-        val textSb = this.readUpToTagBegin(reader)
+        val textSb = this.readUpToTagBegin(source)
         if (textSb == null) {
             return TOKEN_EOD
         }
@@ -69,7 +69,7 @@ class HtmlParser {
             safeAppendChild(parent, textNode)
         }
         if (this.justReadTagBegin) {
-            var tag = this.readTag(parent, reader)
+            var tag = this.readTag(parent, source)
             if (tag == null) {
                 return TOKEN_EOD
             }
@@ -77,14 +77,14 @@ class HtmlParser {
             try {
                 if (tag.startsWith("!")) {
                     if ("!--" == tag) {
-                        val comment = this.passEndOfComment(reader)
+                        val comment = this.passEndOfComment(source)
                         val decText: StringBuffer = entityDecode(comment)
 
                         safeAppendChild(parent, doc.createComment(decText.toString()))
 
                         return TOKEN_COMMENT
                     } else if ("!DOCTYPE" == tag) {
-                        val doctypeStr = this.parseEndOfTag(reader)
+                        val doctypeStr = this.parseEndOfTag(source)
                         doctypePattern.findAll(doctypeStr).forEach { doctypeMatcher ->
                             val group = doctypeMatcher.groupValues
                             val qName = group[1]
@@ -104,17 +104,17 @@ class HtmlParser {
                         }
                         return TOKEN_BAD
                     } else {
-                        passEndOfTag(reader)
+                        passEndOfTag(source)
                         return TOKEN_BAD
                     }
                 } else if (tag.startsWith("/")) {
                     tag = tag.substring(1)
                     normalTag = normalTag!!.substring(1)
-                    this.passEndOfTag(reader)
+                    this.passEndOfTag(source)
                     return TOKEN_END_ELEMENT
                 } else if (tag.startsWith("?")) {
                     tag = tag.substring(1)
-                    val data = readProcessingInstruction(reader)
+                    val data = readProcessingInstruction(source)
 
                     safeAppendChild(
                         parent, doc.createProcessingInstruction(
@@ -132,7 +132,7 @@ class HtmlParser {
 
                     try {
                         if (!this.justReadTagEnd) {
-                            while (this.readAttribute(reader, element)) {
+                            while (this.readAttribute(source, element)) {
                                 // EMPTY LOOP
                             }
                         }
@@ -179,7 +179,7 @@ class HtmlParser {
                                                 if (isScriptingEnabled) {
                                                     token = this.parseForEndTag(
                                                         parent,
-                                                        reader,
+                                                        source,
                                                         tag,
                                                         false,
                                                         shouldDecodeEntities(einfo)
@@ -187,7 +187,7 @@ class HtmlParser {
                                                 } else {
                                                     token = this.parseToken(
                                                         element,
-                                                        reader,
+                                                        source,
                                                         newStopSet,
                                                         ancestors
                                                     )
@@ -195,11 +195,11 @@ class HtmlParser {
                                             } else {
                                                 token = if (childrenOk) this.parseToken(
                                                     element,
-                                                    reader,
+                                                    source,
                                                     newStopSet,
                                                     ancestors
                                                 ) else this.parseForEndTag(
-                                                    element, reader,
+                                                    element, source,
                                                     tag, true, shouldDecodeEntities(einfo)
                                                 )
                                             }
@@ -296,11 +296,11 @@ class HtmlParser {
     }
 
 
-    private fun readUpToTagBegin(reader: LineNumberReader): StringBuffer? {
+    private fun readUpToTagBegin(source: Source): StringBuffer? {
         var sb: StringBuffer? = null
-        var intCh: Int
-        while ((reader.read().also { intCh = it }) != -1) {
-            val ch = intCh.toChar()
+
+        while (!source.exhausted()) {
+            val ch = source.readCodePointValue().toChar()
             if (ch == '<') {
                 this.justReadTagBegin = true
                 this.justReadTagEnd = false
@@ -322,22 +322,22 @@ class HtmlParser {
     }
 
     private fun parseForEndTag(
-        parent: Node, reader: LineNumberReader, tagName: String?,
+        parent: Node, reader: Source, tagName: String?,
         addTextNode: Boolean,
         decodeEntities: Boolean
     ): Int {
         val doc = this.model
         var intCh: Int
         var sb = StringBuffer()
-        while ((reader.read().also { intCh = it }) != -1) {
+        while ((reader.readCodePointValue().also { intCh = it }) != -1) {
             var ch = intCh.toChar()
             if (ch == '<') {
-                intCh = reader.read()
+                intCh = reader.readCodePointValue()
                 if (intCh != -1) {
                     ch = intCh.toChar()
                     if (ch == '/') {
                         val tempBuffer = StringBuffer()
-                        while ((reader.read().also { intCh = it }) != -1) {
+                        while ((reader.readCodePointValue().also { intCh = it }) != -1) {
                             ch = intCh.toChar()
                             if (ch == '>') {
                                 val thisTag = tempBuffer.toString().trim { it <= ' ' }
@@ -404,10 +404,10 @@ class HtmlParser {
     }
 
 
-    private fun readTag(parent: Node, reader: LineNumberReader): String {
+    private fun readTag(parent: Node, reader: Source): String {
         val sb = StringBuffer()
         var chInt: Int
-        chInt = reader.read()
+        chInt = reader.readCodePointValue()
         if (chInt != -1) {
             var cont = true
             var ch: Char
@@ -418,12 +418,12 @@ class HtmlParser {
                     break
                 } else if (ch == '!') {
                     sb.append('!')
-                    chInt = reader.read()
+                    chInt = reader.readCodePointValue()
                     if (chInt != -1) {
                         ch = chInt.toChar()
                         if (ch == '-') {
                             sb.append('-')
-                            chInt = reader.read()
+                            chInt = reader.readCodePointValue()
                             if (chInt != -1) {
                                 ch = chInt.toChar()
                                 if (ch == '-') {
@@ -439,7 +439,7 @@ class HtmlParser {
                     }
                 } else if (ch == '/') {
                     sb.append(ch)
-                    chInt = reader.read()
+                    chInt = reader.readCodePointValue()
                     if (chInt != -1) {
                         ch = chInt.toChar()
                     } else {
@@ -448,7 +448,7 @@ class HtmlParser {
                 } else if (ch == '<') {
                     val ltText = StringBuffer(3)
                     ltText.append('<')
-                    while ((reader.read().also { chInt = it }) == '<'.code) {
+                    while ((reader.readCodePointValue().also { chInt = it }) == '<'.code) {
                         ltText.append('<')
                     }
                     val doc = this.model
@@ -464,10 +464,10 @@ class HtmlParser {
                     val ltText = StringBuffer()
                     ltText.append('<')
                     ltText.append(ch)
-                    while ((reader.read().also { chInt = it }) != -1) {
+                    while ((reader.readCodePointValue().also { chInt = it }) != -1) {
                         ch = chInt.toChar()
                         if (ch == '<') {
-                            chInt = reader.read()
+                            chInt = reader.readCodePointValue()
                             break
                         }
                         ltText.append(ch)
@@ -503,7 +503,7 @@ class HtmlParser {
                         lastCharSlash = false
                         sb.append(ch)
                     }
-                    chInt = reader.read()
+                    chInt = reader.readCodePointValue()
                     if (chInt == -1) {
                         break
                     }
@@ -521,19 +521,19 @@ class HtmlParser {
     }
 
 
-    private fun passEndOfComment(reader: LineNumberReader): StringBuffer {
+    private fun passEndOfComment(reader: Source): StringBuffer {
         if (this.justReadTagEnd) {
             return StringBuffer(0)
         }
         val sb = StringBuffer()
         OUTER@ while (true) {
-            var chInt = reader.read()
+            var chInt = reader.readCodePointValue()
             if (chInt == -1) {
                 break
             }
             var ch = chInt.toChar()
             if (ch == '-') {
-                chInt = reader.read()
+                chInt = reader.readCodePointValue()
                 if (chInt == -1) {
                     sb.append(ch)
                     break
@@ -542,7 +542,7 @@ class HtmlParser {
                 if (ch == '-') {
                     var extra: StringBuffer? = null
                     while (true) {
-                        chInt = reader.read()
+                        chInt = reader.readCodePointValue()
                         if (chInt == -1) {
                             if (extra != null) {
                                 sb.append(extra)
@@ -591,14 +591,14 @@ class HtmlParser {
     }
 
 
-    private fun parseEndOfTag(reader: Reader): String {
+    private fun parseEndOfTag(reader: Source): String {
         if (this.justReadTagEnd) {
             return ""
         }
         val result = StringBuilder()
         var readSomething = false
         while (true) {
-            val chInt = reader.read()
+            val chInt = reader.readCodePointValue()
             if (chInt == -1) {
                 break
             }
@@ -619,13 +619,13 @@ class HtmlParser {
     }
 
 
-    private fun passEndOfTag(reader: Reader) {
+    private fun passEndOfTag(reader: Source) {
         if (this.justReadTagEnd) {
             return
         }
         var readSomething = false
         while (true) {
-            val chInt = reader.read()
+            val chInt = reader.readCodePointValue()
             if (chInt == -1) {
                 break
             }
@@ -644,16 +644,16 @@ class HtmlParser {
     }
 
 
-    private fun readProcessingInstruction(reader: LineNumberReader): StringBuffer {
+    private fun readProcessingInstruction(reader: Source): StringBuffer {
         val pidata = StringBuffer()
         if (this.justReadTagEnd) {
             return pidata
         }
         var ch: Int
-        ch = reader.read()
+        ch = reader.readCodePointValue()
         while ((ch != -1) && (ch != '>'.code)) {
             pidata.append(ch.toChar())
-            ch = reader.read()
+            ch = reader.readCodePointValue()
         }
         this.justReadTagBegin = false
         this.justReadTagEnd = ch != -1
@@ -661,7 +661,7 @@ class HtmlParser {
     }
 
 
-    private fun readAttribute(reader: LineNumberReader, element: Element): Boolean {
+    private fun readAttribute(reader: Source, element: Element): Boolean {
         if (this.justReadTagEnd) {
             return false
         }
@@ -672,7 +672,7 @@ class HtmlParser {
         var blankFound = false
         var lastCharSlash = false
         while (true) {
-            val chInt = reader.read()
+            val chInt = reader.readCodePointValue()
             if (chInt == -1) {
                 if ((attributeName != null) && (attributeName.isNotEmpty())) {
                     val attributeNameStr = attributeName.toString()
@@ -724,7 +724,7 @@ class HtmlParser {
         var attributeValue: StringBuffer? = null
         var openQuote = -1
         while (true) {
-            val chInt = reader.read()
+            val chInt = reader.readCodePointValue()
             if (chInt == -1) {
                 break
             }
@@ -762,7 +762,7 @@ class HtmlParser {
 
         // Read attribute value
         while (true) {
-            val chInt = reader.read()
+            val chInt = reader.readCodePointValue()
             if (chInt == -1) {
                 break
             }
@@ -1212,8 +1212,8 @@ class HtmlParser {
         }
 
 
-        private fun readCData(reader: LineNumberReader, sb: StringBuffer) {
-            var next = reader.read()
+        private fun readCData(reader: Source, sb: StringBuffer) {
+            var next = reader.readCodePointValue()
 
             while (next >= 0) {
                 val nextCh = next.toChar()
@@ -1225,26 +1225,26 @@ class HtmlParser {
                         } else {
                             sb.append(nextCh)
                             sb.append(next2)
-                            next = reader.read()
+                            next = reader.readCodePointValue()
                         }
                     } else {
                         break
                     }
                 } else {
                     sb.append(nextCh)
-                    next = reader.read()
+                    next = reader.readCodePointValue()
                 }
             }
         }
 
         // Tries to read at most n characters.
-        private fun readN(reader: LineNumberReader, n: Int): String? {
+        private fun readN(reader: Source, n: Int): String? {
             val chars = CharArray(n)
             var i = 0
             while (i < n) {
                 var ich: Int
                 try {
-                    ich = reader.read()
+                    ich = reader.readCodePointValue()
                 } catch (_: Throwable) {
                     break
                 }

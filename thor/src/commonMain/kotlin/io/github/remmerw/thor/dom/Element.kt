@@ -42,7 +42,7 @@ internal class Element(model: Model, uid: Long, name: String) : Node(model, uid,
             children.value.forEach { entity ->
                 model!!.node(entity).debug()
             }
-            println("</$name")
+            println("</$name>")
         }
     }
 }

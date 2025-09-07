@@ -42,7 +42,7 @@ abstract class Node(
             children.value.forEach { entity ->
                 model!!.node(entity).debug()
             }
-            println("</$name")
+            println("</$name>")
         }
     }
 }
