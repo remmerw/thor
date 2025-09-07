@@ -5,7 +5,6 @@ import io.ktor.http.Url
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
-import kotlin.test.assertNotNull
 
 class ParserTest {
 
