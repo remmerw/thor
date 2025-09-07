@@ -72,7 +72,7 @@ fun Chars(
     modifier: Modifier,
     style: TextStyle = LocalTextStyle.current
 ) {
-    val text by stateModel.wurst(entity).collectAsState()
+    val text by stateModel.data(entity).collectAsState()
 
     if (text.isNotEmpty()) {
         Text(text = text, modifier = modifier, style = style)

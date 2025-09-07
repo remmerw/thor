@@ -55,16 +55,13 @@ class StateModel() : ViewModel() {
     }
 
 
-    fun wurst(entity: Entity): StateFlow<String> {
+    fun data(entity: Entity): StateFlow<String> {
         return document!!.data(entity)
     }
 
 
-    fun children(entity: Entity?): List<Entity> {
+    fun children(entity: Entity): List<Entity> {
         if (document == null) {
-            return emptyList()
-        }
-        if (entity == null) {
             return emptyList()
         }
         return document!!.children(entity.uid).map { node ->
