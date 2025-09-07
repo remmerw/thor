@@ -1,4 +1,4 @@
 package io.github.remmerw.thor.dom
 
-class Comment(model: Model, parent: Node, uid: Long, text: String) :
-    CharacterData(model, parent, uid, "#comment", text)
+internal class Comment(model: Model, uid: Long, text: String) :
+    CharacterData(model, uid, "#comment", text)

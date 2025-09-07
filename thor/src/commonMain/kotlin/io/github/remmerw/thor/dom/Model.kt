@@ -6,7 +6,7 @@ import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.concurrent.atomics.incrementAndFetch
 
 
-class Model() : Node(null, null, 0, "#document") {
+class Model() : Node(null, 0, "#document") {
 
     @OptIn(ExperimentalAtomicApi::class)
     private val uids = AtomicLong(0L)
@@ -44,44 +44,31 @@ class Model() : Node(null, null, 0, "#document") {
 
     }
 
-    fun getDocumentElement(): Element? {
-        this.children().forEach { node ->
-            val node: Any? = node
-            if (node is Element) {
-                return node
-            }
-        }
-        return null
-
-    }
-
-    fun createElement(parent: Node, name: String): Element {
+    internal fun createElement(name: String): Element {
         val uid = this.nextUid()
-        return Element(this, parent, uid, name.uppercase())
+        return Element(this, uid, name.uppercase())
     }
 
 
-    fun createTextNode(parent: Node, data: String): Text {
-        return Text(this, parent, nextUid(), data)
+    internal fun createTextNode(data: String): Text {
+        return Text(this, nextUid(), data)
     }
 
-    fun createComment(parent: Node, data: String): Comment {
-        return Comment(this, parent, nextUid(), data)
+    internal fun createComment(data: String): Comment {
+        return Comment(this, nextUid(), data)
     }
 
     // todo
-    fun createCDATASection(parent: Node, data: String): CDataSection {
-        return CDataSection(this, parent, nextUid(), data)
+    internal fun createCDATASection(data: String): CDataSection {
+        return CDataSection(this, nextUid(), data)
     }
 
-
-    fun createProcessingInstruction(
-        parent: Node,
+    internal fun createProcessingInstruction(
         name: String,
         data: String
     ): ProcessingInstruction {
         return ProcessingInstruction(
-            this, parent, nextUid(), name, data
+            this, nextUid(), name, data
         )
     }
 

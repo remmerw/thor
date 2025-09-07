@@ -1,13 +1,12 @@
 package io.github.remmerw.thor.model
 
-import io.github.remmerw.thor.dom.Element
+import io.github.remmerw.thor.dom.Entity
 import io.ktor.http.Url
 
 object Utils {
 
-    fun getHref(elementModel: Element): String {
-        val href = elementModel.getAttribute("href")
-        return if (href == null) "" else Urls.removeControlCharacters(href)
+    fun getHref(href: String): String {
+        return Urls.removeControlCharacters(href)
     }
 
 
@@ -27,10 +26,9 @@ object Utils {
 
 
     private fun absoluteURL(
-        anchor: Element,
+        href: String,
         stateModel: StateModel
     ): Url? {
-        val href = getHref(anchor)
         if (href.startsWith("javascript:")) {
             return null
         } else {
@@ -44,12 +42,12 @@ object Utils {
         return null
     }
 
-    fun navigate(elementModel: Element, stateModel: StateModel) {
+    fun navigate(entity: Entity, stateModel: StateModel, href: String, target: String) {
 
-        if (elementModel.name == Type.ANCHOR.name ||
-            elementModel.name == Type.A.name
+        if (entity.name == Type.ANCHOR.name ||
+            entity.name == Type.A.name
         ) {
-            val href = getHref(elementModel)
+
             if (href.startsWith("#")) {
                 // TODO: Scroll to the element. Issue #101
             } else if (href.startsWith("javascript:")) {
@@ -57,15 +55,14 @@ object Utils {
                 // evalInScope adds the JS task
                 println(script)
             } else {
-                val url = absoluteURL(elementModel, stateModel)
+                val url = absoluteURL(href, stateModel)
                 if (url != null) {
-                    val target = elementModel.getAttribute("target")
                     stateModel.linkClicked(url, target)
                 }
             }
         }
-        if (elementModel.name == Type.LINK.name) {
-            val href = getHref(elementModel)
+        if (entity.name == Type.LINK.name) {
+
             if (href.startsWith("#")) {
                 // TODO: Scroll to the element. Issue #101
             } else if (href.startsWith("javascript:")) {
@@ -73,9 +70,8 @@ object Utils {
                 // evalInScope adds the JS task
                 println(script)
             } else {
-                val url = absoluteURL(elementModel, stateModel)
+                val url = absoluteURL(href, stateModel)
                 if (url != null) {
-                    val target = elementModel.getAttribute("target")
                     stateModel.linkClicked(url, target)
                 }
             }

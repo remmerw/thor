@@ -2,14 +2,8 @@ package io.github.remmerw.thor.dom
 
 import kotlinx.coroutines.flow.MutableStateFlow
 
-abstract class CharacterData(
-    model: Model,
-    parent: Node,
-    uid: Long,
-    name: String,
-    text: String
-) :
-    Node(model, parent, uid, name) {
+internal abstract class CharacterData(model: Model, uid: Long, name: String, text: String) :
+    Node(model, uid, name) {
 
     val data = MutableStateFlow(text)
 
@@ -24,5 +18,9 @@ abstract class CharacterData(
         }
         val length = someText.length
         return this.name + "[length=" + length + ",text=" + someText + "]"
+    }
+
+    override fun debug() {
+        // text not yet printed out
     }
 }

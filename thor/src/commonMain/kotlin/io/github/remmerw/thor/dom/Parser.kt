@@ -34,8 +34,7 @@ class HtmlParser {
 
 
     fun parse(reader: LineNumberReader) {
-        val doc = this.model
-        this.parse(reader, doc)
+        parse(reader, model)
     }
 
 
@@ -66,7 +65,7 @@ class HtmlParser {
         }
         if (textSb.isNotEmpty()) {
             val decText: StringBuffer = entityDecode(textSb)
-            val textNode: Node = doc.createTextNode(parent, decText.toString())
+            val textNode: Node = doc.createTextNode(decText.toString())
             safeAppendChild(parent, textNode)
         }
         if (this.justReadTagBegin) {
@@ -81,7 +80,7 @@ class HtmlParser {
                         val comment = this.passEndOfComment(reader)
                         val decText: StringBuffer = entityDecode(comment)
 
-                        safeAppendChild(parent, doc.createComment(parent, decText.toString()))
+                        safeAppendChild(parent, doc.createComment(decText.toString()))
 
                         return TOKEN_COMMENT
                     } else if ("!DOCTYPE" == tag) {
@@ -92,7 +91,7 @@ class HtmlParser {
                             val publicId = group[2]
                             val systemId = group[3]
                             val doctype = DocumentType(
-                                doc, parent,
+                                doc,
                                 doc.nextUid(),
                                 qName,
                                 publicId,
@@ -119,7 +118,7 @@ class HtmlParser {
 
                     safeAppendChild(
                         parent, doc.createProcessingInstruction(
-                            parent, tag, data.toString()
+                            tag, data.toString()
                         )
                     )
 
@@ -129,7 +128,7 @@ class HtmlParser {
                     val tagHasPrefix = localIndex > 0
                     val localName: String =
                         (if (tagHasPrefix) normalTag.substring(localIndex + 1) else normalTag)
-                    var element = doc.createElement(parent, localName)
+                    var element = doc.createElement(localName)
 
                     try {
                         if (!this.justReadTagEnd) {
@@ -353,7 +352,7 @@ class HtmlParser {
                                         }
                                         val text = sb.toString()
                                         if (text.isNotEmpty()) {
-                                            val textNode: Node = doc.createTextNode(parent, text)
+                                            val textNode: Node = doc.createTextNode(text)
                                             safeAppendChild(parent, textNode)
                                         }
                                     }
@@ -397,7 +396,7 @@ class HtmlParser {
             }
             val text = sb.toString()
             if (text.isNotEmpty()) {
-                val textNode: Node = doc.createTextNode(parent, text)
+                val textNode: Node = doc.createTextNode(text)
                 safeAppendChild(parent, textNode)
             }
         }
@@ -453,7 +452,7 @@ class HtmlParser {
                         ltText.append('<')
                     }
                     val doc = this.model
-                    val textNode: Node = doc.createTextNode(parent, ltText.toString())
+                    val textNode: Node = doc.createTextNode(ltText.toString())
                     parent.appendChild(textNode)
 
                     if (chInt == -1) {
@@ -474,7 +473,7 @@ class HtmlParser {
                         ltText.append(ch)
                     }
                     val doc = this.model
-                    val textNode: Node = doc.createTextNode(parent, ltText.toString())
+                    val textNode: Node = doc.createTextNode(ltText.toString())
                     parent.appendChild(textNode)
                     if (chInt == -1) {
                         cont = false
@@ -1210,17 +1209,6 @@ class HtmlParser {
             elementInfos.put("A", optionalEndElement)
             elementInfos.put("ANCHOR", optionalEndElement)
             // TODO: Keep adding tags here
-        }
-
-
-        private fun hasAncestorTag(node: Node?, tag: String): Boolean {
-            return if (node == null) {
-                false
-            } else if (tag.equals(node.name, ignoreCase = true)) {
-                true
-            } else {
-                hasAncestorTag(node.parent, tag)
-            }
         }
 
 

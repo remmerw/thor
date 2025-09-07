@@ -21,7 +21,7 @@ class ParserTest {
             val p = Render(Url(url))
             val model = createModel()
             p.parse(model)
-
+            model.debug()
             model.getDoctype().toString()
 
             println("Done $url")

@@ -1,5 +1,5 @@
 package io.github.remmerw.thor.dom
 
 
-class CDataSection(model: Model, parent: Node, uid: Long, text: String) :
-    CharacterData(model, parent, uid, "#cdata-section", text)
+internal class CDataSection(model: Model, uid: Long, text: String) :
+    CharacterData(model, uid, "#cdata-section", text)

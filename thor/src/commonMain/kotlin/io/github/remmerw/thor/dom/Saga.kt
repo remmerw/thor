@@ -16,7 +16,7 @@ fun parseModel(
     model: Model = createModel(),
     inputStream: InputStream,
     charset: String
-): Model {
+) {
     val reader = LineNumberReader(InputStreamReader(inputStream, charset))
     reader.use { reader ->
         val parser = HtmlParser(
@@ -25,7 +25,6 @@ fun parseModel(
         )
         parser.parse(reader)
     }
-    return model
 }
 
 

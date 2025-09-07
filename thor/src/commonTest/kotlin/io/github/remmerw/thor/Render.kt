@@ -2,6 +2,7 @@ package io.github.remmerw.thor
 
 import io.github.remmerw.thor.dom.Model
 import io.github.remmerw.thor.dom.Element
+import io.github.remmerw.thor.dom.Entity
 import io.github.remmerw.thor.dom.Node
 import io.github.remmerw.thor.dom.parseModel
 import io.ktor.http.Url
@@ -26,11 +27,7 @@ class Render(var url: Url) {
             val inputStream = connection.getInputStream()
             requireNotNull(inputStream)
 
-
-            val document = parseModel( model, inputStream, "UTF-8")
-
-            // Do a recursive traversal on the top-level DOM node.
-            doTree( document.getDocumentElement()!!)
+            parseModel( model, inputStream, "UTF-8")
         } catch (e: Exception) {
             e.printStackTrace()
             println("parsePage($url):  $e")
@@ -38,40 +35,4 @@ class Render(var url: Url) {
         }
 
     }
-
-    /**
-     * Recurse the DOM starting with Node node.  For each Node of
-     * type Element, call doElement() with it and recurse over its
-     * children.  The Elements refer to the HTML tags, and the children
-     * are tags contained inside the parent tag.
-     */
-    fun doTree(node: Node) {
-        if (node is Element) {
-            // Visit tag.
-
-            doElement(node)
-
-            // Visit all the children, i.e., tags contained in this tag.
-           node.children().forEach { node ->
-                doTree(node)
-            }
-
-
-            println("</" + node.name + ">")
-        }
-    }
-
-
-    fun doElement(element: Element) {
-        println("<" + element.name + ">")
-
-        if(element.hasAttributes()) {
-            println("Attributes : " + element.attributes().toString())
-        }
-
-    }
-
-
-
-
 }

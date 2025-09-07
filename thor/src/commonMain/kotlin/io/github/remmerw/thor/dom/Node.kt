@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 abstract class Node(
     var model: Model?,
-    val parent: Node?,
     val uid: Long,
     val name: String
 ) {
@@ -16,12 +15,6 @@ abstract class Node(
     }
 
     val children = MutableStateFlow(mutableListOf<Entity>())
-
-    fun children(): List<Node> {
-        return children.value.map { entity ->
-            model!!.node(entity)
-        }
-    }
 
 
     internal fun appendChild(newChild: Node) {
@@ -39,6 +32,18 @@ abstract class Node(
 
     override fun toString(): String {
         return "$name($uid)"
+    }
+
+    open fun debug() {
+        if (children.value.isEmpty()) {
+            println("<$name/>")
+        } else {
+            println("<$name>")
+            children.value.forEach { entity ->
+                model!!.node(entity).debug()
+            }
+            println("</$name")
+        }
     }
 }
 
