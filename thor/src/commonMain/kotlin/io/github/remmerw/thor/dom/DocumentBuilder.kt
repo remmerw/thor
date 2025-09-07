@@ -8,7 +8,7 @@ import java.io.LineNumberReader
 
 fun parseDocument(byteStream: InputStream, url: Url, charset: String): Document {
     val reader = LineNumberReader(InputStreamReader(byteStream, charset))
-    val document = Document(reader, url, charset)
+    val document = Document(reader, url.toString())
     document.load()
     return document
 }

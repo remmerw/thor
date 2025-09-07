@@ -599,7 +599,7 @@ class HtmlParser {
                 }
             }
         }
-        if (sb.length > 0) {
+        if (sb.isNotEmpty()) {
             this.justReadTagEnd = false
             this.justReadTagBegin = false
             this.justReadEmptyElement = false

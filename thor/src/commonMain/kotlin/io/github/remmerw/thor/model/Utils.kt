@@ -11,15 +11,12 @@ object Utils {
         return if (href == null) "" else Urls.removeControlCharacters(href)
     }
 
-    fun getBaseURI(doc: Document): String? {
-        val buri = doc.getBaseURI()
-        return if (buri == null) doc.getDocumentURI() else buri
-    }
+
 
     fun getFullURL(doc: Document, uri: String): Url {
         try {
-            val baseURI = getBaseURI(doc)
-            val documentURL = if (baseURI == null) null else Url(baseURI)
+            val baseURI =  doc.getBaseUri()
+            val documentURL = Url(baseURI)
             return Urls.createURL(documentURL, uri)
         } catch (_: Throwable) {
             return Url(uri)

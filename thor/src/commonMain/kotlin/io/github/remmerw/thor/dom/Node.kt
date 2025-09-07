@@ -22,14 +22,6 @@ abstract class Node(
         return this.name
     }
 
-    open fun getNodeValue(): String? {
-        TODO("Not yet implemented")
-    }
-
-    fun setNodeValue(p0: String?) {
-        TODO("Not yet implemented")
-    }
-
     fun getNodeType(): Short {
         return type
     }
@@ -38,9 +30,6 @@ abstract class Node(
         return children
     }
 
-    fun cloneNode(p0: Boolean): Node? {
-        TODO("Not yet implemented")
-    }
 
     fun uid(): Long {
         return uid
@@ -55,14 +44,14 @@ abstract class Node(
                 if (prevParent is Node) {
                     prevParent.removeChild(newChild)
                 }
-            } else if ((newChild is Node) && newChild.isInclusiveAncestorOf(this)) {
+            } else if (newChild.isInclusiveAncestorOf(this)) {
                 throw DOMException(
                     DOMException.HIERARCHY_REQUEST_ERR,
                     "Trying to append an ancestor element."
                 )
             }
 
-            this.children.add(newChild as Node)
+            this.children.add(newChild)
 
             return newChild
         } else {
@@ -114,16 +103,9 @@ abstract class Node(
     }
 
 
-    protected fun nodeIndex(): Int {
-        val parent = this.getParentNode()
-        return parent?.getChildIndex(this) ?: -1
-    }
-
     protected fun getChildIndex(child: Node?): Int {
-
         val nl = this.children
         return nl.indexOf(child)
-
     }
 
 
@@ -148,33 +130,6 @@ abstract class Node(
         }
     }
 
-    @Throws(DOMException::class)
-    fun compareDocumentPosition(other: Node?): Short {
-        val parent = this.getParentNode()
-        if (other !is Node) {
-            throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Unknwon node implementation")
-        }
-        if ((parent != null) && (parent === other.getParentNode())) {
-            val thisIndex = this.nodeIndex()
-            val otherIndex =
-                other.nodeIndex()
-            if ((thisIndex == -1) || (otherIndex == -1)) {
-                return DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
-            }
-            if (thisIndex < otherIndex) {
-                return DOCUMENT_POSITION_FOLLOWING
-            } else {
-                return DOCUMENT_POSITION_PRECEDING
-            }
-        } else if (this.isAncestorOf(other)) {
-            return DOCUMENT_POSITION_CONTAINED_BY
-        } else if (other.isAncestorOf(this)) {
-            return DOCUMENT_POSITION_CONTAINS
-        } else {
-            return DOCUMENT_POSITION_DISCONNECTED
-        }
-    }
-
 
     fun getOwnerDocument(): Document? {
         return document
@@ -182,22 +137,8 @@ abstract class Node(
 
     protected fun setOwnerDocument(value: Document) {
         this.document = value
-
     }
 
-    fun setOwnerDocument(value: Document, deep: Boolean) {
-        setOwnerDocument(value)
-        if (deep) {
-
-            val nl = this.children
-            val i: MutableIterator<Node?> = nl.iterator()
-            while (i.hasNext()) {
-                val child = i.next() as Node
-                child.setOwnerDocument(value, deep)
-            }
-
-        }
-    }
 
     protected fun visitImpl(visitor: NodeVisitor) {
 
@@ -240,7 +181,7 @@ abstract class Node(
         if (idx == -1) {
             throw DOMException(DOMException.NOT_FOUND_ERR, "refChild not found")
         }
-        nl.add(idx, newChild as Node)
+        nl.add(idx, newChild)
 
 
         return newChild
@@ -268,7 +209,7 @@ abstract class Node(
         if (idx == -1) {
             throw DOMException(DOMException.NOT_FOUND_ERR, "oldChild not found")
         }
-        nl.set(idx, newChild!! as Node)
+        nl.set(idx, newChild!!)
 
         return newChild
     }
@@ -285,34 +226,9 @@ abstract class Node(
 
 
     fun hasChildNodes(): Boolean {
-
         return children.isNotEmpty()
-
     }
 
-    open fun getBaseURI(): String? {
-        val document = this.document
-        return document?.getBaseURI()
-    }
-
-    fun getChildNodes(): NodeList {
-
-        val nl = this.children
-        return NodeList(nl.toList())
-
-    }
-
-    fun getFirstChild(): Node? {
-
-        return children().first()
-
-    }
-
-    fun getLastChild(): Node? {
-
-        return this.children.last()
-
-    }
 
     private fun getPreviousTo(node: Node?): Node? {
 
@@ -356,125 +272,15 @@ abstract class Node(
         return parent?.getNextTo(this)
     }
 
-    fun getFeature(feature: String?, version: String?): Any? {
-        // TODO What should this do?
-        return null
-    }
-
-
-    open fun hasAttributes(): Boolean {
-        return false
-    }
-
-    fun getNamespaceURI(): String? {
-        return null
-    }
-
-    fun getPrefix(): String? {
-        TODO("Not supported yet")
-    }
-
-    fun setPrefix(prefix: String?) {
-        TODO("Not supported yet")
-    }
-
-
-    @Throws(DOMException::class)
-    open fun getTextContent(): String? {
-        val sb = StringBuffer()
-
-        val nl = this.children
-        val i = nl.iterator()
-        while (i.hasNext()) {
-            val node = i.next()
-            val type = node.getNodeType()
-            when (type) {
-                CDATA_SECTION_NODE, TEXT_NODE, ELEMENT_NODE -> {
-                    val textContent = node.getTextContent()
-                    if (textContent != null) {
-                        sb.append(textContent)
-                    }
-                }
-
-                else -> {}
-            }
-        }
-
-        return sb.toString()
-    }
-
-
-    open fun setTextContent(textContent: String) {
-
-        this.removeChildrenImpl(TextFilter())
-        if ("" != textContent) {
-            val impl = getOwnerDocument()!!
-            val t = Text(
-                impl,
-                impl.nextUid(), textContent
-            )
-            t.parent = (this)
-
-            this.children.add(t)
-        }
-
-
-    }
-
-    protected fun removeChildrenImpl(filter: NodeFilter) {
-        val nl = this.children
-        val len = nl.size
-        var i = len
-        while (--i >= 0) {
-            val node: Node = nl[i]
-            if (filter.accept(node)) {
-                nl.removeAt(i)
-            }
-        }
-    }
-
-    fun insertAfter(newChild: Node?, refChild: Node?): Node? {
-
-        val nl = this.children
-        val idx = nl.indexOf(refChild)
-        if (idx == -1) {
-            throw DOMException(DOMException.NOT_FOUND_ERR, "refChild not found")
-        }
-        nl.add(idx + 1, newChild!!)
-
-
-
-        return newChild
-    }
-
 
     fun getParentNode(): Node? {
         return this.parent
-    }
-
-    fun isSameNode(other: Node?): Boolean {
-        return this === other
-    }
-
-    fun isSupported(feature: String?, version: String): Boolean {
-        return ("HTML" == feature && (version <= "4.01"))
-    }
-
-    fun lookupNamespaceURI(prefix: String?): String? {
-        return null
     }
 
     open fun equalAttributes(arg: Node?): Boolean {
         return false
     }
 
-    fun isDefaultNamespace(namespaceURI: String?): Boolean {
-        return namespaceURI == null
-    }
-
-    fun lookupPrefix(namespaceURI: String?): String? {
-        return null
-    }
 
     fun entity(): Entity {
         return Entity(uid, name)

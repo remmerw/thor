@@ -10,7 +10,7 @@ class Element(document: Document, uid: Long, name: String) :
     }
 
 
-    override fun hasAttributes(): Boolean {
+    fun hasAttributes(): Boolean {
         synchronized(this) {
             return !attributes.isEmpty()
         }

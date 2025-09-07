@@ -22,11 +22,9 @@ class ParserTest {
             val document = p.parsePage()
             assertNotNull(document)
 
-            document.getElementsByName("hello").toString()
-            document.getDocumentUrl().toString()
-            document.getDocumentHost().toString()
-            document.getInputEncoding()
-            document.getXmlVersion()
+            document.getDoctype().toString()
+            document.getBaseUri()
+
             document.getXmlEncoding()
             document.getXmlStandalone()
             document.isXML()

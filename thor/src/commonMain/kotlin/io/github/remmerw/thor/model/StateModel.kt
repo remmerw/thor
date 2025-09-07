@@ -56,7 +56,7 @@ class StateModel() : ViewModel() {
 
 
     fun wurst(entity: Entity): StateFlow<String> {
-        return document!!.wurst(entity)
+        return document!!.data(entity)
     }
 
 
