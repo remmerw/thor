@@ -12,10 +12,9 @@ object Utils {
     }
 
 
-
     fun getFullURL(doc: Document, uri: String): Url {
         try {
-            val baseURI =  doc.getBaseUri()
+            val baseURI = doc.getBaseUri()
             val documentURL = Url(baseURI)
             return Urls.createURL(documentURL, uri)
         } catch (_: Throwable) {

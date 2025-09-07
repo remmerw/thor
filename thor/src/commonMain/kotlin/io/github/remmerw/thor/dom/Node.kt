@@ -1,5 +1,7 @@
 package io.github.remmerw.thor.dom
 
+import kotlinx.coroutines.flow.MutableStateFlow
+
 
 abstract class Node(
     var document: Document?,
@@ -13,14 +15,17 @@ abstract class Node(
         }
     }
 
-    private val children = mutableListOf<Node>()
+    val children = MutableStateFlow(mutableListOf<Entity>())
 
     fun children(): List<Node> {
-        return children
+        return children.value.map { entity ->
+            document!!.node(entity)
+        }
     }
 
+
     internal fun appendChild(newChild: Node) {
-        this.children.add(newChild)
+        this.children.value.add(newChild.entity()) // todo fix
     }
 
     fun getDocumentOwner(): Document {

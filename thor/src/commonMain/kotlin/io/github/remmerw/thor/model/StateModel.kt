@@ -6,9 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.remmerw.thor.dom.Document
-import io.github.remmerw.thor.dom.Element
 import io.github.remmerw.thor.dom.Entity
-import io.github.remmerw.thor.dom.Node
 import io.ktor.http.Url
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -42,25 +40,13 @@ class StateModel() : ViewModel() {
         return document!!.attributes(entity)
     }
 
-    fun node(node: Entity): Node? {
-        return document?.node(node.uid)
-    }
-
     fun data(entity: Entity): StateFlow<String> {
         return document!!.data(entity)
     }
 
-
-    fun children(entity: Entity): List<Entity> {
-        if (document == null) {
-            return emptyList()
-        }
-        return document!!.children(entity.uid).map { node ->
-            println(node.name)
-            node.entity()
-        }.toList()
+    fun children(entity: Entity): StateFlow<List<Entity>> {
+        return document!!.children(entity)
     }
-
 
     fun fullUri(spec: String): String {
 

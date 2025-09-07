@@ -5,7 +5,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import io.github.remmerw.thor.dom.Entity
 import io.github.remmerw.thor.model.StateModel
@@ -17,7 +18,7 @@ fun Body(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    val entities = remember { stateModel.children(entity) }
+    val entities by stateModel.children(entity).collectAsState()
     LazyColumn(modifier = modifier.fillMaxWidth()) {
 
         items(

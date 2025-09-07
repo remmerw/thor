@@ -8,7 +8,7 @@ import kotlin.concurrent.atomics.incrementAndFetch
 
 
 class Document(
-    private var reader: LineNumberReader,
+    private val reader: LineNumberReader,
     private val documentUri: String
 ) : Node(null, null, 0, "#document") {
 
@@ -39,20 +39,17 @@ class Document(
         return this.documentUri
     }
 
+    internal fun node(entity: Entity): Node {
+        return nodes[entity.uid]!!
+    }
+
 
     fun load() {
-
-        try {
+        reader.use { reader ->
             val parser = HtmlParser(
                 this, this.isXML(), true
             )
             parser.parse(reader)
-
-        } finally {
-            try {
-                reader.close()
-            } catch (_: Throwable) {
-            }
         }
     }
 
@@ -123,16 +120,12 @@ class Document(
         return this.documentUri
     }
 
-    fun children(uid: Long): List<Node> {
-        return nodes[uid]?.children() ?: emptyList()
+    fun children(entity: Entity): StateFlow<List<Entity>> {
+        return nodes[entity.uid]!!.children
     }
 
     fun attributes(entity: Entity): StateFlow<Map<String, String>> {
         return (nodes[entity.uid] as Element).attributes
-    }
-
-    fun node(uid: Long): Node? {
-        return nodes[uid]
     }
 
     fun data(entity: Entity): StateFlow<String> {

@@ -2,6 +2,7 @@ package io.github.remmerw.thor
 
 import io.github.remmerw.thor.dom.Document
 import io.github.remmerw.thor.dom.Element
+import io.github.remmerw.thor.dom.Entity
 import io.github.remmerw.thor.dom.Node
 import io.github.remmerw.thor.dom.parseDocument
 import io.ktor.http.Url
@@ -30,7 +31,7 @@ class Render(var url: Url) {
             val document = parseDocument(inputStream, url, "UTF-8")
 
             // Do a recursive traversal on the top-level DOM node.
-            doTree( document.getDocumentElement())
+            doTree( document.getDocumentElement()!!)
             return document
         } catch (e: Exception) {
             e.printStackTrace()
@@ -46,7 +47,7 @@ class Render(var url: Url) {
      * children.  The Elements refer to the HTML tags, and the children
      * are tags contained inside the parent tag.
      */
-    fun doTree(node: Node?) {
+    fun doTree(node: Node) {
         if (node is Element) {
             // Visit tag.
 

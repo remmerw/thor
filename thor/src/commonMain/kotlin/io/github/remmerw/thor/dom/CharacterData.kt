@@ -7,7 +7,7 @@ abstract class CharacterData(
     parent: Node,
     uid: Long,
     name: String,
-    var text: String = ""
+    text: String
 ) :
     Node(document, parent, uid, name) {
 
