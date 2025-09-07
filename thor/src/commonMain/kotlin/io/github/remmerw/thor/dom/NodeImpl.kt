@@ -544,6 +544,10 @@ abstract class NodeImpl(
         return null
     }
 
+    fun entity(): Entity {
+        return Entity(uid, name)
+    }
+
     override fun toString(): String {
         return "$nodeName($uid)"
     }

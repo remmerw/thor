@@ -1,5 +1,6 @@
 package io.github.remmerw.thor.dom
 
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.w3c.dom.CharacterData
 import org.w3c.dom.Document
 
@@ -13,6 +14,7 @@ abstract class CharacterDataImpl(
     NodeImpl(document, uid, name, type),
     CharacterData {
 
+    val wurst = MutableStateFlow(text)
 
     override fun getTextContent(): String {
         return this.text

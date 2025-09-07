@@ -25,7 +25,7 @@ class RenderTest {
         composeTestRule.setContent {
 
             val stateModel: StateModel = viewModel { StateModel() }
-            stateModel.document = document
+            stateModel.setDocument(document)
 
 
             HtmlViewer(stateModel)

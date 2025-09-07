@@ -1,11 +1,8 @@
 package io.github.remmerw.thor.dom
 
-import io.github.remmerw.thor.dom.NodeFilter.AnchorFilter
-import io.github.remmerw.thor.dom.NodeFilter.AppletFilter
-import io.github.remmerw.thor.dom.NodeFilter.FormFilter
-import io.github.remmerw.thor.dom.NodeFilter.LinkFilter
 import io.github.remmerw.thor.dom.NodeFilter.TagNameFilter
 import io.ktor.http.Url
+import kotlinx.coroutines.flow.StateFlow
 import org.w3c.dom.Attr
 import org.w3c.dom.CDATASection
 import org.w3c.dom.Comment
@@ -44,21 +41,15 @@ class DocumentImpl(
     private var xmlStandalone = false
     private var xmlVersion: String? = null
     private var strictErrorChecking = true
-    private var body: Element? = null
 
 
     init {
         this.setOwnerDocument(this)
+        this.nodes.put(0, this)
     }
 
     internal fun addNode(node: NodeImpl) {
         nodes.put(node.uid(), node)
-
-        if (node is Element) {
-            if (node.nodeName == "BODY") {
-                setBody(node)
-            }
-        }
     }
 
     @OptIn(ExperimentalAtomicApi::class)
@@ -90,52 +81,9 @@ class DocumentImpl(
         // NOP, per spec
     }
 
-    fun getBody(): Element? {
-        synchronized(this) {
-            return this.body
-        }
-    }
-
-    fun setBody(body: Element?) {
-        synchronized(this) {
-            this.body = body
-        }
-    }
-
-    fun getImages(): Collection {
-        synchronized(this) {
-            return DescendantHTMLCollection(this, NodeFilter.ImageFilter())
-        }
-    }
-
-    fun getApplets(): Collection {
-        synchronized(this) {
-            return DescendantHTMLCollection(this, AppletFilter())
-
-        }
-    }
-
-    fun getLinks(): Collection {
-        synchronized(this) {
-            return DescendantHTMLCollection(this, LinkFilter())
-        }
-    }
-
-    fun getForms(): Collection {
-        synchronized(this) {
-            return DescendantHTMLCollection(this, FormFilter())
-        }
-    }
-
     fun getElementsByName(name: String): Collection {
         synchronized(this) {
             return DescendantHTMLCollection(this, NodeFilter.ElementNameFilter(name))
-        }
-    }
-
-    fun getAnchors(): Collection {
-        synchronized(this) {
-            return DescendantHTMLCollection(this, AnchorFilter())
         }
     }
 
@@ -362,6 +310,10 @@ class DocumentImpl(
 
     fun node(uid: Long): Node? {
         return nodes[uid]
+    }
+
+    fun wurst(entity: Entity): StateFlow<String> {
+        return (nodes[entity.uid] as TextImpl).wurst
     }
 
     companion object {

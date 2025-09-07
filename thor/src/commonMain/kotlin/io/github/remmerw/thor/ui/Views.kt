@@ -1,14 +1,13 @@
 package io.github.remmerw.thor.ui
 
-import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,27 +25,19 @@ import io.github.remmerw.thor.model.StateModel
 fun HtmlViewer(
     stateModel: StateModel
 ) {
-    // val tasks by stateModel.tasks(pid).collectAsState(emptyList()) ->  Flow<List<Task>>
-    val bodyNode by remember { mutableStateOf(stateModel.bodyNode()) }
-    val nodeModels = remember { stateModel.childNodes(bodyNode) }
 
+    val entity by stateModel.entity.collectAsState()
     Scaffold(
         content = { padding ->
-            LazyColumn(
+            Box(
                 modifier = Modifier.padding(padding).fillMaxWidth()
             ) {
-
-                items(
-                    items = nodeModels,
-                    key = { element -> element.uid }
-                ) { nodeModel ->
-                    FlowRow {
-                        EvaluateEntity(
-                            entity = nodeModel,
-                            stateModel = stateModel,
-                            modifier = Modifier
-                        )
-                    }
+                if (entity != null) {
+                    Nodes(
+                        entity = entity!!,
+                        stateModel = stateModel,
+                        modifier = Modifier,
+                    )
                 }
             }
         }
@@ -56,19 +47,18 @@ fun HtmlViewer(
 
 @Composable
 fun Nodes(
-    nodeModel: Entity,
+    entity: Entity,
     stateModel: StateModel,
     modifier: Modifier,
     style: TextStyle = LocalTextStyle.current,
 ) {
 
-    val nodeModels = remember { stateModel.childNodes(nodeModel) }
+    val entities = remember { stateModel.children(entity) }
 
+    if (entities.isNotEmpty()) {
 
-    if (nodeModels.isNotEmpty()) {
-
-        nodeModels.forEach { nodeModel ->
-            EvaluateEntity(nodeModel, stateModel, modifier, style)
+        entities.forEach { entity ->
+            EvaluateEntity(entity, stateModel, modifier, style)
         }
     }
 
@@ -82,7 +72,8 @@ fun Chars(
     modifier: Modifier,
     style: TextStyle = LocalTextStyle.current
 ) {
-    val text by remember { mutableStateOf(stateModel.text(entity)) }
+    val text by stateModel.wurst(entity).collectAsState()
+
     if (text.isNotEmpty()) {
         Text(text = text, modifier = modifier, style = style)
     }
@@ -91,40 +82,40 @@ fun Chars(
 
 @Composable
 fun Html(
-    nodeModel: Entity,
+    entity: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
 
-    Nodes(nodeModel, stateModel, modifier)
+    Nodes(entity, stateModel, modifier)
 }
 
 
 @Composable
 fun Dummy(
-    nodeModel: Entity,
+    entity: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
 
-    Nodes(nodeModel, stateModel, modifier)
+    Nodes(entity, stateModel, modifier)
 }
 
 
 @Composable
 fun Font(
-    nodeModel: Entity,
+    entity: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
 
-    Nodes(nodeModel, stateModel, modifier)
+    Nodes(entity, stateModel, modifier)
 }
 
 
 @Composable
 fun Img(
-    nodeModel: Entity,
+    entity: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
@@ -132,7 +123,7 @@ fun Img(
 
     val src by remember {
         mutableStateOf(
-            stateModel.attribute(nodeModel, "src")
+            stateModel.attribute(entity, "src")
         )
     }
 
@@ -146,91 +137,82 @@ fun Img(
         )
     }
 
-    Nodes(nodeModel, stateModel, modifier)
+    Nodes(entity, stateModel, modifier)
 
 }
 
 @Composable
 fun Ul(
-    nodeModel: Entity,
+    entity: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Nodes(nodeModel, stateModel, modifier)
+    Nodes(entity, stateModel, modifier)
 }
 
 
 @Composable
 fun Blockquote(
-    nodeModel: Entity,
+    entity: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Nodes(nodeModel, stateModel, modifier)
+    Nodes(entity, stateModel, modifier)
 }
 
 @Composable
 fun Li(
-    nodeModel: Entity,
+    entity: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Nodes(nodeModel, stateModel, modifier)
+    Nodes(entity, stateModel, modifier)
 }
 
 @Composable
 fun Form(
-    nodeModel: Entity,
+    entity: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
 
-    Nodes(nodeModel, stateModel, modifier)
-}
-
-@Composable
-fun Body(
-    nodeModel: Entity,
-    stateModel: StateModel,
-    modifier: Modifier
-) {
-    Nodes(nodeModel, stateModel, modifier)
+    Nodes(entity, stateModel, modifier)
 }
 
 
 @Composable
 fun Center(
-    nodeModel: Entity,
+    entity: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Nodes(nodeModel, stateModel, modifier)
+    Nodes(entity, stateModel, modifier)
 }
 
 @Composable
 fun Table(
-    nodeModel: Entity,
+    entity: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Nodes(nodeModel, stateModel, modifier)
+    Nodes(entity, stateModel, modifier)
 }
 
 
 @Composable
 fun Link(
-    nodeModel: Entity,
+    entity: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Nodes(nodeModel, stateModel, modifier)
+    Nodes(entity, stateModel, modifier)
 
-    //Utils.navigate(nodeModel, stateModel)
+    //Utils.navigate(entity, stateModel)
 }
 
 @Composable
 fun A(
-    nodeModel: Entity,
+    entity: Entity,
     stateModel: StateModel,
     modifier: Modifier,
     style: TextStyle = LocalTextStyle.current
@@ -238,7 +220,7 @@ fun A(
 
     val href by remember {
         mutableStateOf(
-            stateModel.attribute(nodeModel, "href")
+            stateModel.attribute(entity, "href")
         )
     }
 
@@ -252,9 +234,9 @@ fun A(
     }
 
 
-    Nodes(nodeModel, stateModel, modifier, style)
+    Nodes(entity, stateModel, modifier, style)
 
-    //Utils.navigate(nodeModel, stateModel)
+    //Utils.navigate(entity, stateModel)
 
 
 }
@@ -262,46 +244,46 @@ fun A(
 
 @Composable
 fun Tr(
-    nodeModel: Entity,
+    entity: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Nodes(nodeModel, stateModel, modifier)
+    Nodes(entity, stateModel, modifier)
 }
 
 
 @Composable
 fun Td(
-    nodeModel: Entity,
+    entity: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Nodes(nodeModel, stateModel, modifier)
+    Nodes(entity, stateModel, modifier)
 }
 
 @Composable
 fun Div(
-    nodeModel: Entity,
+    entity: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Nodes(nodeModel, stateModel, modifier)
+    Nodes(entity, stateModel, modifier)
 }
 
 @Composable
 fun Big(
-    nodeModel: Entity,
+    entity: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Nodes(nodeModel, stateModel, modifier)
+    Nodes(entity, stateModel, modifier)
 }
 
 @Composable
 fun Br(
-    nodeModel: Entity,
+    entity: Entity,
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Nodes(nodeModel, stateModel, modifier)
+    Nodes(entity, stateModel, modifier)
 }

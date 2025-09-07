@@ -4,19 +4,32 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import io.github.remmerw.thor.dom.DocumentImpl
-import io.github.remmerw.thor.dom.ElementImpl
 import io.github.remmerw.thor.dom.Entity
 import io.github.remmerw.thor.dom.NodeImpl
 import io.github.remmerw.thor.dom.TextImpl
 import io.ktor.http.Url
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import org.w3c.dom.Element
 import org.w3c.dom.Node
 
 class StateModel() : ViewModel() {
     var isImageLoadingEnabled: Boolean by mutableStateOf(true)
 
-    var document: DocumentImpl? by mutableStateOf(null)
+    private var document: DocumentImpl? = null
+
+    val entity = MutableStateFlow<Entity?>(null)
+
+    fun setDocument(documentImpl: DocumentImpl) {
+        viewModelScope.launch {
+            document = documentImpl
+            println(documentImpl.entity())
+            entity.emit(documentImpl.entity())
+        }
+    }
 
     fun navigate(url: Url, target: String?) {
         TODO("Not yet implemented")
@@ -42,7 +55,13 @@ class StateModel() : ViewModel() {
         return (document!!.node(entity.uid) as TextImpl).text
     }
 
-    fun childNodes(entity: Entity?): List<Entity> {
+
+    fun wurst(entity: Entity): StateFlow<String> {
+        return document!!.wurst(entity)
+    }
+
+
+    fun children(entity: Entity?): List<Entity> {
         if (document == null) {
             return emptyList()
         }
@@ -54,19 +73,6 @@ class StateModel() : ViewModel() {
             println(node.nodeName)
             Entity(node.uid(), node.nodeName)
         }.toList()
-    }
-
-
-    fun bodyNode(): Entity? {
-        if (document == null) {
-            return null
-        }
-        val body = document!!.getBody()
-        if (body != null) {
-            body as ElementImpl
-            return Entity(body.uid(), body.nodeName)
-        }
-        return null
     }
 
 
