@@ -9,7 +9,6 @@ import io.github.remmerw.thor.dom.Document
 import io.github.remmerw.thor.dom.Element
 import io.github.remmerw.thor.dom.Entity
 import io.github.remmerw.thor.dom.Node
-import io.github.remmerw.thor.dom.Text
 import io.ktor.http.Url
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -39,21 +38,13 @@ class StateModel() : ViewModel() {
         err?.printStackTrace()
     }
 
-    fun attribute(entity: Entity, attribute: String): String? {
-        return (node(entity) as Element?)?.getAttribute(attribute)
+    fun attributes(entity: Entity): StateFlow<Map<String, String>> {
+        return document!!.attributes(entity)
     }
 
     fun node(node: Entity): Node? {
         return document?.node(node.uid)
     }
-
-    fun text(entity: Entity): String {
-        if (document == null) {
-            return ""
-        }
-        return (document!!.node(entity.uid) as Text).text
-    }
-
 
     fun data(entity: Entity): StateFlow<String> {
         return document!!.data(entity)

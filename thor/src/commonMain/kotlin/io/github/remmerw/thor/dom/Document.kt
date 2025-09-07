@@ -127,6 +127,10 @@ class Document(
         return nodes[uid]?.children() ?: emptyList()
     }
 
+    fun attributes(entity: Entity): StateFlow<Map<String, String>> {
+        return (nodes[entity.uid] as Element).attributes
+    }
+
     fun node(uid: Long): Node? {
         return nodes[uid]
     }

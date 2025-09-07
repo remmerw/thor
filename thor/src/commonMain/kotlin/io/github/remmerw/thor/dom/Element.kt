@@ -1,30 +1,32 @@
 package io.github.remmerw.thor.dom
 
+import kotlinx.coroutines.flow.MutableStateFlow
+
 
 class Element(document: Document, parent: Node, uid: Long, name: String) :
     Node(document, parent, uid, name) {
-    private val attributes = mutableMapOf<String, String>()
+    val attributes = MutableStateFlow(mutableMapOf<String, String>())
 
     fun attributes(): Map<String, String> {
-        return attributes
+        return attributes.value
     }
 
     fun hasAttributes(): Boolean {
-        return !attributes.isEmpty()
+        return !attributes.value.isEmpty()
     }
 
     fun getAttribute(name: String): String? {
-        return attributes[name.lowercase()]
+        return attributes.value[name.lowercase()]
     }
 
 
     // todo test
     internal fun removeAttribute(name: String) {
-        attributes.remove(name.lowercase())
+        attributes.value.remove(name.lowercase()) // todo fix
     }
 
     fun setAttribute(name: String, value: String) {
-        attributes.put(name.lowercase(), value)
+        attributes.value.put(name.lowercase(), value)  // todo fix
     }
 
 }

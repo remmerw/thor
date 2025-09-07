@@ -121,15 +121,12 @@ fun Img(
 ) {
     val isImageLoadingEnabled = remember { stateModel.isImageLoadingEnabled }
 
-    val src by remember {
-        mutableStateOf(
-            stateModel.attribute(entity, "src")
-        )
-    }
+    val attributes by stateModel.attributes(entity).collectAsState()
+    val src = attributes["src"]
 
     if (isImageLoadingEnabled && !src.isNullOrEmpty()) {
         AsyncImage(
-            model = stateModel.fullUri(src!!),
+            model = stateModel.fullUri(src),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -218,16 +215,13 @@ fun A(
     style: TextStyle = LocalTextStyle.current
 ) {
 
-    val href by remember {
-        mutableStateOf(
-            stateModel.attribute(entity, "href")
-        )
-    }
-
+    val attributes by stateModel.attributes(entity).collectAsState()
+    val href = attributes["href"]
     // todo this is wrong !!!
     if (href != null) {
         Text(
-            text = href!!, modifier = modifier,
+            text = href,
+            modifier = modifier,
             color = Color.Blue,
             textDecoration = TextDecoration.Underline
         )
