@@ -2,7 +2,6 @@ package io.github.remmerw.thor.dom
 
 import kotlinx.io.Source
 import kotlinx.io.readCodePointValue
-import java.util.LinkedList
 
 internal class StopException(val element: Element) : Exception()
 class HtmlParser {
@@ -41,7 +40,7 @@ class HtmlParser {
     fun parse(source: Source, parent: Node) {
         while (this.parseToken(
                 parent, source, null,
-                LinkedList<String>()
+                ArrayDeque()
             ) != TOKEN_EOD
         ) {
         }
@@ -56,7 +55,7 @@ class HtmlParser {
         parent: Node,
         source: Source,
         stopTags: MutableSet<String>?,
-        ancestors: LinkedList<String>
+        ancestors: ArrayDeque<String>
     ): Int {
         val doc = this.model
         val textSb = this.readUpToTagBegin(source)
