@@ -1,6 +1,6 @@
 package io.github.remmerw.thor
 
-import io.github.remmerw.thor.dom.createModel
+import io.github.remmerw.saga.createModel
 import io.ktor.http.Url
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -25,7 +25,6 @@ class ParserTest {
             p.parse(model)
 
             model.debug()
-            model.getDoctype().toString()
 
             println("Done $url")
         }

@@ -5,8 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.remmerw.thor.dom.Entity
-import io.github.remmerw.thor.dom.Model
+import io.github.remmerw.saga.Entity
+import io.github.remmerw.saga.Model
 import io.ktor.http.Url
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

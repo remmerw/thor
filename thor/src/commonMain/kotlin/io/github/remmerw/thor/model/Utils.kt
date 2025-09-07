@@ -1,6 +1,6 @@
 package io.github.remmerw.thor.model
 
-import io.github.remmerw.thor.dom.Entity
+import io.github.remmerw.saga.Entity
 import io.ktor.http.Url
 
 object Utils {

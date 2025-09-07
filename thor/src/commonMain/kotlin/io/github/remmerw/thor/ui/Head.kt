@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import io.github.remmerw.thor.dom.Entity
+import io.github.remmerw.saga.Entity
 import io.github.remmerw.thor.model.StateModel
 
 

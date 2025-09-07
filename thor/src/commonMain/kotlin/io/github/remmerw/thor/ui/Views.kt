@@ -16,7 +16,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import coil3.compose.AsyncImage
-import io.github.remmerw.thor.dom.Entity
+import io.github.remmerw.saga.Entity
 import io.github.remmerw.thor.model.StateModel
 
 

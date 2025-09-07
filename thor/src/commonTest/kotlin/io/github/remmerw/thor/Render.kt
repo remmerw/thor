@@ -1,7 +1,7 @@
 package io.github.remmerw.thor
 
-import io.github.remmerw.thor.dom.Model
-import io.github.remmerw.thor.dom.attachToModel
+import io.github.remmerw.saga.Model
+import io.github.remmerw.saga.attachToModel
 import io.ktor.http.Url
 import kotlinx.io.asSource
 import kotlinx.io.buffered

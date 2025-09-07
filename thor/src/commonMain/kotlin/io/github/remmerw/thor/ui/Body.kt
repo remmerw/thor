@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import io.github.remmerw.thor.dom.Entity
+import io.github.remmerw.saga.Entity
 import io.github.remmerw.thor.model.StateModel
 
 

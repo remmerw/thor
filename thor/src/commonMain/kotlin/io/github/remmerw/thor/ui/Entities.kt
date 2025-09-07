@@ -4,7 +4,7 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
-import io.github.remmerw.thor.dom.Entity
+import io.github.remmerw.saga.Entity
 import io.github.remmerw.thor.model.StateModel
 import io.github.remmerw.thor.model.Type
 
