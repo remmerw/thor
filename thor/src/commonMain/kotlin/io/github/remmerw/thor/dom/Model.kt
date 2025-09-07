@@ -17,7 +17,7 @@ class Model() : Node(null, null, 0, "#document") {
 
 
     init {
-        this.setOwnerDocument(this)
+        this.setModel(this)
         this.nodes.put(0, this)
     }
 

@@ -28,11 +28,7 @@ abstract class Node(
         this.children.value.add(newChild.entity()) // todo fix
     }
 
-    fun getDocumentOwner(): Model {
-        return model!!
-    }
-
-    internal fun setOwnerDocument(value: Model) {
+    internal fun setModel(value: Model) {
         this.model = value
     }
 
