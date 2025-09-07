@@ -167,9 +167,11 @@ class HtmlParser {
                             val publicId = group[2]
                             val systemId = group[3]
                             val doctype = DocumentType(
-                                htmlDoc, parent, htmlDoc.nextUid(),
+                                htmlDoc, parent,
+                                htmlDoc.nextUid(),
                                 qName,
-                                publicId, systemId
+                                publicId,
+                                systemId
                             )
                             htmlDoc.setDoctype(doctype)
                             needRoot = false
@@ -310,7 +312,7 @@ class HtmlParser {
                                             }
                                         } catch (se: StopException) {
                                             // newElement does not have a parent.
-                                            val newElement = se.element!!
+                                            val newElement = se.element
                                             tag = newElement.name
                                             normalTag = tag.uppercase()
                                             // If a subelement throws StopException with
@@ -1379,7 +1381,7 @@ class HtmlParser {
             val chars = CharArray(n)
             var i = 0
             while (i < n) {
-                var ich = -1
+                var ich: Int
                 try {
                     ich = reader.read()
                 } catch (_: Throwable) {
@@ -1455,10 +1457,10 @@ class HtmlParser {
 
         private fun getEntityChar(spec: String): Int {
             // TODO: Declared entities
-            var c: Char? = ENTITIES.get(spec)
+            var c: Char? = ENTITIES[spec]
             if (c == null) {
                 val specTL = spec.lowercase()
-                c = ENTITIES.get(specTL)
+                c = ENTITIES[specTL]
                 if (c == null) {
                     return -1
                 }

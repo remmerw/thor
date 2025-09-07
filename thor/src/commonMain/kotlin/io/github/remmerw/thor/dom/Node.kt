@@ -5,8 +5,7 @@ abstract class Node(
     var document: Document?,
     val parent: Node?,
     val uid: Long,
-    val name: String,
-    val type: Short
+    val name: String
 ) {
     init {
         if (document is Document) {
@@ -39,17 +38,6 @@ abstract class Node(
 
     override fun toString(): String {
         return "$name($uid)"
-    }
-
-
-    companion object {
-        const val ELEMENT_NODE: Short = 1
-        const val TEXT_NODE: Short = 3
-        const val CDATA_SECTION_NODE: Short = 4
-        const val PROCESSING_INSTRUCTION_NODE: Short = 7
-        const val COMMENT_NODE: Short = 8
-        const val DOCUMENT_NODE: Short = 9
-        const val DOCUMENT_TYPE_NODE: Short = 10
     }
 }
 

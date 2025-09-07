@@ -2,7 +2,7 @@ package io.github.remmerw.thor.dom
 
 
 class Element(document: Document, parent: Node, uid: Long, name: String) :
-    Node(document, parent, uid, name, ELEMENT_NODE) {
+    Node(document, parent, uid, name) {
     private val attributes = mutableMapOf<String, String>()
 
     fun attributes(): Map<String, String> {

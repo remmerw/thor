@@ -6,5 +6,5 @@ class ProcessingInstruction(
     parent: Node,
     uid: Long,
     name: String,
-    val data: String // todo
-) : Node(document, parent, uid, name, PROCESSING_INSTRUCTION_NODE)
+    val data: String // todo test
+) : Node(document, parent, uid, name)

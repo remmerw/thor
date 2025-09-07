@@ -7,10 +7,9 @@ abstract class CharacterData(
     parent: Node,
     uid: Long,
     name: String,
-    type: Short,
     var text: String = ""
 ) :
-    Node(document, parent, uid, name, type) {
+    Node(document, parent, uid, name) {
 
     val data = MutableStateFlow(text)
 

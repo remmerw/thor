@@ -10,7 +10,7 @@ import kotlin.concurrent.atomics.incrementAndFetch
 class Document(
     private var reader: LineNumberReader,
     private val documentUri: String
-) : Node(null, null, 0, "#document", DOCUMENT_NODE) {
+) : Node(null, null, 0, "#document") {
 
     @OptIn(ExperimentalAtomicApi::class)
     private val uids = AtomicLong(0L)
@@ -107,12 +107,11 @@ class Document(
 
     fun createProcessingInstruction(
         parent: Node,
-        target: String,
+        name: String,
         data: String
     ): ProcessingInstruction {
         return ProcessingInstruction(
-            this, parent, nextUid(),
-            target, data
+            this, parent, nextUid(), name, data
         )
     }
 
