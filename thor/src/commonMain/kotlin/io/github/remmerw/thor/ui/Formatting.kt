@@ -65,3 +65,12 @@ fun Small(
     )
 }
 
+
+@Composable
+fun Center(
+    entity: Entity,
+    stateModel: StateModel,
+    modifier: Modifier
+) {
+    RowEntities(entity, stateModel, modifier)
+}

@@ -14,3 +14,23 @@ fun Table(
 ) {
     RowEntities(entity, stateModel, modifier)
 }
+
+
+@Composable
+fun Tr(
+    entity: Entity,
+    stateModel: StateModel,
+    modifier: Modifier
+) {
+    RowEntities(entity, stateModel, modifier)
+}
+
+
+@Composable
+fun Td(
+    entity: Entity,
+    stateModel: StateModel,
+    modifier: Modifier
+) {
+    RowEntities(entity, stateModel, modifier)
+}

@@ -189,6 +189,10 @@ fun EntityComposable(
             Ul(entity, stateModel, modifier)
         }
 
+        Type.OL.name -> {
+            Ol(entity, stateModel, modifier)
+        }
+
         Type.TR.name -> {
             Tr(entity, stateModel, modifier)
         }

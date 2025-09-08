@@ -51,7 +51,6 @@ fun Html(
 }
 
 
-
 @Composable
 fun Img(
     entity: Entity,
@@ -77,15 +76,6 @@ fun Img(
 
 }
 
-@Composable
-fun Ul(
-    entity: Entity,
-    stateModel: StateModel,
-    modifier: Modifier
-) {
-    RowEntities(entity, stateModel, modifier)
-}
-
 
 @Composable
 fun Blockquote(
@@ -96,14 +86,6 @@ fun Blockquote(
     RowEntities(entity, stateModel, modifier)
 }
 
-@Composable
-fun Li(
-    entity: Entity,
-    stateModel: StateModel,
-    modifier: Modifier
-) {
-    RowEntities(entity, stateModel, modifier)
-}
 
 @Composable
 fun Form(
@@ -112,37 +94,6 @@ fun Form(
     modifier: Modifier
 ) {
 
-    RowEntities(entity, stateModel, modifier)
-}
-
-
-@Composable
-fun Center(
-    entity: Entity,
-    stateModel: StateModel,
-    modifier: Modifier
-) {
-    RowEntities(entity, stateModel, modifier)
-}
-
-
-
-@Composable
-fun Tr(
-    entity: Entity,
-    stateModel: StateModel,
-    modifier: Modifier
-) {
-    RowEntities(entity, stateModel, modifier)
-}
-
-
-@Composable
-fun Td(
-    entity: Entity,
-    stateModel: StateModel,
-    modifier: Modifier
-) {
     RowEntities(entity, stateModel, modifier)
 }
 
