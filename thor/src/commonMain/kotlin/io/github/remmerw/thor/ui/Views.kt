@@ -51,16 +51,6 @@ fun Html(
 }
 
 
-@Composable
-fun Dummy(
-    entity: Entity,
-    stateModel: StateModel,
-    modifier: Modifier
-) {
-
-    RowEntities(entity, stateModel, modifier)
-}
-
 
 @Composable
 fun Img(
@@ -135,14 +125,6 @@ fun Center(
     RowEntities(entity, stateModel, modifier)
 }
 
-@Composable
-fun Table(
-    entity: Entity,
-    stateModel: StateModel,
-    modifier: Modifier
-) {
-    RowEntities(entity, stateModel, modifier)
-}
 
 
 @Composable
