@@ -7,7 +7,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextDecoration
 import io.github.remmerw.saga.Entity
 import io.github.remmerw.thor.model.StateModel
 import io.github.remmerw.thor.model.Type
@@ -18,6 +20,8 @@ fun ColumnEntities(
     entity: Entity,
     stateModel: StateModel,
     modifier: Modifier,
+    color: Color = Color.Unspecified,
+    textDecoration: TextDecoration? = null,
     style: TextStyle = LocalTextStyle.current,
 ) {
 
@@ -27,7 +31,10 @@ fun ColumnEntities(
 
         entities.forEach { entity ->
             Column(modifier = modifier.fillMaxWidth()) {
-                Entity(entity, stateModel, modifier, style)
+                Entity(entity, stateModel, modifier,
+                    color = color,
+                    textDecoration = textDecoration,
+                    style = style)
             }
         }
     }
@@ -39,6 +46,8 @@ fun RowEntities(
     entity: Entity,
     stateModel: StateModel,
     modifier: Modifier,
+    color: Color = Color.Unspecified,
+    textDecoration: TextDecoration? = null,
     style: TextStyle = LocalTextStyle.current,
 ) {
 
@@ -47,7 +56,10 @@ fun RowEntities(
     if (entities.isNotEmpty()) {
 
         entities.forEach { entity ->
-            Entity(entity, stateModel, modifier, style)
+            Entity(entity, stateModel, modifier,
+                color = color,
+                textDecoration = textDecoration,
+                style = style)
         }
     }
 
@@ -58,11 +70,16 @@ fun Entity(
     entity: Entity,
     stateModel: StateModel,
     modifier: Modifier = Modifier,
+    color: Color = Color.Unspecified,
+    textDecoration: TextDecoration? = null,
     style: TextStyle = LocalTextStyle.current
 ) {
     when (entity.name) {
         "#text" -> {
-            Chars(entity, stateModel, modifier, style)
+            Chars(entity, stateModel, modifier,
+                color = color,
+                textDecoration = textDecoration,
+                style = style)
         }
 
         Type.HTML.name -> {
@@ -121,9 +138,7 @@ fun Entity(
             Font(entity, stateModel, modifier)
         }
 
-        Type.LINK.name -> {
-            Link(entity, stateModel, modifier)
-        }
+
 
         Type.A.name, Type.ANCHOR.name -> {
             A(entity, stateModel, modifier)
@@ -157,6 +172,9 @@ fun Entity(
             Blockquote(entity, stateModel, modifier)
         }
 
+        Type.LINK.name, Type.META.name, Type.HEAD.name -> {
+            // not visible (not yet supported)
+        }
         else -> {
             Dummy(entity, stateModel, modifier)
         }

@@ -15,7 +15,7 @@ fun H6(
     modifier: Modifier
 ) {
 
-    Nodes(
+    RowEntities(
         entity, stateModel,
         modifier = modifier.fillMaxWidth(),
         style = MaterialTheme.typography.titleSmall
@@ -32,7 +32,7 @@ fun H5(
     modifier: Modifier
 ) {
 
-    Nodes(
+    RowEntities(
         entity, stateModel,
         modifier = modifier,
         style = MaterialTheme.typography.titleMedium
@@ -47,7 +47,7 @@ fun H4(
     modifier: Modifier
 ) {
 
-    Nodes(
+    RowEntities(
         entity, stateModel,
         modifier = modifier.fillMaxWidth(),
         style = MaterialTheme.typography.titleLarge
@@ -63,7 +63,7 @@ fun H3(
     modifier: Modifier
 ) {
 
-    Nodes(
+    RowEntities(
         entity, stateModel,
         modifier = modifier.fillMaxWidth(),
         style = MaterialTheme.typography.headlineSmall
@@ -80,7 +80,7 @@ fun H2(
     modifier: Modifier
 ) {
 
-    Nodes(
+    RowEntities(
         entity, stateModel,
         modifier = modifier.fillMaxWidth(),
         style = MaterialTheme.typography.headlineMedium
@@ -97,7 +97,7 @@ fun H1(
     modifier: Modifier
 ) {
 
-    Nodes(
+    RowEntities(
         entity, stateModel,
         modifier = modifier.fillMaxWidth(),
         style = MaterialTheme.typography.headlineLarge

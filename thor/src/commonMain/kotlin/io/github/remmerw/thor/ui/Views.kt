@@ -33,7 +33,7 @@ fun HtmlViewer(
                 modifier = Modifier.padding(padding).fillMaxWidth()
             ) {
                 if (entity != null) {
-                    Nodes(
+                    RowEntities(
                         entity = entity!!,
                         stateModel = stateModel,
                         modifier = Modifier,
@@ -44,42 +44,6 @@ fun HtmlViewer(
     )
 }
 
-
-@Composable
-fun Nodes(
-    entity: Entity,
-    stateModel: StateModel,
-    modifier: Modifier,
-    style: TextStyle = LocalTextStyle.current,
-) {
-
-    val entities by stateModel.children(entity).collectAsState()
-
-    if (entities.isNotEmpty()) {
-
-        entities.forEach { entity ->
-            Entity(entity, stateModel, modifier, style)
-        }
-
-    }
-
-}
-
-
-@Composable
-fun Chars(
-    entity: Entity,
-    stateModel: StateModel,
-    modifier: Modifier,
-    style: TextStyle = LocalTextStyle.current
-) {
-    val text by stateModel.text(entity).collectAsState()
-
-    if (text.isNotEmpty()) {
-        Text(text = text, modifier = modifier, style = style)
-    }
-
-}
 
 @Composable
 fun Html(
@@ -99,7 +63,7 @@ fun Dummy(
     modifier: Modifier
 ) {
 
-    Nodes(entity, stateModel, modifier)
+    RowEntities(entity, stateModel, modifier)
 }
 
 
@@ -110,7 +74,7 @@ fun Font(
     modifier: Modifier
 ) {
 
-    Nodes(entity, stateModel, modifier)
+    RowEntities(entity, stateModel, modifier)
 }
 
 
@@ -135,7 +99,7 @@ fun Img(
         )
     }
 
-    Nodes(entity, stateModel, modifier)
+    RowEntities(entity, stateModel, modifier)
 
 }
 
@@ -145,7 +109,7 @@ fun Ul(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Nodes(entity, stateModel, modifier)
+    RowEntities(entity, stateModel, modifier)
 }
 
 
@@ -155,7 +119,7 @@ fun Blockquote(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Nodes(entity, stateModel, modifier)
+    RowEntities(entity, stateModel, modifier)
 }
 
 @Composable
@@ -164,7 +128,7 @@ fun Li(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Nodes(entity, stateModel, modifier)
+    RowEntities(entity, stateModel, modifier)
 }
 
 @Composable
@@ -174,7 +138,7 @@ fun Form(
     modifier: Modifier
 ) {
 
-    Nodes(entity, stateModel, modifier)
+    RowEntities(entity, stateModel, modifier)
 }
 
 
@@ -184,7 +148,7 @@ fun Center(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Nodes(entity, stateModel, modifier)
+    RowEntities(entity, stateModel, modifier)
 }
 
 @Composable
@@ -193,48 +157,10 @@ fun Table(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Nodes(entity, stateModel, modifier)
+    RowEntities(entity, stateModel, modifier)
 }
 
 
-@Composable
-fun Link(
-    entity: Entity,
-    stateModel: StateModel,
-    modifier: Modifier
-) {
-    Nodes(entity, stateModel, modifier)
-
-    //Utils.navigate(entity, stateModel)
-}
-
-@Composable
-fun A(
-    entity: Entity,
-    stateModel: StateModel,
-    modifier: Modifier,
-    style: TextStyle = LocalTextStyle.current
-) {
-
-    val attributes by stateModel.attributes(entity).collectAsState()
-    val href = attributes["href"]
-    // todo this is wrong !!!
-    if (href != null) {
-        Text(
-            text = href,
-            modifier = modifier,
-            color = Color.Blue,
-            textDecoration = TextDecoration.Underline
-        )
-    }
-
-
-    Nodes(entity, stateModel, modifier, style)
-
-    //Utils.navigate(entity, stateModel)
-
-
-}
 
 
 @Composable
@@ -243,7 +169,7 @@ fun Tr(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Nodes(entity, stateModel, modifier)
+    RowEntities(entity, stateModel, modifier)
 }
 
 
@@ -253,7 +179,7 @@ fun Td(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Nodes(entity, stateModel, modifier)
+    RowEntities(entity, stateModel, modifier)
 }
 
 @Composable
@@ -262,7 +188,7 @@ fun Div(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Nodes(entity, stateModel, modifier)
+    RowEntities(entity, stateModel, modifier)
 }
 
 @Composable
@@ -271,7 +197,7 @@ fun Big(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Nodes(entity, stateModel, modifier)
+    RowEntities(entity, stateModel, modifier)
 }
 
 @Composable
@@ -280,5 +206,5 @@ fun Br(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Nodes(entity, stateModel, modifier)
+    RowEntities(entity, stateModel, modifier)
 }
