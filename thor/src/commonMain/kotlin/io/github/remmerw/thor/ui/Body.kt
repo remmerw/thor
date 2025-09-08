@@ -26,7 +26,7 @@ fun Body(
             key = { element -> element.uid }
         ) { entity ->
             FlowRow {
-                EvaluateEntity(
+                Entity(
                     entity = entity,
                     stateModel = stateModel,
                     modifier = Modifier

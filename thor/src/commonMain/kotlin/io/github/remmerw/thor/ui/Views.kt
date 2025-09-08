@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,7 +26,7 @@ fun HtmlViewer(
     stateModel: StateModel
 ) {
 
-    val entity by stateModel.entity.collectAsState()
+    val entity by remember { mutableStateOf(stateModel.entity) }
     Scaffold(
         content = { padding ->
             Box(
@@ -57,8 +58,9 @@ fun Nodes(
     if (entities.isNotEmpty()) {
 
         entities.forEach { entity ->
-            EvaluateEntity(entity, stateModel, modifier, style)
+            Entity(entity, stateModel, modifier, style)
         }
+
     }
 
 }
@@ -71,7 +73,7 @@ fun Chars(
     modifier: Modifier,
     style: TextStyle = LocalTextStyle.current
 ) {
-    val text by stateModel.data(entity).collectAsState()
+    val text by stateModel.text(entity).collectAsState()
 
     if (text.isNotEmpty()) {
         Text(text = text, modifier = modifier, style = style)
@@ -86,7 +88,7 @@ fun Html(
     modifier: Modifier
 ) {
 
-    Nodes(entity, stateModel, modifier)
+    ColumnEntities(entity, stateModel, modifier)
 }
 
 

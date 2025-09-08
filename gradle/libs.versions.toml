@@ -8,6 +8,7 @@ ui-test-junit4 = "1.9.0"
 coil = "3.3.0"
 ktor = "3.2.3"
 kotlinx-coroutines = "1.10.2"
+ui-test-junit4-desktop = "1.8.2"
 
 [libraries]
 androidx-core = { module = "androidx.test:core", version.ref = "core" }
@@ -24,7 +25,8 @@ ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "k
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-client-java = { group = "io.ktor", name = "ktor-client-java", version.ref = "ktor" }
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
-saga = { module = "io.github.remmerw:saga", version = "0.0.1" }
+saga = { module = "io.github.remmerw:saga", version = "0.0.2" }
+ui-test-junit4-desktop = { module = "org.jetbrains.compose.ui:ui-test-junit4-desktop", version.ref = "ui-test-junit4-desktop" }
 
 [plugins]
 androidLibrary = { id = "com.android.library", version.ref = "agp" }

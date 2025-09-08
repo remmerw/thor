@@ -1,7 +1,11 @@
 package io.github.remmerw.thor.ui
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import io.github.remmerw.saga.Entity
@@ -10,7 +14,47 @@ import io.github.remmerw.thor.model.Type
 
 
 @Composable
-fun EvaluateEntity(
+fun ColumnEntities(
+    entity: Entity,
+    stateModel: StateModel,
+    modifier: Modifier,
+    style: TextStyle = LocalTextStyle.current,
+) {
+
+    val entities by stateModel.children(entity).collectAsState()
+
+    if (entities.isNotEmpty()) {
+
+        entities.forEach { entity ->
+            Column(modifier = modifier.fillMaxWidth()) {
+                Entity(entity, stateModel, modifier, style)
+            }
+        }
+    }
+}
+
+
+@Composable
+fun RowEntities(
+    entity: Entity,
+    stateModel: StateModel,
+    modifier: Modifier,
+    style: TextStyle = LocalTextStyle.current,
+) {
+
+    val entities by stateModel.children(entity).collectAsState()
+
+    if (entities.isNotEmpty()) {
+
+        entities.forEach { entity ->
+            Entity(entity, stateModel, modifier, style)
+        }
+    }
+
+}
+
+@Composable
+fun Entity(
     entity: Entity,
     stateModel: StateModel,
     modifier: Modifier = Modifier,

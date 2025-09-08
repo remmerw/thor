@@ -57,12 +57,17 @@ kotlin {
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.uiTest)
                 implementation(libs.androidx.ui.test.junit4)
+                //implementation(libs.ui.test.junit4.desktop)
+
             }
         }
+
 
         jvmTest {
             dependencies {
                 implementation(libs.kotlin.test)
+                implementation(libs.ui.test.junit4.desktop)
+                implementation(compose.desktop.currentOs)
             }
         }
 

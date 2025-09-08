@@ -14,11 +14,13 @@ fun H6(
     stateModel: StateModel,
     modifier: Modifier
 ) {
+
     Nodes(
         entity, stateModel,
         modifier = modifier.fillMaxWidth(),
         style = MaterialTheme.typography.titleSmall
     )
+
 
 }
 
@@ -29,11 +31,13 @@ fun H5(
     stateModel: StateModel,
     modifier: Modifier
 ) {
+
     Nodes(
         entity, stateModel,
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
         style = MaterialTheme.typography.titleMedium
     )
+
 }
 
 @Composable
@@ -42,11 +46,14 @@ fun H4(
     stateModel: StateModel,
     modifier: Modifier
 ) {
+
     Nodes(
         entity, stateModel,
         modifier = modifier.fillMaxWidth(),
-        style = MaterialTheme.typography.titleMedium
+        style = MaterialTheme.typography.titleLarge
     )
+
+
 }
 
 @Composable
@@ -55,11 +62,14 @@ fun H3(
     stateModel: StateModel,
     modifier: Modifier
 ) {
+
     Nodes(
         entity, stateModel,
         modifier = modifier.fillMaxWidth(),
-        style = MaterialTheme.typography.headlineLarge
+        style = MaterialTheme.typography.headlineSmall
     )
+
+
 }
 
 
@@ -69,6 +79,7 @@ fun H2(
     stateModel: StateModel,
     modifier: Modifier
 ) {
+
     Nodes(
         entity, stateModel,
         modifier = modifier.fillMaxWidth(),
@@ -85,9 +96,11 @@ fun H1(
     stateModel: StateModel,
     modifier: Modifier
 ) {
+
     Nodes(
         entity, stateModel,
         modifier = modifier.fillMaxWidth(),
-        style = MaterialTheme.typography.headlineSmall
+        style = MaterialTheme.typography.headlineLarge
     )
+
 }
