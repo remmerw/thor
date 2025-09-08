@@ -25,17 +25,18 @@ fun A(
     val href = attributes["href"]
     // todo this is wrong !!!
     if (href != null) {
-       // todo
+        // todo
     }
 
 
     RowEntities(
         entity = entity,
-        stateModel =stateModel,
+        stateModel = stateModel,
         modifier = modifier,
         color = Color.Blue,
-        textDecoration =TextDecoration.Underline,
-        style = MaterialTheme.typography.labelMedium)
+        textDecoration = TextDecoration.Underline,
+        style = MaterialTheme.typography.labelMedium
+    )
 
     //Utils.navigate(entity, stateModel)
 

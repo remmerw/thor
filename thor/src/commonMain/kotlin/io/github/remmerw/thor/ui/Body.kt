@@ -26,7 +26,7 @@ fun Body(
             key = { element -> element.uid }
         ) { entity ->
             FlowRow {
-                Entity(
+                EntityComposable(
                     entity = entity,
                     stateModel = stateModel,
                     modifier = Modifier

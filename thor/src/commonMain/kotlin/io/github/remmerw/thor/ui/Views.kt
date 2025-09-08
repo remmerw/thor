@@ -3,19 +3,14 @@ package io.github.remmerw.thor.ui
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextDecoration
 import coil3.compose.AsyncImage
 import io.github.remmerw.saga.Entity
 import io.github.remmerw.thor.model.StateModel
@@ -58,17 +53,6 @@ fun Html(
 
 @Composable
 fun Dummy(
-    entity: Entity,
-    stateModel: StateModel,
-    modifier: Modifier
-) {
-
-    RowEntities(entity, stateModel, modifier)
-}
-
-
-@Composable
-fun Font(
     entity: Entity,
     stateModel: StateModel,
     modifier: Modifier
@@ -159,8 +143,6 @@ fun Table(
 ) {
     RowEntities(entity, stateModel, modifier)
 }
-
-
 
 
 @Composable
