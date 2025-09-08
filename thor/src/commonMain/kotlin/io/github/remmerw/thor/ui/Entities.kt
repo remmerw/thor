@@ -36,7 +36,7 @@ fun ColumnEntities(
     if (entities.isNotEmpty()) {
 
         entities.forEach { entity ->
-            Column(modifier = modifier.fillMaxWidth()) {
+            Column {
                 EntityComposable(
                     entity = entity,
                     stateModel = stateModel,
@@ -53,7 +53,7 @@ fun ColumnEntities(
 
 
 @Composable
-fun RowEntities(
+fun Entities(
     entity: Entity,
     stateModel: StateModel,
     modifier: Modifier,
@@ -153,6 +153,18 @@ fun EntityComposable(
             Table(entity, stateModel, modifier)
         }
 
+        Type.TFOOT.name -> {
+            TFoot(entity, stateModel, modifier)
+        }
+
+        Type.TBODY.name -> {
+            TBody(entity, stateModel, modifier)
+        }
+
+        Type.THEAD.name -> {
+            THead(entity, stateModel, modifier)
+        }
+
         Type.FORM.name -> {
             Form(entity, stateModel, modifier)
         }
@@ -199,6 +211,10 @@ fun EntityComposable(
 
         Type.TD.name -> {
             Td(entity, stateModel, modifier)
+        }
+
+        Type.TH.name -> {
+            Th(entity, stateModel, modifier)
         }
 
         Type.IMG.name -> {

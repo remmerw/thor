@@ -18,7 +18,7 @@ fun Font(
     modifier: Modifier
 ) {
 
-    RowEntities(entity, stateModel, modifier)
+    Entities(entity, stateModel, modifier)
 }
 
 @Composable
@@ -32,7 +32,7 @@ fun B(
     style: TextStyle = LocalTextStyle.current,
 ) {
 
-    RowEntities(
+    Entities(
         entity = entity,
         stateModel = stateModel,
         modifier = modifier,
@@ -54,7 +54,7 @@ fun Small(
     style: TextStyle = LocalTextStyle.current,
 ) {
 
-    RowEntities(
+    Entities(
         entity = entity,
         stateModel = stateModel,
         modifier = modifier,
@@ -72,5 +72,5 @@ fun Center(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    RowEntities(entity, stateModel, modifier)
+    Entities(entity, stateModel, modifier)
 }

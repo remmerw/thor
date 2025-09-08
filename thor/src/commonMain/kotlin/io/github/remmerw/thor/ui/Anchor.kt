@@ -29,7 +29,7 @@ fun A(
     }
 
 
-    RowEntities(
+    Entities(
         entity = entity,
         stateModel = stateModel,
         modifier = modifier,

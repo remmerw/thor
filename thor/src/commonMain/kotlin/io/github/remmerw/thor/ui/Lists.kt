@@ -1,6 +1,5 @@
 package io.github.remmerw.thor.ui
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -46,10 +45,12 @@ fun Li(
             .padding(0.dp, 4.dp)
             .fillMaxWidth()
     ) {
-        Text(text = "\u2022",
+        Text(
+            text = "\u2022",
             modifier = Modifier.padding(8.dp),
             fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.titleLarge)
-        RowEntities(entity, stateModel, modifier)
+            style = MaterialTheme.typography.titleLarge
+        )
+        Entities(entity, stateModel, modifier)
     }
 }

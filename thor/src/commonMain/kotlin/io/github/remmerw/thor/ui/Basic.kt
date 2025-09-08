@@ -23,7 +23,7 @@ fun P(
     fontWeight: FontWeight? = null,
     style: TextStyle = LocalTextStyle.current,
 ) {
-    RowEntities(
+    Entities(
         entity = entity,
         stateModel = stateModel,
         modifier = modifier.padding(0.dp, 16.dp),

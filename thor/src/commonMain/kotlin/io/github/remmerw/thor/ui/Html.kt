@@ -28,7 +28,7 @@ fun HtmlViewer(
                 modifier = Modifier.padding(padding).fillMaxWidth()
             ) {
                 if (entity != null) {
-                    RowEntities(
+                    Entities(
                         entity = entity!!,
                         stateModel = stateModel,
                         modifier = Modifier,
@@ -51,31 +51,6 @@ fun Html(
 }
 
 
-@Composable
-fun Img(
-    entity: Entity,
-    stateModel: StateModel,
-    modifier: Modifier
-) {
-    val isImageLoadingEnabled = remember { stateModel.isImageLoadingEnabled }
-
-    val attributes by stateModel.attributes(entity).collectAsState()
-    val src = attributes["src"]
-
-    if (isImageLoadingEnabled && !src.isNullOrEmpty()) {
-        AsyncImage(
-            model = stateModel.fullUri(src),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxWidth()
-        )
-    }
-
-    RowEntities(entity, stateModel, modifier)
-
-}
-
 
 @Composable
 fun Blockquote(
@@ -83,7 +58,7 @@ fun Blockquote(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    RowEntities(entity, stateModel, modifier)
+    Entities(entity, stateModel, modifier)
 }
 
 
@@ -94,7 +69,7 @@ fun Form(
     modifier: Modifier
 ) {
 
-    RowEntities(entity, stateModel, modifier)
+    Entities(entity, stateModel, modifier)
 }
 
 @Composable
@@ -103,7 +78,7 @@ fun Div(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    RowEntities(entity, stateModel, modifier)
+    Entities(entity, stateModel, modifier)
 }
 
 @Composable
@@ -112,7 +87,7 @@ fun Big(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    RowEntities(entity, stateModel, modifier)
+    Entities(entity, stateModel, modifier)
 }
 
 @Composable
@@ -121,5 +96,5 @@ fun Br(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    RowEntities(entity, stateModel, modifier)
+    Entities(entity, stateModel, modifier)
 }
