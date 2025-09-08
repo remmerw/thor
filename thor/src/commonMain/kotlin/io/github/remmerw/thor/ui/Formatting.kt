@@ -67,6 +67,15 @@ fun Small(
 
 
 @Composable
+fun Span(
+    entity: Entity,
+    stateModel: StateModel,
+    modifier: Modifier
+) {
+    Entities(entity, stateModel, modifier)
+}
+
+@Composable
 fun Center(
     entity: Entity,
     stateModel: StateModel,

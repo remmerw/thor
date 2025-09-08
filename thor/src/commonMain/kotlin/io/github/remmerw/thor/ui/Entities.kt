@@ -173,6 +173,10 @@ fun EntityComposable(
             Center(entity, stateModel, modifier)
         }
 
+        Type.SPAN.name -> {
+            Span(entity, stateModel, modifier)
+        }
+
         Type.DIV.name -> {
             Div(entity, stateModel, modifier)
         }
