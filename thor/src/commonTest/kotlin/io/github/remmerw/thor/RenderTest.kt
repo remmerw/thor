@@ -24,6 +24,7 @@ class RenderTest {
         val p = Render(url)
         val model = createModel()
         p.parse(model)
+        model.debug()
         composeTestRule.setContent {
 
             val stateModel: StateModel = viewModel { StateModel() }

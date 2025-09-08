@@ -3,7 +3,6 @@ package io.github.remmerw.thor.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,7 +18,7 @@ fun Table(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+    Column(modifier = Modifier.padding(8.dp)) {
         ColumnEntities(entity, stateModel, modifier)
     }
 }
