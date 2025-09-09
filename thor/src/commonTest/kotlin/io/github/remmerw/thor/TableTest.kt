@@ -27,6 +27,8 @@ class TableTest {
 
         val table = model.createEntity(Type.TABLE.name, body)
 
+        val caption = model.createEntity(Type.CAPTION.name, table)
+        model.createText(caption, "Caption")
         val tr1 = model.createEntity(Type.TR.name, table)
         val th1 = model.createEntity(Type.TH.name, tr1)
         model.createText(th1, "Header 1")

@@ -18,7 +18,7 @@ fun Body(
     stateModel: StateModel,
     modifier: Modifier
 ) {
-    val entities by stateModel.children(entity).collectAsState()
+    val entities by stateModel.children(entity).collectAsState(emptyList())
     LazyColumn(modifier = modifier.fillMaxWidth()) {
 
         items(

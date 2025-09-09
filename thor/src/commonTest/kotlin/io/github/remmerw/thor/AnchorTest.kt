@@ -24,8 +24,10 @@ class AnchorTest {
 
         val html = model.createEntity(Type.HTML.name)
         val body = model.createEntity(Type.BODY.name, html)
-        val a = model.createEntity(Type.A.name, body,
-            mapOf("href" to "https://www.w3schools.com"))
+        val a = model.createEntity(
+            Type.A.name, body,
+            mapOf("href" to "https://www.w3schools.com")
+        )
         model.createText(a, "Visit W3Schools.com!")
 
         model.debug()

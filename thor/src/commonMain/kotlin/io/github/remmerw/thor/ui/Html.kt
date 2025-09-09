@@ -1,6 +1,6 @@
 package io.github.remmerw.thor.ui
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -21,7 +21,7 @@ fun HtmlViewer(
     val entity by remember { mutableStateOf(stateModel.entity) }
     Scaffold(
         content = { padding ->
-            Box(
+            Column(
                 modifier = Modifier.padding(padding).fillMaxWidth()
             ) {
                 if (entity != null) {
@@ -65,24 +65,6 @@ fun Form(
     modifier: Modifier
 ) {
 
-    Entities(entity, stateModel, modifier)
-}
-
-@Composable
-fun Div(
-    entity: Entity,
-    stateModel: StateModel,
-    modifier: Modifier
-) {
-    Entities(entity, stateModel, modifier)
-}
-
-@Composable
-fun Big(
-    entity: Entity,
-    stateModel: StateModel,
-    modifier: Modifier
-) {
     Entities(entity, stateModel, modifier)
 }
 

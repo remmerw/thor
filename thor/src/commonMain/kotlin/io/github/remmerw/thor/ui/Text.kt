@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import io.github.remmerw.saga.Entity
 import io.github.remmerw.thor.model.StateModel
@@ -21,6 +22,7 @@ fun Chars(
     modifier: Modifier,
     color: Color = Color.Unspecified,
     textDecoration: TextDecoration? = null,
+    textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
     style: TextStyle = LocalTextStyle.current
 ) {
@@ -32,6 +34,7 @@ fun Chars(
             modifier = modifier,
             color = color,
             fontWeight = fontWeight,
+            textAlign = textAlign,
             textDecoration = textDecoration,
             style = style
         )

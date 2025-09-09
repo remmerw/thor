@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import io.github.remmerw.saga.Entity
@@ -31,7 +32,7 @@ fun ColumnEntities(
     style: TextStyle = LocalTextStyle.current,
 ) {
 
-    val entities by stateModel.children(entity).collectAsState()
+    val entities by stateModel.children(entity).collectAsState(emptyList())
 
     if (entities.isNotEmpty()) {
 
@@ -59,11 +60,12 @@ fun Entities(
     modifier: Modifier,
     color: Color = Color.Unspecified,
     textDecoration: TextDecoration? = null,
+    textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
-    style: TextStyle = LocalTextStyle.current,
+    style: TextStyle = LocalTextStyle.current
 ) {
 
-    val entities by stateModel.children(entity).collectAsState()
+    val entities by stateModel.children(entity).collectAsState(emptyList())
 
     if (entities.isNotEmpty()) {
 
@@ -74,6 +76,7 @@ fun Entities(
                 modifier = modifier,
                 color = color,
                 textDecoration = textDecoration,
+                textAlign = textAlign,
                 fontWeight = fontWeight,
                 style = style
             )
@@ -86,9 +89,10 @@ fun Entities(
 fun EntityComposable(
     entity: Entity,
     stateModel: StateModel,
-    modifier: Modifier = Modifier,
+    modifier: Modifier,
     color: Color = Color.Unspecified,
     textDecoration: TextDecoration? = null,
+    textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
     style: TextStyle = LocalTextStyle.current
 ) {
@@ -100,6 +104,7 @@ fun EntityComposable(
                 modifier = modifier,
                 color = color,
                 textDecoration = textDecoration,
+                textAlign = textAlign,
                 fontWeight = fontWeight,
                 style = style
             )
@@ -153,6 +158,10 @@ fun EntityComposable(
             Table(entity, stateModel, modifier)
         }
 
+        Type.CAPTION.name -> {
+            Caption(entity, stateModel, modifier)
+        }
+
         Type.TFOOT.name -> {
             TFoot(entity, stateModel, modifier)
         }
@@ -170,11 +179,29 @@ fun EntityComposable(
         }
 
         Type.CENTER.name -> {
-            Center(entity, stateModel, modifier)
+            Center(
+                entity = entity,
+                stateModel = stateModel,
+                modifier = modifier,
+                color = color,
+                textDecoration = textDecoration,
+                textAlign = textAlign,
+                fontWeight = fontWeight,
+                style = style
+            )
         }
 
         Type.SPAN.name -> {
-            Span(entity, stateModel, modifier)
+            Span(
+                entity = entity,
+                stateModel = stateModel,
+                modifier = modifier,
+                color = color,
+                textDecoration = textDecoration,
+                textAlign = textAlign,
+                fontWeight = fontWeight,
+                style = style
+            )
         }
 
         Type.DIV.name -> {
@@ -186,7 +213,16 @@ fun EntityComposable(
         }
 
         Type.FONT.name -> {
-            Font(entity, stateModel, modifier)
+            Font(
+                entity = entity,
+                stateModel = stateModel,
+                modifier = modifier,
+                color = color,
+                textDecoration = textDecoration,
+                textAlign = textAlign,
+                fontWeight = fontWeight,
+                style = style
+            )
         }
 
         Type.A.name, Type.ANCHOR.name -> {
@@ -236,6 +272,7 @@ fun EntityComposable(
                 modifier = modifier,
                 color = color,
                 textDecoration = textDecoration,
+                textAlign = textAlign,
                 fontWeight = fontWeight,
                 style = style
             )
@@ -248,6 +285,7 @@ fun EntityComposable(
                 modifier = modifier,
                 color = color,
                 textDecoration = textDecoration,
+                textAlign = textAlign,
                 fontWeight = fontWeight,
                 style = style
             )
@@ -260,6 +298,7 @@ fun EntityComposable(
                 modifier = modifier,
                 color = color,
                 textDecoration = textDecoration,
+                textAlign = textAlign,
                 fontWeight = fontWeight,
                 style = style
             )

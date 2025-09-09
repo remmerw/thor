@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import io.github.remmerw.saga.Entity
@@ -20,6 +21,7 @@ fun P(
     modifier: Modifier,
     color: Color = Color.Unspecified,
     textDecoration: TextDecoration? = null,
+    textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
     style: TextStyle = LocalTextStyle.current,
 ) {
@@ -29,6 +31,7 @@ fun P(
         modifier = modifier.padding(0.dp, 16.dp),
         color = color,
         textDecoration = textDecoration,
+        textAlign = textAlign,
         fontWeight = fontWeight,
         style = style
     )

@@ -3,10 +3,13 @@ package io.github.remmerw.thor.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.github.remmerw.saga.Entity
 import io.github.remmerw.thor.model.StateModel
@@ -20,6 +23,24 @@ fun Table(
 ) {
     Column(modifier = Modifier.padding(8.dp)) {
         ColumnEntities(entity, stateModel, modifier)
+    }
+}
+
+
+@Composable
+fun Caption(
+    entity: Entity,
+    stateModel: StateModel,
+    modifier: Modifier
+) {
+    Row(modifier = Modifier.padding(8.dp).fillMaxWidth()) {
+        Entities(
+            entity = entity,
+            stateModel = stateModel,
+            modifier = modifier,
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.labelLarge
+        )
     }
 }
 

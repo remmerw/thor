@@ -30,7 +30,7 @@ class HeaderTest {
         model.createText(h2, "H2")
         val h3 = model.createEntity(Type.H3.name, body)
         model.createText(h3, "H3")
-        val h4 =model.createEntity(Type.H4.name, body)
+        val h4 = model.createEntity(Type.H4.name, body)
         model.createText(h4, "H4")
         val h5 = model.createEntity(Type.H5.name, body)
         model.createText(h5, "H5")
