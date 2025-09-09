@@ -331,11 +331,29 @@ fun EntityComposable(
         }
 
         Type.IMG.name -> {
-            Img(entity, stateModel, modifier)
+            Img(
+                entity = entity,
+                stateModel = stateModel,
+                modifier = modifier,
+                color = color,
+                textDecoration = textDecoration,
+                textAlign = textAlign,
+                fontWeight = fontWeight,
+                style = style
+            )
         }
 
         Type.BLOCKQUOTE.name -> {
-            Blockquote(entity, stateModel, modifier)
+            Blockquote(
+                entity = entity,
+                stateModel = stateModel,
+                modifier = modifier,
+                color = color,
+                textDecoration = textDecoration,
+                textAlign = textAlign,
+                fontWeight = fontWeight,
+                style = style
+            )
         }
 
         Type.B.name -> {

@@ -47,8 +47,7 @@ class StateModel() : ViewModel() {
         return model!!.children(entity).transform { value ->
             val list = mutableListOf<Entity>()
             value.forEach { entity ->
-                if (entity.name != Type.IMG.name &&
-                    entity.name != Type.HEAD.name &&
+                if (entity.name != Type.HEAD.name &&
                     entity.name != Type.SVG.name &&
                     entity.name != Type.SCRIPT.name
                 ) {

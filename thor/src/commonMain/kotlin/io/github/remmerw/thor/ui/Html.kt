@@ -48,15 +48,6 @@ fun Html(
 }
 
 
-@Composable
-fun Blockquote(
-    entity: Entity,
-    stateModel: StateModel,
-    modifier: Modifier
-) {
-    Entities(entity, stateModel, modifier)
-}
-
 
 @Composable
 fun Br(
