@@ -1,7 +1,6 @@
 package io.github.remmerw.thor.model
 
 enum class Type {
-    UNKNOWN,  // all not known entities
     A, META, HEAD, B, TBODY, CAPTION, SMALL,
     LINK, ANCHOR, TABLE, TD,
     TH, TR, STYLE, IMG, SCRIPT, SPAN, Q,
@@ -11,5 +10,5 @@ enum class Type {
     BASEFONT, H1, H2, H3, H4, H5, H6, CANVAS, HTML, TITLE, BASE,
     CENTER, BIG, SECTION, NAV, SVG, USE, SUMMARY,
     DETAILS, HEADER, FOOTER, ARTICLE, NOSCRIPT,
-    TFOOT, THEAD;
+    TFOOT, THEAD, MAIN, PICTURE, SOURCE, STRONG, EM;
 }

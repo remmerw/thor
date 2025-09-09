@@ -7,9 +7,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import io.github.remmerw.saga.Entity
 import io.github.remmerw.thor.model.StateModel
@@ -21,6 +23,8 @@ fun P(
     stateModel: StateModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
+    fontSize: TextUnit = TextUnit.Unspecified,
+    fontStyle: FontStyle? = null,
     textDecoration: TextDecoration? = null,
     textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
@@ -31,6 +35,8 @@ fun P(
         stateModel = stateModel,
         modifier = modifier.padding(0.dp, 16.dp),
         color = color,
+        fontSize = fontSize,
+        fontStyle = fontStyle,
         textDecoration = textDecoration,
         textAlign = textAlign,
         fontWeight = fontWeight,
@@ -45,6 +51,8 @@ fun Section(
     stateModel: StateModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
+    fontSize: TextUnit = TextUnit.Unspecified,
+    fontStyle: FontStyle? = null,
     textDecoration: TextDecoration? = null,
     textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
@@ -56,6 +64,8 @@ fun Section(
             stateModel = stateModel,
             modifier = modifier.padding(0.dp, 16.dp),
             color = color,
+            fontSize = fontSize,
+            fontStyle = fontStyle,
             textDecoration = textDecoration,
             textAlign = textAlign,
             fontWeight = fontWeight,
@@ -71,6 +81,8 @@ fun Header(
     stateModel: StateModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
+    fontSize: TextUnit = TextUnit.Unspecified,
+    fontStyle: FontStyle? = null,
     textDecoration: TextDecoration? = null,
     textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
@@ -82,6 +94,8 @@ fun Header(
         stateModel = stateModel,
         modifier = modifier.padding(0.dp, 16.dp),
         color = color,
+        fontSize = fontSize,
+        fontStyle = fontStyle,
         textDecoration = textDecoration,
         textAlign = textAlign,
         fontWeight = fontWeight,

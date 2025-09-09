@@ -7,9 +7,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.TextUnit
 import io.github.remmerw.saga.Entity
 import io.github.remmerw.thor.model.StateModel
 
@@ -20,6 +22,8 @@ fun H6(
     stateModel: StateModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
+    fontSize: TextUnit = TextUnit.Unspecified,
+    fontStyle: FontStyle? = null,
     textDecoration: TextDecoration? = null,
     textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
@@ -27,9 +31,12 @@ fun H6(
 ) {
 
     Entities(
-        entity, stateModel,
+        entity = entity,
+        stateModel = stateModel,
         modifier = modifier.fillMaxWidth(),
         color = color,
+        fontSize = fontSize,
+        fontStyle = fontStyle,
         textDecoration = textDecoration,
         textAlign = textAlign,
         fontWeight = fontWeight,
@@ -46,6 +53,8 @@ fun H5(
     stateModel: StateModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
+    fontSize: TextUnit = TextUnit.Unspecified,
+    fontStyle: FontStyle? = null,
     textDecoration: TextDecoration? = null,
     textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
@@ -53,9 +62,12 @@ fun H5(
 ) {
 
     Entities(
-        entity, stateModel,
+        entity = entity,
+        stateModel = stateModel,
         modifier = modifier,
         color = color,
+        fontSize = fontSize,
+        fontStyle = fontStyle,
         textDecoration = textDecoration,
         textAlign = textAlign,
         fontWeight = fontWeight,
@@ -70,6 +82,8 @@ fun H4(
     stateModel: StateModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
+    fontSize: TextUnit = TextUnit.Unspecified,
+    fontStyle: FontStyle? = null,
     textDecoration: TextDecoration? = null,
     textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
@@ -77,9 +91,12 @@ fun H4(
 ) {
 
     Entities(
-        entity, stateModel,
+        entity = entity,
+        stateModel = stateModel,
         modifier = modifier.fillMaxWidth(),
         color = color,
+        fontSize = fontSize,
+        fontStyle = fontStyle,
         textDecoration = textDecoration,
         textAlign = textAlign,
         fontWeight = fontWeight,
@@ -95,6 +112,8 @@ fun H3(
     stateModel: StateModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
+    fontSize: TextUnit = TextUnit.Unspecified,
+    fontStyle: FontStyle? = null,
     textDecoration: TextDecoration? = null,
     textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
@@ -102,9 +121,12 @@ fun H3(
 ) {
 
     Entities(
-        entity, stateModel,
+        entity = entity,
+        stateModel = stateModel,
         modifier = modifier.fillMaxWidth(),
         color = color,
+        fontSize = fontSize,
+        fontStyle = fontStyle,
         textDecoration = textDecoration,
         textAlign = textAlign,
         fontWeight = fontWeight,
@@ -121,6 +143,8 @@ fun H2(
     stateModel: StateModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
+    fontSize: TextUnit = TextUnit.Unspecified,
+    fontStyle: FontStyle? = null,
     textDecoration: TextDecoration? = null,
     textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
@@ -128,9 +152,12 @@ fun H2(
 ) {
 
     Entities(
-        entity, stateModel,
+        entity = entity,
+        stateModel = stateModel,
         modifier = modifier.fillMaxWidth(),
         color = color,
+        fontSize = fontSize,
+        fontStyle = fontStyle,
         textDecoration = textDecoration,
         textAlign = textAlign,
         fontWeight = fontWeight,
@@ -146,6 +173,8 @@ fun H1(
     stateModel: StateModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
+    fontSize: TextUnit = TextUnit.Unspecified,
+    fontStyle: FontStyle? = null,
     textDecoration: TextDecoration? = null,
     textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
@@ -153,8 +182,15 @@ fun H1(
 ) {
 
     Entities(
-        entity, stateModel,
+        entity = entity,
+        stateModel = stateModel,
         modifier = modifier.fillMaxWidth(),
+        color = color,
+        fontSize = fontSize,
+        fontStyle = fontStyle,
+        textDecoration = textDecoration,
+        textAlign = textAlign,
+        fontWeight = fontWeight,
         style = MaterialTheme.typography.headlineLarge
     )
 

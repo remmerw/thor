@@ -8,9 +8,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import io.github.remmerw.saga.Entity
 import io.github.remmerw.thor.model.StateModel
@@ -22,6 +24,8 @@ fun Font(
     stateModel: StateModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
+    fontSize: TextUnit = TextUnit.Unspecified,
+    fontStyle: FontStyle? = null,
     textDecoration: TextDecoration? = null,
     textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
@@ -38,6 +42,8 @@ fun Font(
         stateModel = stateModel,
         modifier = modifier,
         color = colorOverwrite,
+        fontSize = fontSize,
+        fontStyle = fontStyle,
         textDecoration = textDecoration,
         textAlign = textAlign,
         fontWeight = fontWeight,
@@ -51,6 +57,8 @@ fun B(
     stateModel: StateModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
+    fontSize: TextUnit = TextUnit.Unspecified,
+    fontStyle: FontStyle? = null,
     textDecoration: TextDecoration? = null,
     textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
@@ -62,6 +70,8 @@ fun B(
         stateModel = stateModel,
         modifier = modifier,
         color = color,
+        fontSize = fontSize,
+        fontStyle = fontStyle,
         textDecoration = textDecoration,
         textAlign = textAlign,
         fontWeight = FontWeight.Bold,
@@ -69,12 +79,15 @@ fun B(
     )
 }
 
+
 @Composable
-fun Small(
+fun Em(
     entity: Entity,
     stateModel: StateModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
+    fontSize: TextUnit = TextUnit.Unspecified,
+    fontStyle: FontStyle? = null,
     textDecoration: TextDecoration? = null,
     textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
@@ -86,6 +99,37 @@ fun Small(
         stateModel = stateModel,
         modifier = modifier,
         color = color,
+        fontSize = fontSize,
+        fontStyle = FontStyle.Italic,
+        textDecoration = textDecoration,
+        textAlign = textAlign,
+        fontWeight = fontWeight,
+        style = style
+    )
+}
+
+
+@Composable
+fun Small(
+    entity: Entity,
+    stateModel: StateModel,
+    modifier: Modifier,
+    color: Color = Color.Unspecified,
+    fontSize: TextUnit = TextUnit.Unspecified,
+    fontStyle: FontStyle? = null,
+    textDecoration: TextDecoration? = null,
+    textAlign: TextAlign? = null,
+    fontWeight: FontWeight? = null,
+    style: TextStyle = LocalTextStyle.current,
+) {
+
+    Entities(
+        entity = entity,
+        stateModel = stateModel,
+        modifier = modifier,
+        color = color,
+        fontSize = fontSize,
+        fontStyle = fontStyle,
         textDecoration = textDecoration,
         textAlign = textAlign,
         fontWeight = FontWeight.Thin,
@@ -100,6 +144,8 @@ fun Span(
     stateModel: StateModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
+    fontSize: TextUnit = TextUnit.Unspecified,
+    fontStyle: FontStyle? = null,
     textDecoration: TextDecoration? = null,
     textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
@@ -112,6 +158,8 @@ fun Span(
         stateModel = stateModel,
         modifier = modifier,
         color = color,
+        fontSize = fontSize,
+        fontStyle = fontStyle,
         textDecoration = textDecoration,
         textAlign = textAlign,
         fontWeight = fontWeight,
@@ -125,6 +173,8 @@ fun Center(
     stateModel: StateModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
+    fontSize: TextUnit = TextUnit.Unspecified,
+    fontStyle: FontStyle? = null,
     textDecoration: TextDecoration? = null,
     textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
@@ -135,6 +185,8 @@ fun Center(
         stateModel = stateModel,
         modifier = modifier,
         color = color,
+        fontSize = fontSize,
+        fontStyle = fontStyle,
         textDecoration = textDecoration,
         textAlign = TextAlign.Center,
         fontWeight = fontWeight,
@@ -148,6 +200,8 @@ fun Big(
     stateModel: StateModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
+    fontSize: TextUnit = TextUnit.Unspecified,
+    fontStyle: FontStyle? = null,
     textDecoration: TextDecoration? = null,
     textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
@@ -158,6 +212,8 @@ fun Big(
         stateModel = stateModel,
         modifier = modifier,
         color = color,
+        fontSize = fontSize,
+        fontStyle = fontStyle,
         textDecoration = textDecoration,
         textAlign = textAlign,
         fontWeight = FontWeight.Bold,
@@ -172,6 +228,8 @@ fun Div(
     stateModel: StateModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
+    fontSize: TextUnit = TextUnit.Unspecified,
+    fontStyle: FontStyle? = null,
     textDecoration: TextDecoration? = null,
     textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
@@ -193,6 +251,8 @@ fun Div(
         stateModel = stateModel,
         modifier = modifier,
         color = color,
+        fontSize = fontSize,
+        fontStyle = fontStyle,
         textDecoration = textDecoration,
         textAlign = textAlignOverwrite,
         fontWeight = fontWeight,
@@ -201,13 +261,14 @@ fun Div(
 }
 
 
-
 @Composable
 fun Blockquote(
     entity: Entity,
     stateModel: StateModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
+    fontSize: TextUnit = TextUnit.Unspecified,
+    fontStyle: FontStyle? = null,
     textDecoration: TextDecoration? = null,
     textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
@@ -218,6 +279,8 @@ fun Blockquote(
         stateModel = stateModel,
         modifier = modifier.padding(16.dp, 0.dp, 0.dp, 0.dp),
         color = color,
+        fontSize = fontSize,
+        fontStyle = fontStyle,
         textDecoration = textDecoration,
         textAlign = textAlign,
         fontWeight = fontWeight,

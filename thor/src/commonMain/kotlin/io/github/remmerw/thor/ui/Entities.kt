@@ -12,9 +12,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import io.github.remmerw.saga.Entity
 import io.github.remmerw.thor.model.StateModel
@@ -27,6 +29,8 @@ fun ColumnEntities(
     stateModel: StateModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
+    fontSize: TextUnit = TextUnit.Unspecified,
+    fontStyle: FontStyle? = null,
     textDecoration: TextDecoration? = null,
     textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
@@ -44,6 +48,8 @@ fun ColumnEntities(
                     stateModel = stateModel,
                     modifier = modifier,
                     color = color,
+                    fontSize = fontSize,
+                    fontStyle = fontStyle,
                     textDecoration = textDecoration,
                     textAlign = textAlign,
                     fontWeight = fontWeight,
@@ -61,6 +67,8 @@ fun Entities(
     stateModel: StateModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
+    fontSize: TextUnit = TextUnit.Unspecified,
+    fontStyle: FontStyle? = null,
     textDecoration: TextDecoration? = null,
     textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
@@ -77,6 +85,8 @@ fun Entities(
                 stateModel = stateModel,
                 modifier = modifier,
                 color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
@@ -93,6 +103,8 @@ fun EntityComposable(
     stateModel: StateModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
+    fontSize: TextUnit = TextUnit.Unspecified,
+    fontStyle: FontStyle? = null,
     textDecoration: TextDecoration? = null,
     textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
@@ -105,6 +117,8 @@ fun EntityComposable(
                 stateModel = stateModel,
                 modifier = modifier,
                 color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
@@ -116,7 +130,44 @@ fun EntityComposable(
             Html(
                 entity = entity,
                 stateModel = stateModel,
-                modifier = modifier
+                modifier = modifier,
+                color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
+                textDecoration = textDecoration,
+                textAlign = textAlign,
+                fontWeight = fontWeight,
+                style = style
+            )
+        }
+
+        Type.MAIN.name -> {
+            ColumnEntities(
+                entity = entity,
+                stateModel = stateModel,
+                modifier = modifier,
+                color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
+                textDecoration = textDecoration,
+                textAlign = textAlign,
+                fontWeight = fontWeight,
+                style = style
+            )
+        }
+
+        Type.PICTURE.name -> {
+            Entities(
+                entity = entity,
+                stateModel = stateModel,
+                modifier = modifier,
+                color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
+                textDecoration = textDecoration,
+                textAlign = textAlign,
+                fontWeight = fontWeight,
+                style = style
             )
         }
 
@@ -124,7 +175,14 @@ fun EntityComposable(
             Body(
                 entity = entity,
                 stateModel = stateModel,
-                modifier = modifier
+                modifier = modifier,
+                color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
+                textDecoration = textDecoration,
+                textAlign = textAlign,
+                fontWeight = fontWeight,
+                style = style
             )
         }
 
@@ -134,6 +192,8 @@ fun EntityComposable(
                 stateModel = stateModel,
                 modifier = modifier,
                 color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
@@ -142,23 +202,78 @@ fun EntityComposable(
         }
 
         Type.H2.name -> {
-            H2(entity, stateModel, modifier)
+            H2(
+                entity = entity,
+                stateModel = stateModel,
+                modifier = modifier,
+                color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
+                textDecoration = textDecoration,
+                textAlign = textAlign,
+                fontWeight = fontWeight,
+                style = style
+            )
         }
 
         Type.H3.name -> {
-            H3(entity, stateModel, modifier)
+            H3(
+                entity = entity,
+                stateModel = stateModel,
+                modifier = modifier,
+                color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
+                textDecoration = textDecoration,
+                textAlign = textAlign,
+                fontWeight = fontWeight,
+                style = style
+            )
         }
 
         Type.H4.name -> {
-            H4(entity, stateModel, modifier)
+            H4(
+                entity = entity,
+                stateModel = stateModel,
+                modifier = modifier,
+                color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
+                textDecoration = textDecoration,
+                textAlign = textAlign,
+                fontWeight = fontWeight,
+                style = style
+            )
         }
 
         Type.H5.name -> {
-            H5(entity, stateModel, modifier)
+            H5(
+                entity = entity,
+                stateModel = stateModel,
+                modifier = modifier,
+                color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
+                textDecoration = textDecoration,
+                textAlign = textAlign,
+                fontWeight = fontWeight,
+                style = style
+            )
         }
 
         Type.H6.name -> {
-            H6(entity, stateModel, modifier)
+            H6(
+                entity = entity,
+                stateModel = stateModel,
+                modifier = modifier,
+                color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
+                textDecoration = textDecoration,
+                textAlign = textAlign,
+                fontWeight = fontWeight,
+                style = style
+            )
         }
 
         Type.TABLE.name -> {
@@ -187,6 +302,8 @@ fun EntityComposable(
                 stateModel = stateModel,
                 modifier = modifier,
                 color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
@@ -200,6 +317,8 @@ fun EntityComposable(
                 stateModel = stateModel,
                 modifier = modifier,
                 color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
@@ -213,6 +332,8 @@ fun EntityComposable(
                 stateModel = stateModel,
                 modifier = modifier,
                 color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
@@ -226,6 +347,8 @@ fun EntityComposable(
                 stateModel = stateModel,
                 modifier = modifier,
                 color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
@@ -239,6 +362,8 @@ fun EntityComposable(
                 stateModel = stateModel,
                 modifier = modifier,
                 color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
@@ -252,6 +377,8 @@ fun EntityComposable(
                 stateModel = stateModel,
                 modifier = modifier,
                 color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
@@ -265,6 +392,8 @@ fun EntityComposable(
                 stateModel = stateModel,
                 modifier = modifier,
                 color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
@@ -278,6 +407,8 @@ fun EntityComposable(
                 stateModel = stateModel,
                 modifier = modifier,
                 color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
@@ -291,6 +422,8 @@ fun EntityComposable(
                 stateModel = stateModel,
                 modifier = modifier,
                 color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
@@ -299,11 +432,48 @@ fun EntityComposable(
         }
 
         Type.A.name, Type.ANCHOR.name -> {
-            A(entity, stateModel, modifier)
+            A(
+                entity = entity,
+                stateModel = stateModel,
+                modifier = modifier,
+                color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
+                textDecoration = textDecoration,
+                textAlign = textAlign,
+                fontWeight = fontWeight,
+                style = style
+            )
         }
 
         Type.LI.name -> {
-            Li(entity, stateModel, modifier)
+            Li(
+                entity = entity,
+                stateModel = stateModel,
+                modifier = modifier,
+                color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
+                textDecoration = textDecoration,
+                textAlign = textAlign,
+                fontWeight = fontWeight,
+                style = style
+            )
+        }
+
+        Type.NAV.name -> {
+            Nav(
+                entity = entity,
+                stateModel = stateModel,
+                modifier = modifier,
+                color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
+                textDecoration = textDecoration,
+                textAlign = textAlign,
+                fontWeight = fontWeight,
+                style = style
+            )
         }
 
         Type.BR.name -> {
@@ -311,11 +481,33 @@ fun EntityComposable(
         }
 
         Type.UL.name -> {
-            Ul(entity, stateModel, modifier)
+            Ul(
+                entity = entity,
+                stateModel = stateModel,
+                modifier = modifier,
+                color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
+                textDecoration = textDecoration,
+                textAlign = textAlign,
+                fontWeight = fontWeight,
+                style = style
+            )
         }
 
         Type.OL.name -> {
-            Ol(entity, stateModel, modifier)
+            Ol(
+                entity = entity,
+                stateModel = stateModel,
+                modifier = modifier,
+                color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
+                textDecoration = textDecoration,
+                textAlign = textAlign,
+                fontWeight = fontWeight,
+                style = style
+            )
         }
 
         Type.TR.name -> {
@@ -336,6 +528,8 @@ fun EntityComposable(
                 stateModel = stateModel,
                 modifier = modifier,
                 color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
@@ -349,6 +543,8 @@ fun EntityComposable(
                 stateModel = stateModel,
                 modifier = modifier,
                 color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
@@ -356,12 +552,29 @@ fun EntityComposable(
             )
         }
 
-        Type.B.name -> {
+        Type.B.name, Type.STRONG.name -> {
             B(
                 entity = entity,
                 stateModel = stateModel,
                 modifier = modifier,
                 color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
+                textDecoration = textDecoration,
+                textAlign = textAlign,
+                fontWeight = fontWeight,
+                style = style
+            )
+        }
+
+        Type.EM.name -> {
+            Em(
+                entity = entity,
+                stateModel = stateModel,
+                modifier = modifier,
+                color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
@@ -375,6 +588,8 @@ fun EntityComposable(
                 stateModel = stateModel,
                 modifier = modifier,
                 color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
@@ -388,6 +603,8 @@ fun EntityComposable(
                 stateModel = stateModel,
                 modifier = modifier,
                 color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
@@ -399,9 +616,6 @@ fun EntityComposable(
             HorizontalDivider(thickness = 2.dp)
         }
 
-        Type.TITLE.name, Type.LINK.name, Type.META.name, Type.HEAD.name -> {
-            // not visible (not yet supported)
-        }
 
         else -> {
             Text(

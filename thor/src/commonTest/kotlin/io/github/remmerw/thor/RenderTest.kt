@@ -19,8 +19,9 @@ class RenderTest {
     @Test
     fun renderTest(): Unit = runBlocking(Dispatchers.IO) {
 
-        val url = Url("http://www.benjysbrain.com/")
+       // val url = Url("http://www.benjysbrain.com/")
 
+        val url = Url("https://www.welt.de/")
         val p = Render(url)
         val model = createModel()
         p.parse(model)

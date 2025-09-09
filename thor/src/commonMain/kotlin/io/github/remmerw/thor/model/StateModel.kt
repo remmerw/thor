@@ -49,7 +49,9 @@ class StateModel() : ViewModel() {
             value.forEach { entity ->
                 if (entity.name != Type.HEAD.name &&
                     entity.name != Type.SVG.name &&
-                    entity.name != Type.SCRIPT.name
+                    entity.name != Type.SCRIPT.name  &&
+                    entity.name != Type.SOURCE.name &&
+                    entity.name != Type.NOSCRIPT.name
                 ) {
                     list.add(entity)
                 }

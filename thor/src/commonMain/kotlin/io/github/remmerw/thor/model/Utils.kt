@@ -14,7 +14,8 @@ object Utils {
         try {
             val documentURL = Url(baseURI)
             return Urls.createURL(documentURL, uri)
-        } catch (_: Throwable) {
+        } catch (throwable: Throwable) {
+            println(throwable)
             return Url(uri)
         }
     }

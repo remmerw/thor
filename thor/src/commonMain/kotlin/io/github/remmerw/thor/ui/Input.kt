@@ -6,9 +6,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.TextUnit
 import io.github.remmerw.saga.Entity
 import io.github.remmerw.thor.model.StateModel
 
@@ -19,6 +21,8 @@ fun Form(
     stateModel: StateModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
+    fontSize: TextUnit = TextUnit.Unspecified,
+    fontStyle: FontStyle? = null,
     textDecoration: TextDecoration? = null,
     textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
@@ -30,6 +34,8 @@ fun Form(
         stateModel = stateModel,
         modifier = modifier,
         color = color,
+        fontSize = fontSize,
+        fontStyle = fontStyle,
         textDecoration = textDecoration,
         textAlign = textAlign,
         fontWeight = fontWeight,
@@ -44,6 +50,8 @@ fun InputButton(
     stateModel: StateModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
+    fontSize: TextUnit = TextUnit.Unspecified,
+    fontStyle: FontStyle? = null,
     textDecoration: TextDecoration? = null,
     textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
@@ -59,6 +67,8 @@ fun InputButton(
             stateModel = stateModel,
             modifier = modifier,
             color = color,
+            fontSize = fontSize,
+            fontStyle = fontStyle,
             textDecoration = textDecoration,
             textAlign = textAlign,
             fontWeight = fontWeight,
