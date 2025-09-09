@@ -47,8 +47,11 @@ class StateModel() : ViewModel() {
         return model!!.children(entity).transform { value ->
             val list = mutableListOf<Entity>()
             value.forEach { entity ->
-                if(entity.name != Type.IMG.name &&
-                    entity.name != Type.HEAD.name){
+                if (entity.name != Type.IMG.name &&
+                    entity.name != Type.HEAD.name &&
+                    entity.name != Type.SVG.name &&
+                    entity.name != Type.SCRIPT.name
+                ) {
                     list.add(entity)
                 }
             }
@@ -74,10 +77,10 @@ class StateModel() : ViewModel() {
         println("TODO linkClicked $url")
     }
 
-    fun color(colorAttribute:String) : Color? {
+    fun color(colorAttribute: String): Color? {
         try {
             return parseColor(colorAttribute)
-        } catch (throwable:Throwable){
+        } catch (throwable: Throwable) {
             throwable.printStackTrace() // todo
             return null
         }
@@ -85,7 +88,7 @@ class StateModel() : ViewModel() {
 
 
     @Suppress("MagicNumber")
-     fun parseColor(colorHEX: String): Color {
+    fun parseColor(colorHEX: String): Color {
         val clean = colorHEX.removePrefix("#").uppercase()
 
         return when (clean.length) {

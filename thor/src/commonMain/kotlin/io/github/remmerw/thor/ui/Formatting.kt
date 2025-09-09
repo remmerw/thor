@@ -181,7 +181,7 @@ fun Div(
     val attributes by stateModel.attributes(entity).collectAsState()
     val alignAttribute = attributes["align"]
     if (!alignAttribute.isNullOrEmpty()) {
-        if(alignAttribute == "left"){
+        if (alignAttribute == "left") {
             textAlignOverwrite = TextAlign.Left
         }
     }

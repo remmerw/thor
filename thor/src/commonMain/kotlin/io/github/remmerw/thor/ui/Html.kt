@@ -59,16 +59,6 @@ fun Blockquote(
 
 
 @Composable
-fun Form(
-    entity: Entity,
-    stateModel: StateModel,
-    modifier: Modifier
-) {
-
-    Entities(entity, stateModel, modifier)
-}
-
-@Composable
 fun Br(
     entity: Entity,
     stateModel: StateModel,

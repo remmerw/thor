@@ -28,6 +28,7 @@ fun ColumnEntities(
     modifier: Modifier,
     color: Color = Color.Unspecified,
     textDecoration: TextDecoration? = null,
+    textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
     style: TextStyle = LocalTextStyle.current,
 ) {
@@ -44,6 +45,7 @@ fun ColumnEntities(
                     modifier = modifier,
                     color = color,
                     textDecoration = textDecoration,
+                    textAlign = textAlign,
                     fontWeight = fontWeight,
                     style = style
                 )
@@ -130,7 +132,12 @@ fun EntityComposable(
             H1(
                 entity = entity,
                 stateModel = stateModel,
-                modifier = modifier
+                modifier = modifier,
+                color = color,
+                textDecoration = textDecoration,
+                textAlign = textAlign,
+                fontWeight = fontWeight,
+                style = style
             )
         }
 
@@ -175,7 +182,55 @@ fun EntityComposable(
         }
 
         Type.FORM.name -> {
-            Form(entity, stateModel, modifier)
+            Form(
+                entity = entity,
+                stateModel = stateModel,
+                modifier = modifier,
+                color = color,
+                textDecoration = textDecoration,
+                textAlign = textAlign,
+                fontWeight = fontWeight,
+                style = style
+            )
+        }
+
+        Type.BUTTON.name -> {
+            InputButton(
+                entity = entity,
+                stateModel = stateModel,
+                modifier = modifier,
+                color = color,
+                textDecoration = textDecoration,
+                textAlign = textAlign,
+                fontWeight = fontWeight,
+                style = style
+            )
+        }
+
+        Type.HEADER.name -> {
+            Header(
+                entity = entity,
+                stateModel = stateModel,
+                modifier = modifier,
+                color = color,
+                textDecoration = textDecoration,
+                textAlign = textAlign,
+                fontWeight = fontWeight,
+                style = style
+            )
+        }
+
+        Type.SECTION.name, Type.ARTICLE.name, Type.FOOTER.name -> { // maybe todo article
+            Section(
+                entity = entity,
+                stateModel = stateModel,
+                modifier = modifier,
+                color = color,
+                textDecoration = textDecoration,
+                textAlign = textAlign,
+                fontWeight = fontWeight,
+                style = style
+            )
         }
 
         Type.CENTER.name -> {
@@ -205,11 +260,29 @@ fun EntityComposable(
         }
 
         Type.DIV.name -> {
-            Div(entity, stateModel, modifier)
+            Div(
+                entity = entity,
+                stateModel = stateModel,
+                modifier = modifier,
+                color = color,
+                textDecoration = textDecoration,
+                textAlign = textAlign,
+                fontWeight = fontWeight,
+                style = style
+            )
         }
 
         Type.BIG.name -> {
-            Big(entity, stateModel, modifier)
+            Big(
+                entity = entity,
+                stateModel = stateModel,
+                modifier = modifier,
+                color = color,
+                textDecoration = textDecoration,
+                textAlign = textAlign,
+                fontWeight = fontWeight,
+                style = style
+            )
         }
 
         Type.FONT.name -> {
