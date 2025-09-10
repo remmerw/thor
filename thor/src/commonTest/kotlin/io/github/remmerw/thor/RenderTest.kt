@@ -26,7 +26,6 @@ class RenderTest {
         val model = stateModel.model()
         model.debug()
         stateModel.documentUri = url.toString()
-        stateModel.setModel(model.entity())
 
 
 

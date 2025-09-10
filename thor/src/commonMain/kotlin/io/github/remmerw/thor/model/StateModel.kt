@@ -22,17 +22,12 @@ class StateModel() : ViewModel() {
     var documentUri: String? = null
     private val model: Model = createModel()
 
-    var entity: Entity? = null
+    val entity: Entity = model.entity()
 
     fun model(): Model {
         return model
     }
 
-    fun setModel(entity: Entity) {
-        println(entity)
-        this.entity = entity
-
-    }
 
     suspend fun parse(url: Url) {
         var urlObj: URL?
