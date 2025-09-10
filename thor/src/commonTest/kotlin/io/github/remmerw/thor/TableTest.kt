@@ -2,7 +2,6 @@ package io.github.remmerw.thor
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.lifecycle.viewmodel.compose.viewModel
-import io.github.remmerw.saga.createModel
 import io.github.remmerw.thor.model.StateModel
 import io.github.remmerw.thor.model.Type
 import io.github.remmerw.thor.ui.HtmlViewer
@@ -19,8 +18,8 @@ class TableTest {
     @Test
     fun test(): Unit = runBlocking(Dispatchers.IO) {
 
-        val stateModel =  StateModel()
-        val model = createModel()
+        val stateModel = StateModel()
+        val model = stateModel.model()
 
         val html = model.createEntity(Type.HTML.name)
         val body = model.createEntity(Type.BODY.name, html)
