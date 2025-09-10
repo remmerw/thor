@@ -45,19 +45,14 @@ class TableTest {
         model.createText(td3, "Content 3")
         val td4 = model.createEntity(Type.TD.name, tr3)
         model.createText(td4, "Content 4")
-
+        stateModel.setModel(model.entity())
 
 
         model.debug()
 
 
         composeTestRule.setContent {
-
             val stateModel: StateModel = viewModel { stateModel }
-
-            stateModel.setModel(model.entity())
-
-
             HtmlViewer(stateModel)
         }
 

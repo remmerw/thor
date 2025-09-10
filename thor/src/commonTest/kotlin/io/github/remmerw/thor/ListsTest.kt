@@ -40,7 +40,7 @@ class ListsTest {
         model.createText(ul2, "UL2")
         val ul3 = model.createEntity(Type.LI.name, ul)
         model.createText(ul3, "UL2")
-
+        stateModel.setModel(model.entity())
 
 
 
@@ -48,12 +48,7 @@ class ListsTest {
 
 
         composeTestRule.setContent {
-
             val stateModel: StateModel = viewModel { stateModel }
-
-            stateModel.setModel(model.entity())
-
-
             HtmlViewer(stateModel)
         }
 

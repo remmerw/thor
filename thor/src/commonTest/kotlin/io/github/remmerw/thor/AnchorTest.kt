@@ -30,15 +30,10 @@ class AnchorTest {
         model.createText(a, "Visit W3Schools.com!")
 
         model.debug()
-
+        stateModel.setModel(model.entity())
 
         composeTestRule.setContent {
-
             val stateModel: StateModel = viewModel { stateModel }
-
-            stateModel.setModel(model.entity())
-
-
             HtmlViewer(stateModel)
         }
 

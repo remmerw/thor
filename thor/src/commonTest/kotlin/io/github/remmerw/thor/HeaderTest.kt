@@ -35,15 +35,11 @@ class HeaderTest {
         model.createText(h5, "H5")
         val h6 = model.createEntity(Type.H6.name, body)
         model.createText(h6, "H6")
+        stateModel.setModel(model.entity())
 
 
         composeTestRule.setContent {
-
             val stateModel: StateModel = viewModel { stateModel }
-
-            stateModel.setModel(model.entity())
-
-
             HtmlViewer(stateModel)
         }
 
