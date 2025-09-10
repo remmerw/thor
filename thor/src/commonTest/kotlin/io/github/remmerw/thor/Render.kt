@@ -7,10 +7,10 @@ import kotlinx.io.asSource
 import kotlinx.io.buffered
 import java.net.URL
 
-class Render(var url: Url) {
+object Render {
 
 
-    suspend fun parse(model: Model) {
+    fun parse(url: Url, model: Model) {
         var urlObj: URL?
         try {
             urlObj = URL(url.toString())

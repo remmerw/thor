@@ -11,7 +11,6 @@ import io.github.remmerw.saga.Model
 import io.github.remmerw.saga.attachToModel
 import io.github.remmerw.saga.createModel
 import io.ktor.http.Url
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -32,7 +31,7 @@ class StateModel() : ViewModel() {
     }
 
 
-    suspend fun parse(url: Url) {
+    fun parse(url: Url) {
         var urlObj: URL?
         try {
             urlObj = URL(url.toString())
@@ -70,14 +69,22 @@ class StateModel() : ViewModel() {
     }
 
     fun attributes(entity: Entity): StateFlow<Map<String, String>> {
-        return model!!.attributes(entity)
+        return model.attributes(entity).stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Lazily,
+            initialValue = emptyMap()
+        )
     }
 
     fun text(entity: Entity): StateFlow<String> {
-        return model!!.text(entity)
+        return model.text(entity).stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Lazily,
+            initialValue = ""
+        )
     }
 
-    fun children(entity: Entity): Flow<List<Entity>> {
+    fun children(entity: Entity): StateFlow<List<Entity>> {
         return model.children(entity).transform { value ->
             val list = mutableListOf<Entity>()
             value.forEach { entity ->

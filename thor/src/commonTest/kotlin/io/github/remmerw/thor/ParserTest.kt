@@ -20,9 +20,9 @@ class ParserTest {
         )
 
         urls.forEach { url ->
-            val p = Render(Url(url))
+
             val model = createModel()
-            p.parse(model)
+            Render.parse(Url(url), model)
 
             model.debug()
 
