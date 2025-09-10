@@ -19,7 +19,7 @@ class TableTest {
     @Test
     fun test(): Unit = runBlocking(Dispatchers.IO) {
 
-
+        val stateModel =  StateModel()
         val model = createModel()
 
         val html = model.createEntity(Type.HTML.name)
@@ -54,9 +54,9 @@ class TableTest {
 
         composeTestRule.setContent {
 
-            val stateModel: StateModel = viewModel { StateModel() }
+            val stateModel: StateModel = viewModel { stateModel }
 
-            stateModel.setModel(model)
+            stateModel.setModel(model.entity())
 
 
             HtmlViewer(stateModel)

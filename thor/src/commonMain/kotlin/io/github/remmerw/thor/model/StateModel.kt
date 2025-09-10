@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import io.github.remmerw.saga.Entity
 import io.github.remmerw.saga.Model
+import io.github.remmerw.saga.createModel
 import io.ktor.http.Url
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,14 +16,16 @@ import kotlinx.coroutines.flow.transform
 class StateModel() : ViewModel() {
     var isImageLoadingEnabled: Boolean by mutableStateOf(true)
     var documentUri: String? = null
-    private var model: Model? = null
+    private val model: Model = createModel()
 
     var entity: Entity? = null
 
-    fun setModel(model: Model) {
-        println(model.entity())
-        this.model = model
-        this.entity = model.entity()
+    fun model() : Model{
+        return model
+    }
+    fun setModel(entity: Entity) {
+        println(entity)
+        this.entity = entity
 
     }
 

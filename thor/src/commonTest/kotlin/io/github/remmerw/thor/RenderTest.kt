@@ -22,16 +22,17 @@ class RenderTest {
         val url = Url("http://www.benjysbrain.com/")
 
         //val url = Url("https://www.welt.de/")
+        val stateModel =  StateModel()
         val p = Render(url)
-        val model = createModel()
+        val model = stateModel.model()
         p.parse(model)
         model.debug()
         composeTestRule.setContent {
 
-            val stateModel: StateModel = viewModel { StateModel() }
+            val stateModel: StateModel = viewModel { stateModel }
 
             stateModel.documentUri = url.toString()
-            stateModel.setModel(model)
+            stateModel.setModel(model.entity())
 
 
             HtmlViewer(stateModel)
