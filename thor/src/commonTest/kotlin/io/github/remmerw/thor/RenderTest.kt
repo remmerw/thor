@@ -7,6 +7,7 @@ import io.github.remmerw.thor.ui.HtmlViewer
 import io.ktor.http.Url
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.Rule
 import kotlin.test.Test
@@ -22,10 +23,12 @@ class RenderTest {
 
         //val url = Url("https://www.welt.de/")
         val stateModel = StateModel()
-        stateModel.parse(url)
-        val model = stateModel.model()
-        model.debug()
-        stateModel.documentUri = url.toString()
+        //launch {
+            stateModel.parse(url)
+            val model = stateModel.model()
+            model.debug()
+
+       // }
 
 
 

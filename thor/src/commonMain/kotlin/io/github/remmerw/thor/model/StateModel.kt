@@ -38,6 +38,7 @@ class StateModel() : ViewModel() {
             throw e
         }
 
+
         // Open a connection to the HTML page and use Cobra to parse it.
         // Cobra does not return until page is loaded.
         try {
@@ -50,6 +51,8 @@ class StateModel() : ViewModel() {
             e.printStackTrace()
             println("parsePage($url):  $e")
             throw e
+        } finally {
+            documentUri = url.toString()
         }
 
     }
