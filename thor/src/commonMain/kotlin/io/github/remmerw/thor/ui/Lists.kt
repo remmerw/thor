@@ -92,15 +92,10 @@ fun Li(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .padding(0.dp, 4.dp)
+            .padding(8.dp, 2.dp)
             .fillMaxWidth()
     ) {
-        Text(
-            text = "\u2022",
-            modifier = Modifier.padding(8.dp),
-            fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.titleLarge
-        )
+
         Entities(
             entity = entity,
             stateModel = stateModel,
