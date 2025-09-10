@@ -10,14 +10,13 @@ import io.github.remmerw.saga.Entity
 import io.github.remmerw.saga.Model
 import io.github.remmerw.saga.attachToModel
 import io.github.remmerw.saga.createModel
+import io.github.remmerw.thor.debug
 import io.ktor.http.Url
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transform
-import kotlinx.io.asSource
-import kotlinx.io.buffered
-import java.net.URL
+import kotlinx.io.Source
 
 class StateModel() : ViewModel() {
     var isImageLoadingEnabled: Boolean by mutableStateOf(true)
@@ -26,37 +25,18 @@ class StateModel() : ViewModel() {
 
     val entity: Entity = model.entity()
 
-    fun model(): Model {
+    fun model(): Model { // todo private
         return model
     }
 
 
-    fun parse(url: Url) {
-        var urlObj: URL?
+    fun parse(source: Source) {
         try {
-            urlObj = URL(url.toString())
-        } catch (e: Exception) {
-            e.printStackTrace()
-            throw e
+            attachToModel(source, model) // todo rename
+        } catch (throwable: Throwable) {
+            // todo give message
+            debug(throwable)
         }
-
-
-        // Open a connection to the HTML page and use Cobra to parse it.
-        // Cobra does not return until page is loaded.
-        try {
-            val connection = urlObj.openConnection()
-            val inputStream = connection.getInputStream()
-            requireNotNull(inputStream)
-
-            attachToModel(inputStream.asSource().buffered(), model)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            println("parsePage($url):  $e")
-            throw e
-        } finally {
-            documentUri = url.toString()
-        }
-
     }
 
     fun navigate(url: Url, target: String?) {
