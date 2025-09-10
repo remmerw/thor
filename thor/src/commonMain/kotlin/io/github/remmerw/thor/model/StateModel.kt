@@ -5,13 +5,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import io.github.remmerw.saga.Entity
 import io.github.remmerw.saga.Model
 import io.github.remmerw.saga.attachToModel
 import io.github.remmerw.saga.createModel
 import io.ktor.http.Url
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transform
 import kotlinx.io.asSource
 import kotlinx.io.buffered
@@ -75,7 +78,7 @@ class StateModel() : ViewModel() {
     }
 
     fun children(entity: Entity): Flow<List<Entity>> {
-        return model!!.children(entity).transform { value ->
+        return model.children(entity).transform { value ->
             val list = mutableListOf<Entity>()
             value.forEach { entity ->
                 if (entity.name != Type.HEAD.name &&
@@ -88,13 +91,18 @@ class StateModel() : ViewModel() {
                 }
             }
             emit(list)
-        }
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Lazily,
+            initialValue = emptyList()
+        )
     }
+
 
     fun fullUri(spec: String): String {
 
         val cleanSpec = Urls.encodeIllegalCharacters(spec)
-        return if (model != null) {
+        return if (documentUri != null) { // todo might be wrong
             Utils.getFullURL(documentUri!!, cleanSpec).toString()
         } else {
             Url(cleanSpec).toString()
