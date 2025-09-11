@@ -42,7 +42,7 @@ fun Img(
     if (isImageLoadingEnabled && !src.isNullOrEmpty()) {
         println(src)
         AsyncImage(
-            model = htmlModel.fullUri(src), // todo fix fullUri
+            model = htmlModel.fullUri(src),
             contentDescription = alt,
             contentScale = ContentScale.Crop,
             modifier = modifier

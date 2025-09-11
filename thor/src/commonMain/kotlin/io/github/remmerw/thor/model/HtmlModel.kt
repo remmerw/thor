@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import coil3.toUri
 import io.github.remmerw.saga.Entity
 import io.github.remmerw.saga.Model
 import io.github.remmerw.saga.attachToModel
@@ -118,13 +119,22 @@ class HtmlModel() : ViewModel() {
         )
     }
 
-    fun fullUri(spec: String): String {
+    fun fullUri(uri: String): String {
 
-        val cleanSpec = Urls.encodeIllegalCharacters(spec)
+        val cleanUri = Urls.encodeIllegalCharacters(uri)
+
+        try {
+            val testUri = cleanUri.toUri()
+            if (!testUri.scheme.isNullOrEmpty()){
+                return testUri.toString()
+            }
+        } catch (throwable:Throwable){
+            debug(throwable)
+        }
         return if (documentUri != null) { // todo might be wrong
-            Utils.getFullURL(documentUri!!, cleanSpec).toString()
+            Utils.getFullURL(documentUri!!, cleanUri).toString()
         } else {
-            Url(cleanSpec).toString()
+            Url(cleanUri).toString()
         }
     }
 
