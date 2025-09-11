@@ -17,7 +17,7 @@ import io.github.remmerw.thor.model.HtmlModel
 
 
 @Composable
-fun FlowLayout(
+fun Layout(
     entity: Entity,
     htmlModel: HtmlModel,
     modifier: Modifier,

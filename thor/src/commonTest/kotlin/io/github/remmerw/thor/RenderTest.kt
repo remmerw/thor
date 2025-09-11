@@ -24,8 +24,8 @@ class RenderTest {
     @Test
     fun renderTest(): Unit = runBlocking(Dispatchers.IO) {
 
-        //val url = Url("http://www.benjysbrain.com/")
-        val url = Url("https://www.w3schools.com/")
+        val url = Url("http://www.benjysbrain.com/")
+        //val url = Url("https://www.w3schools.com/")
 
         var data: String? = null
         val connection = URL(url.toString()).openConnection()

@@ -1,6 +1,5 @@
 package io.github.remmerw.thor.ui
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -41,7 +40,7 @@ fun Li(
             .fillMaxWidth()
     ) {
 
-        FlowLayout(
+        Layout(
             entity = entity,
             htmlModel = htmlModel,
             modifier = modifier,
@@ -71,7 +70,7 @@ fun Nav(
     style: TextStyle = LocalTextStyle.current,
 ) {
     FlowRow(modifier = Modifier.fillMaxWidth()) {
-        FlowLayout(
+        Layout(
             entity = entity,
             htmlModel = htmlModel,
             modifier = modifier,

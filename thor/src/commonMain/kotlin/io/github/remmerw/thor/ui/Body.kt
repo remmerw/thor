@@ -1,7 +1,5 @@
 package io.github.remmerw.thor.ui
 
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -42,18 +40,18 @@ fun Body(
             key = { element -> element.uid }
         ) { entity ->
 
-                Element(
-                    entity = entity,
-                    htmlModel = htmlModel,
-                    modifier = modifier,
-                    color = color,
-                    fontSize = fontSize,
-                    fontStyle = fontStyle,
-                    textDecoration = textDecoration,
-                    textAlign = textAlign,
-                    fontWeight = fontWeight,
-                    style = style
-                )
+            Element(
+                entity = entity,
+                htmlModel = htmlModel,
+                modifier = modifier,
+                color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
+                textDecoration = textDecoration,
+                textAlign = textAlign,
+                fontWeight = fontWeight,
+                style = style
+            )
 
         }
     }

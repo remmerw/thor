@@ -39,6 +39,7 @@ fun Element(
         Type.STYLE.name, Type.LABEL.name -> {
             // nothing to do here
         }
+
         "#text" -> {
             Chars(
                 entity = entity,
@@ -101,7 +102,7 @@ fun Element(
         }
 
         Type.H1.name -> {
-            FlowLayout(
+            Layout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier.fillMaxWidth(),
@@ -116,7 +117,7 @@ fun Element(
         }
 
         Type.H2.name -> {
-            FlowLayout(
+            Layout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier.fillMaxWidth(),
@@ -131,7 +132,7 @@ fun Element(
         }
 
         Type.H3.name -> {
-            FlowLayout(
+            Layout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier.fillMaxWidth(),
@@ -146,7 +147,7 @@ fun Element(
         }
 
         Type.H4.name -> {
-            FlowLayout(
+            Layout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier.fillMaxWidth(),
@@ -161,7 +162,7 @@ fun Element(
         }
 
         Type.H5.name -> {
-            FlowLayout(
+            Layout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier,
@@ -176,7 +177,7 @@ fun Element(
         }
 
         Type.H6.name -> {
-            FlowLayout(
+            Layout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier.fillMaxWidth(),
@@ -235,7 +236,7 @@ fun Element(
 
 
         Type.CENTER.name -> {
-            FlowLayout(
+            Layout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier,
@@ -250,7 +251,7 @@ fun Element(
         }
 
         Type.SPAN.name -> {
-            FlowLayout(
+            Layout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier,
@@ -284,7 +285,7 @@ fun Element(
         }
 
         Type.BIG.name -> {
-            FlowLayout(
+            Layout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier,
@@ -367,7 +368,7 @@ fun Element(
         }
 
         Type.TD.name -> {
-            FlowLayout(
+            Layout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier.padding(4.dp),
@@ -382,7 +383,7 @@ fun Element(
         }
 
         Type.TH.name -> {
-            FlowLayout(
+            Layout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier.padding(4.dp),
@@ -412,7 +413,7 @@ fun Element(
         }
 
         Type.BLOCKQUOTE.name -> {
-            FlowLayout(
+            Layout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier.padding(16.dp, 0.dp, 0.dp, 0.dp),
@@ -427,7 +428,7 @@ fun Element(
         }
 
         Type.B.name, Type.STRONG.name -> {
-            FlowLayout(
+            Layout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier,
@@ -442,7 +443,7 @@ fun Element(
         }
 
         Type.EM.name, Type.I.name -> {
-            FlowLayout(
+            Layout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier,
@@ -457,7 +458,7 @@ fun Element(
         }
 
         Type.SMALL.name -> {
-            FlowLayout(
+            Layout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier,

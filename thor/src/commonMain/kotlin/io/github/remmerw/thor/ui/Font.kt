@@ -35,7 +35,7 @@ fun Font(
     if (!colorAttribute.isNullOrEmpty()) {
         colorOverwrite = htmlModel.color(colorAttribute) ?: color
     }
-    FlowLayout(
+    Layout(
         entity = entity,
         htmlModel = htmlModel,
         modifier = modifier,

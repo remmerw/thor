@@ -19,7 +19,7 @@ fun Caption(
     modifier: Modifier
 ) {
     Row(modifier = Modifier.padding(4.dp).fillMaxWidth()) {
-        FlowLayout(
+        Layout(
             entity = entity,
             htmlModel = htmlModel,
             modifier = modifier.fillMaxWidth(),
@@ -36,7 +36,7 @@ fun TFoot(
     htmlModel: HtmlModel,
     modifier: Modifier
 ) {
-    FlowLayout(entity, htmlModel, modifier)
+    Layout(entity, htmlModel, modifier)
 }
 
 
@@ -46,6 +46,6 @@ fun THead(
     htmlModel: HtmlModel,
     modifier: Modifier
 ) {
-    FlowLayout(entity, htmlModel, modifier)
+    Layout(entity, htmlModel, modifier)
 }
 

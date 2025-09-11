@@ -39,7 +39,7 @@ fun A(
     }
 
 
-    FlowLayout(
+    Layout(
         entity = entity,
         htmlModel = htmlModel,
         modifier = modifier,

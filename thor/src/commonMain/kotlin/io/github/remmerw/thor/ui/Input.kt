@@ -34,7 +34,7 @@ fun Form(
     style: TextStyle = LocalTextStyle.current,
 ) {
 
-    FlowLayout(
+    Layout(
         entity = entity,
         htmlModel = htmlModel,
         modifier = modifier,
@@ -66,12 +66,12 @@ fun Input(
 
     val name = entity.name
 
-    if( name == Type.BUTTON.name) {
+    if (name == Type.BUTTON.name) {
         Button(
             onClick = {},
             enabled = false,
         ) {
-            FlowLayout(
+            Layout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier,
@@ -84,7 +84,7 @@ fun Input(
                 style = style
             )
         }
-    } else if( name == Type.INPUT.name) {
+    } else if (name == Type.INPUT.name) {
 
         val type = attributes["type"]
 
