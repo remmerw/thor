@@ -3,9 +3,7 @@ package io.github.remmerw.thor.ui
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Card
 import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -47,12 +45,12 @@ fun Div(
     }
     val entities by htmlModel.children(entity).collectAsState(emptyList())
 
-    Card (modifier = Modifier.padding(8.dp)){ // todo padding
+    if (entities.isNotEmpty()) {
+        Column(modifier = Modifier.padding(8.dp)) { // todo padding
 
-        if (entities.isNotEmpty()) {
             entities.forEach { entity ->
 
-                Column {
+                Row {
                     EntityComposable(
                         entity = entity,
                         htmlModel = htmlModel,

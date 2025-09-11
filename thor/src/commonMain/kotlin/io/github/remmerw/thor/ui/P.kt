@@ -1,8 +1,12 @@
 package io.github.remmerw.thor.ui
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -29,17 +33,30 @@ fun P(
     fontWeight: FontWeight? = null,
     style: TextStyle = LocalTextStyle.current,
 ) {
-    Entities(
-        entity = entity,
-        htmlModel = htmlModel,
-        modifier = modifier.padding(0.dp, 8.dp),
-        color = color,
-        fontSize = fontSize,
-        fontStyle = fontStyle,
-        textDecoration = textDecoration,
-        textAlign = textAlign,
-        fontWeight = fontWeight,
-        style = style
-    )
+    val entities by htmlModel.children(entity).collectAsState(emptyList())
+
+    if (entities.isNotEmpty()) {
+        Column(modifier = Modifier.padding(8.dp)) { // todo padding
+
+            entities.forEach { entity ->
+
+                Row {
+                    EntityComposable(
+                        entity = entity,
+                        htmlModel = htmlModel,
+                        modifier = modifier,
+                        color = color,
+                        fontSize = fontSize,
+                        fontStyle = fontStyle,
+                        textDecoration = textDecoration,
+                        textAlign = textAlign,
+                        fontWeight = fontWeight,
+                        style = style
+                    )
+                }
+            }
+
+        }
+    }
 }
 
