@@ -17,13 +17,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.TextUnit
 import io.github.remmerw.saga.Entity
-import io.github.remmerw.thor.model.StateModel
+import io.github.remmerw.thor.model.HtmlModel
 
 
 @Composable
 fun Body(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
@@ -33,7 +33,7 @@ fun Body(
     fontWeight: FontWeight? = null,
     style: TextStyle = LocalTextStyle.current
 ) {
-    val entities by stateModel.children(entity).collectAsState(emptyList())
+    val entities by htmlModel.children(entity).collectAsState(emptyList())
     LazyColumn(modifier = modifier.fillMaxWidth()) {
 
         items(
@@ -43,7 +43,7 @@ fun Body(
             FlowRow {
                 EntityComposable(
                     entity = entity,
-                    stateModel = stateModel,
+                    htmlModel = htmlModel,
                     modifier = modifier,
                     color = color,
                     fontSize = fontSize,

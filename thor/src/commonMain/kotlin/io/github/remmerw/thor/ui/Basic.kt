@@ -14,13 +14,13 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import io.github.remmerw.saga.Entity
-import io.github.remmerw.thor.model.StateModel
+import io.github.remmerw.thor.model.HtmlModel
 
 
 @Composable
 fun P(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
@@ -32,7 +32,7 @@ fun P(
 ) {
     Entities(
         entity = entity,
-        stateModel = stateModel,
+        htmlModel = htmlModel,
         modifier = modifier.padding(0.dp, 16.dp),
         color = color,
         fontSize = fontSize,
@@ -48,7 +48,7 @@ fun P(
 @Composable
 fun Section(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
@@ -61,7 +61,7 @@ fun Section(
     Card {
         ColumnEntities(
             entity = entity,
-            stateModel = stateModel,
+            htmlModel = htmlModel,
             modifier = modifier.padding(0.dp, 16.dp),
             color = color,
             fontSize = fontSize,
@@ -78,7 +78,7 @@ fun Section(
 @Composable
 fun Header(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
@@ -91,7 +91,7 @@ fun Header(
 
     ColumnEntities(
         entity = entity,
-        stateModel = stateModel,
+        htmlModel = htmlModel,
         modifier = modifier.padding(0.dp, 16.dp),
         color = color,
         fontSize = fontSize,

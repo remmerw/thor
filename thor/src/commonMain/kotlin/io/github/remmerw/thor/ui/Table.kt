@@ -15,17 +15,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.remmerw.saga.Entity
-import io.github.remmerw.thor.model.StateModel
+import io.github.remmerw.thor.model.HtmlModel
 
 
 @Composable
 fun Table(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier
 ) {
     Column {
-        Entities(entity, stateModel, modifier)
+        Entities(entity, htmlModel, modifier)
     }
 }
 
@@ -33,13 +33,13 @@ fun Table(
 @Composable
 fun Caption(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier
 ) {
     Row(modifier = Modifier.padding(4.dp).fillMaxWidth()) {
         Entities(
             entity = entity,
-            stateModel = stateModel,
+            htmlModel = htmlModel,
             modifier = modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
@@ -51,41 +51,41 @@ fun Caption(
 @Composable
 fun TBody(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier
 ) {
-    Entities(entity, stateModel, modifier)
+    Entities(entity, htmlModel, modifier)
 }
 
 
 @Composable
 fun TFoot(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier
 ) {
-    Entities(entity, stateModel, modifier)
+    Entities(entity, htmlModel, modifier)
 }
 
 
 @Composable
 fun THead(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier
 ) {
-    Entities(entity, stateModel, modifier)
+    Entities(entity, htmlModel, modifier)
 }
 
 
 @Composable
 fun Tr(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier
 ) {
 
-    val entities by stateModel.children(entity).collectAsState(emptyList())
+    val entities by htmlModel.children(entity).collectAsState(emptyList())
 
     if (entities.isNotEmpty()) {
 
@@ -102,7 +102,7 @@ fun Tr(
                 Column(modifier = modifier.weight(weight, true)) {
                     EntityComposable(
                         entity = entity,
-                        stateModel = stateModel,
+                        htmlModel = htmlModel,
                         modifier = modifier,
                         /* color = color,
                          fontSize = fontSize,
@@ -122,12 +122,12 @@ fun Tr(
 @Composable
 fun Th(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier
 ) {
     Entities(
         entity = entity,
-        stateModel = stateModel,
+        htmlModel = htmlModel,
         modifier = modifier.padding(4.dp),
         textAlign = TextAlign.Center,
         fontWeight = FontWeight.Bold,
@@ -138,12 +138,12 @@ fun Th(
 @Composable
 fun Td(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier
 ) {
     Entities(
         entity = entity,
-        stateModel = stateModel,
+        htmlModel = htmlModel,
         modifier = modifier.padding(4.dp),
         textAlign = TextAlign.Left
     )

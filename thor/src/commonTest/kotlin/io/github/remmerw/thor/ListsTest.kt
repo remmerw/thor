@@ -2,7 +2,7 @@ package io.github.remmerw.thor
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.lifecycle.viewmodel.compose.viewModel
-import io.github.remmerw.thor.model.StateModel
+import io.github.remmerw.thor.model.HtmlModel
 import io.github.remmerw.thor.model.Type
 import io.github.remmerw.thor.ui.HtmlViewer
 import kotlinx.coroutines.Dispatchers
@@ -19,10 +19,10 @@ class ListsTest {
     @Test
     fun test(): Unit = runBlocking(Dispatchers.IO) {
 
-        val stateModel = StateModel()
+        val htmlModel = HtmlModel()
 
         launch {
-            val model = stateModel.model()
+            val model = htmlModel.model()
 
             val html = model.createEntity(Type.HTML.name)
             val body = model.createEntity(Type.BODY.name, html)
@@ -49,8 +49,8 @@ class ListsTest {
 
 
         composeTestRule.setContent {
-            val stateModel: StateModel = viewModel { stateModel }
-            HtmlViewer(stateModel)
+            val htmlModel: HtmlModel = viewModel { htmlModel }
+            HtmlViewer(htmlModel)
         }
 
 

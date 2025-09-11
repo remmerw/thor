@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transform
 import kotlinx.io.Source
 
-class StateModel() : ViewModel() {
+class HtmlModel() : ViewModel() {
     var isImageLoadingEnabled: Boolean by mutableStateOf(true)
     var documentUri: String? = null
     private val model: Model = createModel()

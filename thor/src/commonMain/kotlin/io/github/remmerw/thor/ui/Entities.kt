@@ -19,14 +19,14 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import io.github.remmerw.saga.Entity
-import io.github.remmerw.thor.model.StateModel
+import io.github.remmerw.thor.model.HtmlModel
 import io.github.remmerw.thor.model.Type
 
 
 @Composable
 fun ColumnEntities(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
@@ -37,7 +37,7 @@ fun ColumnEntities(
     style: TextStyle = LocalTextStyle.current,
 ) {
 
-    val entities by stateModel.children(entity).collectAsState(emptyList())
+    val entities by htmlModel.children(entity).collectAsState(emptyList())
 
     if (entities.isNotEmpty()) {
 
@@ -45,7 +45,7 @@ fun ColumnEntities(
             Column {
                 EntityComposable(
                     entity = entity,
-                    stateModel = stateModel,
+                    htmlModel = htmlModel,
                     modifier = modifier,
                     color = color,
                     fontSize = fontSize,
@@ -64,7 +64,7 @@ fun ColumnEntities(
 @Composable
 fun Entities(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
@@ -75,14 +75,14 @@ fun Entities(
     style: TextStyle = LocalTextStyle.current
 ) {
 
-    val entities by stateModel.children(entity).collectAsState(emptyList())
+    val entities by htmlModel.children(entity).collectAsState(emptyList())
 
     if (entities.isNotEmpty()) {
 
         entities.forEach { entity ->
             EntityComposable(
                 entity = entity,
-                stateModel = stateModel,
+                htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
@@ -100,7 +100,7 @@ fun Entities(
 @Composable
 fun EntityComposable(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
@@ -114,7 +114,7 @@ fun EntityComposable(
         "#text" -> {
             Chars(
                 entity = entity,
-                stateModel = stateModel,
+                htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
@@ -129,7 +129,7 @@ fun EntityComposable(
         Type.HTML.name -> {
             Html(
                 entity = entity,
-                stateModel = stateModel,
+                htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
@@ -144,7 +144,7 @@ fun EntityComposable(
         Type.MAIN.name -> {
             ColumnEntities(
                 entity = entity,
-                stateModel = stateModel,
+                htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
@@ -159,7 +159,7 @@ fun EntityComposable(
         Type.PICTURE.name -> {
             Entities(
                 entity = entity,
-                stateModel = stateModel,
+                htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
@@ -174,7 +174,7 @@ fun EntityComposable(
         Type.BODY.name -> {
             Body(
                 entity = entity,
-                stateModel = stateModel,
+                htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
@@ -189,7 +189,7 @@ fun EntityComposable(
         Type.H1.name -> {
             H1(
                 entity = entity,
-                stateModel = stateModel,
+                htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
@@ -204,7 +204,7 @@ fun EntityComposable(
         Type.H2.name -> {
             H2(
                 entity = entity,
-                stateModel = stateModel,
+                htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
@@ -219,7 +219,7 @@ fun EntityComposable(
         Type.H3.name -> {
             H3(
                 entity = entity,
-                stateModel = stateModel,
+                htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
@@ -234,7 +234,7 @@ fun EntityComposable(
         Type.H4.name -> {
             H4(
                 entity = entity,
-                stateModel = stateModel,
+                htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
@@ -249,7 +249,7 @@ fun EntityComposable(
         Type.H5.name -> {
             H5(
                 entity = entity,
-                stateModel = stateModel,
+                htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
@@ -264,7 +264,7 @@ fun EntityComposable(
         Type.H6.name -> {
             H6(
                 entity = entity,
-                stateModel = stateModel,
+                htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
@@ -277,29 +277,29 @@ fun EntityComposable(
         }
 
         Type.TABLE.name -> {
-            Table(entity, stateModel, modifier)
+            Table(entity, htmlModel, modifier)
         }
 
         Type.CAPTION.name -> {
-            Caption(entity, stateModel, modifier)
+            Caption(entity, htmlModel, modifier)
         }
 
         Type.TFOOT.name -> {
-            TFoot(entity, stateModel, modifier)
+            TFoot(entity, htmlModel, modifier)
         }
 
         Type.TBODY.name -> {
-            TBody(entity, stateModel, modifier)
+            TBody(entity, htmlModel, modifier)
         }
 
         Type.THEAD.name -> {
-            THead(entity, stateModel, modifier)
+            THead(entity, htmlModel, modifier)
         }
 
         Type.FORM.name -> {
             Form(
                 entity = entity,
-                stateModel = stateModel,
+                htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
@@ -314,7 +314,7 @@ fun EntityComposable(
         Type.BUTTON.name -> {
             InputButton(
                 entity = entity,
-                stateModel = stateModel,
+                htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
@@ -329,7 +329,7 @@ fun EntityComposable(
         Type.HEADER.name -> {
             Header(
                 entity = entity,
-                stateModel = stateModel,
+                htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
@@ -344,7 +344,7 @@ fun EntityComposable(
         Type.SECTION.name, Type.ARTICLE.name, Type.FOOTER.name -> { // maybe todo article
             Section(
                 entity = entity,
-                stateModel = stateModel,
+                htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
@@ -359,7 +359,7 @@ fun EntityComposable(
         Type.CENTER.name -> {
             Center(
                 entity = entity,
-                stateModel = stateModel,
+                htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
@@ -374,7 +374,7 @@ fun EntityComposable(
         Type.SPAN.name -> {
             Span(
                 entity = entity,
-                stateModel = stateModel,
+                htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
@@ -389,7 +389,7 @@ fun EntityComposable(
         Type.DIV.name -> {
             Div(
                 entity = entity,
-                stateModel = stateModel,
+                htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
@@ -404,7 +404,7 @@ fun EntityComposable(
         Type.BIG.name -> {
             Big(
                 entity = entity,
-                stateModel = stateModel,
+                htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
@@ -419,7 +419,7 @@ fun EntityComposable(
         Type.FONT.name -> {
             Font(
                 entity = entity,
-                stateModel = stateModel,
+                htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
@@ -434,7 +434,7 @@ fun EntityComposable(
         Type.A.name, Type.ANCHOR.name -> {
             A(
                 entity = entity,
-                stateModel = stateModel,
+                htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
@@ -449,7 +449,7 @@ fun EntityComposable(
         Type.LI.name -> {
             Li(
                 entity = entity,
-                stateModel = stateModel,
+                htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
@@ -464,7 +464,7 @@ fun EntityComposable(
         Type.NAV.name -> {
             Nav(
                 entity = entity,
-                stateModel = stateModel,
+                htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
@@ -477,13 +477,13 @@ fun EntityComposable(
         }
 
         Type.BR.name -> {
-            Br(entity, stateModel, modifier)
+            Br(entity, htmlModel, modifier)
         }
 
         Type.UL.name -> {
             Ul(
                 entity = entity,
-                stateModel = stateModel,
+                htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
@@ -498,7 +498,7 @@ fun EntityComposable(
         Type.OL.name -> {
             Ol(
                 entity = entity,
-                stateModel = stateModel,
+                htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
@@ -511,21 +511,21 @@ fun EntityComposable(
         }
 
         Type.TR.name -> {
-            Tr(entity, stateModel, modifier)
+            Tr(entity, htmlModel, modifier)
         }
 
         Type.TD.name -> {
-            Td(entity, stateModel, modifier)
+            Td(entity, htmlModel, modifier)
         }
 
         Type.TH.name -> {
-            Th(entity, stateModel, modifier)
+            Th(entity, htmlModel, modifier)
         }
 
         Type.IMG.name -> {
             Img(
                 entity = entity,
-                stateModel = stateModel,
+                htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
@@ -540,7 +540,7 @@ fun EntityComposable(
         Type.BLOCKQUOTE.name -> {
             Blockquote(
                 entity = entity,
-                stateModel = stateModel,
+                htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
@@ -555,7 +555,7 @@ fun EntityComposable(
         Type.B.name, Type.STRONG.name -> {
             B(
                 entity = entity,
-                stateModel = stateModel,
+                htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
@@ -570,7 +570,7 @@ fun EntityComposable(
         Type.EM.name -> {
             Em(
                 entity = entity,
-                stateModel = stateModel,
+                htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
@@ -585,7 +585,7 @@ fun EntityComposable(
         Type.P.name -> {
             P(
                 entity = entity,
-                stateModel = stateModel,
+                htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
@@ -600,7 +600,7 @@ fun EntityComposable(
         Type.SMALL.name -> {
             Small(
                 entity = entity,
-                stateModel = stateModel,
+                htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,

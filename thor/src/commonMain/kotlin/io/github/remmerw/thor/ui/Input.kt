@@ -12,13 +12,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.TextUnit
 import io.github.remmerw.saga.Entity
-import io.github.remmerw.thor.model.StateModel
+import io.github.remmerw.thor.model.HtmlModel
 
 
 @Composable
 fun Form(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
@@ -31,7 +31,7 @@ fun Form(
 
     Entities(
         entity = entity,
-        stateModel = stateModel,
+        htmlModel = htmlModel,
         modifier = modifier,
         color = color,
         fontSize = fontSize,
@@ -47,7 +47,7 @@ fun Form(
 @Composable
 fun InputButton(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
@@ -64,7 +64,7 @@ fun InputButton(
     ) {
         Entities(
             entity = entity,
-            stateModel = stateModel,
+            htmlModel = htmlModel,
             modifier = modifier,
             color = color,
             fontSize = fontSize,

@@ -14,13 +14,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.TextUnit
 import io.github.remmerw.saga.Entity
-import io.github.remmerw.thor.model.StateModel
+import io.github.remmerw.thor.model.HtmlModel
 
 
 @Composable
 fun Chars(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
@@ -30,7 +30,7 @@ fun Chars(
     fontWeight: FontWeight? = null,
     style: TextStyle = LocalTextStyle.current
 ) {
-    val text by stateModel.text(entity).collectAsState()
+    val text by htmlModel.text(entity).collectAsState()
 
     if (text.isNotEmpty()) {
         Text(

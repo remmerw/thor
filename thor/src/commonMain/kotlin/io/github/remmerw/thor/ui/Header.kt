@@ -13,13 +13,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.TextUnit
 import io.github.remmerw.saga.Entity
-import io.github.remmerw.thor.model.StateModel
+import io.github.remmerw.thor.model.HtmlModel
 
 
 @Composable
 fun H6(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
@@ -32,7 +32,7 @@ fun H6(
 
     Entities(
         entity = entity,
-        stateModel = stateModel,
+        htmlModel = htmlModel,
         modifier = modifier.fillMaxWidth(),
         color = color,
         fontSize = fontSize,
@@ -50,7 +50,7 @@ fun H6(
 @Composable
 fun H5(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
@@ -63,7 +63,7 @@ fun H5(
 
     Entities(
         entity = entity,
-        stateModel = stateModel,
+        htmlModel = htmlModel,
         modifier = modifier,
         color = color,
         fontSize = fontSize,
@@ -79,7 +79,7 @@ fun H5(
 @Composable
 fun H4(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
@@ -92,7 +92,7 @@ fun H4(
 
     Entities(
         entity = entity,
-        stateModel = stateModel,
+        htmlModel = htmlModel,
         modifier = modifier.fillMaxWidth(),
         color = color,
         fontSize = fontSize,
@@ -109,7 +109,7 @@ fun H4(
 @Composable
 fun H3(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
@@ -122,7 +122,7 @@ fun H3(
 
     Entities(
         entity = entity,
-        stateModel = stateModel,
+        htmlModel = htmlModel,
         modifier = modifier.fillMaxWidth(),
         color = color,
         fontSize = fontSize,
@@ -140,7 +140,7 @@ fun H3(
 @Composable
 fun H2(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
@@ -153,7 +153,7 @@ fun H2(
 
     Entities(
         entity = entity,
-        stateModel = stateModel,
+        htmlModel = htmlModel,
         modifier = modifier.fillMaxWidth(),
         color = color,
         fontSize = fontSize,
@@ -170,7 +170,7 @@ fun H2(
 @Composable
 fun H1(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
@@ -183,7 +183,7 @@ fun H1(
 
     Entities(
         entity = entity,
-        stateModel = stateModel,
+        htmlModel = htmlModel,
         modifier = modifier.fillMaxWidth(),
         color = color,
         fontSize = fontSize,

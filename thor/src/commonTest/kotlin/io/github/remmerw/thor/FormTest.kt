@@ -2,7 +2,7 @@ package io.github.remmerw.thor
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.lifecycle.viewmodel.compose.viewModel
-import io.github.remmerw.thor.model.StateModel
+import io.github.remmerw.thor.model.HtmlModel
 import io.github.remmerw.thor.ui.HtmlViewer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -19,7 +19,7 @@ class FormTest {
     @Test
     fun test(): Unit = runBlocking(Dispatchers.IO) {
 
-        val stateModel = StateModel()
+        val htmlModel = HtmlModel()
 
         val data = "<!DOCTYPE html>\n" +
                 "<html>\n" +
@@ -43,18 +43,18 @@ class FormTest {
                 "</html>\n"
 
         launch {
-            val model = stateModel.model()
+            val model = htmlModel.model()
 
             val buffer = Buffer()
             buffer.write(data.encodeToByteArray())
-            stateModel.parse(buffer)
+            htmlModel.parse(buffer)
 
             model.debug()
         }
 
         composeTestRule.setContent {
-            val stateModel: StateModel = viewModel { stateModel }
-            HtmlViewer(stateModel)
+            val htmlModel: HtmlModel = viewModel { htmlModel }
+            HtmlViewer(htmlModel)
         }
 
 

@@ -16,13 +16,13 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import io.github.remmerw.saga.Entity
-import io.github.remmerw.thor.model.StateModel
+import io.github.remmerw.thor.model.HtmlModel
 
 
 @Composable
 fun Ul(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
@@ -34,7 +34,7 @@ fun Ul(
 ) {
     ColumnEntities(
         entity = entity,
-        stateModel = stateModel,
+        htmlModel = htmlModel,
         modifier = modifier,
         color = color,
         fontSize = fontSize,
@@ -50,7 +50,7 @@ fun Ul(
 @Composable
 fun Ol(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
@@ -62,7 +62,7 @@ fun Ol(
 ) {
     ColumnEntities(
         entity = entity,
-        stateModel = stateModel,
+        htmlModel = htmlModel,
         modifier = modifier,
         color = color,
         fontSize = fontSize,
@@ -77,7 +77,7 @@ fun Ol(
 @Composable
 fun Li(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
@@ -96,7 +96,7 @@ fun Li(
 
         Entities(
             entity = entity,
-            stateModel = stateModel,
+            htmlModel = htmlModel,
             modifier = modifier,
             color = color,
             fontSize = fontSize,
@@ -113,7 +113,7 @@ fun Li(
 @Composable
 fun Nav(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
@@ -131,7 +131,7 @@ fun Nav(
     ) {
         Entities(
             entity = entity,
-            stateModel = stateModel,
+            htmlModel = htmlModel,
             modifier = modifier,
             color = color,
             fontSize = fontSize,

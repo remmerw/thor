@@ -18,12 +18,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.TextUnit
 import io.github.remmerw.saga.Entity
-import io.github.remmerw.thor.model.StateModel
+import io.github.remmerw.thor.model.HtmlModel
 
 
 @Composable
 fun HtmlViewer(
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
     fontStyle: FontStyle? = null,
@@ -33,7 +33,7 @@ fun HtmlViewer(
     style: TextStyle = LocalTextStyle.current
 ) {
 
-    val entity by remember { mutableStateOf(stateModel.entity) }
+    val entity by remember { mutableStateOf(htmlModel.entity) }
     Scaffold(
         content = { padding ->
             Column(
@@ -42,7 +42,7 @@ fun HtmlViewer(
                 if (entity != null) {
                     Entities(
                         entity = entity!!,
-                        stateModel = stateModel,
+                        htmlModel = htmlModel,
                         modifier = Modifier,
                         color = color,
                         fontSize = fontSize,
@@ -62,7 +62,7 @@ fun HtmlViewer(
 @Composable
 fun Html(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
@@ -75,7 +75,7 @@ fun Html(
 
     ColumnEntities(
         entity = entity,
-        stateModel = stateModel,
+        htmlModel = htmlModel,
         modifier = modifier,
         color = color,
         fontSize = fontSize,
@@ -91,8 +91,8 @@ fun Html(
 @Composable
 fun Br(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier
 ) {
-    Entities(entity, stateModel, modifier)
+    Entities(entity, htmlModel, modifier)
 }

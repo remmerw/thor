@@ -28,22 +28,22 @@ object Utils {
 
     private fun absoluteURL(
         href: String,
-        stateModel: StateModel
+        htmlModel: HtmlModel
     ): Url? {
         if (href.startsWith("javascript:")) {
             return null
         } else {
             try {
 
-                return getFullURL2(stateModel.documentUri!!, href)
+                return getFullURL2(htmlModel.documentUri!!, href)
             } catch (throwable: Throwable) {
-                stateModel.warn("Malformed URI: [" + href + "].", throwable)
+                htmlModel.warn("Malformed URI: [" + href + "].", throwable)
             }
         }
         return null
     }
 
-    fun navigate(entity: Entity, stateModel: StateModel, href: String, target: String) {
+    fun navigate(entity: Entity, htmlModel: HtmlModel, href: String, target: String) {
 
         if (entity.name == Type.ANCHOR.name ||
             entity.name == Type.A.name
@@ -56,9 +56,9 @@ object Utils {
                 // evalInScope adds the JS task
                 println(script)
             } else {
-                val url = absoluteURL(href, stateModel)
+                val url = absoluteURL(href, htmlModel)
                 if (url != null) {
-                    stateModel.linkClicked(url, target)
+                    htmlModel.linkClicked(url, target)
                 }
             }
         }
@@ -71,9 +71,9 @@ object Utils {
                 // evalInScope adds the JS task
                 println(script)
             } else {
-                val url = absoluteURL(href, stateModel)
+                val url = absoluteURL(href, htmlModel)
                 if (url != null) {
-                    stateModel.linkClicked(url, target)
+                    htmlModel.linkClicked(url, target)
                 }
             }
         }

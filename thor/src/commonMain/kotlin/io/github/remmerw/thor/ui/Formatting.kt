@@ -15,13 +15,13 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import io.github.remmerw.saga.Entity
-import io.github.remmerw.thor.model.StateModel
+import io.github.remmerw.thor.model.HtmlModel
 
 
 @Composable
 fun Font(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
@@ -32,14 +32,14 @@ fun Font(
     style: TextStyle = LocalTextStyle.current,
 ) {
     var colorOverwrite: Color = color
-    val attributes by stateModel.attributes(entity).collectAsState()
+    val attributes by htmlModel.attributes(entity).collectAsState()
     val colorAttribute = attributes["color"]
     if (!colorAttribute.isNullOrEmpty()) {
-        colorOverwrite = stateModel.color(colorAttribute) ?: color
+        colorOverwrite = htmlModel.color(colorAttribute) ?: color
     }
     Entities(
         entity = entity,
-        stateModel = stateModel,
+        htmlModel = htmlModel,
         modifier = modifier,
         color = colorOverwrite,
         fontSize = fontSize,
@@ -54,7 +54,7 @@ fun Font(
 @Composable
 fun B(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
@@ -67,7 +67,7 @@ fun B(
 
     Entities(
         entity = entity,
-        stateModel = stateModel,
+        htmlModel = htmlModel,
         modifier = modifier,
         color = color,
         fontSize = fontSize,
@@ -83,7 +83,7 @@ fun B(
 @Composable
 fun Em(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
@@ -96,7 +96,7 @@ fun Em(
 
     Entities(
         entity = entity,
-        stateModel = stateModel,
+        htmlModel = htmlModel,
         modifier = modifier,
         color = color,
         fontSize = fontSize,
@@ -112,7 +112,7 @@ fun Em(
 @Composable
 fun Small(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
@@ -125,7 +125,7 @@ fun Small(
 
     Entities(
         entity = entity,
-        stateModel = stateModel,
+        htmlModel = htmlModel,
         modifier = modifier,
         color = color,
         fontSize = fontSize,
@@ -141,7 +141,7 @@ fun Small(
 @Composable
 fun Span(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
@@ -155,7 +155,7 @@ fun Span(
     // right now nothing to do here
     Entities(
         entity = entity,
-        stateModel = stateModel,
+        htmlModel = htmlModel,
         modifier = modifier,
         color = color,
         fontSize = fontSize,
@@ -170,7 +170,7 @@ fun Span(
 @Composable
 fun Center(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
@@ -182,7 +182,7 @@ fun Center(
 ) {
     Entities(
         entity = entity,
-        stateModel = stateModel,
+        htmlModel = htmlModel,
         modifier = modifier,
         color = color,
         fontSize = fontSize,
@@ -197,7 +197,7 @@ fun Center(
 @Composable
 fun Big(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
@@ -209,7 +209,7 @@ fun Big(
 ) {
     Entities(
         entity = entity,
-        stateModel = stateModel,
+        htmlModel = htmlModel,
         modifier = modifier,
         color = color,
         fontSize = fontSize,
@@ -225,7 +225,7 @@ fun Big(
 @Composable
 fun Div(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
@@ -238,7 +238,7 @@ fun Div(
 
     var textAlignOverwrite = textAlign
 
-    val attributes by stateModel.attributes(entity).collectAsState()
+    val attributes by htmlModel.attributes(entity).collectAsState()
     val alignAttribute = attributes["align"]
     if (!alignAttribute.isNullOrEmpty()) {
         if (alignAttribute == "left") {
@@ -248,7 +248,7 @@ fun Div(
 
     Entities(
         entity = entity,
-        stateModel = stateModel,
+        htmlModel = htmlModel,
         modifier = modifier,
         color = color,
         fontSize = fontSize,
@@ -264,7 +264,7 @@ fun Div(
 @Composable
 fun Blockquote(
     entity: Entity,
-    stateModel: StateModel,
+    htmlModel: HtmlModel,
     modifier: Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
@@ -276,7 +276,7 @@ fun Blockquote(
 ) {
     Entities(
         entity = entity,
-        stateModel = stateModel,
+        htmlModel = htmlModel,
         modifier = modifier.padding(16.dp, 0.dp, 0.dp, 0.dp),
         color = color,
         fontSize = fontSize,

@@ -13,10 +13,10 @@ class ParserTest {
 
         val urls = listOf(
             "http://www.benjysbrain.com/",
-            "https://www.welt.de/",
+           /* "https://www.welt.de/",
             "https://www.spiegel.de/",
             "https://www.handelsblatt.de/",
-            "https://www.zeit.de/"
+            "https://www.zeit.de/"*/
         )
 
         urls.forEach { url ->

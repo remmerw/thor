@@ -2,7 +2,7 @@ package io.github.remmerw.thor
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.lifecycle.viewmodel.compose.viewModel
-import io.github.remmerw.thor.model.StateModel
+import io.github.remmerw.thor.model.HtmlModel
 import io.github.remmerw.thor.ui.HtmlViewer
 import io.ktor.http.Url
 import kotlinx.coroutines.Dispatchers
@@ -35,20 +35,20 @@ class RenderTest {
 
         checkNotNull(data)
 
-        val stateModel = StateModel()
-        stateModel.documentUri = url.toString()
+        val htmlModel = HtmlModel()
+        htmlModel.documentUri = url.toString()
 
         launch {
             val buffer = Buffer()
             buffer.write(data.encodeToByteArray())
-            stateModel.parse(buffer)
-            stateModel.model().debug()
+            htmlModel.parse(buffer)
+            htmlModel.model().debug()
         }
 
 
         composeTestRule.setContent {
-            val stateModel: StateModel = viewModel { stateModel }
-            HtmlViewer(stateModel)
+            val htmlModel: HtmlModel = viewModel { htmlModel }
+            HtmlViewer(htmlModel)
         }
 
 
