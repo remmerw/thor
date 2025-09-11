@@ -4,7 +4,7 @@ core = "1.7.0"
 kotlin = "2.2.20"
 compose-multiplatform = "1.8.2"
 lifecycle = "2.9.3"
-ui-test-junit4 = "1.9.0"
+ui-test-junit4 = "1.9.1"
 coil = "3.3.0"
 ktor = "3.2.3"
 kotlinx-coroutines = "1.10.2"
@@ -15,6 +15,7 @@ androidx-core = { module = "androidx.test:core", version.ref = "core" }
 androidx-runner = { module = "androidx.test:runner", version.ref = "core" }
 androidx-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "ui-test-junit4" }
 androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "ui-test-junit4" }
+coil-svg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coil" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlinx-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version = "0.8.0" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
@@ -25,7 +26,7 @@ ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "k
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-client-java = { group = "io.ktor", name = "ktor-client-java", version.ref = "ktor" }
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
-saga = { module = "io.github.remmerw:saga", version = "0.0.8" }
+saga = { module = "io.github.remmerw:saga", version = "0.0.9" }
 ui-test-junit4-desktop = { module = "org.jetbrains.compose.ui:ui-test-junit4-desktop", version.ref = "ui-test-junit4-desktop" }
 
 [plugins]
