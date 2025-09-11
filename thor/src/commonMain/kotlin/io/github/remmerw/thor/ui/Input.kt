@@ -1,8 +1,12 @@
 package io.github.remmerw.thor.ui
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -13,6 +17,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.TextUnit
 import io.github.remmerw.saga.Entity
 import io.github.remmerw.thor.model.HtmlModel
+import io.github.remmerw.thor.model.Type
 
 
 @Composable
@@ -45,7 +50,7 @@ fun Form(
 
 
 @Composable
-fun InputButton(
+fun Input(
     entity: Entity,
     htmlModel: HtmlModel,
     modifier: Modifier,
@@ -57,23 +62,34 @@ fun InputButton(
     fontWeight: FontWeight? = null,
     style: TextStyle = LocalTextStyle.current,
 ) {
+    val attributes by htmlModel.attributes(entity).collectAsState()
 
-    Button(
-        onClick = {},
-        enabled = false,
-    ) {
-        FlowLayout(
-            entity = entity,
-            htmlModel = htmlModel,
-            modifier = modifier,
-            color = color,
-            fontSize = fontSize,
-            fontStyle = fontStyle,
-            textDecoration = textDecoration,
-            textAlign = textAlign,
-            fontWeight = fontWeight,
-            style = style
-        )
+    val name = entity.name
+
+    if( name == Type.BUTTON.name) {
+        Button(
+            onClick = {},
+            enabled = false,
+        ) {
+            FlowLayout(
+                entity = entity,
+                htmlModel = htmlModel,
+                modifier = modifier,
+                color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
+                textDecoration = textDecoration,
+                textAlign = textAlign,
+                fontWeight = fontWeight,
+                style = style
+            )
+        }
+    } else if( name == Type.INPUT.name) {
+
+        val type = attributes["type"]
+
+        Text(text = "Input type $type", modifier = Modifier.fillMaxWidth())
+
     }
 
 }

@@ -35,6 +35,10 @@ fun Element(
     style: TextStyle = LocalTextStyle.current
 ) {
     when (entity.name) {
+        "#comment", Type.SCRIPT.name, Type.NOSCRIPT.name,
+        Type.STYLE.name, Type.LABEL.name -> {
+            // nothing to do here
+        }
         "#text" -> {
             Chars(
                 entity = entity,
@@ -50,8 +54,8 @@ fun Element(
             )
         }
 
-        Type.HTML.name -> {
-            Html(
+        Type.INPUT.name -> {
+            Input(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier,
@@ -215,7 +219,7 @@ fun Element(
         }
 
         Type.BUTTON.name -> {
-            InputButton(
+            Input(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier,
@@ -437,7 +441,7 @@ fun Element(
             )
         }
 
-        Type.EM.name -> {
+        Type.EM.name, Type.I.name -> {
             FlowLayout(
                 entity = entity,
                 htmlModel = htmlModel,

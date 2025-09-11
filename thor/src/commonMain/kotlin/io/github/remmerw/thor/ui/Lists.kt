@@ -1,5 +1,7 @@
 package io.github.remmerw.thor.ui
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -68,12 +70,7 @@ fun Nav(
     fontWeight: FontWeight? = null,
     style: TextStyle = LocalTextStyle.current,
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .padding(0.dp, 4.dp)
-            .fillMaxWidth()
-    ) {
+    FlowRow(modifier = Modifier.fillMaxWidth()) {
         FlowLayout(
             entity = entity,
             htmlModel = htmlModel,
