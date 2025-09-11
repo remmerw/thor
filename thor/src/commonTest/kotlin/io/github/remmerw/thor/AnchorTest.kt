@@ -31,7 +31,7 @@ class AnchorTest {
             )
             model.createText(a, "Visit W3Schools.com!")
 
-            model.debug()
+            println(model.content())
         }
 
         composeTestRule.setContent {

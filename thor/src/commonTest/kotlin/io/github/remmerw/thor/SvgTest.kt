@@ -12,7 +12,7 @@ import kotlinx.io.Buffer
 import org.junit.Rule
 import kotlin.test.Test
 
-class FormTest {
+class SvgTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
@@ -25,22 +25,15 @@ class FormTest {
                 "<html>\n" +
                 "<body>\n" +
                 "\n" +
-                "<h1>The label element</h1>\n" +
+                "<h1>The svg element</h1>\n" +
                 "\n" +
-                "<p>Click on one of the text labels to toggle the related radio button:</p>\n" +
-                "\n" +
-                "<form action=\"/action_page.php\">\n" +
-                "  <input type=\"radio\" id=\"html\" name=\"fav_language\" value=\"HTML\">\n" +
-                "  <label for=\"html\">HTML</label><br>\n" +
-                "  <input type=\"radio\" id=\"css\" name=\"fav_language\" value=\"CSS\">\n" +
-                "  <label for=\"css\">CSS</label><br>\n" +
-                "  <input type=\"radio\" id=\"javascript\" name=\"fav_language\" value=\"JavaScript\">\n" +
-                "  <label for=\"javascript\">JavaScript</label><br><br>\n" +
-                "  <input type=\"submit\" value=\"Submit\">\n" +
-                "</form>\n" +
-                "\n" +
+                "<svg width=\"100\" height=\"100\">\n" +
+                "  <circle cx=\"50\" cy=\"50\" r=\"40\" stroke=\"green\" stroke-width=\"4\" fill=\"yellow\" />\n" +
+                "  Sorry, your browser does not support inline SVG.\n" +
+                "</svg>\n" +
+                " \n" +
                 "</body>\n" +
-                "</html>\n"
+                "</html>"
 
         launch {
             val model = htmlModel.model()

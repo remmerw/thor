@@ -48,7 +48,7 @@ kotlin {
 
                 implementation(libs.coil.compose)
                 implementation(libs.coil.network.ktor)
-                // implementation("androidx.graphics:graphics-core:1.0.3")
+                implementation(libs.coil.svg)
             }
         }
 

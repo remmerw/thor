@@ -13,10 +13,10 @@ class ParserTest {
 
         val urls = listOf(
             "http://www.benjysbrain.com/",
-           /* "https://www.welt.de/",
-            "https://www.spiegel.de/",
-            "https://www.handelsblatt.de/",
-            "https://www.zeit.de/"*/
+            /* "https://www.welt.de/",
+             "https://www.spiegel.de/",
+             "https://www.handelsblatt.de/",
+             "https://www.zeit.de/"*/
         )
 
         urls.forEach { url ->
@@ -24,7 +24,7 @@ class ParserTest {
             val model = createModel()
             Render.parse(Url(url), model)
 
-            model.debug()
+            println(model.content())
 
             println("Done $url")
         }

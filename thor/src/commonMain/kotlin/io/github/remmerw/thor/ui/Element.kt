@@ -412,6 +412,21 @@ fun Element(
             )
         }
 
+        Type.SVG.name -> {
+            Svg(
+                entity = entity,
+                htmlModel = htmlModel,
+                modifier = modifier,
+                color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
+                textDecoration = textDecoration,
+                textAlign = textAlign,
+                fontWeight = fontWeight,
+                style = style
+            )
+        }
+
         Type.BLOCKQUOTE.name -> {
             Layout(
                 entity = entity,

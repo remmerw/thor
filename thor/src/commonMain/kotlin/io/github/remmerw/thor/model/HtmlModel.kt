@@ -9,7 +9,6 @@ import androidx.lifecycle.viewModelScope
 import coil3.toUri
 import io.github.remmerw.saga.Entity
 import io.github.remmerw.saga.Model
-import io.github.remmerw.saga.attachToModel
 import io.github.remmerw.saga.createModel
 import io.github.remmerw.thor.debug
 import io.ktor.http.Url
@@ -33,7 +32,7 @@ class HtmlModel() : ViewModel() {
 
     fun parse(source: Source) {
         try {
-            attachToModel(source, model) // todo rename
+            model.parse(source)
         } catch (throwable: Throwable) {
             // todo give message
             debug(throwable)
@@ -90,6 +89,14 @@ class HtmlModel() : ViewModel() {
         )
     }
 
+    fun content(entity: Entity): String {
+        return model.content(entity)
+    }
+
+    fun content(): String {
+        return model.content(entity)
+    }
+
     fun html(): StateFlow<List<Entity>> {
         return model.children(model.entity()).transform { value ->
             val list = mutableListOf<Entity>()
@@ -112,10 +119,10 @@ class HtmlModel() : ViewModel() {
 
         try {
             val testUri = cleanUri.toUri()
-            if (!testUri.scheme.isNullOrEmpty()){
+            if (!testUri.scheme.isNullOrEmpty()) {
                 return testUri.toString()
             }
-        } catch (throwable:Throwable){
+        } catch (throwable: Throwable) {
             debug(throwable)
         }
         return if (documentUri != null) { // todo might be wrong
@@ -124,9 +131,6 @@ class HtmlModel() : ViewModel() {
             Url(cleanUri).toString()
         }
     }
-
-
-
 
 
     fun linkClicked(

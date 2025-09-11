@@ -49,7 +49,7 @@ class TableTest {
             model.createText(td4, "Content 4")
 
 
-            model.debug()
+            println(model.content())
         }
 
 

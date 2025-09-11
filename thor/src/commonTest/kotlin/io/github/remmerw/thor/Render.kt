@@ -1,7 +1,6 @@
 package io.github.remmerw.thor
 
 import io.github.remmerw.saga.Model
-import io.github.remmerw.saga.attachToModel
 import io.ktor.http.Url
 import kotlinx.io.asSource
 import kotlinx.io.buffered
@@ -26,7 +25,7 @@ object Render {
             val inputStream = connection.getInputStream()
             requireNotNull(inputStream)
 
-            attachToModel(inputStream.asSource().buffered(), model)
+            model.parse(inputStream.asSource().buffered())
         } catch (e: Exception) {
             e.printStackTrace()
             println("parsePage($url):  $e")

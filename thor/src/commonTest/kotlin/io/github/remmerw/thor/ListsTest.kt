@@ -44,7 +44,7 @@ class ListsTest {
             val ul3 = model.createEntity(Type.LI.name, ul)
             model.createText(ul3, "UL2")
 
-            model.debug()
+            println(model.content())
         }
 
 

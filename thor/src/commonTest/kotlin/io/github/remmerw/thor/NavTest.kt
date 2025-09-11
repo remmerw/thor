@@ -53,7 +53,7 @@ class NavTest {
             buffer.write(data.encodeToByteArray())
             htmlModel.parse(buffer)
 
-            model.debug()
+            println(model.content())
         }
 
         composeTestRule.setContent {
