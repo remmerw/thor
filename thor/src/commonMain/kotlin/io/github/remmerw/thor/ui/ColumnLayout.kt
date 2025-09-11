@@ -48,7 +48,7 @@ fun ColumnLayout(
     Column {
         entities.forEach { entity ->
             Row {
-                EntityComposable(
+                Element(
                     entity = entity,
                     htmlModel = htmlModel,
                     modifier = modifier,

@@ -34,13 +34,12 @@ fun RowLayout(
 
     val entities by htmlModel.children(entity).collectAsState(emptyList())
 
-
     val weight = 1F
 
     Row {
         entities.forEach { entity ->
             Column(modifier = modifier.weight(weight, true)) {
-                EntityComposable(
+                Element(
                     entity = entity,
                     htmlModel = htmlModel,
                     modifier = modifier,

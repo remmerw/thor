@@ -41,7 +41,7 @@ fun Body(
             key = { element -> element.uid }
         ) { entity ->
             Row {
-                EntityComposable(
+                Element(
                     entity = entity,
                     htmlModel = htmlModel,
                     modifier = modifier,

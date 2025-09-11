@@ -1,14 +1,12 @@
 package io.github.remmerw.thor.ui
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -24,45 +22,7 @@ import io.github.remmerw.thor.model.Type
 
 
 @Composable
-fun ColumnEntities(
-    entity: Entity,
-    htmlModel: HtmlModel,
-    modifier: Modifier,
-    color: Color = Color.Unspecified,
-    fontSize: TextUnit = TextUnit.Unspecified,
-    fontStyle: FontStyle? = null,
-    textDecoration: TextDecoration? = null,
-    textAlign: TextAlign? = null,
-    fontWeight: FontWeight? = null,
-    style: TextStyle = LocalTextStyle.current,
-) {
-
-    val entities by htmlModel.children(entity).collectAsState(emptyList())
-
-    if (entities.isNotEmpty()) {
-
-        entities.forEach { entity ->
-            Column {
-                EntityComposable(
-                    entity = entity,
-                    htmlModel = htmlModel,
-                    modifier = modifier,
-                    color = color,
-                    fontSize = fontSize,
-                    fontStyle = fontStyle,
-                    textDecoration = textDecoration,
-                    textAlign = textAlign,
-                    fontWeight = fontWeight,
-                    style = style
-                )
-            }
-        }
-    }
-}
-
-
-@Composable
-fun EntityComposable(
+fun Element(
     entity: Entity,
     htmlModel: HtmlModel,
     modifier: Modifier,
@@ -105,23 +65,9 @@ fun EntityComposable(
             )
         }
 
-        Type.MAIN.name -> {
-            ColumnEntities(
-                entity = entity,
-                htmlModel = htmlModel,
-                modifier = modifier,
-                color = color,
-                fontSize = fontSize,
-                fontStyle = fontStyle,
-                textDecoration = textDecoration,
-                textAlign = textAlign,
-                fontWeight = fontWeight,
-                style = style
-            )
-        }
 
         Type.PICTURE.name -> {
-            FlowLayout(
+            ColumnLayout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier,
@@ -151,67 +97,67 @@ fun EntityComposable(
         }
 
         Type.H1.name -> {
-            H1(
+            FlowLayout(
                 entity = entity,
                 htmlModel = htmlModel,
-                modifier = modifier,
+                modifier = modifier.fillMaxWidth(),
                 color = color,
                 fontSize = fontSize,
                 fontStyle = fontStyle,
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
-                style = style
+                style = MaterialTheme.typography.headlineLarge
             )
         }
 
         Type.H2.name -> {
-            H2(
+            FlowLayout(
                 entity = entity,
                 htmlModel = htmlModel,
-                modifier = modifier,
+                modifier = modifier.fillMaxWidth(),
                 color = color,
                 fontSize = fontSize,
                 fontStyle = fontStyle,
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
-                style = style
+                style = MaterialTheme.typography.headlineMedium
             )
         }
 
         Type.H3.name -> {
-            H3(
+            FlowLayout(
                 entity = entity,
                 htmlModel = htmlModel,
-                modifier = modifier,
+                modifier = modifier.fillMaxWidth(),
                 color = color,
                 fontSize = fontSize,
                 fontStyle = fontStyle,
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
-                style = style
+                style = MaterialTheme.typography.headlineSmall
             )
         }
 
         Type.H4.name -> {
-            H4(
+            FlowLayout(
                 entity = entity,
                 htmlModel = htmlModel,
-                modifier = modifier,
+                modifier = modifier.fillMaxWidth(),
                 color = color,
                 fontSize = fontSize,
                 fontStyle = fontStyle,
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
-                style = style
+                style = MaterialTheme.typography.titleLarge,
             )
         }
 
         Type.H5.name -> {
-            H5(
+            FlowLayout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier,
@@ -221,7 +167,7 @@ fun EntityComposable(
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
-                style = style
+                style = MaterialTheme.typography.titleMedium,
             )
         }
 
@@ -283,38 +229,9 @@ fun EntityComposable(
             )
         }
 
-        Type.HEADER.name -> {
-            Header(
-                entity = entity,
-                htmlModel = htmlModel,
-                modifier = modifier,
-                color = color,
-                fontSize = fontSize,
-                fontStyle = fontStyle,
-                textDecoration = textDecoration,
-                textAlign = textAlign,
-                fontWeight = fontWeight,
-                style = style
-            )
-        }
-
-        Type.SECTION.name, Type.ARTICLE.name, Type.FOOTER.name -> { // maybe todo article
-            Section(
-                entity = entity,
-                htmlModel = htmlModel,
-                modifier = modifier,
-                color = color,
-                fontSize = fontSize,
-                fontStyle = fontStyle,
-                textDecoration = textDecoration,
-                textAlign = textAlign,
-                fontWeight = fontWeight,
-                style = style
-            )
-        }
 
         Type.CENTER.name -> {
-            Center(
+            FlowLayout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier,
@@ -322,14 +239,14 @@ fun EntityComposable(
                 fontSize = fontSize,
                 fontStyle = fontStyle,
                 textDecoration = textDecoration,
-                textAlign = textAlign,
+                textAlign = TextAlign.Center,
                 fontWeight = fontWeight,
                 style = style
             )
         }
 
         Type.SPAN.name -> {
-            Span(
+            FlowLayout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier,
@@ -343,7 +260,11 @@ fun EntityComposable(
             )
         }
 
-        Type.DIV.name, Type.TABLE.name, Type.TBODY.name, Type.P.name -> {
+        Type.DIV.name, Type.TABLE.name,
+        Type.TBODY.name, Type.P.name,
+        Type.SECTION.name, Type.ARTICLE.name,
+        Type.FOOTER.name, Type.HEADER.name,
+        Type.UL.name, Type.OL.name -> {
             ColumnLayout(
                 entity = entity,
                 htmlModel = htmlModel,
@@ -359,7 +280,7 @@ fun EntityComposable(
         }
 
         Type.BIG.name -> {
-            Big(
+            FlowLayout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier,
@@ -368,7 +289,7 @@ fun EntityComposable(
                 fontStyle = fontStyle,
                 textDecoration = textDecoration,
                 textAlign = textAlign,
-                fontWeight = fontWeight,
+                fontWeight = FontWeight.Bold,
                 style = style
             )
         }
@@ -437,46 +358,38 @@ fun EntityComposable(
             Br(entity, htmlModel, modifier)
         }
 
-        Type.UL.name -> {
-            Ul(
-                entity = entity,
-                htmlModel = htmlModel,
-                modifier = modifier,
-                color = color,
-                fontSize = fontSize,
-                fontStyle = fontStyle,
-                textDecoration = textDecoration,
-                textAlign = textAlign,
-                fontWeight = fontWeight,
-                style = style
-            )
-        }
-
-        Type.OL.name -> {
-            Ol(
-                entity = entity,
-                htmlModel = htmlModel,
-                modifier = modifier,
-                color = color,
-                fontSize = fontSize,
-                fontStyle = fontStyle,
-                textDecoration = textDecoration,
-                textAlign = textAlign,
-                fontWeight = fontWeight,
-                style = style
-            )
-        }
-
         Type.TR.name -> {
             RowLayout(entity, htmlModel, modifier)
         }
 
         Type.TD.name -> {
-            Td(entity, htmlModel, modifier)
+            FlowLayout(
+                entity = entity,
+                htmlModel = htmlModel,
+                modifier = modifier.padding(4.dp),
+                color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
+                textDecoration = textDecoration,
+                textAlign = TextAlign.Left,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.labelSmall
+            )
         }
 
         Type.TH.name -> {
-            Th(entity, htmlModel, modifier)
+            FlowLayout(
+                entity = entity,
+                htmlModel = htmlModel,
+                modifier = modifier.padding(4.dp),
+                color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
+                textDecoration = textDecoration,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.labelSmall
+            )
         }
 
         Type.IMG.name -> {
@@ -495,10 +408,10 @@ fun EntityComposable(
         }
 
         Type.BLOCKQUOTE.name -> {
-            Blockquote(
+            FlowLayout(
                 entity = entity,
                 htmlModel = htmlModel,
-                modifier = modifier,
+                modifier = modifier.padding(16.dp, 0.dp, 0.dp, 0.dp),
                 color = color,
                 fontSize = fontSize,
                 fontStyle = fontStyle,
@@ -510,7 +423,7 @@ fun EntityComposable(
         }
 
         Type.B.name, Type.STRONG.name -> {
-            B(
+            FlowLayout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier,
@@ -519,19 +432,19 @@ fun EntityComposable(
                 fontStyle = fontStyle,
                 textDecoration = textDecoration,
                 textAlign = textAlign,
-                fontWeight = fontWeight,
+                fontWeight = FontWeight.Bold,
                 style = style
             )
         }
 
         Type.EM.name -> {
-            Em(
+            FlowLayout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
-                fontStyle = fontStyle,
+                fontStyle = FontStyle.Italic,
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
@@ -540,7 +453,7 @@ fun EntityComposable(
         }
 
         Type.SMALL.name -> {
-            Small(
+            FlowLayout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier,
@@ -549,7 +462,7 @@ fun EntityComposable(
                 fontStyle = fontStyle,
                 textDecoration = textDecoration,
                 textAlign = textAlign,
-                fontWeight = fontWeight,
+                fontWeight = FontWeight.Thin,
                 style = style
             )
         }

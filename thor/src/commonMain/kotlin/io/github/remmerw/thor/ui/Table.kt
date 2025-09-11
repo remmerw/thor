@@ -49,33 +49,3 @@ fun THead(
     FlowLayout(entity, htmlModel, modifier)
 }
 
-
-@Composable
-fun Th(
-    entity: Entity,
-    htmlModel: HtmlModel,
-    modifier: Modifier
-) {
-    FlowLayout(
-        entity = entity,
-        htmlModel = htmlModel,
-        modifier = modifier.padding(4.dp),
-        textAlign = TextAlign.Center,
-        fontWeight = FontWeight.Bold,
-        style = MaterialTheme.typography.labelSmall
-    )
-}
-
-@Composable
-fun Td(
-    entity: Entity,
-    htmlModel: HtmlModel,
-    modifier: Modifier
-) {
-    FlowLayout(
-        entity = entity,
-        htmlModel = htmlModel,
-        modifier = modifier.padding(4.dp),
-        textAlign = TextAlign.Left
-    )
-}

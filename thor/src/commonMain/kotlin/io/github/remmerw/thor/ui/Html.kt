@@ -39,7 +39,6 @@ fun HtmlViewer(
                 modifier = Modifier.padding(padding).fillMaxWidth()
             ) {
                 entities.forEach { entity ->
-                    println(entity.name)
                     Html(
                         entity = entity,
                         htmlModel = htmlModel,
@@ -76,7 +75,6 @@ fun Html(
     val entities by htmlModel.body(entity).collectAsState(emptyList())
 
     entities.forEach { entity ->
-        println(entity.name)
         Body(
             entity = entity,
             htmlModel = htmlModel,

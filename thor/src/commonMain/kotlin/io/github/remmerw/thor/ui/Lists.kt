@@ -20,61 +20,6 @@ import io.github.remmerw.thor.model.HtmlModel
 
 
 @Composable
-fun Ul(
-    entity: Entity,
-    htmlModel: HtmlModel,
-    modifier: Modifier,
-    color: Color = Color.Unspecified,
-    fontSize: TextUnit = TextUnit.Unspecified,
-    fontStyle: FontStyle? = null,
-    textDecoration: TextDecoration? = null,
-    textAlign: TextAlign? = null,
-    fontWeight: FontWeight? = null,
-    style: TextStyle = LocalTextStyle.current,
-) {
-    ColumnEntities(
-        entity = entity,
-        htmlModel = htmlModel,
-        modifier = modifier,
-        color = color,
-        fontSize = fontSize,
-        fontStyle = fontStyle,
-        textDecoration = textDecoration,
-        textAlign = textAlign,
-        fontWeight = fontWeight,
-        style = style
-    )
-}
-
-
-@Composable
-fun Ol(
-    entity: Entity,
-    htmlModel: HtmlModel,
-    modifier: Modifier,
-    color: Color = Color.Unspecified,
-    fontSize: TextUnit = TextUnit.Unspecified,
-    fontStyle: FontStyle? = null,
-    textDecoration: TextDecoration? = null,
-    textAlign: TextAlign? = null,
-    fontWeight: FontWeight? = null,
-    style: TextStyle = LocalTextStyle.current,
-) {
-    ColumnEntities(
-        entity = entity,
-        htmlModel = htmlModel,
-        modifier = modifier,
-        color = color,
-        fontSize = fontSize,
-        fontStyle = fontStyle,
-        textDecoration = textDecoration,
-        textAlign = textAlign,
-        fontWeight = fontWeight,
-        style = style
-    )
-}
-
-@Composable
 fun Li(
     entity: Entity,
     htmlModel: HtmlModel,

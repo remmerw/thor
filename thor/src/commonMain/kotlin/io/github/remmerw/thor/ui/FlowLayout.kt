@@ -35,7 +35,7 @@ fun FlowLayout(
     if (entities.isNotEmpty()) {
 
         entities.forEach { entity ->
-            EntityComposable(
+            Element(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier,
