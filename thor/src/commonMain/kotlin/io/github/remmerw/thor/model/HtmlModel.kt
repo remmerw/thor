@@ -66,20 +66,7 @@ class HtmlModel() : ViewModel() {
     }
 
     fun children(entity: Entity): StateFlow<List<Entity>> {
-        return model.children(entity).transform { value ->
-            val list = mutableListOf<Entity>()
-            value.forEach { entity ->
-                if (entity.name != Type.HEAD.name &&
-                    entity.name != Type.SVG.name &&
-                    entity.name != Type.SCRIPT.name &&
-                    entity.name != Type.SOURCE.name &&
-                    entity.name != Type.NOSCRIPT.name
-                ) {
-                    list.add(entity)
-                }
-            }
-            emit(list)
-        }.stateIn(
+        return model.children(entity).stateIn(
             scope = viewModelScope,
             started = SharingStarted.Lazily,
             initialValue = emptyList()
@@ -91,7 +78,7 @@ class HtmlModel() : ViewModel() {
         return model.children(entity).transform { value ->
             val list = mutableListOf<Entity>()
             value.forEach { entity ->
-                if (entity.name != Type.BODY.name) {
+                if (entity.name == Type.BODY.name) {
                     list.add(entity)
                 }
             }

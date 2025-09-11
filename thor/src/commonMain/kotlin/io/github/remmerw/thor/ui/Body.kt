@@ -1,6 +1,7 @@
 package io.github.remmerw.thor.ui
 
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -40,7 +41,7 @@ fun Body(
             items = entities,
             key = { element -> element.uid }
         ) { entity ->
-            FlowRow {
+            Row {
                 EntityComposable(
                     entity = entity,
                     htmlModel = htmlModel,

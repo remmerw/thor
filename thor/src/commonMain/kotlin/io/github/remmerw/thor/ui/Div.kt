@@ -1,6 +1,11 @@
 package io.github.remmerw.thor.ui
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -12,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.dp
 import io.github.remmerw.saga.Entity
 import io.github.remmerw.thor.model.HtmlModel
 
@@ -39,26 +45,29 @@ fun Div(
             textAlignOverwrite = TextAlign.Left
         }
     }
-
     val entities by htmlModel.children(entity).collectAsState(emptyList())
 
-    if (entities.isNotEmpty()) {
+    Card (modifier = Modifier.padding(8.dp)){ // todo padding
 
-        entities.forEach { entity ->
+        if (entities.isNotEmpty()) {
+            entities.forEach { entity ->
 
-            EntityComposable(
-                entity = entity,
-                htmlModel = htmlModel,
-                modifier = modifier,
-                color = color,
-                fontSize = fontSize,
-                fontStyle = fontStyle,
-                textDecoration = textDecoration,
-                textAlign = textAlignOverwrite,
-                fontWeight = fontWeight,
-                style = style
-            )
+                Column {
+                    EntityComposable(
+                        entity = entity,
+                        htmlModel = htmlModel,
+                        modifier = modifier,
+                        color = color,
+                        fontSize = fontSize,
+                        fontStyle = fontStyle,
+                        textDecoration = textDecoration,
+                        textAlign = textAlignOverwrite,
+                        fontWeight = fontWeight,
+                        style = style
+                    )
+                }
+            }
+
         }
-
     }
 }
