@@ -223,45 +223,6 @@ fun Big(
 
 
 @Composable
-fun Div(
-    entity: Entity,
-    htmlModel: HtmlModel,
-    modifier: Modifier,
-    color: Color = Color.Unspecified,
-    fontSize: TextUnit = TextUnit.Unspecified,
-    fontStyle: FontStyle? = null,
-    textDecoration: TextDecoration? = null,
-    textAlign: TextAlign? = null,
-    fontWeight: FontWeight? = null,
-    style: TextStyle = LocalTextStyle.current,
-) {
-
-    var textAlignOverwrite = textAlign
-
-    val attributes by htmlModel.attributes(entity).collectAsState()
-    val alignAttribute = attributes["align"]
-    if (!alignAttribute.isNullOrEmpty()) {
-        if (alignAttribute == "left") {
-            textAlignOverwrite = TextAlign.Left
-        }
-    }
-
-    Entities(
-        entity = entity,
-        htmlModel = htmlModel,
-        modifier = modifier,
-        color = color,
-        fontSize = fontSize,
-        fontStyle = fontStyle,
-        textDecoration = textDecoration,
-        textAlign = textAlignOverwrite,
-        fontWeight = fontWeight,
-        style = style
-    )
-}
-
-
-@Composable
 fun Blockquote(
     entity: Entity,
     htmlModel: HtmlModel,
