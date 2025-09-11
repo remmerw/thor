@@ -94,7 +94,7 @@ fun Li(
             .fillMaxWidth()
     ) {
 
-        Entities(
+        FlowLayout(
             entity = entity,
             htmlModel = htmlModel,
             modifier = modifier,
@@ -129,7 +129,7 @@ fun Nav(
             .padding(0.dp, 4.dp)
             .fillMaxWidth()
     ) {
-        Entities(
+        FlowLayout(
             entity = entity,
             htmlModel = htmlModel,
             modifier = modifier,

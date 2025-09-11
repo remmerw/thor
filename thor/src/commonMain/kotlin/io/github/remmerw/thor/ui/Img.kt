@@ -49,7 +49,7 @@ fun Img(
         )
     }
 
-    Entities(
+    FlowLayout(
         entity = entity,
         htmlModel = htmlModel,
         modifier = modifier,

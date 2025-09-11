@@ -99,5 +99,5 @@ fun Br(
     htmlModel: HtmlModel,
     modifier: Modifier
 ) {
-    Entities(entity, htmlModel, modifier)
+    FlowLayout(entity, htmlModel, modifier)
 }

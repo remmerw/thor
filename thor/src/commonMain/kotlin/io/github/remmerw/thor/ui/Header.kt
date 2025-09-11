@@ -30,7 +30,7 @@ fun H6(
     style: TextStyle = LocalTextStyle.current,
 ) {
 
-    Entities(
+    FlowLayout(
         entity = entity,
         htmlModel = htmlModel,
         modifier = modifier.fillMaxWidth(),
@@ -61,7 +61,7 @@ fun H5(
     style: TextStyle = LocalTextStyle.current,
 ) {
 
-    Entities(
+    FlowLayout(
         entity = entity,
         htmlModel = htmlModel,
         modifier = modifier,
@@ -90,7 +90,7 @@ fun H4(
     style: TextStyle = LocalTextStyle.current,
 ) {
 
-    Entities(
+    FlowLayout(
         entity = entity,
         htmlModel = htmlModel,
         modifier = modifier.fillMaxWidth(),
@@ -120,7 +120,7 @@ fun H3(
     style: TextStyle = LocalTextStyle.current,
 ) {
 
-    Entities(
+    FlowLayout(
         entity = entity,
         htmlModel = htmlModel,
         modifier = modifier.fillMaxWidth(),
@@ -151,7 +151,7 @@ fun H2(
     style: TextStyle = LocalTextStyle.current,
 ) {
 
-    Entities(
+    FlowLayout(
         entity = entity,
         htmlModel = htmlModel,
         modifier = modifier.fillMaxWidth(),
@@ -181,7 +181,7 @@ fun H1(
     style: TextStyle = LocalTextStyle.current,
 ) {
 
-    Entities(
+    FlowLayout(
         entity = entity,
         htmlModel = htmlModel,
         modifier = modifier.fillMaxWidth(),

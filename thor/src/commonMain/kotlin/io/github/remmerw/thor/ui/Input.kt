@@ -29,7 +29,7 @@ fun Form(
     style: TextStyle = LocalTextStyle.current,
 ) {
 
-    Entities(
+    FlowLayout(
         entity = entity,
         htmlModel = htmlModel,
         modifier = modifier,
@@ -62,7 +62,7 @@ fun InputButton(
         onClick = {},
         enabled = false,
     ) {
-        Entities(
+        FlowLayout(
             entity = entity,
             htmlModel = htmlModel,
             modifier = modifier,

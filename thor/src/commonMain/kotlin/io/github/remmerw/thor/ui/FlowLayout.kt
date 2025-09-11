@@ -1,8 +1,5 @@
 package io.github.remmerw.thor.ui
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -15,13 +12,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.dp
 import io.github.remmerw.saga.Entity
 import io.github.remmerw.thor.model.HtmlModel
 
 
 @Composable
-fun P(
+fun FlowLayout(
     entity: Entity,
     htmlModel: HtmlModel,
     modifier: Modifier,
@@ -31,32 +27,26 @@ fun P(
     textDecoration: TextDecoration? = null,
     textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
-    style: TextStyle = LocalTextStyle.current,
+    style: TextStyle = LocalTextStyle.current
 ) {
+
     val entities by htmlModel.children(entity).collectAsState(emptyList())
 
     if (entities.isNotEmpty()) {
-        Column(modifier = Modifier.padding(8.dp)) { // todo padding
 
-            entities.forEach { entity ->
-
-                Row {
-                    EntityComposable(
-                        entity = entity,
-                        htmlModel = htmlModel,
-                        modifier = modifier,
-                        color = color,
-                        fontSize = fontSize,
-                        fontStyle = fontStyle,
-                        textDecoration = textDecoration,
-                        textAlign = textAlign,
-                        fontWeight = fontWeight,
-                        style = style
-                    )
-                }
-            }
-
+        entities.forEach { entity ->
+            EntityComposable(
+                entity = entity,
+                htmlModel = htmlModel,
+                modifier = modifier,
+                color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
+                textDecoration = textDecoration,
+                textAlign = textAlign,
+                fontWeight = fontWeight,
+                style = style
+            )
         }
     }
 }
-

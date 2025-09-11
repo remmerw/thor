@@ -62,42 +62,6 @@ fun ColumnEntities(
 
 
 @Composable
-fun Entities(
-    entity: Entity,
-    htmlModel: HtmlModel,
-    modifier: Modifier,
-    color: Color = Color.Unspecified,
-    fontSize: TextUnit = TextUnit.Unspecified,
-    fontStyle: FontStyle? = null,
-    textDecoration: TextDecoration? = null,
-    textAlign: TextAlign? = null,
-    fontWeight: FontWeight? = null,
-    style: TextStyle = LocalTextStyle.current
-) {
-
-    val entities by htmlModel.children(entity).collectAsState(emptyList())
-
-    if (entities.isNotEmpty()) {
-
-        entities.forEach { entity ->
-            EntityComposable(
-                entity = entity,
-                htmlModel = htmlModel,
-                modifier = modifier,
-                color = color,
-                fontSize = fontSize,
-                fontStyle = fontStyle,
-                textDecoration = textDecoration,
-                textAlign = textAlign,
-                fontWeight = fontWeight,
-                style = style
-            )
-        }
-    }
-
-}
-
-@Composable
 fun EntityComposable(
     entity: Entity,
     htmlModel: HtmlModel,
@@ -157,7 +121,7 @@ fun EntityComposable(
         }
 
         Type.PICTURE.name -> {
-            Entities(
+            FlowLayout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier,
@@ -262,22 +226,18 @@ fun EntityComposable(
         }
 
         Type.H6.name -> {
-            H6(
+            FlowLayout(
                 entity = entity,
                 htmlModel = htmlModel,
-                modifier = modifier,
+                modifier = modifier.fillMaxWidth(),
                 color = color,
                 fontSize = fontSize,
                 fontStyle = fontStyle,
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
-                style = style
+                style = MaterialTheme.typography.titleSmall
             )
-        }
-
-        Type.TABLE.name -> {
-            Table(entity, htmlModel, modifier)
         }
 
         Type.CAPTION.name -> {
@@ -288,9 +248,6 @@ fun EntityComposable(
             TFoot(entity, htmlModel, modifier)
         }
 
-        Type.TBODY.name -> {
-            TBody(entity, htmlModel, modifier)
-        }
 
         Type.THEAD.name -> {
             THead(entity, htmlModel, modifier)
@@ -386,8 +343,8 @@ fun EntityComposable(
             )
         }
 
-        Type.DIV.name -> {
-            Div(
+        Type.DIV.name, Type.TABLE.name, Type.TBODY.name, Type.P.name -> {
+            ColumnLayout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier,
@@ -511,7 +468,7 @@ fun EntityComposable(
         }
 
         Type.TR.name -> {
-            Tr(entity, htmlModel, modifier)
+            RowLayout(entity, htmlModel, modifier)
         }
 
         Type.TD.name -> {
@@ -569,21 +526,6 @@ fun EntityComposable(
 
         Type.EM.name -> {
             Em(
-                entity = entity,
-                htmlModel = htmlModel,
-                modifier = modifier,
-                color = color,
-                fontSize = fontSize,
-                fontStyle = fontStyle,
-                textDecoration = textDecoration,
-                textAlign = textAlign,
-                fontWeight = fontWeight,
-                style = style
-            )
-        }
-
-        Type.P.name -> {
-            P(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier,

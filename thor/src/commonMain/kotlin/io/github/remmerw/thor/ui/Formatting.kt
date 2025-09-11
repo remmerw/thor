@@ -37,7 +37,7 @@ fun Font(
     if (!colorAttribute.isNullOrEmpty()) {
         colorOverwrite = htmlModel.color(colorAttribute) ?: color
     }
-    Entities(
+    FlowLayout(
         entity = entity,
         htmlModel = htmlModel,
         modifier = modifier,
@@ -65,7 +65,7 @@ fun B(
     style: TextStyle = LocalTextStyle.current,
 ) {
 
-    Entities(
+    FlowLayout(
         entity = entity,
         htmlModel = htmlModel,
         modifier = modifier,
@@ -94,7 +94,7 @@ fun Em(
     style: TextStyle = LocalTextStyle.current,
 ) {
 
-    Entities(
+    FlowLayout(
         entity = entity,
         htmlModel = htmlModel,
         modifier = modifier,
@@ -123,7 +123,7 @@ fun Small(
     style: TextStyle = LocalTextStyle.current,
 ) {
 
-    Entities(
+    FlowLayout(
         entity = entity,
         htmlModel = htmlModel,
         modifier = modifier,
@@ -153,7 +153,7 @@ fun Span(
 ) {
 
     // right now nothing to do here
-    Entities(
+    FlowLayout(
         entity = entity,
         htmlModel = htmlModel,
         modifier = modifier,
@@ -180,7 +180,7 @@ fun Center(
     fontWeight: FontWeight? = null,
     style: TextStyle = LocalTextStyle.current,
 ) {
-    Entities(
+    FlowLayout(
         entity = entity,
         htmlModel = htmlModel,
         modifier = modifier,
@@ -207,7 +207,7 @@ fun Big(
     fontWeight: FontWeight? = null,
     style: TextStyle = LocalTextStyle.current,
 ) {
-    Entities(
+    FlowLayout(
         entity = entity,
         htmlModel = htmlModel,
         modifier = modifier,
@@ -235,7 +235,7 @@ fun Blockquote(
     fontWeight: FontWeight? = null,
     style: TextStyle = LocalTextStyle.current,
 ) {
-    Entities(
+    FlowLayout(
         entity = entity,
         htmlModel = htmlModel,
         modifier = modifier.padding(16.dp, 0.dp, 0.dp, 0.dp),
