@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,15 +34,15 @@ fun HtmlViewer(
     style: TextStyle = LocalTextStyle.current
 ) {
 
-    val entity by remember { mutableStateOf(htmlModel.entity) }
+    val entities by htmlModel.html().collectAsState(emptyList())
     Scaffold(
         content = { padding ->
             Column(
                 modifier = Modifier.padding(padding).fillMaxWidth()
             ) {
-                if (entity != null) {
+                entities.forEach { entity ->
                     Entities(
-                        entity = entity!!,
+                        entity = entity,
                         htmlModel = htmlModel,
                         modifier = Modifier,
                         color = color,
@@ -73,18 +74,22 @@ fun Html(
     style: TextStyle = LocalTextStyle.current
 ) {
 
-    ColumnEntities(
-        entity = entity,
-        htmlModel = htmlModel,
-        modifier = modifier,
-        color = color,
-        fontSize = fontSize,
-        fontStyle = fontStyle,
-        textDecoration = textDecoration,
-        textAlign = textAlign,
-        fontWeight = fontWeight,
-        style = style
-    )
+    val entities by htmlModel.body(entity).collectAsState(emptyList())
+
+    entities.forEach { entity ->
+        Entities(
+            entity = entity,
+            htmlModel = htmlModel,
+            modifier = modifier,
+            color = color,
+            fontSize = fontSize,
+            fontStyle = fontStyle,
+            textDecoration = textDecoration,
+            textAlign = textAlign,
+            fontWeight = fontWeight,
+            style = style
+        )
+    }
 }
 
 

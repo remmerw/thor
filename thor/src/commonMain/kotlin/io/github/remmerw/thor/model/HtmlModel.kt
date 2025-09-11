@@ -85,6 +85,38 @@ class HtmlModel() : ViewModel() {
         )
     }
 
+    fun body(entity: Entity): StateFlow<List<Entity>> {
+        require(entity.name == Type.HTML.name)
+        return model.children(entity).transform { value ->
+            val list = mutableListOf<Entity>()
+            value.forEach { entity ->
+                if (entity.name != Type.BODY.name) {
+                    list.add(entity)
+                }
+            }
+            emit(list)
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Lazily,
+            initialValue = emptyList()
+        )
+    }
+
+    fun html(): StateFlow<List<Entity>> {
+        return model.children(model.entity()).transform { value ->
+            val list = mutableListOf<Entity>()
+            value.forEach { entity ->
+                if (entity.name == Type.HTML.name) {
+                    list.add(entity)
+                }
+            }
+            emit(list)
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Lazily,
+            initialValue = emptyList()
+        )
+    }
 
     fun fullUri(spec: String): String {
 
@@ -95,6 +127,9 @@ class HtmlModel() : ViewModel() {
             Url(cleanSpec).toString()
         }
     }
+
+
+
 
 
     fun linkClicked(

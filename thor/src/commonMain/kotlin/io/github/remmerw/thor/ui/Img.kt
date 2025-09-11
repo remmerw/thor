@@ -36,13 +36,14 @@ fun Img(
 
     val attributes by htmlModel.attributes(entity).collectAsState()
     val src = attributes["src"]
+    val alt = attributes["alt"]
 
 
     if (isImageLoadingEnabled && !src.isNullOrEmpty()) {
         println(src)
         AsyncImage(
             model = htmlModel.fullUri(src), // todo fix fullUri
-            contentDescription = null,
+            contentDescription = alt,
             contentScale = ContentScale.Crop,
             modifier = modifier
         )
