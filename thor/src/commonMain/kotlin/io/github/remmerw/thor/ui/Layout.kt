@@ -1,5 +1,7 @@
 package io.github.remmerw.thor.ui
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -15,12 +17,16 @@ import androidx.compose.ui.unit.TextUnit
 import io.github.remmerw.saga.Entity
 import io.github.remmerw.thor.model.HtmlModel
 
+enum class Layout {
+    LINEAR, VERTICAL, HORIZONTAL
+}
 
 @Composable
 fun Layout(
     entity: Entity,
     htmlModel: HtmlModel,
     modifier: Modifier,
+    layout: Layout = Layout.LINEAR,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
     fontStyle: FontStyle? = null,
@@ -35,18 +41,56 @@ fun Layout(
     if (entities.isNotEmpty()) {
 
         entities.forEach { entity ->
-            Element(
-                entity = entity,
-                htmlModel = htmlModel,
-                modifier = modifier,
-                color = color,
-                fontSize = fontSize,
-                fontStyle = fontStyle,
-                textDecoration = textDecoration,
-                textAlign = textAlign,
-                fontWeight = fontWeight,
-                style = style
-            )
+            when (layout) {
+                Layout.LINEAR -> {
+                    Element(
+                        entity = entity,
+                        htmlModel = htmlModel,
+                        modifier = modifier,
+                        color = color,
+                        fontSize = fontSize,
+                        fontStyle = fontStyle,
+                        textDecoration = textDecoration,
+                        textAlign = textAlign,
+                        fontWeight = fontWeight,
+                        style = style
+                    )
+                }
+
+                Layout.VERTICAL -> {
+                    Column {
+                        Element(
+                            entity = entity,
+                            htmlModel = htmlModel,
+                            modifier = modifier,
+                            color = color,
+                            fontSize = fontSize,
+                            fontStyle = fontStyle,
+                            textDecoration = textDecoration,
+                            textAlign = textAlign,
+                            fontWeight = fontWeight,
+                            style = style
+                        )
+                    }
+                }
+
+                Layout.HORIZONTAL -> {
+                    Row {
+                        Element(
+                            entity = entity,
+                            htmlModel = htmlModel,
+                            modifier = modifier,
+                            color = color,
+                            fontSize = fontSize,
+                            fontStyle = fontStyle,
+                            textDecoration = textDecoration,
+                            textAlign = textAlign,
+                            fontWeight = fontWeight,
+                            style = style
+                        )
+                    }
+                }
+            }
         }
     }
 }

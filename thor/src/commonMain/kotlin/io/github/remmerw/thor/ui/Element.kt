@@ -1,14 +1,22 @@
 package io.github.remmerw.thor.ui
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -16,7 +24,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import io.github.remmerw.saga.Entity
+import io.github.remmerw.thor.debug
 import io.github.remmerw.thor.model.HtmlModel
 import io.github.remmerw.thor.model.Type
 
@@ -34,6 +44,8 @@ fun Element(
     fontWeight: FontWeight? = null,
     style: TextStyle = LocalTextStyle.current
 ) {
+
+
     when (entity.name) {
         "#comment", Type.SCRIPT.name, Type.NOSCRIPT.name,
         Type.STYLE.name, Type.LABEL.name -> {
@@ -41,49 +53,33 @@ fun Element(
         }
 
         "#text" -> {
-            Chars(
-                entity = entity,
-                htmlModel = htmlModel,
-                modifier = modifier,
-                color = color,
-                fontSize = fontSize,
-                fontStyle = fontStyle,
-                textDecoration = textDecoration,
-                textAlign = textAlign,
-                fontWeight = fontWeight,
-                style = style
-            )
+            val text by htmlModel.text(entity).collectAsState()
+
+            if (text.isNotEmpty()) {
+                Text(
+                    text = text,
+                    modifier = modifier,
+                    color = color,
+                    fontStyle = fontStyle,
+                    fontSize = fontSize,
+                    fontWeight = fontWeight,
+                    textAlign = textAlign,
+                    textDecoration = textDecoration,
+                    style = style
+                )
+            }
         }
 
         Type.INPUT.name -> {
-            Input(
-                entity = entity,
-                htmlModel = htmlModel,
-                modifier = modifier,
-                color = color,
-                fontSize = fontSize,
-                fontStyle = fontStyle,
-                textDecoration = textDecoration,
-                textAlign = textAlign,
-                fontWeight = fontWeight,
-                style = style
-            )
-        }
+            val attributes by htmlModel.attributes(entity).collectAsState()
+            val type = attributes["type"]
 
-
-        Type.PICTURE.name -> {
-            ColumnLayout(
-                entity = entity,
-                htmlModel = htmlModel,
-                modifier = modifier,
-                color = color,
-                fontSize = fontSize,
-                fontStyle = fontStyle,
-                textDecoration = textDecoration,
-                textAlign = textAlign,
-                fontWeight = fontWeight,
-                style = style
-            )
+            Text(
+                text = "Input type $type",
+                color = Color.Red,
+                modifier = modifier.fillMaxWidth(),
+                style = MaterialTheme.typography.headlineMedium
+            ) // todo
         }
 
         Type.BODY.name -> {
@@ -192,20 +188,23 @@ fun Element(
         }
 
         Type.CAPTION.name -> {
-            Caption(entity, htmlModel, modifier)
+            Layout(
+                entity = entity,
+                htmlModel = htmlModel,
+                modifier = modifier.fillMaxWidth().padding(4.dp),
+                layout = Layout.LINEAR,
+                color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
+                textDecoration = textDecoration,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.labelLarge
+            )
         }
 
-        Type.TFOOT.name -> {
-            TFoot(entity, htmlModel, modifier)
-        }
-
-
-        Type.THEAD.name -> {
-            THead(entity, htmlModel, modifier)
-        }
-
-        Type.FORM.name -> {
-            Form(
+        Type.TFOOT.name, Type.THEAD.name, Type.FORM.name -> {
+            Layout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier,
@@ -220,18 +219,23 @@ fun Element(
         }
 
         Type.BUTTON.name -> {
-            Input(
-                entity = entity,
-                htmlModel = htmlModel,
-                modifier = modifier,
-                color = color,
-                fontSize = fontSize,
-                fontStyle = fontStyle,
-                textDecoration = textDecoration,
-                textAlign = textAlign,
-                fontWeight = fontWeight,
-                style = style
-            )
+            Button(
+                onClick = {},
+                enabled = false,
+            ) {
+                Layout(
+                    entity = entity,
+                    htmlModel = htmlModel,
+                    modifier = modifier,
+                    color = color,
+                    fontSize = fontSize,
+                    fontStyle = fontStyle,
+                    textDecoration = textDecoration,
+                    textAlign = textAlign,
+                    fontWeight = fontWeight,
+                    style = style
+                )
+            }
         }
 
 
@@ -269,19 +273,23 @@ fun Element(
         Type.TBODY.name, Type.P.name,
         Type.SECTION.name, Type.ARTICLE.name,
         Type.FOOTER.name, Type.HEADER.name,
-        Type.UL.name, Type.OL.name -> {
-            ColumnLayout(
-                entity = entity,
-                htmlModel = htmlModel,
-                modifier = modifier,
-                color = color,
-                fontSize = fontSize,
-                fontStyle = fontStyle,
-                textDecoration = textDecoration,
-                textAlign = textAlign,
-                fontWeight = fontWeight,
-                style = style
-            )
+        Type.UL.name, Type.OL.name,
+        Type.PICTURE.name -> {
+            Column {
+                Layout(
+                    entity = entity,
+                    htmlModel = htmlModel,
+                    modifier = modifier,
+                    layout = Layout.HORIZONTAL,
+                    color = color,
+                    fontSize = fontSize,
+                    fontStyle = fontStyle,
+                    textDecoration = textDecoration,
+                    textAlign = textAlign,
+                    fontWeight = fontWeight,
+                    style = style
+                )
+            }
         }
 
         Type.BIG.name -> {
@@ -300,11 +308,17 @@ fun Element(
         }
 
         Type.FONT.name -> {
-            Font(
+            val attributes by htmlModel.attributes(entity).collectAsState()
+            var colorOverwrite: Color = color
+            val colorAttribute = attributes["color"]
+            if (!colorAttribute.isNullOrEmpty()) {
+                colorOverwrite = htmlModel.color(colorAttribute) ?: color
+            }
+            Layout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier,
-                color = color,
+                color = colorOverwrite,
                 fontSize = fontSize,
                 fontStyle = fontStyle,
                 textDecoration = textDecoration,
@@ -315,22 +329,26 @@ fun Element(
         }
 
         Type.A.name, Type.ANCHOR.name -> {
-            A(
+            val attributes by htmlModel.attributes(entity).collectAsState()
+            attributes["href"]
+            // todo href
+            Layout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier,
-                color = color,
+                color = Color.Blue,
                 fontSize = fontSize,
                 fontStyle = fontStyle,
-                textDecoration = textDecoration,
+                textDecoration = TextDecoration.Underline,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
-                style = style
+                style = MaterialTheme.typography.labelMedium,
             )
         }
 
-        Type.LI.name -> {
-            Li(
+        Type.LI.name -> { // todo test again
+
+            Layout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier,
@@ -342,13 +360,48 @@ fun Element(
                 fontWeight = fontWeight,
                 style = style
             )
+
         }
 
         Type.NAV.name -> {
-            Nav(
+            FlowRow { // todo check
+                Layout(
+                    entity = entity,
+                    htmlModel = htmlModel,
+                    modifier = modifier,
+                    color = color,
+                    fontSize = fontSize,
+                    fontStyle = fontStyle,
+                    textDecoration = textDecoration,
+                    textAlign = textAlign,
+                    fontWeight = fontWeight,
+                    style = style
+                )
+            }
+        }
+
+        Type.BR.name -> { // todo
+            Layout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier,
+                layout = Layout.LINEAR,
+                color = color,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
+                textDecoration = textDecoration,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.labelSmall
+            )
+        }
+
+        Type.TR.name -> {
+            Layout(
+                entity = entity,
+                htmlModel = htmlModel,
+                modifier = modifier,
+                layout = Layout.VERTICAL,
                 color = color,
                 fontSize = fontSize,
                 fontStyle = fontStyle,
@@ -357,14 +410,7 @@ fun Element(
                 fontWeight = fontWeight,
                 style = style
             )
-        }
 
-        Type.BR.name -> {
-            Br(entity, htmlModel, modifier)
-        }
-
-        Type.TR.name -> {
-            RowLayout(entity, htmlModel, modifier)
         }
 
         Type.TD.name -> {
@@ -398,33 +444,43 @@ fun Element(
         }
 
         Type.IMG.name -> {
-            Img(
-                entity = entity,
-                htmlModel = htmlModel,
-                modifier = modifier,
-                color = color,
-                fontSize = fontSize,
-                fontStyle = fontStyle,
-                textDecoration = textDecoration,
-                textAlign = textAlign,
-                fontWeight = fontWeight,
-                style = style
-            )
+            val attributes by htmlModel.attributes(entity).collectAsState()
+            val isImageLoadingEnabled = remember { htmlModel.isImageLoadingEnabled }
+            val src = attributes["src"]
+            val alt = attributes["alt"]
+
+
+            if (isImageLoadingEnabled && !src.isNullOrEmpty()) {
+                println(src)
+                AsyncImage(
+                    model = htmlModel.fullUri(src),
+                    contentDescription = alt,
+                    contentScale = ContentScale.Crop,
+                    modifier = modifier
+                )
+            }
         }
 
         Type.SVG.name -> {
-            Svg(
-                entity = entity,
-                htmlModel = htmlModel,
-                modifier = modifier,
-                color = color,
-                fontSize = fontSize,
-                fontStyle = fontStyle,
-                textDecoration = textDecoration,
-                textAlign = textAlign,
-                fontWeight = fontWeight,
-                style = style
-            )
+            val attributes by htmlModel.attributes(entity).collectAsState()
+            var width = 24
+            var height = 24
+            try {
+                width = attributes["width"]?.toInt() ?: 24
+                height = attributes["height"]?.toInt() ?: 24
+            } catch (throwable: Throwable) {
+                debug(throwable)
+            }
+            val svg = remember { htmlModel.content(entity) }
+
+            if (svg.isNotEmpty()) {
+                AsyncImage(
+                    model = svg.encodeToByteArray(),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = modifier.size(width.dp, height.dp)
+                )
+            }
         }
 
         Type.BLOCKQUOTE.name -> {

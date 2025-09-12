@@ -89,13 +89,3 @@ fun Html(
         )
     }
 }
-
-
-@Composable
-fun Br(
-    entity: Entity,
-    htmlModel: HtmlModel,
-    modifier: Modifier
-) {
-    Layout(entity, htmlModel, modifier)
-}

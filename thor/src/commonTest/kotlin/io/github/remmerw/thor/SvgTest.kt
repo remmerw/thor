@@ -29,7 +29,6 @@ class SvgTest {
                 "\n" +
                 "<svg width=\"100\" height=\"100\">\n" +
                 "  <circle cx=\"50\" cy=\"50\" r=\"40\" stroke=\"green\" stroke-width=\"4\" fill=\"yellow\" />\n" +
-                "  Sorry, your browser does not support inline SVG.\n" +
                 "</svg>\n" +
                 " \n" +
                 "</body>\n" +
