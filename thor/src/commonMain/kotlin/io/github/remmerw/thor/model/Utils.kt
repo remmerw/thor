@@ -3,7 +3,20 @@ package io.github.remmerw.thor.model
 import io.github.remmerw.saga.Entity
 import io.ktor.http.Url
 
+// todo import android.content.res.Resources
 object Utils {
+
+
+    object UnitUtil {
+        val density: Float
+            get() = 2F// todo Resources.getSystem().displayMetrics.density
+
+
+        fun dpToPixel(dp: Float): Int = (dp * density).toInt()
+
+        fun pixelToDp(px: Float): Int = (px / density).toInt()
+
+    }
 
     fun getHref(href: String): String {
         return Urls.removeControlCharacters(href)

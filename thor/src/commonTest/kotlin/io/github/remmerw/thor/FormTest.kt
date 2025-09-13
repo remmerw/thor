@@ -17,27 +17,23 @@ class FormTest {
     val composeTestRule = createComposeRule()
 
     @Test
-    fun test(): Unit = runBlocking(Dispatchers.IO) {
+    fun internalCss(): Unit = runBlocking(Dispatchers.IO) {
 
         val htmlModel = HtmlModel()
 
         val data = "<!DOCTYPE html>\n" +
                 "<html>\n" +
+                "<head>\n" +
+                "<style>\n" +
+                "body {background-color: powderblue;}\n" +
+                "h1   {color: blue;}\n" +
+                "p    {color: red;}\n" +
+                "</style>\n" +
+                "</head>\n" +
                 "<body>\n" +
                 "\n" +
-                "<h1>The label element</h1>\n" +
-                "\n" +
-                "<p>Click on one of the text labels to toggle the related radio button:</p>\n" +
-                "\n" +
-                "<form action=\"/action_page.php\">\n" +
-                "  <input type=\"radio\" id=\"html\" name=\"fav_language\" value=\"HTML\">\n" +
-                "  <label for=\"html\">HTML</label><br>\n" +
-                "  <input type=\"radio\" id=\"css\" name=\"fav_language\" value=\"CSS\">\n" +
-                "  <label for=\"css\">CSS</label><br>\n" +
-                "  <input type=\"radio\" id=\"javascript\" name=\"fav_language\" value=\"JavaScript\">\n" +
-                "  <label for=\"javascript\">JavaScript</label><br><br>\n" +
-                "  <input type=\"submit\" value=\"Submit\">\n" +
-                "</form>\n" +
+                "<h1>This is a heading</h1>\n" +
+                "<p>This is a paragraph.</p>\n" +
                 "\n" +
                 "</body>\n" +
                 "</html>\n"
