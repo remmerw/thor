@@ -1,5 +1,6 @@
 package io.github.remmerw.thor.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -25,6 +27,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import io.github.remmerw.saga.COMMENT_NODE
 import io.github.remmerw.saga.Entity
 import io.github.remmerw.saga.TEXT_NODE
 import io.github.remmerw.saga.Tag
@@ -44,12 +47,13 @@ fun Element(
     textDecoration: TextDecoration? = null,
     textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
+    fontFamily: FontFamily? = null,
     style: TextStyle = LocalTextStyle.current
 ) {
 
 
     when (entity.name) {
-        "#comment", Tag.SCRIPT.tag(), Tag.NOSCRIPT.tag(),
+        COMMENT_NODE, Tag.SCRIPT.tag(), Tag.NOSCRIPT.tag(),
         Tag.STYLE.tag(), Tag.LABEL.tag() -> {
             // nothing to do here
         }
@@ -65,6 +69,7 @@ fun Element(
                     fontStyle = fontStyle,
                     fontSize = fontSize,
                     fontWeight = fontWeight,
+                    fontFamily = fontFamily,
                     textAlign = textAlign,
                     textDecoration = textDecoration,
                     style = style
@@ -95,6 +100,7 @@ fun Element(
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
+                fontFamily = fontFamily,
                 style = style
             )
         }
@@ -110,6 +116,7 @@ fun Element(
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
+                fontFamily = fontFamily,
                 style = MaterialTheme.typography.headlineLarge
             )
         }
@@ -125,6 +132,7 @@ fun Element(
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
+                fontFamily = fontFamily,
                 style = MaterialTheme.typography.headlineMedium
             )
         }
@@ -140,6 +148,7 @@ fun Element(
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
+                fontFamily = fontFamily,
                 style = MaterialTheme.typography.headlineSmall
             )
         }
@@ -155,6 +164,7 @@ fun Element(
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
+                fontFamily = fontFamily,
                 style = MaterialTheme.typography.titleLarge,
             )
         }
@@ -170,6 +180,7 @@ fun Element(
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
+                fontFamily = fontFamily,
                 style = MaterialTheme.typography.titleMedium,
             )
         }
@@ -185,6 +196,7 @@ fun Element(
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
+                fontFamily = fontFamily,
                 style = MaterialTheme.typography.titleSmall
             )
         }
@@ -201,6 +213,7 @@ fun Element(
                 textDecoration = textDecoration,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold,
+                fontFamily = fontFamily,
                 style = MaterialTheme.typography.labelLarge
             )
         }
@@ -216,6 +229,7 @@ fun Element(
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
+                fontFamily = fontFamily,
                 style = style
             )
         }
@@ -235,6 +249,7 @@ fun Element(
                     textDecoration = textDecoration,
                     textAlign = textAlign,
                     fontWeight = fontWeight,
+                    fontFamily = fontFamily,
                     style = style
                 )
             }
@@ -252,11 +267,20 @@ fun Element(
                 textDecoration = textDecoration,
                 textAlign = TextAlign.Center,
                 fontWeight = fontWeight,
+                fontFamily = fontFamily,
                 style = style
             )
         }
 
         Tag.SPAN.tag() -> {
+            val attributes by htmlModel.attributes(entity).collectAsState()
+            val color = attributes["color"]?.let {
+                Styler.parseColor(it)
+            } ?: color
+            val fontFamily = attributes["font-family"]?.let {
+                Styler.parseFontFamily(it)
+            } ?: fontFamily
+
             Layout(
                 entity = entity,
                 htmlModel = htmlModel,
@@ -267,6 +291,7 @@ fun Element(
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
+                fontFamily = fontFamily,
                 style = style
             )
         }
@@ -277,6 +302,11 @@ fun Element(
         Tag.FOOTER.tag(), Tag.HEADER.tag(),
         Tag.UL.tag(), Tag.OL.tag(),
         Tag.PICTURE.tag() -> {
+            val attributes by htmlModel.attributes(entity).collectAsState()
+            val textAlign = attributes["text-align"]?.let {
+                Styler.parseTextAlign(it)
+            } ?: textAlign
+
             Column {
                 Layout(
                     entity = entity,
@@ -289,6 +319,7 @@ fun Element(
                     textDecoration = textDecoration,
                     textAlign = textAlign,
                     fontWeight = fontWeight,
+                    fontFamily = fontFamily,
                     style = style
                 )
             }
@@ -305,27 +336,29 @@ fun Element(
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = FontWeight.Bold,
+                fontFamily = fontFamily,
                 style = style
             )
         }
 
         Tag.FONT.tag() -> {
             val attributes by htmlModel.attributes(entity).collectAsState()
-            var colorOverwrite: Color = color
-            val colorAttribute = attributes["color"]
-            if (!colorAttribute.isNullOrEmpty()) {
-                colorOverwrite = htmlModel.color(colorAttribute) ?: color
-            }
+
+            val color = attributes["color"]?.let {
+                Styler.parseColor(it)
+            } ?: color
+
             Layout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier,
-                color = colorOverwrite,
+                color = color,
                 fontSize = fontSize,
                 fontStyle = fontStyle,
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
+                fontFamily = fontFamily,
                 style = style
             )
         }
@@ -344,6 +377,7 @@ fun Element(
                 textDecoration = TextDecoration.Underline,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
+                fontFamily = fontFamily,
                 style = MaterialTheme.typography.labelMedium,
             )
         }
@@ -360,6 +394,7 @@ fun Element(
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
+                fontFamily = fontFamily,
                 style = style
             )
 
@@ -377,6 +412,7 @@ fun Element(
                     textDecoration = textDecoration,
                     textAlign = textAlign,
                     fontWeight = fontWeight,
+                    fontFamily = fontFamily,
                     style = style
                 )
             }
@@ -394,6 +430,7 @@ fun Element(
                 textDecoration = textDecoration,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold,
+                fontFamily = fontFamily,
                 style = MaterialTheme.typography.labelSmall
             )
         }
@@ -410,22 +447,33 @@ fun Element(
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
+                fontFamily = fontFamily,
                 style = style
             )
 
         }
 
         Tag.TD.tag() -> {
+            val attributes by htmlModel.attributes(entity).collectAsState()
+            val textAlign = attributes["text-align"]?.let {
+                Styler.parseTextAlign(it)
+            } ?: textAlign
+
+            val backgroundColor = attributes["background-color"]?.let {
+                Styler.parseBackgroundColor(it)
+            } ?: Color.Unspecified
+
             Layout(
                 entity = entity,
                 htmlModel = htmlModel,
-                modifier = modifier.padding(4.dp),
+                modifier = modifier.background(color = backgroundColor),
                 color = color,
                 fontSize = fontSize,
                 fontStyle = fontStyle,
                 textDecoration = textDecoration,
-                textAlign = TextAlign.Left,
+                textAlign = textAlign,
                 fontWeight = FontWeight.Bold,
+                fontFamily = fontFamily,
                 style = MaterialTheme.typography.labelSmall
             )
         }
@@ -441,6 +489,7 @@ fun Element(
                 textDecoration = textDecoration,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold,
+                fontFamily = fontFamily,
                 style = MaterialTheme.typography.labelSmall
             )
         }
@@ -496,6 +545,7 @@ fun Element(
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
+                fontFamily = fontFamily,
                 style = style
             )
         }
@@ -511,6 +561,7 @@ fun Element(
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = FontWeight.Bold,
+                fontFamily = fontFamily,
                 style = style
             )
         }
@@ -532,6 +583,7 @@ fun Element(
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
+                fontFamily = fontFamily,
                 style = style
             )
         }
@@ -547,6 +599,7 @@ fun Element(
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = FontWeight.Thin,
+                fontFamily = fontFamily,
                 style = style
             )
         }

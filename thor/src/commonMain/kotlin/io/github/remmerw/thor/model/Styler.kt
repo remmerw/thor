@@ -1,6 +1,7 @@
 package io.github.remmerw.thor.model
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -81,6 +82,21 @@ object Styler {
         debug(e)
     }.getOrNull()
 
+    fun parseFontFamily(value: String): FontFamily? = runCatching {
+        when (value) {
+            FontFamily.Cursive.name -> FontFamily.Cursive
+            FontFamily.SansSerif.name -> FontFamily.SansSerif
+            FontFamily.Serif.name -> FontFamily.Serif
+            FontFamily.Monospace.name -> FontFamily.Monospace
+            else -> {
+                debug("parse font family fail: $value")
+                null
+            }
+        }
+    }.onFailure { e ->
+        debug(e)
+    }.getOrNull()
+
     fun parseFontStyle(value: String): FontStyle? =
         when (value) {
             "normal" -> FontStyle.Normal
@@ -129,6 +145,50 @@ object Styler {
                 null
             }
         }
+
+
+    @Suppress("MagicNumber")
+    fun parseColor2(colorHEX: String): Color {
+        val clean = colorHEX.removePrefix("#").uppercase()
+
+        return when (clean.length) {
+            3 -> {
+                // RGB -> RRGGBB
+                val r = clean[0].digitToInt(16) * 17
+                val g = clean[1].digitToInt(16) * 17
+                val b = clean[2].digitToInt(16) * 17
+                Color(red = r, green = g, blue = b, alpha = 255)
+            }
+
+            4 -> {
+                // ARGB
+                val a = clean[0].digitToInt(radix = 16) * 17
+                val r = clean[1].digitToInt(16) * 17
+                val g = clean[2].digitToInt(16) * 17
+                val b = clean[3].digitToInt(16) * 17
+                Color(alpha = a, red = r, green = g, blue = b)
+            }
+
+            6 -> {
+                // RRGGBB
+                val r = clean.substring(0, 2).toInt(16)
+                val g = clean.substring(2, 4).toInt(16)
+                val b = clean.substring(4, 6).toInt(16)
+                Color(red = r, green = g, blue = b, alpha = 255)
+            }
+
+            8 -> {
+                // AARRGGBB
+                val a = clean.substring(0, 2).toInt(16)
+                val r = clean.substring(2, 4).toInt(16)
+                val g = clean.substring(4, 6).toInt(16)
+                val b = clean.substring(6, 8).toInt(16)
+                Color(alpha = a, red = r, green = g, blue = b)
+            }
+
+            else -> throw IllegalArgumentException("Invalid Hex color: $colorHEX")
+        }
+    }
 
     private val blankRegex by lazy { "\\s+".toRegex() }
 

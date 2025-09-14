@@ -9,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -33,6 +34,7 @@ fun Layout(
     textDecoration: TextDecoration? = null,
     textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
+    fontFamily: FontFamily? = null,
     style: TextStyle = LocalTextStyle.current
 ) {
 
@@ -53,6 +55,7 @@ fun Layout(
                         textDecoration = textDecoration,
                         textAlign = textAlign,
                         fontWeight = fontWeight,
+                        fontFamily = fontFamily,
                         style = style
                     )
                 }
@@ -69,6 +72,7 @@ fun Layout(
                             textDecoration = textDecoration,
                             textAlign = textAlign,
                             fontWeight = fontWeight,
+                            fontFamily = fontFamily,
                             style = style
                         )
                     }
@@ -86,6 +90,7 @@ fun Layout(
                             textDecoration = textDecoration,
                             textAlign = textAlign,
                             fontWeight = fontWeight,
+                            fontFamily = fontFamily,
                             style = style
                         )
                     }
