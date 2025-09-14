@@ -2,8 +2,8 @@ package io.github.remmerw.thor
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.lifecycle.viewmodel.compose.viewModel
+import io.github.remmerw.saga.Tag
 import io.github.remmerw.thor.model.HtmlModel
-import io.github.remmerw.thor.model.Type
 import io.github.remmerw.thor.ui.HtmlViewer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -24,24 +24,24 @@ class ListsTest {
         launch {
             val model = htmlModel.model()
 
-            val html = model.createEntity(Type.HTML.name)
-            val body = model.createEntity(Type.BODY.name, html)
+            val html = model.createEntity(Tag.HTML.tag())
+            val body = model.createEntity(Tag.BODY.tag(), html)
 
-            val ol = model.createEntity(Type.OL.name, body)
-            val ol1 = model.createEntity(Type.LI.name, ol)
+            val ol = model.createEntity(Tag.OL.tag(), body)
+            val ol1 = model.createEntity(Tag.LI.tag(), ol)
             model.createText(ol1, "OL1")
-            val ol2 = model.createEntity(Type.LI.name, ol)
+            val ol2 = model.createEntity(Tag.LI.tag(), ol)
             model.createText(ol2, "OL2")
-            val ol3 = model.createEntity(Type.LI.name, ol)
+            val ol3 = model.createEntity(Tag.LI.tag(), ol)
             model.createText(ol3, "OL2")
 
 
-            val ul = model.createEntity(Type.UL.name, body)
-            val ul1 = model.createEntity(Type.LI.name, ul)
+            val ul = model.createEntity(Tag.UL.tag(), body)
+            val ul1 = model.createEntity(Tag.LI.tag(), ul)
             model.createText(ul1, "UL1")
-            val ul2 = model.createEntity(Type.LI.name, ul)
+            val ul2 = model.createEntity(Tag.LI.tag(), ul)
             model.createText(ul2, "UL2")
-            val ul3 = model.createEntity(Type.LI.name, ul)
+            val ul3 = model.createEntity(Tag.LI.tag(), ul)
             model.createText(ul3, "UL2")
 
             println(model.content())

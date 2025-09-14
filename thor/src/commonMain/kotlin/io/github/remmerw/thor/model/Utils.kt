@@ -1,6 +1,7 @@
 package io.github.remmerw.thor.model
 
 import io.github.remmerw.saga.Entity
+import io.github.remmerw.saga.Tag
 import io.ktor.http.Url
 
 // todo import android.content.res.Resources
@@ -58,8 +59,8 @@ object Utils {
 
     fun navigate(entity: Entity, htmlModel: HtmlModel, href: String, target: String) {
 
-        if (entity.name == Type.ANCHOR.name ||
-            entity.name == Type.A.name
+        if (entity.name == Tag.ANCHOR.tag() ||
+            entity.name == Tag.A.tag()
         ) {
 
             if (href.startsWith("#")) {
@@ -75,7 +76,7 @@ object Utils {
                 }
             }
         }
-        if (entity.name == Type.LINK.name) {
+        if (entity.name == Tag.LINK.tag()) {
 
             if (href.startsWith("#")) {
                 // TODO: Scroll to the element. Issue #101

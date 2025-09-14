@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import coil3.toUri
 import io.github.remmerw.saga.Entity
 import io.github.remmerw.saga.Model
+import io.github.remmerw.saga.Tag
 import io.github.remmerw.saga.createModel
 import io.github.remmerw.thor.debug
 import io.ktor.http.Url
@@ -33,6 +34,7 @@ class HtmlModel() : ViewModel() {
     fun parse(source: Source) {
         try {
             model.parse(source)
+            model.normalize()
         } catch (throwable: Throwable) {
             // todo give message
             debug(throwable)
@@ -73,11 +75,11 @@ class HtmlModel() : ViewModel() {
     }
 
     fun body(entity: Entity): StateFlow<List<Entity>> {
-        require(entity.name == Type.HTML.name)
+        require(entity.name == Tag.HTML.tag())
         return model.children(entity).transform { value ->
             val list = mutableListOf<Entity>()
             value.forEach { entity ->
-                if (entity.name == Type.BODY.name) {
+                if (entity.name == Tag.BODY.tag()) {
                     list.add(entity)
                 }
             }
@@ -101,7 +103,7 @@ class HtmlModel() : ViewModel() {
         return model.children(model.entity()).transform { value ->
             val list = mutableListOf<Entity>()
             value.forEach { entity ->
-                if (entity.name == Type.HTML.name) {
+                if (entity.name == Tag.HTML.tag()) {
                     list.add(entity)
                 }
             }

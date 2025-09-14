@@ -2,8 +2,8 @@ package io.github.remmerw.thor
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.lifecycle.viewmodel.compose.viewModel
+import io.github.remmerw.saga.Tag
 import io.github.remmerw.thor.model.HtmlModel
-import io.github.remmerw.thor.model.Type
 import io.github.remmerw.thor.ui.HtmlViewer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -23,29 +23,29 @@ class TableTest {
         launch {
             val model = htmlModel.model()
 
-            val html = model.createEntity(Type.HTML.name)
-            val body = model.createEntity(Type.BODY.name, html)
+            val html = model.createEntity(Tag.HTML.tag())
+            val body = model.createEntity(Tag.BODY.tag(), html)
 
-            val table = model.createEntity(Type.TABLE.name, body)
+            val table = model.createEntity(Tag.TABLE.tag(), body)
 
-            val caption = model.createEntity(Type.CAPTION.name, table)
+            val caption = model.createEntity(Tag.CAPTION.tag(), table)
             model.createText(caption, "Caption")
-            val tr1 = model.createEntity(Type.TR.name, table)
-            val th1 = model.createEntity(Type.TH.name, tr1)
+            val tr1 = model.createEntity(Tag.TR.tag(), table)
+            val th1 = model.createEntity(Tag.TH.tag(), tr1)
             model.createText(th1, "Header 1")
-            val th2 = model.createEntity(Type.TH.name, tr1)
+            val th2 = model.createEntity(Tag.TH.tag(), tr1)
             model.createText(th2, "Header 2")
 
-            val tr2 = model.createEntity(Type.TR.name, table)
-            val td1 = model.createEntity(Type.TD.name, tr2)
+            val tr2 = model.createEntity(Tag.TR.tag(), table)
+            val td1 = model.createEntity(Tag.TD.tag(), tr2)
             model.createText(td1, "Content 1")
-            val td2 = model.createEntity(Type.TD.name, tr2)
+            val td2 = model.createEntity(Tag.TD.tag(), tr2)
             model.createText(td2, "Content 2")
 
-            val tr3 = model.createEntity(Type.TR.name, table)
-            val td3 = model.createEntity(Type.TD.name, tr3)
+            val tr3 = model.createEntity(Tag.TR.tag(), table)
+            val td3 = model.createEntity(Tag.TD.tag(), tr3)
             model.createText(td3, "Content 3")
-            val td4 = model.createEntity(Type.TD.name, tr3)
+            val td4 = model.createEntity(Tag.TD.tag(), tr3)
             model.createText(td4, "Content 4")
 
 

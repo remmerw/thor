@@ -26,9 +26,11 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import io.github.remmerw.saga.Entity
+import io.github.remmerw.saga.TEXT_NODE
+import io.github.remmerw.saga.Tag
 import io.github.remmerw.thor.debug
 import io.github.remmerw.thor.model.HtmlModel
-import io.github.remmerw.thor.model.Type
+import io.github.remmerw.thor.model.Styler
 
 
 @Composable
@@ -47,12 +49,12 @@ fun Element(
 
 
     when (entity.name) {
-        "#comment", Type.SCRIPT.name, Type.NOSCRIPT.name,
-        Type.STYLE.name, Type.LABEL.name -> {
+        "#comment", Tag.SCRIPT.tag(), Tag.NOSCRIPT.tag(),
+        Tag.STYLE.tag(), Tag.LABEL.tag() -> {
             // nothing to do here
         }
 
-        "#text" -> {
+        TEXT_NODE -> {
             val text by htmlModel.text(entity).collectAsState()
 
             if (text.isNotEmpty()) {
@@ -70,7 +72,7 @@ fun Element(
             }
         }
 
-        Type.INPUT.name -> {
+        Tag.INPUT.tag() -> {
             val attributes by htmlModel.attributes(entity).collectAsState()
             val type = attributes["type"]
 
@@ -82,7 +84,7 @@ fun Element(
             ) // todo
         }
 
-        Type.BODY.name -> {
+        Tag.BODY.tag() -> {
             Body(
                 entity = entity,
                 htmlModel = htmlModel,
@@ -97,7 +99,7 @@ fun Element(
             )
         }
 
-        Type.H1.name -> {
+        Tag.H1.tag() -> {
             Layout(
                 entity = entity,
                 htmlModel = htmlModel,
@@ -112,7 +114,7 @@ fun Element(
             )
         }
 
-        Type.H2.name -> {
+        Tag.H2.tag() -> {
             Layout(
                 entity = entity,
                 htmlModel = htmlModel,
@@ -127,7 +129,7 @@ fun Element(
             )
         }
 
-        Type.H3.name -> {
+        Tag.H3.tag() -> {
             Layout(
                 entity = entity,
                 htmlModel = htmlModel,
@@ -142,7 +144,7 @@ fun Element(
             )
         }
 
-        Type.H4.name -> {
+        Tag.H4.tag() -> {
             Layout(
                 entity = entity,
                 htmlModel = htmlModel,
@@ -157,7 +159,7 @@ fun Element(
             )
         }
 
-        Type.H5.name -> {
+        Tag.H5.tag() -> {
             Layout(
                 entity = entity,
                 htmlModel = htmlModel,
@@ -172,7 +174,7 @@ fun Element(
             )
         }
 
-        Type.H6.name -> {
+        Tag.H6.tag() -> {
             Layout(
                 entity = entity,
                 htmlModel = htmlModel,
@@ -187,7 +189,7 @@ fun Element(
             )
         }
 
-        Type.CAPTION.name -> {
+        Tag.CAPTION.tag() -> {
             Layout(
                 entity = entity,
                 htmlModel = htmlModel,
@@ -203,7 +205,7 @@ fun Element(
             )
         }
 
-        Type.TFOOT.name, Type.THEAD.name, Type.FORM.name -> {
+        Tag.TFOOT.tag(), Tag.THEAD.tag(), Tag.FORM.tag() -> {
             Layout(
                 entity = entity,
                 htmlModel = htmlModel,
@@ -218,7 +220,7 @@ fun Element(
             )
         }
 
-        Type.BUTTON.name -> {
+        Tag.BUTTON.tag() -> {
             Button(
                 onClick = {},
                 enabled = false,
@@ -239,7 +241,7 @@ fun Element(
         }
 
 
-        Type.CENTER.name -> {
+        Tag.CENTER.tag() -> {
             Layout(
                 entity = entity,
                 htmlModel = htmlModel,
@@ -254,7 +256,7 @@ fun Element(
             )
         }
 
-        Type.SPAN.name -> {
+        Tag.SPAN.tag() -> {
             Layout(
                 entity = entity,
                 htmlModel = htmlModel,
@@ -269,12 +271,12 @@ fun Element(
             )
         }
 
-        Type.DIV.name, Type.TABLE.name,
-        Type.TBODY.name, Type.P.name,
-        Type.SECTION.name, Type.ARTICLE.name,
-        Type.FOOTER.name, Type.HEADER.name,
-        Type.UL.name, Type.OL.name,
-        Type.PICTURE.name -> {
+        Tag.DIV.tag(), Tag.TABLE.tag(),
+        Tag.TBODY.tag(), Tag.P.tag(),
+        Tag.SECTION.tag(), Tag.ARTICLE.tag(),
+        Tag.FOOTER.tag(), Tag.HEADER.tag(),
+        Tag.UL.tag(), Tag.OL.tag(),
+        Tag.PICTURE.tag() -> {
             Column {
                 Layout(
                     entity = entity,
@@ -292,7 +294,7 @@ fun Element(
             }
         }
 
-        Type.BIG.name -> {
+        Tag.BIG.tag() -> {
             Layout(
                 entity = entity,
                 htmlModel = htmlModel,
@@ -307,7 +309,7 @@ fun Element(
             )
         }
 
-        Type.FONT.name -> {
+        Tag.FONT.tag() -> {
             val attributes by htmlModel.attributes(entity).collectAsState()
             var colorOverwrite: Color = color
             val colorAttribute = attributes["color"]
@@ -328,7 +330,7 @@ fun Element(
             )
         }
 
-        Type.A.name, Type.ANCHOR.name -> {
+        Tag.A.tag(), Tag.ANCHOR.tag() -> {
             val attributes by htmlModel.attributes(entity).collectAsState()
             attributes["href"]
             // todo href
@@ -346,7 +348,7 @@ fun Element(
             )
         }
 
-        Type.LI.name -> { // todo test again
+        Tag.LI.tag() -> {
 
             Layout(
                 entity = entity,
@@ -363,7 +365,7 @@ fun Element(
 
         }
 
-        Type.NAV.name -> {
+        Tag.NAV.tag() -> {
             FlowRow { // todo check
                 Layout(
                     entity = entity,
@@ -380,7 +382,7 @@ fun Element(
             }
         }
 
-        Type.BR.name -> { // todo
+        Tag.BR.tag() -> { // todo
             Layout(
                 entity = entity,
                 htmlModel = htmlModel,
@@ -396,7 +398,7 @@ fun Element(
             )
         }
 
-        Type.TR.name -> {
+        Tag.TR.tag() -> {
             Layout(
                 entity = entity,
                 htmlModel = htmlModel,
@@ -413,7 +415,7 @@ fun Element(
 
         }
 
-        Type.TD.name -> {
+        Tag.TD.tag() -> {
             Layout(
                 entity = entity,
                 htmlModel = htmlModel,
@@ -428,7 +430,7 @@ fun Element(
             )
         }
 
-        Type.TH.name -> {
+        Tag.TH.tag() -> {
             Layout(
                 entity = entity,
                 htmlModel = htmlModel,
@@ -443,7 +445,7 @@ fun Element(
             )
         }
 
-        Type.IMG.name -> {
+        Tag.IMG.tag() -> {
             val attributes by htmlModel.attributes(entity).collectAsState()
             val isImageLoadingEnabled = remember { htmlModel.isImageLoadingEnabled }
             val src = attributes["src"]
@@ -461,7 +463,7 @@ fun Element(
             }
         }
 
-        Type.SVG.name -> {
+        Tag.SVG.tag() -> {
             val attributes by htmlModel.attributes(entity).collectAsState()
             var width = 24
             var height = 24
@@ -483,7 +485,7 @@ fun Element(
             }
         }
 
-        Type.BLOCKQUOTE.name -> {
+        Tag.BLOCKQUOTE.tag() -> {
             Layout(
                 entity = entity,
                 htmlModel = htmlModel,
@@ -498,7 +500,7 @@ fun Element(
             )
         }
 
-        Type.B.name, Type.STRONG.name -> {
+        Tag.B.tag(), Tag.STRONG.tag() -> {
             Layout(
                 entity = entity,
                 htmlModel = htmlModel,
@@ -513,14 +515,20 @@ fun Element(
             )
         }
 
-        Type.EM.name, Type.I.name -> {
+        Tag.EM.tag(), Tag.I.tag() -> {
+            val attributes by htmlModel.attributes(entity).collectAsState()
+            val fontStyle = attributes["font-style"]?.let {
+                Styler.parseFontStyle(it)
+            } ?: FontStyle.Italic
+
+
             Layout(
                 entity = entity,
                 htmlModel = htmlModel,
                 modifier = modifier,
                 color = color,
                 fontSize = fontSize,
-                fontStyle = FontStyle.Italic,
+                fontStyle = fontStyle,
                 textDecoration = textDecoration,
                 textAlign = textAlign,
                 fontWeight = fontWeight,
@@ -528,7 +536,7 @@ fun Element(
             )
         }
 
-        Type.SMALL.name -> {
+        Tag.SMALL.tag() -> {
             Layout(
                 entity = entity,
                 htmlModel = htmlModel,
@@ -543,7 +551,7 @@ fun Element(
             )
         }
 
-        Type.HR.name -> {
+        Tag.HR.tag() -> {
             HorizontalDivider(thickness = 2.dp)
         }
 

@@ -2,8 +2,8 @@ package io.github.remmerw.thor
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.lifecycle.viewmodel.compose.viewModel
+import io.github.remmerw.saga.Tag
 import io.github.remmerw.thor.model.HtmlModel
-import io.github.remmerw.thor.model.Type
 import io.github.remmerw.thor.ui.HtmlViewer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -23,10 +23,10 @@ class AnchorTest {
 
         launch {
             val model = htmlModel.model()
-            val html = model.createEntity(Type.HTML.name)
-            val body = model.createEntity(Type.BODY.name, html)
+            val html = model.createEntity(Tag.HTML.tag())
+            val body = model.createEntity(Tag.BODY.tag(), html)
             val a = model.createEntity(
-                Type.A.name, body,
+                Tag.A.tag(), body,
                 mapOf("href" to "https://www.w3schools.com")
             )
             model.createText(a, "Visit W3Schools.com!")
