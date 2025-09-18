@@ -2,13 +2,14 @@
 agp = "8.13.0"
 core = "1.7.0"
 kotlin = "2.2.20"
-compose-multiplatform = "1.8.2"
-lifecycle = "2.9.3"
+compose-multiplatform = "1.9.0"
+lifecycle = "2.9.4"
+polyglot = "25.0.0"
 ui-test-junit4 = "1.9.1"
 coil = "3.3.0"
-ktor = "3.2.3"
+ktor = "3.3.0"
 kotlinx-coroutines = "1.10.2"
-ui-test-junit4-desktop = "1.8.2"
+ui-test-junit4-desktop = "1.9.0"
 
 [libraries]
 androidx-core = { module = "androidx.test:core", version.ref = "core" }
@@ -26,8 +27,9 @@ ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "k
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-client-java = { group = "io.ktor", name = "ktor-client-java", version.ref = "ktor" }
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
-saga = { module = "io.github.remmerw:saga", version = "0.1.4" }
+polyglot = { module = "org.graalvm.polyglot:polyglot", version.ref = "polyglot" }
 ui-test-junit4-desktop = { module = "org.jetbrains.compose.ui:ui-test-junit4-desktop", version.ref = "ui-test-junit4-desktop" }
+wasm = { module = "org.graalvm.polyglot:wasm", version.ref = "polyglot" }
 
 [plugins]
 androidLibrary = { id = "com.android.library", version.ref = "agp" }

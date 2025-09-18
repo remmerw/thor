@@ -37,11 +37,11 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.stdlib)
                 implementation(libs.kotlinx.io.core)
-                implementation(libs.saga)
 
                 implementation(libs.lifecycle)
                 implementation(compose.runtime)
                 implementation(compose.foundation)
+                implementation(compose.components.resources)
                 implementation(compose.material3)
                 implementation(compose.ui)
                 implementation(compose.materialIconsExtended)
@@ -49,6 +49,9 @@ kotlin {
                 implementation(libs.coil.compose)
                 implementation(libs.coil.network.ktor)
                 implementation(libs.coil.svg)
+
+                implementation(libs.polyglot)
+                implementation(libs.wasm)
             }
         }
 
@@ -69,6 +72,7 @@ kotlin {
                 implementation(libs.kotlin.test)
                 implementation(libs.ui.test.junit4.desktop)
                 implementation(compose.desktop.currentOs)
+                implementation(compose.desktop.common)
             }
         }
 
@@ -120,6 +124,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
+
 }
 
 
